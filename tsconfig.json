@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    "target": "ES6",
+    "module": "commonjs",
+    "lib": ["dom","ES6"],
+    "noImplicitAny": false,
+    "strictPropertyInitialization": false,
+    "esModuleInterop": true, 
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
