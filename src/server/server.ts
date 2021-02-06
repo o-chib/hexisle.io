@@ -1,14 +1,13 @@
 import path from 'path';
 import express from 'express';
 import http from 'http';
+//const Game = require('./game');
+const Socketio = require('socket.io');
+const Constsants = require('../shared/constants');
 
-import {clientConnection} from './clientConnection';
-
-const app = express();
-const server = http.createServer(app);  
-const websocket = require('socket.io')(server);
 
 // Serve up the static files from public
+const app = express();
 app.use(express.static('public')); 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public/index.html"));
@@ -17,9 +16,15 @@ app.get("/", (req, res) => {
 // Start listening for people to connect
 const ip = process.env.IP || "localhost";
 const port = process.env.PORT || 3000;
-server.listen(port, () => {
+const server = http.createServer(app).listen(port, () => {
     console.log("Server started:  http://" + ip + ":" + port);
 });
 
 // Start Socket.io connection
-clientConnection(websocket);
+const websocket = Socketio(server);
+websocket.on('connection', socket => {
+  console.log('Player connected!', socket.id);
+});
+
+// Start the game
+//const game = new Game();
