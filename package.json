@@ -6,6 +6,7 @@
   "license": "",
   "main": "",
   "scripts": {
+    "website": "npm run build && npm run start",
     "start": "node server-bundle.js",
     "build": "npm run build-server && npm run build-client",
     "build-server": "webpack --mode development --config webpack.server.js",
