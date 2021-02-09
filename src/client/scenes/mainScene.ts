@@ -1,17 +1,33 @@
 import io from 'socket.io-client'
+//import playerData from '../../shared/playerData';
+
+const Constant = require('./../../shared/constants');
 
 export default class MainScene extends Phaser.Scene {
-  private mySprite: Phaser.GameObjects.Sprite;
+	socket: SocketIOClient.Socket;
 
-  constructor() {
-    super({ key: 'MainScene' });
-  }
+	constructor() {
+		super('MainScene');
+	}
 
-  preload(): void {
-    this.load.image('aliem', '../assets/Alien-thumb.jpg');
-  }
+	preload(): void {
+		this.load.image('aliem', '../assets/Alien-thumb.jpg');
+	}
 
-  create(): void {
-    this.mySprite = this.add.sprite(400, 300, 'aliem');
-  }
+	create(): void {
+		this.socket = io();
+		this.socket.emit('ready')
+		this.socket.emit(Constant.message.JOIN, this.socket.id);
+		this.socket.on("hello", () => {
+			console.log("socket hello");
+		});
+
+  	}
+
+  	update(): void {
+  	}
+
+	play = () => {
+		this.socket.emit(Constant.message.JOIN, this.socket.id);
+	};
 }
