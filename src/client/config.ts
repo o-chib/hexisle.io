@@ -5,8 +5,7 @@ import hexTileScene from './scenes/hexTileScene'
 const DEFAULT_WIDTH = window.innerWidth
 const DEFAULT_HEIGHT = window.innerHeight
 
-export var MAP_DIAMETER: number = DEFAULT_HEIGHT;
-export var MAP_DIAMETER2: number = DEFAULT_WIDTH;
+export var MAP_DIAMETER: number = 800;
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',

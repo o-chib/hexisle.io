@@ -1,10 +1,11 @@
-import { MAP_DIAMETER, MAP_DIAMETER2 } from '../config';
+import { MAP_DIAMETER } from '../config';
 
 export default class HexTileScene extends Phaser.Scene {
   private graphics: Phaser.GameObjects.Graphics;
   private hexSize: number = 25;
   private hexMapCoords: Point[][];
   private cartMapCoords: Point[][];
+  private tileMap: Tile[][];
 
   constructor() {
     super({ key: 'hexTileScene' });
@@ -21,78 +22,42 @@ export default class HexTileScene extends Phaser.Scene {
 
     this.graphics.scene.add.text(10, 10, String(this.getMapHexRadius()));
     this.graphics.scene.add.text(10, 30, String(MAP_DIAMETER));
-    this.graphics.scene.add.text(10, 50, String(MAP_DIAMETER2));
 
-    // generate the hex coordinates
-    this.generateHexMapCoords();
+    // generate the tile map
+    this.generateTileMap();
 
-    // generate the cartesian coordinates for our hex coordinates
-    this.generateCartMapCoords();
-
-    // draw all our hexes
-    this.drawAllHexes();
-
-    //center point
-    //let centerPoint = new Point(MAP_DIAMETER / 2, MAP_DIAMETER / 2);
-    //this.createTileColumn(centerPoint, this.getMapHexRadius());
+    // draw all our hexes in the tile map
+    this.drawHexes(this.tileMap);
   }
 
-  generateHexMapCoords(): void {
+  generateTileMap(): void {
     // generates the hex integer coordinates from the game-size
     
-    this.hexMapCoords = [];
+    this.tileMap = [];
     let hexRadius: number = this.getMapHexRadius();
 
     // for each column
     for (let col = 0; col < (2 * hexRadius) + 1; col++) {
-      this.hexMapCoords[col] = [];
+      this.tileMap[col] = [];
       
       // for each row
       for (let row = 0; row < (2 * hexRadius) + 1; row++) {
-        this.hexMapCoords[col][row] = new Point(col, row);
+        this.tileMap[col][row] = new Tile();
+        this.tileMap[col][row].axial_coord = new AxialPoint(col, row);
+        this.tileMap[col][row].cartesian_coord = this.axialToCartesian(this.tileMap[col][row].axial_coord);
       }
     }
   }
 
-  generateCartMapCoords(): void {
-    // generates cartesian coordinates for hex center points based on our hex coordinates
-
-    this.cartMapCoords = [];
-
-    // for each column
-    for (let col = 0; col < this.hexMapCoords.length; col++) {
-      this.cartMapCoords[col] = [];
-
-      // for each row
-      for (let row = 0; row < this.hexMapCoords[col].length; row++) {
-
-        // matrix multiplication for conversions
-        let x: number = this.hexSize * (1.5 * col)
-        //let y: number = this.hexSize * (Math.sqrt(3)/2 * col + Math.sqrt(3) * row);
-        // if the column number is even shift the hexes down, if it's odd don't
-        let y: number;
-        if (col % 2 == 0) {
-          y = this.hexSize * (Math.sqrt(3)/2 + Math.sqrt(3) * row);
-        } else {
-          y = this.hexSize * (Math.sqrt(3) * row);
-        }
-        //this.graphics.scene.add.text(100 + 100 * row, 30 * col, String([Math.round(x * 100) / 100, Math.round(y * 100) / 100]));
-        this.cartMapCoords[col][row] = new Point(x, y);
-      }
-    }
-  }
-
-  drawAllHexes(): void {
+  drawHexes(tileMap: Tile[][]): void {
     // draws every hex we have in our map
     
     // for each column
-    for (let col = 0; col < this.hexMapCoords.length; col++) {
-      //this.graphics.scene.add.text(100, 30 * col, String(col));
+    for (let col = 0; col < tileMap.length; col++) {
       
       // for each row
-      for (let row = 0; row < this.hexMapCoords[col].length; row++) {
-        //this.graphics.scene.add.text(150 + 30 * row, 30 * col, String(row));
-        this.createTile(this.cartMapCoords[col][row])
+      for (let row = 0; row < tileMap[col].length; row++) {
+        this.createTile(tileMap[col][row].cartesian_coord)
       }
     }
   }
@@ -156,6 +121,21 @@ export default class HexTileScene extends Phaser.Scene {
     let mapRadius: number = MAP_DIAMETER / 2;
     let freeSpace: number = mapRadius - (this.getHexHeight() / 2)
     return Math.floor(freeSpace / this.getHexHeight());
+  }
+
+  axialToCartesian(axialPoint: AxialPoint): Point {
+    
+    // matrix multiplication for conversions
+    let x: number = (this.hexSize * (1.5 * axialPoint.q)) + this.hexSize
+
+    // if the column number is even shift the hexes down, if it's odd don't
+    let y: number;
+    if (axialPoint.q % 2 == 0) {
+      y = this.hexSize * (Math.sqrt(3)/2 + Math.sqrt(3) * axialPoint.r);
+    } else {
+      y = this.hexSize * (Math.sqrt(3) * axialPoint.r);
+    }
+    return new Point(x, y);
   }
 }
 
