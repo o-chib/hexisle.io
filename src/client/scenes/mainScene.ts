@@ -18,20 +18,20 @@ export default class MainScene extends Phaser.Scene {
 	create(): void {
 		this.socket = io();
 		this.socket.emit(Constant.MESSAGE.JOIN);
-		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState);
+		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState.bind(this));
   	}
 
 	updateState(update: any): void { //TODO may state type
-		const { time, me, others } = update;
-		if (!me) {
+		console.log(update);
+		const { time, currentPlayer, otherPlayers } = update;
+		if (!currentPlayer) {
 			return;
 		}
 		
 		// Draw background
-		console.log("Im here");
 		// Draw all players
-		this.mySprite = this.add.sprite(me.xPos, me.yPos, 'aliem');
-		others.forEach( opp => {
+		this.mySprite = this.add.sprite(currentPlayer.xPos, currentPlayer.yPos, 'aliem');
+		otherPlayers.forEach( opp => {
 			this.add.sprite(opp.xPos, opp.yPos, 'aliem');
 		});
 	}
