@@ -6,8 +6,8 @@ const DEFAULT_HEIGHT = window.innerHeight
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
-	width: 600,
-	height: 600,
+	width: DEFAULT_WIDTH,
+	height: DEFAULT_HEIGHT,
 	type: Phaser.AUTO,
 	scene: [mainScene],
 	physics: {
