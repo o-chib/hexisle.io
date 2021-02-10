@@ -3,6 +3,7 @@ module.exports = Object.freeze({
     
     MESSAGE: {
         JOIN: 'join',
-        GAME_UPDATE: 'update_state'
+        GAME_UPDATE: 'update_state',
+        MOVEMENT: 'move'
     }
 });

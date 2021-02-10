@@ -8,7 +8,7 @@ export default class Game {
 	constructor() {
 		this.sockets = new Map();
 		this.players = new Map();
-		setInterval(this.update.bind(this), 1000); //TODO lean what bind is, and make it 1000 / 60
+		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
@@ -27,11 +27,9 @@ export default class Game {
 	}
 
 	update() {
-		console.log("sending " + this.players.size);
 		this.sockets.forEach(socket => {
 			if (!this.players.has(socket.id)) return;
 			const player : Player = this.players.get(socket.id)!;
-			console.log("sending " + socket.id);
 			socket.emit(Constant.MESSAGE.GAME_UPDATE, this.createUpdate(player));
 		});
 	}
@@ -48,5 +46,13 @@ export default class Game {
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map(p => p.serializeForUpdate())
 		};
+	}
+
+	movePlayer(socket: SocketIOClient.Socket, direction: number) {
+		if (!this.players.has(socket.id)) return;
+		const player : Player = this.players.get(socket.id)!;
+
+		player.xPos = player.xPos + 10*Math.cos(direction);
+		player.yPos = player.yPos - 10*Math.sin(direction);
 	}
 }

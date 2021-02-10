@@ -14,6 +14,7 @@ export default class MainScene extends Phaser.Scene {
 	preload(): void {
 		this.load.image('aliem', '../assets/Alien-thumb.jpg');
 		this.load.image('rainbow', '../assets/rainbow.bmp');
+		this.load.image('background', '../assets/background.jpg');
 	}
 
 	create(): void {
@@ -23,7 +24,21 @@ export default class MainScene extends Phaser.Scene {
 		this.add.sprite(200, 200, 'rainbow');
 		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
 		this.myPlayerSprite.setVisible(false);
+
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
+
+		this.input.keyboard.on('keydown', (event) => {
+			let direction: number;
+			switch(event.key) {
+				case "w": direction = Math.PI / 2; break;
+				case "d": direction = 0; break;   // Up, Angle = -90??
+				case "s": direction = 1.5 * Math.PI; break; // Down, Angle = 90??
+				case "a": direction = Math.PI; break;
+				default: return;
+			} 
+			this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
+		});
+
   	}
 
 	updateState(update: any): void { //TODO may state type

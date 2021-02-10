@@ -26,14 +26,17 @@ const game = new Game();
 
 // Start Socket.io connection
 const websocket = Socketio(server);
-websocket.on('connection', function (socket: any) {
+websocket.on('connection', function (socket: SocketIOClient.Socket) {
 	console.log('Player connected!', socket.id);
 	updateSocket(socket);
 });
 
-function updateSocket(socket: any) {
+function updateSocket(socket: SocketIOClient.Socket) {
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
+	});
+	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
+		game.movePlayer(socket, direction);
 	});
 	socket.on('disconnect', () => {
 		game.removePlayer(socket);
