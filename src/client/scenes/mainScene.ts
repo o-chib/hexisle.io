@@ -3,7 +3,8 @@ import io from 'socket.io-client'
 
 const Constant = require('./../../shared/constants');
 
-export default class MainScene extends Phaser.Scene {
+export default class MainScene extends Phaser.Scene {	
+	private mySprite: Phaser.GameObjects.Sprite;
 	socket: SocketIOClient.Socket;
 
 	constructor() {
@@ -16,18 +17,22 @@ export default class MainScene extends Phaser.Scene {
 
 	create(): void {
 		this.socket = io();
-		this.socket.emit('ready')
-		this.socket.emit(Constant.message.JOIN, this.socket.id);
-		this.socket.on("hello", () => {
-			console.log("socket hello");
+		this.socket.emit(Constant.MESSAGE.JOIN);
+		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState);
+  	}
+
+	updateState(update: any): void { //TODO may state type
+		const { time, me, others } = update;
+		if (!me) {
+			return;
+		}
+		
+		// Draw background
+		console.log("Im here");
+		// Draw all players
+		this.mySprite = this.add.sprite(me.xPos, me.yPos, 'aliem');
+		others.forEach( opp => {
+			this.add.sprite(opp.xPos, opp.yPos, 'aliem');
 		});
-
-  	}
-
-  	update(): void {
-  	}
-
-	play = () => {
-		this.socket.emit(Constant.message.JOIN, this.socket.id);
-	};
+	}
 }
