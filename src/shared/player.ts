@@ -15,4 +15,14 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 		this.yVel = 0;
 		this.direction = 0;
 	}
+
+	serializeForUpdate() {
+		return {
+			socketId: this.socketId,
+			xPos: this.xPos,
+			yPos: this.yPos
+			//direction: this.direction,
+			//hp: this.hp,
+		};
+	}
 }

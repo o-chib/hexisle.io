@@ -4,7 +4,7 @@ import http from 'http';
 import { Socket } from 'socket.io-client';
 import Game from './game';
 const Socketio = require('socket.io');
-const Constsants = require('../shared/constants');
+const Constant = require('../shared/constants');
 
 
 // Serve up the static files from public
@@ -32,9 +32,10 @@ websocket.on('connection', function (socket: any) {
 });
 
 function updateSocket(socket: any) {
-	socket.on('ready', game.addPlayer);
-	socket.on('disconnect', onDisconnect);
-}
-function onDisconnect() {
-	game.removePlayer(this);
+	socket.on(Constant.MESSAGE.JOIN, () => {
+		game.addPlayer(socket);
+	});
+	socket.on('disconnect', () => {
+		game.removePlayer(socket);
+	});
 }
