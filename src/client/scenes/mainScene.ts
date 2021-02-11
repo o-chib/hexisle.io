@@ -55,13 +55,13 @@ export default class MainScene extends Phaser.Scene {
 		if (!this.myPlayerSprite.visible)
 			this.myPlayerSprite.setVisible(true);
 
-		
 		otherPlayers.forEach( opp => {
-			if (this.otherPlayerSprites.has(opp.socketID)) {
-				this.otherPlayerSprites.get(opp.socketID)!.setPosition(opp.xPos, opp.yPos);
+			if (this.otherPlayerSprites.has(opp.id)) {
+				this.otherPlayerSprites.get(opp.id)!.setPosition(opp.xPos, opp.yPos);
 			} else {
 				let newPlayer = this.add.sprite(opp.xPos, opp.yPos, 'aliem');
-				this.otherPlayerSprites.set(opp.socketID, newPlayer);
+				this.otherPlayerSprites.set(opp.id, newPlayer);
+				console.log("new opponent")
 			}
 			//TODO memory leak where old sprites dont get removed
 		});
