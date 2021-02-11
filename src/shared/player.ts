@@ -1,5 +1,5 @@
 export default class Player { // extends Phaser.Physics.Matter.Sprite
-	socketId: string;
+	id: string;
 	xPos: number;
 	yPos: number;
 	xVel: number;
@@ -7,8 +7,8 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 	color: string = "0x"+Math.floor(Math.random()*16777215).toString(16);
 	direction: number;
 
-	constructor(socketId: string, xPos: number, yPos: number) {
-		this.socketId = socketId;
+	constructor(id: string, xPos: number, yPos: number) {
+		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.xVel = 0;
@@ -18,7 +18,7 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 
 	serializeForUpdate() {
 		return {
-			socketId: this.socketId,
+			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos
 			//direction: this.direction,
