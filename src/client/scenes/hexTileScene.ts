@@ -31,8 +31,8 @@ export default class HexTileScene extends Phaser.Scene {
     this.generateCamps();
 
     // draw all our hexes in the tile map
-    this.drawHexes(this.tileMap);
-
+    //this.drawHexes(this.tileMap);
+    this.drawMap();
   }
 
   update(): void {
@@ -41,28 +41,120 @@ export default class HexTileScene extends Phaser.Scene {
       let testTile: Tile = new Tile('camp');
       let mouseX: number = this.input.mousePointer.x;
       let mouseY: number = this.input.mousePointer.y;
-      testTile.axial_coord = this.cartesianToAxial(new Point(mouseX, mouseY));
-      if (this.checkIfValidHex(testTile.axial_coord)) {
-        testTile.cartesian_coord = this.tileMap[testTile.axial_coord.q][testTile.axial_coord.r].cartesian_coord;
+      testTile.offset_coord = this.cartesianToAxial(new Point(mouseX, mouseY));
+      if (this.checkIfValidHex(testTile.offset_coord)) {
+        testTile.cartesian_coord = this.tileMap[testTile.offset_coord.q][testTile.offset_coord.r].cartesian_coord;
         this.createTile(testTile);
       }
     }
   }
 
+  getHexDirectionPoint(directionIndex : number, evenQ : boolean): OffsetPoint {
+    // Specifies all directions one can move from any hex;
+    // displacement depends on position of current tile - if it is offset due to 'odd-q' configuration.
+    let axialDir = new OffsetPoint(0, 0);
+    switch(directionIndex) {
+        case 0 :  //South-East
+                  if(evenQ)
+                      axialDir = new OffsetPoint(1, 0);
+                  else
+                      axialDir = new OffsetPoint(1, 1);
+                  break;
+        case 1 : //South
+                  axialDir = new OffsetPoint(0, 1);
+                  break;
+        case 2 : //South-West
+                  if(evenQ)
+                      axialDir = new OffsetPoint(-1, 0);
+                  else
+                      axialDir = new OffsetPoint(-1, 1);
+                  break;
+        case 3 : //North-West
+                  if(evenQ)
+                      axialDir = new OffsetPoint(-1, -1);
+                  else
+                      axialDir = new OffsetPoint(-1, 0);
+                  break;
+        case 4 :  // North
+                  axialDir = new OffsetPoint(0, -1);
+                  break;
+        case 5 :  //North-East
+                  if(evenQ)
+                      axialDir = new OffsetPoint(1, -1);
+                  else
+                      axialDir = new OffsetPoint(1, 0);
+                  break;
+    }
+    return axialDir;
+}
+
+  getHexNeighborPoint(point: OffsetPoint, directionIndex : number) : OffsetPoint {
+    // Get coords of adjacent tile based on direction
+    let neighbor = new OffsetPoint(point.q,point.r);
+
+    let evenQ = false; // if current point lies on even q or odd q;
+    if(point.q % 2 == 0){
+        evenQ = true;
+    }
+    let direction = this.getHexDirectionPoint(directionIndex,evenQ);
+    neighbor.add(direction);
+
+    return neighbor;
+}
+
+  getHexRingPoints(centreTile:Tile, radius :number) : OffsetPoint[] {
+    // Takes center tile and returns a list of points that form a ring at some radius from the center
+    // radius = number of tiles from top to center - excluding the center.
+    let results : OffsetPoint[] = [];
+
+    // Get starting tile (North of center)
+    let evenQ = false; // if current point lies on even q or odd q
+    if(centreTile.offset_coord.q % 2 == 0){
+        evenQ = true;
+    }
+    let currPoint = this.getHexDirectionPoint(4,evenQ);
+    currPoint.scale(radius);
+    currPoint.add(centreTile.offset_coord);
+
+    let k = 0;
+    for(let i = 0; i < 6; ++i){
+        // Iterate in all 6 Hex Directions
+        for(let j = 0; j < radius; ++j){
+            results[k] = new OffsetPoint(currPoint.q, currPoint.r);
+            currPoint = this.getHexNeighborPoint(currPoint,i)
+            ++k;
+        }
+    }
+    return results;
+}
+
+  getHexRadiusPoints(centerTile: Tile, radius:number): OffsetPoint[] {
+    // Takes center tile and returns list of points that surround it in hexagonal shape
+    // radius = number of tiles from top to center - excluding the center.
+    let results  : OffsetPoint[] = [];
+    results[0] = new OffsetPoint(centerTile.offset_coord.q, centerTile.offset_coord.r);
+
+    for(let k = 1; k <= radius; ++k) {
+        let subResult = this.getHexRingPoints(centerTile,k);
+        results = results.concat(subResult);
+    }
+    return results
+  }
+
   generateTileMap(): void {
     // generates the hex integer coordinates from the game-size
-    
+
     this.tileMap = [];
 
     // for each column
     for (let col = 0; col < (2 * this.hexRadius) + 1; col++) {
       this.tileMap[col] = [];
-      
+
       // for each row
       for (let row = 0; row < (2 * this.hexRadius) + 1; row++) {
         this.tileMap[col][row] = new Tile();
-        this.tileMap[col][row].axial_coord = new AxialPoint(col, row);
-        this.tileMap[col][row].cartesian_coord = this.axialToCartesian(this.tileMap[col][row].axial_coord);
+        this.tileMap[col][row].offset_coord = new OffsetPoint(col, row);
+        this.tileMap[col][row].cartesian_coord = this.axialToCartesian(this.tileMap[col][row].offset_coord);
       }
     }
   }
@@ -71,12 +163,26 @@ export default class HexTileScene extends Phaser.Scene {
 
   }
 
+  drawMap() {
+      let centerTile = new Tile();
+      centerTile.offset_coord = new OffsetPoint(10,10);
+      let radius = 5;
+
+      let offsetCoords = this.getHexRadiusPoints(centerTile, radius);
+      let currTile = new Tile();
+      for(let i = 0 ; i < offsetCoords.length ; ++i) {
+          currTile.offset_coord = offsetCoords[i];
+          currTile.cartesian_coord = this.axialToCartesian(offsetCoords[i]);
+          this.createTile(currTile);
+      }
+  }
+
   drawHexes(tileMap: Tile[][]): void {
     // draws every hex we have in our map
-    
+
     // for each column
     for (let col = 0; col < tileMap.length; col++) {
-      
+
       // for each row
       for (let row = 0; row < tileMap[col].length; row++) {
         this.createTile(tileMap[col][row])
@@ -106,11 +212,11 @@ export default class HexTileScene extends Phaser.Scene {
     this.graphics.strokePath();
   }
 
-  checkIfValidHex(axialPoint: AxialPoint): boolean {
+  checkIfValidHex(OffsetPoint: OffsetPoint): boolean {
     // takes in an axial coordinate and returns if that hex exists
 
-    if (axialPoint.q < 0 || axialPoint.r < 0 ||
-        axialPoint.q > this.hexRadius * 2 || axialPoint.r > this.hexRadius * 2) {
+    if (OffsetPoint.q < 0 || OffsetPoint.r < 0 ||
+        OffsetPoint.q > this.hexRadius * 2 || OffsetPoint.r > this.hexRadius * 2) {
           return false;
         }
     return true;
@@ -127,7 +233,7 @@ export default class HexTileScene extends Phaser.Scene {
           let tile_x = point.x;
           let tile_y = point.y + (i * h);
           let tile: Tile = new Tile();
-          tile.axial_coord = new AxialPoint(tile_x, tile_y);
+          tile.offset_coord = new OffsetPoint(tile_x, tile_y);
           this.createTile(tile);
       }
   }
@@ -163,25 +269,25 @@ export default class HexTileScene extends Phaser.Scene {
     return Math.floor(freeSpace / this.getHexHeight());
   }
 
-  private axialToCartesian(axialPoint: AxialPoint): Point {
-    
+  private axialToCartesian(OffsetPoint: OffsetPoint): Point {
+
     // matrix multiplication for conversions
-    let x: number = (this.hexSize * (1.5 * axialPoint.q));
+    let x: number = (this.hexSize * (1.5 * OffsetPoint.q));
 
     // if the column number is odd shift the hexes down, if it's even don't
     let y: number;
-    if (axialPoint.q % 2 != 0) {
-      y = this.hexSize * (Math.sqrt(3)/2 + Math.sqrt(3) * axialPoint.r);
+    if (OffsetPoint.q % 2 != 0) {
+      y = this.hexSize * (Math.sqrt(3)/2 + Math.sqrt(3) * OffsetPoint.r);
     } else {
-      y = this.hexSize * (Math.sqrt(3) * axialPoint.r);
+      y = this.hexSize * (Math.sqrt(3) * OffsetPoint.r);
     }
     return new Point(x + this.hexSize, y + this.hexSize);
   }
 
-  private cartesianToAxial(point: Point): AxialPoint {
+  private cartesianToAxial(point: Point): OffsetPoint {
     // takes in a point in the cartesian plane
     // returns the coordinate of the hex it's in
-    
+
     // account for the half a hex to the bottom right we're pushing the map
     point.x = point.x - (this.hexSize);
     point.y = point.y - (this.hexSize);
@@ -191,7 +297,7 @@ export default class HexTileScene extends Phaser.Scene {
     let r: number = (-1/3 * point.x + Math.sqrt(3)/3 * point.y) / this.hexSize;
 
     // make these axial coords into a cube format
-    let cube: number[] = this.axialToCube(new AxialPoint(q, r));
+    let cube: number[] = this.axialToCube(new OffsetPoint(q, r));
 
     // round the cube
     cube = this.roundCube(cube);
@@ -201,23 +307,23 @@ export default class HexTileScene extends Phaser.Scene {
     return this.cubeToOddq(cube);
   }
 
-  private axialToCube(axialPoint: AxialPoint): number[] {
+  private axialToCube(OffsetPoint: OffsetPoint): number[] {
     // used for conversions from cartesian to axial
     // returns x, y, z in that order in a list
-  
-    let x: number = axialPoint.q;
-    let z: number = axialPoint.r;
+
+    let x: number = OffsetPoint.q;
+    let z: number = OffsetPoint.r;
     let y: number = -x - z;
     return [x, y, z];
   }
 
-  private cubeToOddq(cube: number[]): AxialPoint {
+  private cubeToOddq(cube: number[]): OffsetPoint {
     // used for conversions from cartesian to axial
     // returns an axial point
-  
+
     let col: number = cube[0];
     let row: number = cube[2] + (cube[0] - (cube[0]&1)) / 2;
-    return new AxialPoint(col, row);
+    return new OffsetPoint(col, row);
   }
 
   private roundCube(cube: number[]): number[] {
@@ -241,7 +347,7 @@ export default class HexTileScene extends Phaser.Scene {
 }
 
 export class Tile {
-  public axial_coord: AxialPoint;
+  public offset_coord: OffsetPoint;
   public cartesian_coord: Point;
   public building: string;
 
@@ -250,13 +356,28 @@ export class Tile {
   }
 }
 
-export class AxialPoint {
+export class OffsetPoint {
   public q: number;
   public r: number;
+  public s: number;
 
   constructor(q = 0, r = 0) {
     this.q = q;
     this.r = r;
+    this.s = -this.q -this.r;
+  }
+  public length() : number {
+      return (Math.abs(this.q) + Math.abs(this.r) + Math.abs(this.s)) / 2;
+  }
+  public scale(x: number) {
+     this.q *= x;
+     this.r *= x;
+     this.s *= x;
+  }
+  public add(offset_coord: OffsetPoint) {
+     this.q += offset_coord.q;
+     this.r += offset_coord.r;
+     this.s += offset_coord.s;
   }
 }
 
