@@ -6,24 +6,6 @@ export default class HexTileScene extends Phaser.Scene {
   private hexRadius: number;
   private hexSize: number = 10;
   private campRadius: number = 6;
-  private offsetDirections: OffsetPoint[][] = [
-    // even columns
-    [new OffsetPoint(0, -1), // north
-      new OffsetPoint(1, -1), // northeast
-      new OffsetPoint(1, 0), // southeast
-      new OffsetPoint(0, 1), // south
-      new OffsetPoint(-1, 0), // southwest
-      new OffsetPoint(-1, -1), // northwest,
-    ],
-    // odd columns
-    [new OffsetPoint(0, -1), // north
-      new OffsetPoint(1, 0), // northeast
-      new OffsetPoint(1, 1), // southeast
-      new OffsetPoint(0, 1), // south
-      new OffsetPoint(-1, 1), // southwest
-      new OffsetPoint(-1, 0), // northwest
-    ]
-  ]
 
   constructor() {
     super({ key: 'hexTileScene' });
@@ -74,98 +56,6 @@ export default class HexTileScene extends Phaser.Scene {
         this.drawTile(testTile);
       }
     }
-  }
-
-  getHexDirectionPoint(directionIndex : number, evenQ : boolean): OffsetPoint {
-    // Specifies all directions one can move from any hex;
-    // displacement depends on position of current tile - if it is offset due to 'odd-q' configuration.
-    let axialDir = new OffsetPoint(0, 0);
-    switch(directionIndex) {
-        case 0 :  //South-East
-                  if(evenQ)
-                      axialDir = new OffsetPoint(1, 0);
-                  else
-                      axialDir = new OffsetPoint(1, 1);
-                  break;
-        case 1 : //South
-                  axialDir = new OffsetPoint(0, 1);
-                  break;
-        case 2 : //South-West
-                  if(evenQ)
-                      axialDir = new OffsetPoint(-1, 0);
-                  else
-                      axialDir = new OffsetPoint(-1, 1);
-                  break;
-        case 3 : //North-West
-                  if(evenQ)
-                      axialDir = new OffsetPoint(-1, -1);
-                  else
-                      axialDir = new OffsetPoint(-1, 0);
-                  break;
-        case 4 :  // North
-                  axialDir = new OffsetPoint(0, -1);
-                  break;
-        case 5 :  //North-East
-                  if(evenQ)
-                      axialDir = new OffsetPoint(1, -1);
-                  else
-                      axialDir = new OffsetPoint(1, 0);
-                  break;
-    }
-    return axialDir;
-}
-
-  getHexNeighborPoint(point: OffsetPoint, directionIndex : number) : OffsetPoint {
-    // Get coords of adjacent tile based on direction
-    let neighbor = new OffsetPoint(point.q,point.r);
-
-    let evenQ = false; // if current point lies on even q or odd q;
-    if(point.q % 2 == 0){
-        evenQ = true;
-    }
-    let direction = this.getHexDirectionPoint(directionIndex,evenQ);
-    neighbor.add(direction);
-
-    return neighbor;
-}
-
-  getHexRingPoints(centreTile:Tile, radius :number) : OffsetPoint[] {
-    // Takes center tile and returns a list of points that form a ring at some radius from the center
-    // radius = number of tiles from top to center - excluding the center.
-    let results : OffsetPoint[] = [];
-
-    // Get starting tile (North of center)
-    let evenQ = false; // if current point lies on even q or odd q
-    if(centreTile.offset_coord.q % 2 == 0){
-        evenQ = true;
-    }
-    let currPoint = this.getHexDirectionPoint(4,evenQ);
-    currPoint.scale(radius);
-    currPoint.add(centreTile.offset_coord);
-
-    let k = 0;
-    for(let i = 0; i < 6; ++i){
-        // Iterate in all 6 Hex Directions
-        for(let j = 0; j < radius; ++j){
-            results[k] = new OffsetPoint(currPoint.q, currPoint.r);
-            currPoint = this.getHexNeighborPoint(currPoint,i)
-            ++k;
-        }
-    }
-    return results;
-}
-
-  getHexRadiusPoints(centerTile: Tile, radius:number): OffsetPoint[] {
-    // Takes center tile and returns list of points that surround it in hexagonal shape
-    // radius = number of tiles from top to center - excluding the center.
-    let results  : OffsetPoint[] = [];
-    results[0] = new OffsetPoint(centerTile.offset_coord.q, centerTile.offset_coord.r);
-
-    for(let k = 1; k <= radius; ++k) {
-        let subResult = this.getHexRingPoints(centerTile,k);
-        results = results.concat(subResult);
-    }
-    return results
   }
 
   generateTileMap(): void {
@@ -312,6 +202,45 @@ export default class HexTileScene extends Phaser.Scene {
       }
   }
 
+  getHexRingPoints(centreTile:Tile, radius :number) : OffsetPoint[] {
+    // Takes center tile and returns a list of points that form a ring at some radius from the center
+    // radius = number of tiles from top to center - excluding the center.
+    let results : OffsetPoint[] = [];
+
+    // Get starting tile (North of center)
+    let evenQ = false; // if current point lies on even q or odd q
+    if(centreTile.offset_coord.q % 2 == 0){
+        evenQ = true;
+    }
+    let currPoint = this.getHexDirectionPoint(4,evenQ);
+    currPoint.scale(radius);
+    currPoint.add(centreTile.offset_coord);
+
+    let k = 0;
+    for(let i = 0; i < 6; ++i){
+        // Iterate in all 6 Hex Directions
+        for(let j = 0; j < radius; ++j){
+            results[k] = new OffsetPoint(currPoint.q, currPoint.r);
+            currPoint = this.getHexNeighborPoint(currPoint,i)
+            ++k;
+        }
+    }
+    return results;
+  }
+
+  getHexRadiusPoints(centerTile: Tile, radius:number): OffsetPoint[] {
+    // Takes center tile and returns list of points that surround it in hexagonal shape
+    // radius = number of tiles from top to center - excluding the center.
+    let results  : OffsetPoint[] = [];
+    results[0] = new OffsetPoint(centerTile.offset_coord.q, centerTile.offset_coord.r);
+
+    for(let k = 1; k <= radius; ++k) {
+        let subResult = this.getHexRingPoints(centerTile,k);
+        results = results.concat(subResult);
+    }
+    return results
+  }
+
   private getHexPointsFromCenter(point: Point): Point[] {
     let hexPoints: Point[] = [];
 
@@ -422,6 +351,60 @@ export default class HexTileScene extends Phaser.Scene {
     return [rx, ry, rz];
   }
 
+  private getHexDirectionPoint(directionIndex : number, evenQ : boolean): OffsetPoint {
+    // Specifies all directions one can move from any hex;
+    // displacement depends on position of current tile - if it is offset due to 'odd-q' configuration.
+
+    let offsetDir = new OffsetPoint(0, 0);
+    switch(directionIndex) {
+        case 0 :  //South-East
+                  if(evenQ)
+                      offsetDir = new OffsetPoint(1, 0);
+                  else
+                      offsetDir = new OffsetPoint(1, 1);
+                  break;
+        case 1 : //South
+                  offsetDir = new OffsetPoint(0, 1);
+                  break;
+        case 2 : //South-West
+                  if(evenQ)
+                      offsetDir = new OffsetPoint(-1, 0);
+                  else
+                      offsetDir = new OffsetPoint(-1, 1);
+                  break;
+        case 3 : //North-West
+                  if(evenQ)
+                      offsetDir = new OffsetPoint(-1, -1);
+                  else
+                      offsetDir = new OffsetPoint(-1, 0);
+                  break;
+        case 4 :  // North
+                  offsetDir = new OffsetPoint(0, -1);
+                  break;
+        case 5 :  //North-East
+                  if(evenQ)
+                      offsetDir = new OffsetPoint(1, -1);
+                  else
+                      offsetDir = new OffsetPoint(1, 0);
+                  break;
+    }
+    return offsetDir;
+  }
+
+  private getHexNeighborPoint(point: OffsetPoint, directionIndex : number) : OffsetPoint {
+    // Get coords of adjacent tile based on direction
+    let neighbor = new OffsetPoint(point.q,point.r);
+
+    let evenQ = false; // if current point lies on even q or odd q;
+    if(point.q % 2 == 0){
+        evenQ = true;
+    }
+    let direction = this.getHexDirectionPoint(directionIndex,evenQ);
+    neighbor.add(direction);
+
+    return neighbor;
+  }
+
   private hexTraverse(hex: OffsetPoint, direction: number, distance: number): OffsetPoint {
     // moves the hex coordinate from it's original position <distance> hexes away in the direction <direction>
     // returns the offset coordinate of the new position
@@ -430,9 +413,9 @@ export default class HexTileScene extends Phaser.Scene {
 
       // make sure we're using the right column directions (even or odd)
       if (hex.q % 2 == 0) {
-        hex.add(this.offsetDirections[0][direction]);
+        hex.add(this.getHexDirectionPoint(direction, true));
       } else {
-        hex.add(this.offsetDirections[1][direction]);
+        hex.add(this.getHexDirectionPoint(direction, false));
       }
     }
     return hex;
