@@ -4,8 +4,8 @@ export default class HexTileScene extends Phaser.Scene {
   private graphics: Phaser.GameObjects.Graphics;
   private tileMap: Tile[][]; // Made in offset even-q coordinates
   private hexRadius: number;
-  private hexSize: number = 10;
-  private campRadius: number = 6;
+  private hexSize: number = 25;
+  private campRadius: number = 3;
 
   constructor() {
     super({ key: 'hexTileScene' });
@@ -47,7 +47,8 @@ export default class HexTileScene extends Phaser.Scene {
 
   update(): void {
     if (this.input.mousePointer.isDown) {
-      let testTile: Tile = new Tile('camp');
+      console.time();
+      let testTile: Tile = new Tile('select');
       let mouseX: number = this.input.mousePointer.x;
       let mouseY: number = this.input.mousePointer.y;
       testTile.offset_coord = this.cartesianToOffset(new Point(mouseX, mouseY));
@@ -55,10 +56,13 @@ export default class HexTileScene extends Phaser.Scene {
         testTile.cartesian_coord = this.tileMap[testTile.offset_coord.q][testTile.offset_coord.r].cartesian_coord;
         this.drawTile(testTile);
       }
+      console.timeEnd();
     }
   }
 
   generateTileMap(): void {
+    console.log('time to generate tilemap');
+    console.time();
     // generates the hex integer coordinates from the game-size
 
     this.tileMap = [];
@@ -74,9 +78,12 @@ export default class HexTileScene extends Phaser.Scene {
         this.tileMap[col][row].cartesian_coord = this.offsetToCartesian(this.tileMap[col][row].offset_coord);
       }
     }
+    console.timeEnd();
   }
 
   generateCamps(): OffsetPoint[] {
+    console.log('time to generate camps');
+    console.time();
     // Takes the tilemap and sets tiles to camps dependent on the class config (private variables)
 
     // start at the center of the map, and make it a camp
@@ -124,6 +131,7 @@ export default class HexTileScene extends Phaser.Scene {
         }
       }
     }
+    console.timeEnd();
     return campHexes;
   }
 
@@ -163,6 +171,8 @@ export default class HexTileScene extends Phaser.Scene {
       this.graphics.lineStyle(4, 0xff0000, 1);
     } else if (tile.building == 'ring') {
       this.graphics.lineStyle(1, 0x002fff, 1);
+    } else if (tile.building == 'select') {
+      this.graphics.lineStyle(1, 0xffb300, 1);
     } else {
       this.graphics.lineStyle(1, 0xffffff, 1);
     }
@@ -310,7 +320,6 @@ export default class HexTileScene extends Phaser.Scene {
     cube = this.roundCube(cube);
 
     // convert the cube to evenq coords and return
-    console.log(this.cubeToOffset(cube).q, this.cubeToOffset(cube).r)
     return this.cubeToOffset(cube);
   }
 
