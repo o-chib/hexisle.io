@@ -2,7 +2,7 @@ import { MAP_DIAMETER } from '../config';
 
 export default class HexTileScene extends Phaser.Scene {
   private graphics: Phaser.GameObjects.Graphics;
-  private tileMap: Tile[][];
+  private tileMap: Tile[][]; // Made in offset even-q coordinates
   private hexRadius: number;
   private hexSize: number = 25;
   private campRadius: number = 3;
@@ -37,14 +37,13 @@ export default class HexTileScene extends Phaser.Scene {
 
   update(): void {
     if (this.input.mousePointer.isDown) {
-      console.log('C L I C K');
       let testTile: Tile = new Tile('camp');
       let mouseX: number = this.input.mousePointer.x;
       let mouseY: number = this.input.mousePointer.y;
-      testTile.offset_coord = this.cartesianToAxial(new Point(mouseX, mouseY));
+      testTile.offset_coord = this.cartesianToOffset(new Point(mouseX, mouseY));
       if (this.checkIfValidHex(testTile.offset_coord)) {
         testTile.cartesian_coord = this.tileMap[testTile.offset_coord.q][testTile.offset_coord.r].cartesian_coord;
-        this.createTile(testTile);
+        this.drawTile(testTile);
       }
     }
   }
@@ -154,7 +153,7 @@ export default class HexTileScene extends Phaser.Scene {
       for (let row = 0; row < (2 * this.hexRadius) + 1; row++) {
         this.tileMap[col][row] = new Tile();
         this.tileMap[col][row].offset_coord = new OffsetPoint(col, row);
-        this.tileMap[col][row].cartesian_coord = this.axialToCartesian(this.tileMap[col][row].offset_coord);
+        this.tileMap[col][row].cartesian_coord = this.offsetToCartesian(this.tileMap[col][row].offset_coord);
       }
     }
   }
@@ -172,8 +171,8 @@ export default class HexTileScene extends Phaser.Scene {
       let currTile = new Tile();
       for(let i = 0 ; i < offsetCoords.length ; ++i) {
           currTile.offset_coord = offsetCoords[i];
-          currTile.cartesian_coord = this.axialToCartesian(offsetCoords[i]);
-          this.createTile(currTile);
+          currTile.cartesian_coord = this.offsetToCartesian(offsetCoords[i]);
+          this.drawTile(currTile);
       }
   }
 
@@ -185,12 +184,12 @@ export default class HexTileScene extends Phaser.Scene {
 
       // for each row
       for (let row = 0; row < tileMap[col].length; row++) {
-        this.createTile(tileMap[col][row])
+        this.drawTile(tileMap[col][row])
       }
     }
   }
 
-  createTile(tile: Tile): void {
+  drawTile(tile: Tile): void {
     // takes XY coordinates of center point,
     // generates all required vertices
     // draws individual tile
@@ -222,8 +221,8 @@ export default class HexTileScene extends Phaser.Scene {
     return true;
   }
 
-  createTileColumn(point: Point, numTiles: number): void {
-      // creates a column starting from the center point of the first hex,
+  drawTileColumn(point: Point, numTiles: number): void {
+      // draws a column starting from the center point of the first hex,
       // spans vertically down by numTiles hexes.
 
       // Uses XY coordinates to find center and draw tile
@@ -234,7 +233,7 @@ export default class HexTileScene extends Phaser.Scene {
           let tile_y = point.y + (i * h);
           let tile: Tile = new Tile();
           tile.offset_coord = new OffsetPoint(tile_x, tile_y);
-          this.createTile(tile);
+          this.drawTile(tile);
       }
   }
 
@@ -257,6 +256,9 @@ export default class HexTileScene extends Phaser.Scene {
   }
 
   private getHexCorner(point: Point, angle: number): Point {
+    // given a cartesian point, which is the center of some hex
+    // this returns a point of the hex, whose angle is given by the number
+
     let angle_deg: number = 60 * angle;
     let angle_rad: number = Math.PI / 180 * angle_deg;
     return new Point(point.x + this.hexSize * Math.cos(angle_rad),
@@ -264,12 +266,17 @@ export default class HexTileScene extends Phaser.Scene {
   }
 
   private getMapHexRadius(): number {
+    // given the mapsize, calculates how hexes radially it can hold, given
+    // that there is a hex in the absolute center of the map
+
     let mapRadius: number = MAP_DIAMETER / 2;
     let freeSpace: number = mapRadius - (this.getHexHeight() / 2)
     return Math.floor(freeSpace / this.getHexHeight());
   }
 
-  private axialToCartesian(OffsetPoint: OffsetPoint): Point {
+  private offsetToCartesian(OffsetPoint: OffsetPoint): Point {
+    // given an offset odd-q hex coordinate,
+    // returns the cartesian coordinate of the center of that hex
 
     // matrix multiplication for conversions
     let x: number = (this.hexSize * (1.5 * OffsetPoint.q));
@@ -284,46 +291,41 @@ export default class HexTileScene extends Phaser.Scene {
     return new Point(x + this.hexSize, y + this.hexSize);
   }
 
-  private cartesianToAxial(point: Point): OffsetPoint {
+  private cartesianToOffset(point: Point): OffsetPoint {
     // takes in a point in the cartesian plane
-    // returns the coordinate of the hex it's in
+    // returns the offset odd-q coordinate of the hex it's in
 
     // account for the half a hex to the bottom right we're pushing the map
     point.x = point.x - (this.hexSize);
     point.y = point.y - (this.hexSize);
 
-    // convert the pixel location to an axial location
-    let q: number = (2/3 * point.x) / this.hexSize;
-    let r: number = (-1/3 * point.x + Math.sqrt(3)/3 * point.y) / this.hexSize;
-
-    // make these axial coords into a cube format
-    let cube: number[] = this.axialToCube(new OffsetPoint(q, r));
+    // make the offset coord into a cube format
+    let cube: number[] = this.pixelToCube(new Point(point.x, point.y));
 
     // round the cube
     cube = this.roundCube(cube);
 
     // convert the cube to evenq coords and return
-    console.log(this.cubeToOddq(cube).q, this.cubeToOddq(cube).r)
-    return this.cubeToOddq(cube);
+    console.log(this.cubeToOffset(cube).q, this.cubeToOffset(cube).r)
+    return this.cubeToOffset(cube);
   }
 
-  private axialToCube(OffsetPoint: OffsetPoint): number[] {
-    // used for conversions from cartesian to axial
-    // returns x, y, z in that order in a list
+  private pixelToCube(point: Point): number[] {
+    // used for conversions from cartesian to offset odd-q
+    // returns the cube: x, y, z in that order in a list
 
-    let x: number = OffsetPoint.q;
-    let z: number = OffsetPoint.r;
-    let y: number = -x - z;
-    return [x, y, z];
+    let q: number = (2/3 * point.x) / this.hexSize;
+    let r: number = (-1/3 * point.x + Math.sqrt(3)/3 * point.y) / this.hexSize;
+    return [q, -q - r, r];
   }
 
-  private cubeToOddq(cube: number[]): OffsetPoint {
-    // used for conversions from cartesian to axial
-    // returns an axial point
+  private cubeToOffset(cube: number[]): OffsetPoint {
+    // used for conversions from cartesian to odd-q offset
+    // returns an offset odd-q point
 
-    let col: number = cube[0];
-    let row: number = cube[2] + (cube[0] - (cube[0]&1)) / 2;
-    return new OffsetPoint(col, row);
+    let q: number = cube[0];
+    let r: number = cube[2] + (cube[0] - (cube[0]&1)) / 2;
+    return new OffsetPoint(q, r);
   }
 
   private roundCube(cube: number[]): number[] {
