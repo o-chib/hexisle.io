@@ -1,11 +1,29 @@
-import { MAP_DIAMETER } from '../config';
+import { MAP_HEIGHT } from '../config';
 
 export default class HexTileScene extends Phaser.Scene {
   private graphics: Phaser.GameObjects.Graphics;
   private tileMap: Tile[][]; // Made in offset even-q coordinates
   private hexRadius: number;
-  private hexSize: number = 25;
-  private campRadius: number = 3;
+  private hexSize: number = 10;
+  private campRadius: number = 6;
+  private offsetDirections: OffsetPoint[][] = [
+    // even columns
+    [new OffsetPoint(0, -1), // north
+      new OffsetPoint(1, -1), // northeast
+      new OffsetPoint(1, 0), // southeast
+      new OffsetPoint(0, 1), // south
+      new OffsetPoint(-1, 0), // southwest
+      new OffsetPoint(-1, -1), // northwest,
+    ],
+    // odd columns
+    [new OffsetPoint(0, -1), // north
+      new OffsetPoint(1, 0), // northeast
+      new OffsetPoint(1, 1), // southeast
+      new OffsetPoint(0, 1), // south
+      new OffsetPoint(-1, 1), // southwest
+      new OffsetPoint(-1, 0), // northwest
+    ]
+  ]
 
   constructor() {
     super({ key: 'hexTileScene' });
@@ -15,24 +33,34 @@ export default class HexTileScene extends Phaser.Scene {
   }
 
   create(): void {
-
     this.hexRadius = this.getMapHexRadius();
 
     // Sandbox work
     this.graphics = this.add.graphics();
 
     this.graphics.scene.add.text(810, 10, String(['hex radius', this.hexRadius]));
-    this.graphics.scene.add.text(810, 30, String(['map diameter', MAP_DIAMETER]));
+    this.graphics.scene.add.text(810, 30, String(['map diameter', MAP_HEIGHT]));
 
     // generate the tile map
     this.generateTileMap();
 
     // generate the camps
-    this.generateCamps();
+    let camps: OffsetPoint[] = this.generateCamps();
 
     // draw all our hexes in the tile map
-    //this.drawHexes(this.tileMap);
-    this.drawMap();
+    this.drawHexes(this.tileMap);
+    //this.drawMap();
+
+    // drawing camps and their outermost radius
+    for (let camp of camps) {
+      this.drawTile(this.tileMap[camp.q][camp.r]);
+      for (let ringhex of this.getHexRingPoints(this.tileMap[camp.q][camp.r], this.campRadius)) {
+        if (this.checkIfValidHex(ringhex)) {
+          this.tileMap[ringhex.q][ringhex.r].building = 'ring';
+          this.drawTile(this.tileMap[ringhex.q][ringhex.r]);
+        }
+      }
+    }
   }
 
   update(): void {
@@ -158,16 +186,61 @@ export default class HexTileScene extends Phaser.Scene {
     }
   }
 
-  generateCamps(): void {
+  generateCamps(): OffsetPoint[] {
+    // Takes the tilemap and sets tiles to camps dependent on the class config (private variables)
 
+    // start at the center of the map, and make it a camp
+    let hex: OffsetPoint = new OffsetPoint(this.hexRadius, this.hexRadius);
+    this.tileMap[hex.q][hex.r].building = 'camp';
+    let hexesToCheck: OffsetPoint[] = [hex];
+    let campHexes: OffsetPoint[] = [hex];
+
+    // keep repeating until we don't have any hexes left
+    while (hexesToCheck.length > 0) {
+      hex = hexesToCheck.splice(0, 1)[0];
+      
+      // check all 6 possible surrounding campsite coordinates for this hex
+      for (let i = 0; i < 6; i++) {
+
+        // create a new hex to traverse with
+        let travHex: OffsetPoint = new OffsetPoint(hex.q, hex.r);
+        
+        // direction to check
+        let dir: number = i;
+        
+        // start and go the length of the hex radius in the desired direction (clockwise starting at north)
+        travHex = this.hexTraverse(travHex, dir, this.campRadius)
+
+        // if i is at the last index, loop back to 0, or else increment it
+        if (i == 5) {
+          dir = 0;
+        } else {
+          dir += 1;
+        }
+
+        // start and go the length of the hex radius + 1 in the original direction + 1
+        travHex = this.hexTraverse(travHex, dir, this.campRadius + 1)
+
+        // check if this site exists, if it does add it to the list of hexes to check
+        // around for more campfires and set the tile as a campfire
+        if (this.checkIfValidHex(travHex)) {
+          
+          // only add it if we haven't been to it before
+          if (!this.isHexInHexList(travHex, campHexes)) {
+            hexesToCheck.push(travHex);
+            campHexes.push(travHex);
+            this.tileMap[travHex.q][travHex.r].building = 'camp';
+          }
+        }
+      }
+    }
+    return campHexes;
   }
 
   drawMap() {
-      let centerTile = new Tile();
-      centerTile.offset_coord = new OffsetPoint(10,10);
-      let radius = 5;
+      let centerTile = this.tileMap[this.hexRadius][this.hexRadius];
 
-      let offsetCoords = this.getHexRadiusPoints(centerTile, radius);
+      let offsetCoords = this.getHexRadiusPoints(centerTile, this.hexRadius);
       let currTile = new Tile();
       for(let i = 0 ; i < offsetCoords.length ; ++i) {
           currTile.offset_coord = offsetCoords[i];
@@ -198,8 +271,10 @@ export default class HexTileScene extends Phaser.Scene {
 
     if (tile.building == 'camp') {
       this.graphics.lineStyle(4, 0xff0000, 1);
+    } else if (tile.building == 'ring') {
+      this.graphics.lineStyle(1, 0x002fff, 1);
     } else {
-      this.graphics.lineStyle(2, 0xffffff, 1);
+      this.graphics.lineStyle(1, 0xffffff, 1);
     }
 
     this.graphics.beginPath();
@@ -269,7 +344,7 @@ export default class HexTileScene extends Phaser.Scene {
     // given the mapsize, calculates how hexes radially it can hold, given
     // that there is a hex in the absolute center of the map
 
-    let mapRadius: number = MAP_DIAMETER / 2;
+    let mapRadius: number = MAP_HEIGHT / 2;
     let freeSpace: number = mapRadius - (this.getHexHeight() / 2)
     return Math.floor(freeSpace / this.getHexHeight());
   }
@@ -345,6 +420,34 @@ export default class HexTileScene extends Phaser.Scene {
         rz = -rx - ry;
     }
     return [rx, ry, rz];
+  }
+
+  private hexTraverse(hex: OffsetPoint, direction: number, distance: number): OffsetPoint {
+    // moves the hex coordinate from it's original position <distance> hexes away in the direction <direction>
+    // returns the offset coordinate of the new position
+
+    for (let i = 0; i < distance; i++) {
+
+      // make sure we're using the right column directions (even or odd)
+      if (hex.q % 2 == 0) {
+        hex.add(this.offsetDirections[0][direction]);
+      } else {
+        hex.add(this.offsetDirections[1][direction]);
+      }
+    }
+    return hex;
+  }
+
+  private isHexInHexList(hex: OffsetPoint, hexList: OffsetPoint[]): boolean {
+    // checks if a given hex coordinate is in a list of offset points (checks q and r)
+    // returns a true if it is in the list
+
+    for (let checkHex of hexList) {
+      if (checkHex.q == hex.q && checkHex.r == hex.r) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
