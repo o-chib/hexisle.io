@@ -21,7 +21,6 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos
-			//direction: this.direction,
 			//hp: this.hp,
 		};
 	}
