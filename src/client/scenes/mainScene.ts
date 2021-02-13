@@ -6,7 +6,8 @@ const Constant = require('./../../shared/constants');
 export default class MainScene extends Phaser.Scene {	
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private cursors;
+	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 
 	constructor() {
@@ -16,10 +17,12 @@ export default class MainScene extends Phaser.Scene {
 	preload(): void {
 		this.load.image('aliem', '../assets/Alien-thumb.jpg');
 		this.load.image('rainbow', '../assets/rainbow.bmp');
+		this.load.image('bullet', '../assets/bullet.png');
 	}
 
 	create(): void {
 		this.otherPlayerSprites = new Map(); 
+		this.bulletSprites = new Map(); 
 		this.socket = io();
 		this.socket.emit(Constant.MESSAGE.JOIN);
 		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState.bind(this));
@@ -28,7 +31,18 @@ export default class MainScene extends Phaser.Scene {
 		this.myPlayerSprite.setVisible(false);
 
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
-        this.cursors = this.input.keyboard.createCursorKeys();
+        // this.cursors = this.input.keyboard.createCursorKeys();
+		this.cursors = this.input.keyboard.addKeys({
+			up:		Phaser.Input.Keyboard.KeyCodes.W,
+			down:	Phaser.Input.Keyboard.KeyCodes.S,
+			left:	Phaser.Input.Keyboard.KeyCodes.A,
+			right:	Phaser.Input.Keyboard.KeyCodes.D
+		});
+
+		this.input.on('pointerdown', (pointer) => {
+			const direction = Math.atan2(window.innerHeight / 2 - pointer.y, pointer.x - window.innerWidth / 2);
+			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
+		});
 
 		/*this.input.keyboard.on('keydown', (event) => {
 			let direction: number; //TODO make movement smoother
@@ -74,7 +88,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	updateState(update: any): void { //TODO may state type
-		const { time, currentPlayer, otherPlayers } = update;
+		const { time, currentPlayer, otherPlayers, bullets } = update;
 		if (!currentPlayer) {
 			return;
 		}
@@ -91,9 +105,19 @@ export default class MainScene extends Phaser.Scene {
 			} else {
 				let newPlayer = this.add.sprite(opp.xPos, opp.yPos, 'aliem');
 				this.otherPlayerSprites.set(opp.id, newPlayer);
-				console.log("new opponent")
 			}
 			//TODO memory leak where old sprites dont get removed
+		});
+
+		bullets.forEach( bullet => {
+			if (this.bulletSprites.has(bullet.id)) {
+				this.bulletSprites.get(bullet.id)!.setPosition(bullet.xPos, bullet.yPos);
+			} else {
+				let newBullet = this.add.sprite(bullet.xPos, bullet.yPos, 'bullet');
+				this.bulletSprites.set(bullet.id, newBullet);
+			}
+			//TODO memory leak where old sprites dont get removed
+			//TODO prob dont need to update position as bullets cannot change trajectory, just check if it still exits
 		});
 	}
 }
