@@ -2,36 +2,37 @@ import Player from './../shared/player';
 const Constant = require('../shared/constants');
 
 export default class Game {
-	sockets: Map<string, SocketIOClient.Socket>;
-	players: Map<string, Player>; 
+	players: Map<string, Player>;
+	previousUpdateTimestamp: any;
 
 	constructor() {
-		this.sockets = new Map();
 		this.players = new Map();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
+		this.previousUpdateTimestamp = Date.now();
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
 		console.log("Hello: " + socket.id);
-		this.sockets.set(socket.id, socket);
 		//calc xPos yPos
 		let xPos = Math.floor(Math.random() * 600);
 		let yPos = Math.floor(Math.random() * 600);
-		this.players.set(socket.id, new Player(socket.id, xPos, yPos));
+		this.players.set(socket.id, new Player(socket, xPos, yPos));
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
 		console.log("Goodbye: " + socket.id);
-		this.sockets.delete(socket.id); //TODO dont actually delete, reuse the memory
 		this.players.delete(socket.id);
 	}
 
 	update() {
-		this.sockets.forEach(socket => {
-			if (!this.players.has(socket.id)) return;
-			const player : Player = this.players.get(socket.id)!;
-			socket.emit(Constant.MESSAGE.GAME_UPDATE, this.createUpdate(player));
-		});
+		let currentTimestamp = Date.now();
+		let timePassed = currentTimestamp - this.previousUpdateTimestamp;
+
+		for (const aPlayer of this.players.values()) {
+			aPlayer.socket.emit(Constant.MESSAGE.GAME_UPDATE, this.createUpdate(aPlayer));
+		}
+
+		this.previousUpdateTimestamp = currentTimestamp
 	}
 
 	createUpdate(player: Player) {
