@@ -4,3 +4,5 @@ server-bundle.js
 package-lock.json
 .vscode/
 npm-debug.log
+.git/
+.gitignore
