@@ -16,7 +16,6 @@ export default class MainScene extends Phaser.Scene {
 	preload(): void {
 		this.load.image('aliem', '../assets/Alien-thumb.jpg');
 		this.load.image('rainbow', '../assets/rainbow.bmp');
-		this.load.image('background', '../assets/background.jpg');
 	}
 
 	create(): void {
