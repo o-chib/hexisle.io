@@ -38,6 +38,9 @@ function updateSocket(socket: SocketIOClient.Socket) {
 	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
 		game.movePlayer(socket, direction);
 	});
+	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
+		game.shootBullet(socket, direction);
+	});
 	socket.on('disconnect', () => {
 		game.removePlayer(socket);
 	});
