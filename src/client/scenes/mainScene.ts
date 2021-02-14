@@ -98,28 +98,31 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateBullets(bullets: any) {
-		bullets.forEach(bullet => {
-			if (this.bulletSprites.has(bullet.id)) {
-				this.bulletSprites.get(bullet.id)!.setPosition(bullet.xPos, bullet.yPos);
+		this.bulletSprites = this.updateMapOfObjects(bullets, this.bulletSprites, 'bullet');
+		//TODO may not be necessary for bullets
+	}
+
+	private updateMapOfObjects(currentObjects: any, oldObjects: Map<string, Phaser.GameObjects.Sprite>, sprite: string) {
+		let updatedObjects = new Map();
+		currentObjects.forEach(bullet => {
+			let newBullet;
+			if (oldObjects.has(bullet.id)) {
+				newBullet = oldObjects.get(bullet.id);
+				oldObjects.delete(bullet.id);
+				newBullet.setPosition(bullet.xPos, bullet.yPos);
 			} else {
-				let newBullet = this.add.sprite(bullet.xPos, bullet.yPos, 'bullet');
-				this.bulletSprites.set(bullet.id, newBullet);
+				newBullet = this.add.sprite(bullet.xPos, bullet.yPos, sprite);
 			}
-			//TODO has a memmory leak
-			//TODO may not be necessary
+			updatedObjects.set(bullet.id, newBullet);
 		});
+		for (const anOldBullet of oldObjects.values()) {
+			anOldBullet.destroy();
+		}
+		return updatedObjects;
 	}
 
 	private updateOpponents(otherPlayers: any) {
-		otherPlayers.forEach(opp => {
-			if (this.otherPlayerSprites.has(opp.id)) {
-				this.otherPlayerSprites.get(opp.id)!.setPosition(opp.xPos, opp.yPos);
-			} else {
-				let newPlayer = this.add.sprite(opp.xPos, opp.yPos, 'aliem');
-				this.otherPlayerSprites.set(opp.id, newPlayer);
-			}
-			//TODO has a memmory leak
-		});
+		this.otherPlayerSprites = this.updateMapOfObjects(otherPlayers, this.otherPlayerSprites, 'aliem');
 	}
 }
 
