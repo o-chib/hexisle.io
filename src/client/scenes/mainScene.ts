@@ -20,6 +20,10 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('bullet', '../assets/bullet.png');
 	}
 
+	init() {
+		//TODO what should we move from create to init?
+	}
+
 	create(): void {
 		this.otherPlayerSprites = new Map(); 
 		this.bulletSprites = new Map(); 
@@ -31,7 +35,8 @@ export default class MainScene extends Phaser.Scene {
 		this.myPlayerSprite.setVisible(false);
 
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
-        // this.cursors = this.input.keyboard.createCursorKeys();
+		this.cameras.main.setZoom(0.5);
+
 		this.cursors = this.input.keyboard.addKeys({
 			up:		Phaser.Input.Keyboard.KeyCodes.W,
 			down:	Phaser.Input.Keyboard.KeyCodes.S,
@@ -47,7 +52,7 @@ export default class MainScene extends Phaser.Scene {
   	}
 
 	update () {
-		let direction: number = -1;
+		let direction: number = NaN;
 		//TODO really gross can we clean this?
 		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
 			if (this.cursors.up.isDown && !this.cursors.down.isDown)
@@ -70,42 +75,50 @@ export default class MainScene extends Phaser.Scene {
 				direction = Constant.DIRECTION.S;
 		}
 
-		if (direction != -1) {
+		if (direction != NaN)
 			this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
-		}
 	}
 
 	updateState(update: any): void { //TODO may state type
 		const { time, currentPlayer, otherPlayers, bullets } = update;
-		if (!currentPlayer) {
+		if (currentPlayer == null)
 			return;
-		}
-		
-		// Draw background
-		// Draw all players
+
+		this.updatePlayer(currentPlayer);
+
+		this.updateBullets(bullets);
+
+		this.updateOpponents(otherPlayers);
+	}
+
+	private updatePlayer(currentPlayer: any) {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
 		if (!this.myPlayerSprite.visible)
 			this.myPlayerSprite.setVisible(true);
+	}
 
-		otherPlayers.forEach( opp => {
-			if (this.otherPlayerSprites.has(opp.id)) {
-				this.otherPlayerSprites.get(opp.id)!.setPosition(opp.xPos, opp.yPos);
-			} else {
-				let newPlayer = this.add.sprite(opp.xPos, opp.yPos, 'aliem');
-				this.otherPlayerSprites.set(opp.id, newPlayer);
-			}
-			//TODO memory leak where old sprites dont get removed
-		});
-
-		bullets.forEach( bullet => {
+	private updateBullets(bullets: any) {
+		bullets.forEach(bullet => {
 			if (this.bulletSprites.has(bullet.id)) {
 				this.bulletSprites.get(bullet.id)!.setPosition(bullet.xPos, bullet.yPos);
 			} else {
 				let newBullet = this.add.sprite(bullet.xPos, bullet.yPos, 'bullet');
 				this.bulletSprites.set(bullet.id, newBullet);
 			}
-			//TODO memory leak where old sprites dont get removed
-			//TODO prob dont need to update position as bullets cannot change trajectory, just check if it still exits
+			//TODO has a memmory leak
+			//TODO may not be necessary
+		});
+	}
+
+	private updateOpponents(otherPlayers: any) {
+		otherPlayers.forEach(opp => {
+			if (this.otherPlayerSprites.has(opp.id)) {
+				this.otherPlayerSprites.get(opp.id)!.setPosition(opp.xPos, opp.yPos);
+			} else {
+				let newPlayer = this.add.sprite(opp.xPos, opp.yPos, 'aliem');
+				this.otherPlayerSprites.set(opp.id, newPlayer);
+			}
+			//TODO has a memmory leak
 		});
 	}
 }
