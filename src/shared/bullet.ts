@@ -4,8 +4,10 @@ export default class Bullet {
 	yPos: number;
 	xVel: number;
 	yVel: number;
-	speed: number = 60;
 	expirationDate: number;
+	
+	speed: number = 1000;
+	lifeLength: number = 1500;
 
 	constructor(id: string, xPos: number, yPos: number, direction: number) {
 		this.id = id;
@@ -13,7 +15,7 @@ export default class Bullet {
 		this.yPos = yPos;
 		this.xVel = this.speed * Math.sin(direction);
 		this.yVel = this.speed * Math.cos(direction);
-		this.expirationDate = Date.now() + 1500;
+		this.expirationDate = Date.now() + this.lifeLength;
 	}
 
 	updatePosition(timePassed: number) {
