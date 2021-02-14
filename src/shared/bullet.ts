@@ -7,7 +7,7 @@ export default class Bullet {
 	expirationDate: number;
 	
 	speed: number = 1000;
-	lifeLength: number = 1500;
+	lifeLength: number = 1000;
 
 	constructor(id: string, xPos: number, yPos: number, direction: number) {
 		this.id = id;
