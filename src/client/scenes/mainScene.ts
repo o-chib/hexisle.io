@@ -40,22 +40,10 @@ export default class MainScene extends Phaser.Scene {
 		});
 
 		this.input.on('pointerdown', (pointer) => {
-			const direction = Math.atan2(window.innerHeight / 2 - pointer.y, pointer.x - window.innerWidth / 2);
+			const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+			const direction = Math.atan2(gamePos.x - this.myPlayerSprite.x, gamePos.y- this.myPlayerSprite.y);
 			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 		});
-
-		/*this.input.keyboard.on('keydown', (event) => {
-			let direction: number; //TODO make movement smoother
-			switch(event.key) {
-				case "w": direction = Math.PI / 2; break;
-				case "d": direction = 0; break;   // Up, Angle = -90??
-				case "s": direction = 1.5 * Math.PI; break; // Down, Angle = 90??
-				case "a": direction = Math.PI; break;
-				default: return;
-			} 
-			this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
-		});*/
-
   	}
 
 	update () {
