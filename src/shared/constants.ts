@@ -15,6 +15,8 @@ module.exports = Object.freeze({
         JOIN: 'join',
         GAME_UPDATE: 'update_state',
         MOVEMENT: 'move',
-        SHOOT: 'shoot'
+        SHOOT: 'shoot',
+        
+        TEMP_HIT: 'im_hit' //TODO this is temporary
     }
 });
