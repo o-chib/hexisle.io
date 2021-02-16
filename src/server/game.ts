@@ -21,7 +21,8 @@ export default class Game {
 		//calc xPos yPos
 		let xPos = Math.floor(Math.random() * 600);
 		let yPos = Math.floor(Math.random() * 600);
-		this.players.set(socket.id, new Player(socket, xPos, yPos));
+		let newPlayer = new Player(socket, xPos, yPos, Math.floor(Math.random() * 10000) + 1);
+		this.players.set(socket.id, newPlayer); //TODO rn it has a random team
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
