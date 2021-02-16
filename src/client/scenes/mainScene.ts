@@ -15,9 +15,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	preload(): void {
-		this.load.image('aliem', '../assets/Alien-thumb.jpg');
-		this.load.image('rainbow', '../assets/rainbow.bmp');
+		this.load.image('aliem', '../assets/Character.png');
 		this.load.image('bullet', '../assets/bullet.png');
+		this.load.image('forest', '../assets/ForestGlade.jpg');
 	}
 
 	init() {
@@ -28,14 +28,16 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map(); 
 		this.bulletSprites = new Map(); 
 		this.socket = io();
-		this.socket.emit(Constant.MESSAGE.JOIN);
-		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState.bind(this));
-		this.add.sprite(200, 200, 'rainbow');
+
+		this.add.image(0, 0, 'forest');
+
 		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
 		this.myPlayerSprite.setVisible(false);
+		this.myPlayerSprite.setScale(0.25);
 
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
 		this.cameras.main.setZoom(0.5);
+		//this.cameras.main.setBounds(0,0,1920, 1080);
 
 		this.cursors = this.input.keyboard.addKeys({
 			up:		Phaser.Input.Keyboard.KeyCodes.W,
@@ -46,10 +48,13 @@ export default class MainScene extends Phaser.Scene {
 
 		this.input.on('pointerdown', (pointer) => {
 			const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-			const direction = Math.atan2(gamePos.x - this.myPlayerSprite.x, gamePos.y- this.myPlayerSprite.y);
+			const direction = Math.atan2(gamePos.x - this.myPlayerSprite.x, gamePos.y - this.myPlayerSprite.y);
 			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 		});
-  	}
+		
+		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState.bind(this));
+		this.socket.emit(Constant.MESSAGE.JOIN);
+	}
 
 	update () {
 		let direction: number = NaN;
