@@ -5,17 +5,19 @@ export default class Bullet {
 	xVel: number;
 	yVel: number;
 	expirationDate: number;
+	teamNumber: number;
 	
 	speed: number = 1000;
 	lifeLength: number = 1000;
 
-	constructor(id: string, xPos: number, yPos: number, direction: number) {
+	constructor(id: string, xPos: number, yPos: number, direction: number, teamNumber: number) {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.xVel = this.speed * Math.sin(direction);
 		this.yVel = this.speed * Math.cos(direction);
 		this.expirationDate = Date.now() + this.lifeLength;
+		this.teamNumber = teamNumber;
 	}
 
 	updatePosition(timePassed: number) {
@@ -27,7 +29,8 @@ export default class Bullet {
 		return {
 			id: this.id,
 			xPos: this.xPos,
-			yPos: this.yPos
+			yPos: this.yPos,
+			team: this.teamNumber,
 		};
 	}
 

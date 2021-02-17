@@ -76,11 +76,18 @@ export default class Game {
 		player.xPos = player.xPos + 10*Math.cos(direction);
 		player.yPos = player.yPos - 10*Math.sin(direction);
 	}
-	
+
+	rotatePlayer(socket: SocketIOClient.Socket, direction: number) {
+		if (!this.players.has(socket.id)) return;
+		const player : Player = this.players.get(socket.id)!;
+
+		player.updateDirection(direction);
+	}
+
 	shootBullet(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player : Player = this.players.get(socket.id)!;
-		this.bullets.add(new Bullet(this.bulletCount.toString(), player.xPos, player.yPos, direction));
+		this.bullets.add(new Bullet(this.bulletCount.toString(), player.xPos, player.yPos, direction, player.teamNumber));
 		this.bulletCount += 1;
 	}
 }
