@@ -1,63 +1,20 @@
-import { MAP_HEIGHT } from '../config';
-
-export default class HexTileScene extends Phaser.Scene {
-  private graphics: Phaser.GameObjects.Graphics;
-  private tileMap: Tile[][]; // Made in offset even-q coordinates
-  private hexRadius: number;
-  private hexSize: number = 25;
-  private campRadius: number = 3;
+export class HexTiles {
+  public tileMap: Tile[][]; // Made in offset even-q coordinates
+  public hexRadius: number;
+  public hexSize: number;
+  public campRadius: number;
+  public mapHeight;
 
   constructor() {
-    super({ key: 'hexTileScene' });
-  }
-
-  preload(): void {
-  }
-
-  create(): void {
+    this.hexSize = 50;
+    this.campRadius = 4;
+    this.mapHeight = 4000;
     this.hexRadius = this.getMapHexRadius();
-
-    // Sandbox work
-    this.graphics = this.add.graphics();
-
-    this.graphics.scene.add.text(810, 10, String(['hex radius', this.hexRadius]));
-    this.graphics.scene.add.text(810, 30, String(['map diameter', MAP_HEIGHT]));
-
-    // generate the tile map
-    this.generateTileMap();
-
-    // generate the camps
-    let camps: OffsetPoint[] = this.generateCamps();
-
-    // draw all our hexes in the tile map
-    this.drawHexes(this.tileMap);
-    //this.drawMap();
-
-    // drawing camps and their outermost radius
-    for (let camp of camps) {
-      this.drawTile(this.tileMap[camp.q][camp.r]);
-      for (let ringhex of this.getHexRingPoints(this.tileMap[camp.q][camp.r], this.campRadius)) {
-        if (this.checkIfValidHex(ringhex)) {
-          this.tileMap[ringhex.q][ringhex.r].building = 'ring';
-          this.drawTile(this.tileMap[ringhex.q][ringhex.r]);
-        }
-      }
-    }
   }
 
-  update(): void {
-    if (this.input.mousePointer.isDown) {
-      console.time();
-      let testTile: Tile = new Tile('select');
-      let mouseX: number = this.input.mousePointer.x;
-      let mouseY: number = this.input.mousePointer.y;
-      testTile.offset_coord = this.cartesianToOffset(new Point(mouseX, mouseY));
-      if (this.checkIfValidHex(testTile.offset_coord)) {
-        testTile.cartesian_coord = this.tileMap[testTile.offset_coord.q][testTile.offset_coord.r].cartesian_coord;
-        this.drawTile(testTile);
-      }
-      console.timeEnd();
-    }
+  generateMap(): void {
+    this.generateTileMap();
+    this.generateCamps();
   }
 
   generateTileMap(): void {
@@ -81,7 +38,7 @@ export default class HexTileScene extends Phaser.Scene {
     console.timeEnd();
   }
 
-  generateCamps(): OffsetPoint[] {
+  generateCamps(): void {
     console.log('time to generate camps');
     console.time();
     // Takes the tilemap and sets tiles to camps dependent on the class config (private variables)
@@ -132,58 +89,6 @@ export default class HexTileScene extends Phaser.Scene {
       }
     }
     console.timeEnd();
-    return campHexes;
-  }
-
-  drawMap() {
-      let centerTile = this.tileMap[this.hexRadius][this.hexRadius];
-
-      let offsetCoords = this.getHexRadiusPoints(centerTile, this.hexRadius);
-      let currTile = new Tile();
-      for(let i = 0 ; i < offsetCoords.length ; ++i) {
-          currTile.offset_coord = offsetCoords[i];
-          currTile.cartesian_coord = this.offsetToCartesian(offsetCoords[i]);
-          this.drawTile(currTile);
-      }
-  }
-
-  drawHexes(tileMap: Tile[][]): void {
-    // draws every hex we have in our map
-
-    // for each column
-    for (let col = 0; col < tileMap.length; col++) {
-
-      // for each row
-      for (let row = 0; row < tileMap[col].length; row++) {
-        this.drawTile(tileMap[col][row])
-      }
-    }
-  }
-
-  drawTile(tile: Tile): void {
-    // takes XY coordinates of center point,
-    // generates all required vertices
-    // draws individual tile
-
-    let points: Point[] = this.getHexPointsFromCenter(tile.cartesian_coord);
-
-    if (tile.building == 'camp') {
-      this.graphics.lineStyle(4, 0xff0000, 1);
-    } else if (tile.building == 'ring') {
-      this.graphics.lineStyle(1, 0x002fff, 1);
-    } else if (tile.building == 'select') {
-      this.graphics.lineStyle(2, 0xffb300, 1);
-    } else {
-      this.graphics.lineStyle(1, 0xffffff, 1);
-    }
-
-    this.graphics.beginPath();
-    this.graphics.moveTo(points[0].x, points[0].y);
-    for (let i = 0; i < 6; i++) {
-      this.graphics.lineTo(points[i].x, points[i].y)
-    }
-    this.graphics.closePath();
-    this.graphics.strokePath();
   }
 
   checkIfValidHex(OffsetPoint: OffsetPoint): boolean {
@@ -194,22 +99,6 @@ export default class HexTileScene extends Phaser.Scene {
           return false;
         }
     return true;
-  }
-
-  drawTileColumn(point: Point, numTiles: number): void {
-      // draws a column starting from the center point of the first hex,
-      // spans vertically down by numTiles hexes.
-
-      // Uses XY coordinates to find center and draw tile
-      let h = this.getHexHeight();
-
-      for (let i = 0; i < numTiles; i++) {
-          let tile_x = point.x;
-          let tile_y = point.y + (i * h);
-          let tile: Tile = new Tile();
-          tile.offset_coord = new OffsetPoint(tile_x, tile_y);
-          this.drawTile(tile);
-      }
   }
 
   getHexRingPoints(centreTile:Tile, radius :number) : OffsetPoint[] {
@@ -227,7 +116,7 @@ export default class HexTileScene extends Phaser.Scene {
     currPoint.add(centreTile.offset_coord);
 
     let k = 0;
-    for(let i = 0; i < 6; ++i){
+    for(let i = 0; i < 6; ++i) {
         // Iterate in all 6 Hex Directions
         for(let j = 0; j < radius; ++j){
             results[k] = new OffsetPoint(currPoint.q, currPoint.r);
@@ -241,7 +130,8 @@ export default class HexTileScene extends Phaser.Scene {
   getHexRadiusPoints(centerTile: Tile, radius:number): OffsetPoint[] {
     // Takes center tile and returns list of points that surround it in hexagonal shape
     // radius = number of tiles from top to center - excluding the center.
-    let results  : OffsetPoint[] = [];
+    
+    let results: OffsetPoint[] = [];
     results[0] = new OffsetPoint(centerTile.offset_coord.q, centerTile.offset_coord.r);
 
     for(let k = 1; k <= radius; ++k) {
@@ -286,7 +176,7 @@ export default class HexTileScene extends Phaser.Scene {
     return new Point(x + this.hexSize, y + this.hexSize);
   }
 
-  private getHexPointsFromCenter(point: Point): Point[] {
+  getHexPointsFromCenter(point: Point): Point[] {
     let hexPoints: Point[] = [];
 
     // iterate through each corner
@@ -294,6 +184,23 @@ export default class HexTileScene extends Phaser.Scene {
         let length = hexPoints.push(this.getHexCorner(point, i));
     }
     return hexPoints;
+  }
+
+  getSurroundingTilesFromCart(point: Point): Tile[] {
+    // Gets all tiles a radius away from the cartesian point
+    // returns a list of tiles
+
+    let results: Tile[] = [];
+    let centerTile: Tile = new Tile();
+		centerTile.offset_coord = this.cartesianToOffset(new Point(point.x, point.y));
+		let screenCoords: OffsetPoint[] = this.getHexRadiusPoints(centerTile, 5);
+		for (let coord of screenCoords) {
+      console.log('coord around', coord.q, coord.r);
+      if(this.checkIfValidHex(coord)) {
+			  results.push(this.tileMap[coord.q][coord.r]);
+      }
+		}
+    return results;
   }
 
   private getHexHeight(): number {
@@ -318,7 +225,7 @@ export default class HexTileScene extends Phaser.Scene {
     // given the mapsize, calculates how hexes radially it can hold, given
     // that there is a hex in the absolute center of the map
 
-    let mapRadius: number = MAP_HEIGHT / 2;
+    let mapRadius: number = this.mapHeight / 2;
     let freeSpace: number = mapRadius - (this.getHexHeight() / 2)
     return Math.floor(freeSpace / this.getHexHeight());
   }
