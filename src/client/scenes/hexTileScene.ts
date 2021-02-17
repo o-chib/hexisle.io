@@ -172,7 +172,7 @@ export default class HexTileScene extends Phaser.Scene {
     } else if (tile.building == 'ring') {
       this.graphics.lineStyle(1, 0x002fff, 1);
     } else if (tile.building == 'select') {
-      this.graphics.lineStyle(1, 0xffb300, 1);
+      this.graphics.lineStyle(2, 0xffb300, 1);
     } else {
       this.graphics.lineStyle(1, 0xffffff, 1);
     }
@@ -251,6 +251,41 @@ export default class HexTileScene extends Phaser.Scene {
     return results
   }
 
+  cartesianToOffset(point: Point): OffsetPoint {
+    // takes in a point in the cartesian plane
+    // returns the offset odd-q coordinate of the hex it's in
+
+    // account for the half a hex to the bottom right we're pushing the map
+    point.x = point.x - (this.hexSize);
+    point.y = point.y - (this.hexSize);
+
+    // make the offset coord into a cube format
+    let cube: number[] = this.pixelToCube(new Point(point.x, point.y));
+
+    // round the cube
+    cube = this.roundCube(cube);
+
+    // convert the cube to evenq coords and return
+    return this.cubeToOffset(cube);
+  }
+
+  offsetToCartesian(OffsetPoint: OffsetPoint): Point {
+    // given an offset odd-q hex coordinate,
+    // returns the cartesian coordinate of the center of that hex
+
+    // matrix multiplication for conversions
+    let x: number = (this.hexSize * (1.5 * OffsetPoint.q));
+
+    // if the column number is odd shift the hexes down, if it's even don't
+    let y: number;
+    if (OffsetPoint.q % 2 != 0) {
+      y = this.hexSize * (Math.sqrt(3)/2 + Math.sqrt(3) * OffsetPoint.r);
+    } else {
+      y = this.hexSize * (Math.sqrt(3) * OffsetPoint.r);
+    }
+    return new Point(x + this.hexSize, y + this.hexSize);
+  }
+
   private getHexPointsFromCenter(point: Point): Point[] {
     let hexPoints: Point[] = [];
 
@@ -286,41 +321,6 @@ export default class HexTileScene extends Phaser.Scene {
     let mapRadius: number = MAP_HEIGHT / 2;
     let freeSpace: number = mapRadius - (this.getHexHeight() / 2)
     return Math.floor(freeSpace / this.getHexHeight());
-  }
-
-  private offsetToCartesian(OffsetPoint: OffsetPoint): Point {
-    // given an offset odd-q hex coordinate,
-    // returns the cartesian coordinate of the center of that hex
-
-    // matrix multiplication for conversions
-    let x: number = (this.hexSize * (1.5 * OffsetPoint.q));
-
-    // if the column number is odd shift the hexes down, if it's even don't
-    let y: number;
-    if (OffsetPoint.q % 2 != 0) {
-      y = this.hexSize * (Math.sqrt(3)/2 + Math.sqrt(3) * OffsetPoint.r);
-    } else {
-      y = this.hexSize * (Math.sqrt(3) * OffsetPoint.r);
-    }
-    return new Point(x + this.hexSize, y + this.hexSize);
-  }
-
-  private cartesianToOffset(point: Point): OffsetPoint {
-    // takes in a point in the cartesian plane
-    // returns the offset odd-q coordinate of the hex it's in
-
-    // account for the half a hex to the bottom right we're pushing the map
-    point.x = point.x - (this.hexSize);
-    point.y = point.y - (this.hexSize);
-
-    // make the offset coord into a cube format
-    let cube: number[] = this.pixelToCube(new Point(point.x, point.y));
-
-    // round the cube
-    cube = this.roundCube(cube);
-
-    // convert the cube to evenq coords and return
-    return this.cubeToOffset(cube);
   }
 
   private pixelToCube(point: Point): number[] {
