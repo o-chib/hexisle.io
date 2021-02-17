@@ -19,7 +19,8 @@ module.exports = Object.freeze({
         GAME_UPDATE: 'update_state',
         MOVEMENT: 'move',
         SHOOT: 'shoot',
+        ROTATE: 'rotate',
         
-        TEMP_HIT: 'im_hit' //TODO this is temporary
+        TEMP_HIT: 'im_hit', //TODO this is temporary
     }
 });

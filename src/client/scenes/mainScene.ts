@@ -9,6 +9,7 @@ export default class MainScene extends Phaser.Scene {
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
+	private alive: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -29,10 +30,11 @@ export default class MainScene extends Phaser.Scene {
 		this.bulletSprites = new Map(); 
 		this.socket = io();
 
-		this.add.image(0, 0, 'forest');
+		this.add.image(0, 0, 'forest').setScale(1.5);
 
 		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
 		this.myPlayerSprite.setVisible(false);
+		this.alive = true;
 		this.myPlayerSprite.setScale(0.25);
 
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
@@ -47,10 +49,18 @@ export default class MainScene extends Phaser.Scene {
 		});
 
 		this.input.on('pointerdown', (pointer) => {
+			if (!this.alive) return;
 			const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 			const direction = Math.atan2(gamePos.x - this.myPlayerSprite.x, gamePos.y - this.myPlayerSprite.y);
 			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 		});
+
+		setInterval(() => {
+			const gamePos = this.cameras.main.getWorldPoint(this.input.mousePointer.x, this.input.mousePointer.y);
+			const direction = Math.atan2(gamePos.x - this.myPlayerSprite.x, gamePos.y - this.myPlayerSprite.y);
+			this.myPlayerSprite.setRotation(-1*direction);
+			this.socket.emit(Constant.MESSAGE.ROTATE, direction);
+		}, 1000/20);
 		
 		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState.bind(this));
 		this.socket.emit(Constant.MESSAGE.JOIN);
@@ -98,16 +108,31 @@ export default class MainScene extends Phaser.Scene {
 
 	private updatePlayer(currentPlayer: any) {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-		if (!this.myPlayerSprite.visible)
+		if (this.alive && !this.myPlayerSprite.visible)
 			this.myPlayerSprite.setVisible(true);
 	}
 
 	private updateBullets(bullets: any) {
-		this.bulletSprites = this.updateMapOfObjects(bullets, this.bulletSprites, 'bullet');
+		this.bulletSprites = this.updateMapOfObjects(bullets, this.bulletSprites, 'bullet', 
+			(newBullet, newBulletLiteral) => {return newBullet;}
+		);
 		//TODO may not be necessary for bullets
 	}
 
-	private updateMapOfObjects(currentObjects: any, oldObjects: Map<string, Phaser.GameObjects.Sprite>, sprite: string) {
+	private updateOpponents(otherPlayers: any) {
+		this.otherPlayerSprites = this.updateMapOfObjects(otherPlayers, this.otherPlayerSprites, 'aliem',
+			(newPlayer, playerLiteral) => {
+				newPlayer.setScale(0.25);
+				newPlayer.setRotation(-1*playerLiteral.direction)
+				return newPlayer;
+			}
+		);
+	}
+
+	private updateMapOfObjects(currentObjects: any,
+							   oldObjects: Map<string, Phaser.GameObjects.Sprite>, 
+							   sprite: string, 
+							   callback: (arg0: any, arg1: any) => any) {
 		let updatedObjects = new Map();
 		currentObjects.forEach(bullet => {
 			let newBullet;
@@ -118,16 +143,12 @@ export default class MainScene extends Phaser.Scene {
 			} else {
 				newBullet = this.add.sprite(bullet.xPos, bullet.yPos, sprite);
 			}
-			updatedObjects.set(bullet.id, newBullet);
+			updatedObjects.set(bullet.id, callback(newBullet, bullet));
 		});
 		for (const anOldBullet of oldObjects.values()) {
 			anOldBullet.destroy();
 		}
 		return updatedObjects;
-	}
-
-	private updateOpponents(otherPlayers: any) {
-		this.otherPlayerSprites = this.updateMapOfObjects(otherPlayers, this.otherPlayerSprites, 'aliem');
 	}
 }
 
