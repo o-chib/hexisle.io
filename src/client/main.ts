@@ -1,5 +1,6 @@
 import 'phaser'
 import MainScene from './scenes/mainScene'
+import HUDScene from './scenes/HUDScene'
 import {config} from './config';
 
 export class Game extends Phaser.Game {
