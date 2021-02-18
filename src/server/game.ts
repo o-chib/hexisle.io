@@ -48,13 +48,16 @@ export default class Game {
 			if (aPlayer === player) continue;
 			nearbyPlayers.push(aPlayer);
 		}
+
+		let changedTiles: Tile[] = this.changedTiles;
+		this.changedTiles = [];
 	
 		return {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map(p => p.serializeForUpdate()),
 			tileMap: this.hexTileMap.tileMap,
-			changedTiles: this.changedTiles
+			changedTiles: changedTiles
 		};
 	}
 
@@ -74,16 +77,11 @@ export default class Game {
 			return;
 		}
 
-		console.log('time to change a tile on server');
-		console.time();
-
-		this.changedTiles = [];
 		let tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 		this.hexTileMap.tileMap[coord.q][coord.r] = tile;
-		tile.building = 'select';
-		console.log(tile.offset_coord.q, tile.offset_coord.r);
-		this.changedTiles.push(tile);
-
-		console.timeEnd();
+		if (tile.building != 'select') {
+			tile.building = 'select';
+			this.changedTiles.push(tile);
+		}
 	}
 }

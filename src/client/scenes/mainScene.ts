@@ -39,6 +39,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
         this.cursors = this.input.keyboard.createCursorKeys();
+		this.input.setPollAlways(); // this isn't working for some reason
 
 		/*this.input.keyboard.on('keydown', (event) => {
 			let direction: number; //TODO make movement smoother
