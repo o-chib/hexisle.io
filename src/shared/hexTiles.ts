@@ -24,6 +24,12 @@ export class HexTiles {
 
     this.tileMap = [];
 
+    //hexagon based
+    let centerTile = new Tile();
+    centerTile.offset_coord = new OffsetPoint(this.hexRadius,this.hexRadius);
+
+    let offsetCoords = this.getHexRadiusPoints(centerTile, this.hexRadius);
+
     // for each column
     for (let col = 0; col < (2 * this.hexRadius) + 1; col++) {
       this.tileMap[col] = [];
@@ -33,6 +39,9 @@ export class HexTiles {
         this.tileMap[col][row] = new Tile();
         this.tileMap[col][row].offset_coord = new OffsetPoint(col, row);
         this.tileMap[col][row].cartesian_coord = this.offsetToCartesian(this.tileMap[col][row].offset_coord);
+        if(this.isHexInHexList(this.tileMap[col][row].offset_coord, offsetCoords)){
+            this.tileMap[col][row].tileType = 'arena';
+        }
       }
     }
     console.timeEnd();
@@ -52,16 +61,16 @@ export class HexTiles {
     // keep repeating until we don't have any hexes left
     while (hexesToCheck.length > 0) {
       hex = hexesToCheck.splice(0, 1)[0];
-      
+
       // check all 6 possible surrounding campsite coordinates for this hex
       for (let i = 0; i < 6; i++) {
 
         // create a new hex to traverse with
         let travHex: OffsetPoint = new OffsetPoint(hex.q, hex.r);
-        
+
         // direction to check
         let dir: number = i;
-        
+
         // start and go the length of the hex radius in the desired direction (clockwise starting at north)
         travHex = this.hexTraverse(travHex, dir, this.campRadius)
 
@@ -78,7 +87,7 @@ export class HexTiles {
         // check if this site exists, if it does add it to the list of hexes to check
         // around for more campfires and set the tile as a campfire
         if (this.checkIfValidHex(travHex)) {
-          
+
           // only add it if we haven't been to it before
           if (!this.isHexInHexList(travHex, campHexes)) {
             hexesToCheck.push(travHex);
@@ -130,7 +139,7 @@ export class HexTiles {
   getHexRadiusPoints(centerTile: Tile, radius:number): OffsetPoint[] {
     // Takes center tile and returns list of points that surround it in hexagonal shape
     // radius = number of tiles from top to center - excluding the center.
-    
+
     let results: OffsetPoint[] = [];
     results[0] = new OffsetPoint(centerTile.offset_coord.q, centerTile.offset_coord.r);
 
@@ -353,10 +362,12 @@ export class HexTiles {
 export class Tile {
   public offset_coord: OffsetPoint;
   public cartesian_coord: Point;
+  public tileType: string;
   public building: string;
 
-  constructor(building: string = 'none') {
+  constructor(building: string = 'none', tileType: string = 'empty') {
     this.building = building;
+    this.tileType = tileType;
   }
 }
 
