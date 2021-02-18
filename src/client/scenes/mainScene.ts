@@ -3,6 +3,11 @@ import io from 'socket.io-client'
 
 const Constant = require('./../../shared/constants');
 
+// Text Structure
+// const info_format =
+// `Health: 			%1
+// Score:		%2`
+
 export default class MainScene extends Phaser.Scene {	
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -10,6 +15,9 @@ export default class MainScene extends Phaser.Scene {
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
+
+	// Text/Scoring
+	//private infoText?: Phaser.GameObjects.Text;
 
 	constructor() {
 		super('MainScene');
@@ -30,7 +38,11 @@ export default class MainScene extends Phaser.Scene {
 		this.bulletSprites = new Map(); 
 		this.socket = io();
 
-		this.add.image(0, 0, 'forest').setScale(1.5);
+		const bg = this.add.image(0, 0, 'forest').setScale(1.5);
+		//const hud = this.infoText = this.add.text(0, 0, '');
+
+		//Phaser.Display.Align.In.Center(bg, this.add.zone(500, 500, 800, 600));
+		//Phaser.Display.Align.In.TopLeft(hud, bg);
 
 		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
 		this.myPlayerSprite.setVisible(false);
@@ -40,6 +52,8 @@ export default class MainScene extends Phaser.Scene {
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
 		this.cameras.main.setZoom(0.5);
 		//this.cameras.main.setBounds(0,0,1920, 1080);
+
+		
 
 		this.cursors = this.input.keyboard.addKeys({
 			up:		Phaser.Input.Keyboard.KeyCodes.W,
@@ -60,7 +74,7 @@ export default class MainScene extends Phaser.Scene {
 			const direction = Math.atan2(gamePos.x - this.myPlayerSprite.x, gamePos.y - this.myPlayerSprite.y);
 			this.myPlayerSprite.setRotation(-1*direction);
 			this.socket.emit(Constant.MESSAGE.ROTATE, direction);
-		}, 1000/20);
+		}, 1000/60);
 		
 		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState.bind(this));
 		this.socket.emit(Constant.MESSAGE.JOIN);
@@ -104,6 +118,10 @@ export default class MainScene extends Phaser.Scene {
 		this.updateBullets(bullets);
 
 		this.updateOpponents(otherPlayers);
+
+		//this.updateText(currentPlayer);
+
+		this.events.emit('updateHUD', currentPlayer);
 	}
 
 	private updatePlayer(currentPlayer: any) {
@@ -128,6 +146,20 @@ export default class MainScene extends Phaser.Scene {
 			}
 		);
 	}
+
+	// private updateText(currentPlayer: any) {
+		// const text = Phaser.Utils.String.Format(
+			// info_format,
+			// [
+				// currentPlayer.health,
+				// currentPlayer.score
+			// ]
+		// )
+
+		// this.infoText?.setText(text).setScrollFactor(0);
+		// this.infoText?.setFontSize(48);
+		// this.infoText?.setScale(1/this.cameras.main.zoom, 1/this.cameras.main.zoom);
+	// }
 
 	private updateMapOfObjects(currentObjects: any,
 							   oldObjects: Map<string, Phaser.GameObjects.Sprite>, 
