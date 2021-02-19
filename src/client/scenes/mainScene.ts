@@ -1,9 +1,9 @@
-import io from 'socket.io-client';
+import io from 'socket.io-client'
 //import playerData from '../../shared/playerData';
 
 const Constant = require('./../../shared/constants');
 
-export default class MainScene extends Phaser.Scene {
+export default class MainScene extends Phaser.Scene {	
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -26,8 +26,8 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create(): void {
-		this.otherPlayerSprites = new Map();
-		this.bulletSprites = new Map();
+		this.otherPlayerSprites = new Map(); 
+		this.bulletSprites = new Map(); 
 		this.socket = io();
 
 		this.add.image(0, 0, 'forest').setScale(1.5);
@@ -42,60 +42,47 @@ export default class MainScene extends Phaser.Scene {
 		//this.cameras.main.setBounds(0,0,1920, 1080);
 
 		this.cursors = this.input.keyboard.addKeys({
-			up: Phaser.Input.Keyboard.KeyCodes.W,
-			down: Phaser.Input.Keyboard.KeyCodes.S,
-			left: Phaser.Input.Keyboard.KeyCodes.A,
-			right: Phaser.Input.Keyboard.KeyCodes.D,
+			up:		Phaser.Input.Keyboard.KeyCodes.W,
+			down:	Phaser.Input.Keyboard.KeyCodes.S,
+			left:	Phaser.Input.Keyboard.KeyCodes.A,
+			right:	Phaser.Input.Keyboard.KeyCodes.D
 		});
 
 		this.input.on('pointerdown', (pointer) => {
 			if (!this.alive) return;
-			const gamePos = this.cameras.main.getWorldPoint(
-				pointer.x,
-				pointer.y
-			);
-			const direction = Math.atan2(
-				gamePos.x - this.myPlayerSprite.x,
-				gamePos.y - this.myPlayerSprite.y
-			);
+			const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+			const direction = Math.atan2(gamePos.x - this.myPlayerSprite.x, gamePos.y - this.myPlayerSprite.y);
 			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 		});
 
 		setInterval(() => {
-			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x,
-				this.input.mousePointer.y
-			);
-			const direction = Math.atan2(
-				gamePos.x - this.myPlayerSprite.x,
-				gamePos.y - this.myPlayerSprite.y
-			);
-			this.myPlayerSprite.setRotation(-1 * direction);
+			const gamePos = this.cameras.main.getWorldPoint(this.input.mousePointer.x, this.input.mousePointer.y);
+			const direction = Math.atan2(gamePos.x - this.myPlayerSprite.x, gamePos.y - this.myPlayerSprite.y);
+			this.myPlayerSprite.setRotation(-1*direction);
 			this.socket.emit(Constant.MESSAGE.ROTATE, direction);
-		}, 1000 / 20);
-
-		this.socket.on(
-			Constant.MESSAGE.GAME_UPDATE,
-			this.updateState.bind(this)
-		);
+		}, 1000/20);
+		
+		this.socket.on(Constant.MESSAGE.GAME_UPDATE, this.updateState.bind(this));
 		this.socket.emit(Constant.MESSAGE.JOIN);
 	}
 
-	update() {
-		let direction = NaN;
+	update () {
+		let direction: number = NaN;
 		//TODO really gross can we clean this?
 		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
 			if (this.cursors.up.isDown && !this.cursors.down.isDown)
 				direction = Constant.DIRECTION.NW;
 			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
 				direction = Constant.DIRECTION.SW;
-			else direction = Constant.DIRECTION.W;
+			else
+				direction = Constant.DIRECTION.W;
 		} else if (this.cursors.right.isDown && !this.cursors.left.isDown) {
 			if (this.cursors.up.isDown && !this.cursors.down.isDown)
 				direction = Constant.DIRECTION.NE;
 			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
 				direction = Constant.DIRECTION.SE;
-			else direction = Constant.DIRECTION.E;
+			else
+				direction = Constant.DIRECTION.E;
 		} else {
 			if (this.cursors.up.isDown && !this.cursors.down.isDown)
 				direction = Constant.DIRECTION.N;
@@ -107,10 +94,10 @@ export default class MainScene extends Phaser.Scene {
 			this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 	}
 
-	updateState(update: any): void {
-		//TODO may state type
+	updateState(update: any): void { //TODO may state type
 		const { time, currentPlayer, otherPlayers, bullets } = update;
-		if (currentPlayer == null) return;
+		if (currentPlayer == null)
+			return;
 
 		this.updatePlayer(currentPlayer);
 
@@ -126,38 +113,28 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateBullets(bullets: any) {
-		this.bulletSprites = this.updateMapOfObjects(
-			bullets,
-			this.bulletSprites,
-			'bullet',
-			(newBullet, newBulletLiteral) => {
-				return newBullet;
-			}
+		this.bulletSprites = this.updateMapOfObjects(bullets, this.bulletSprites, 'bullet', 
+			(newBullet, newBulletLiteral) => {return newBullet;}
 		);
 		//TODO may not be necessary for bullets
 	}
 
 	private updateOpponents(otherPlayers: any) {
-		this.otherPlayerSprites = this.updateMapOfObjects(
-			otherPlayers,
-			this.otherPlayerSprites,
-			'aliem',
+		this.otherPlayerSprites = this.updateMapOfObjects(otherPlayers, this.otherPlayerSprites, 'aliem',
 			(newPlayer, playerLiteral) => {
 				newPlayer.setScale(0.25);
-				newPlayer.setRotation(-1 * playerLiteral.direction);
+				newPlayer.setRotation(-1*playerLiteral.direction)
 				return newPlayer;
 			}
 		);
 	}
 
-	private updateMapOfObjects(
-		currentObjects: any,
-		oldObjects: Map<string, Phaser.GameObjects.Sprite>,
-		sprite: string,
-		callback: (arg0: any, arg1: any) => any
-	) {
-		const updatedObjects = new Map();
-		currentObjects.forEach((bullet) => {
+	private updateMapOfObjects(currentObjects: any,
+							   oldObjects: Map<string, Phaser.GameObjects.Sprite>, 
+							   sprite: string, 
+							   callback: (arg0: any, arg1: any) => any) {
+		let updatedObjects = new Map();
+		currentObjects.forEach(bullet => {
 			let newBullet;
 			if (oldObjects.has(bullet.id)) {
 				newBullet = oldObjects.get(bullet.id);
@@ -174,3 +151,6 @@ export default class MainScene extends Phaser.Scene {
 		return updatedObjects;
 	}
 }
+
+
+
