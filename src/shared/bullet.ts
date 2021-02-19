@@ -6,11 +6,17 @@ export default class Bullet {
 	yVel: number;
 	expirationDate: number;
 	teamNumber: number;
-	
-	speed: number = 1000;
-	lifeLength: number = 1000;
 
-	constructor(id: string, xPos: number, yPos: number, direction: number, teamNumber: number) {
+	speed = 1000;
+	lifeLength = 1000;
+
+	constructor(
+		id: string,
+		xPos: number,
+		yPos: number,
+		direction: number,
+		teamNumber: number
+	) {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
@@ -24,7 +30,7 @@ export default class Bullet {
 		this.xPos += timePassed * this.xVel;
 		this.yPos += timePassed * this.yVel;
 	}
-	
+
 	serializeForUpdate() {
 		return {
 			id: this.id,
@@ -34,7 +40,7 @@ export default class Bullet {
 		};
 	}
 
-	isExpired(currentDate: number) : boolean {
+	isExpired(currentDate: number): boolean {
 		return this.expirationDate <= currentDate;
 	}
 }

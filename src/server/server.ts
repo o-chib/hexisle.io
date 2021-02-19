@@ -6,19 +6,18 @@ import Game from './game';
 const Socketio = require('socket.io');
 const Constant = require('../shared/constants');
 
-
 // Serve up the static files from public
 const app = express();
-app.use(express.static('public')); 
-app.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname, "public/index.html"));
+app.use(express.static('public'));
+app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 // Start listening for people to connect
-const ip = process.env.IP || "localhost";
+const ip = process.env.IP || 'localhost';
 const port = process.env.PORT || 3000;
 const server = http.createServer(app).listen(port, () => {
-	console.log("Server started:  http://" + ip + ":" + port);
+	console.log('Server started:  http://' + ip + ':' + port);
 });
 
 // Start the game

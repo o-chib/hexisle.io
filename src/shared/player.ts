@@ -1,4 +1,5 @@
-export default class Player { // extends Phaser.Physics.Matter.Sprite
+export default class Player {
+	// extends Phaser.Physics.Matter.Sprite
 	id: string;
 	xPos: number;
 	yPos: number;
@@ -8,7 +9,12 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 	teamNumber: number;
 	socket: SocketIOClient.Socket;
 
-	constructor(socket: SocketIOClient.Socket, xPos: number, yPos: number, teamNumber: number) {
+	constructor(
+		socket: SocketIOClient.Socket,
+		xPos: number,
+		yPos: number,
+		teamNumber: number
+	) {
 		this.id = socket.id;
 		this.xPos = xPos;
 		this.yPos = yPos;
