@@ -9,9 +9,9 @@ export const config: Phaser.Types.Core.GameConfig = {
 	height: Constant.DEFAULT_HEIGHT,
 	type: Phaser.AUTO,
 	scale: {
-        mode: Phaser.Scale.RESIZE,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-    },
+        	mode: Phaser.Scale.RESIZE,
+        	autoCenter: Phaser.Scale.CENTER_BOTH
+	},
 	scene: [mainScene, HUDScene],
 	physics: {
 		default: 'arcade',
