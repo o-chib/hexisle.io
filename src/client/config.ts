@@ -1,14 +1,16 @@
 import 'phaser'
 import mainScene from './scenes/mainScene'
-
-const DEFAULT_WIDTH = window.innerWidth
-const DEFAULT_HEIGHT = window.innerHeight
+const Constant = require('./../shared/constants');
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
-	width: DEFAULT_WIDTH,
-	height: DEFAULT_HEIGHT,
+	width: Constant.DEFAULT_WIDTH,
+	height: Constant.DEFAULT_HEIGHT,
 	type: Phaser.AUTO,
+	scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
 	scene: [mainScene],
 	physics: {
 		default: 'arcade',

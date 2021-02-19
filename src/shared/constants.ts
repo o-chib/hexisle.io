@@ -1,5 +1,8 @@
 module.exports = Object.freeze({
     // Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
+    DEFAULT_WIDTH: 10000,
+    DEFAULT_HEIGHT: 10000,
+
     DIRECTION: {
         E:  0,
         NE: 0.25 * Math.PI, 
@@ -14,6 +17,10 @@ module.exports = Object.freeze({
     MESSAGE: {
         JOIN: 'join',
         GAME_UPDATE: 'update_state',
-        MOVEMENT: 'move'
+        MOVEMENT: 'move',
+        SHOOT: 'shoot',
+        ROTATE: 'rotate',
+        
+        TEMP_HIT: 'im_hit', //TODO this is temporary
     }
 });
