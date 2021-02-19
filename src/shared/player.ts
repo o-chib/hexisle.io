@@ -6,6 +6,11 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 	yVel: number;
 	direction: number;
 	teamNumber: number;
+
+	// Score tracking & player stats
+	score: number;
+	health: number;
+		
 	socket: SocketIOClient.Socket;
 
 	constructor(socket: SocketIOClient.Socket, xPos: number, yPos: number, teamNumber: number) {
@@ -15,8 +20,11 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 		this.xVel = 0;
 		this.yVel = 0;
 		this.direction = 0;
-		this.socket = socket;
 		this.teamNumber = teamNumber;
+		this.score = 0;
+		this.health = 100;
+		//this.healthRegen = 1;
+		this.socket = socket;
 	}
 
 	updateDirection(newDirection: number) {
@@ -29,7 +37,8 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 			xPos: this.xPos,
 			yPos: this.yPos,
 			direction: this.direction,
-			//hp: this.hp,
+			score: this.score,
+			health: this.health
 		};
 	}
 }

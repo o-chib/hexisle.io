@@ -1,5 +1,6 @@
 import 'phaser'
 import mainScene from './scenes/mainScene'
+import HUDScene from './scenes/HUDScene'
 const Constant = require('./../shared/constants');
 
 export const config: Phaser.Types.Core.GameConfig = {
@@ -8,10 +9,10 @@ export const config: Phaser.Types.Core.GameConfig = {
 	height: Constant.DEFAULT_HEIGHT,
 	type: Phaser.AUTO,
 	scale: {
-        mode: Phaser.Scale.RESIZE,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-    },
-	scene: [mainScene],
+        	mode: Phaser.Scale.RESIZE,
+        	autoCenter: Phaser.Scale.CENTER_BOTH
+	},
+	scene: [mainScene, HUDScene],
 	physics: {
 		default: 'arcade',
 		arcade: {

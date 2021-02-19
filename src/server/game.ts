@@ -39,7 +39,8 @@ export default class Game {
 	update() {
 		let currentTimestamp = Date.now();
 		let timePassed = (currentTimestamp - this.previousUpdateTimestamp) / 1000;
-
+		this.previousUpdateTimestamp = currentTimestamp;
+		
 		for (const aBullet of this.bullets) {
 			aBullet.updatePosition(timePassed);
 			if (aBullet.isExpired(currentTimestamp)) {
@@ -51,7 +52,7 @@ export default class Game {
 			aPlayer.socket.emit(Constant.MESSAGE.GAME_UPDATE, this.createUpdate(aPlayer));
 		}
 
-		this.previousUpdateTimestamp = currentTimestamp;
+		
 	}
 
 	createUpdate(player: Player) {
