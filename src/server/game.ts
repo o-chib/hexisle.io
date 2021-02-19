@@ -1,17 +1,23 @@
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 const Constant = require('../shared/constants');
+import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 
 export default class Game {
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	previousUpdateTimestamp: any;
 	bulletCount: number;
+	hexTileMap: HexTiles;
+	changedTiles: Tile[];
 
 	constructor() {
 		this.players = new Map();
 		this.bullets = new Set();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
+		this.hexTileMap = new HexTiles();
+		this.hexTileMap.generateMap();
+		this.changedTiles = [];
 		this.previousUpdateTimestamp = Date.now();
 		this.bulletCount = 0;
 	}
@@ -56,6 +62,9 @@ export default class Game {
 			if (aPlayer === player) continue;
 			nearbyPlayers.push(aPlayer);
 		}
+
+		let changedTiles: Tile[] = this.changedTiles;
+		this.changedTiles = [];
 	
 		for (const aBullet of this.bullets) {
 			nearbyBullets.push(aBullet);
@@ -65,6 +74,8 @@ export default class Game {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map(p => p.serializeForUpdate()),
+			tileMap: this.hexTileMap.tileMap, // TODO, look into why we need this 
+			changedTiles: changedTiles,
 			bullets: nearbyBullets.map(p => p.serializeForUpdate())
 		};
 	}
@@ -77,6 +88,21 @@ export default class Game {
 		player.yPos = player.yPos - 10*Math.sin(direction);
 	}
 
+	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {
+		if (!this.players.has(socket.id)) return;
+		const player : Player = this.players.get(socket.id)!;
+
+		if (!this.hexTileMap.checkIfValidHex(coord)) {
+			return;
+		}
+
+		let tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+		this.hexTileMap.tileMap[coord.q][coord.r] = tile;
+		if (tile.building != 'select') {
+			tile.building = 'select';
+			this.changedTiles.push(tile);
+		}
+	}
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player : Player = this.players.get(socket.id)!;

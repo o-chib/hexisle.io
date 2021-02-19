@@ -3,6 +3,7 @@ import express from 'express';
 import http from 'http';
 import { Socket } from 'socket.io-client';
 import Game from './game';
+import { OffsetPoint } from '../shared/hexTiles';
 const Socketio = require('socket.io');
 const Constant = require('../shared/constants');
 
@@ -37,6 +38,9 @@ function updateSocket(socket: SocketIOClient.Socket) {
 	});
 	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
 		game.movePlayer(socket, direction);
+	});
+	socket.on(Constant.MESSAGE.TILE_CHANGE, (coord: OffsetPoint) => {
+		game.changeTile(socket, coord);
 	});
 	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
 		game.shootBullet(socket, direction);
