@@ -48,13 +48,13 @@ export default class MainScene extends Phaser.Scene {
 		this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
 
+		//Player and Camera
 		this.myPlayerSprite = this.add.sprite(0, 0, 'character');
 		this.myPlayerSprite.setVisible(false);
 
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
         this.cursors = this.input.keyboard.createCursorKeys();
-
-
+		this.input.setPollAlways(); // this isn't working for some reason
 
 		/*this.input.keyboard.on('keydown', (event) => {
 			let direction: number; //TODO make movement smoother
@@ -119,6 +119,7 @@ export default class MainScene extends Phaser.Scene {
 			console.time();
 
 			this.hexTiles.tileMap = tileMap;
+			// masking logic
 			let reveal = this.graphic_Tex.scene.add.image(0,0,'texture').setDepth(-500).setScale(3);
 			this.drawAllTiles();
 			this.setMapMask(reveal);
@@ -148,19 +149,6 @@ export default class MainScene extends Phaser.Scene {
 		});
 	}
 
-/*
-	drawMap(): void {
-		let centerTile = this.tiles[this.hexTiles.hexRadius][this.hexTiles.hexRadius];
-
-		let offsetCoords = this.hexTiles.getHexRadiusPoints(centerTile, this.hexTiles.hexRadius);
-		let currTile = new Tile();
-		for(let i = 0 ; i < offsetCoords.length ; ++i) {
-			currTile.offset_coord = offsetCoords[i];
-			currTile.cartesian_coord = this.hexTiles.offsetToCartesian(offsetCoords[i]);
-			this.drawTile(currTile);
-		}
-	}
-*/
 	drawAllTiles(): void {
 		// draws every arena/map hex we have in our tilemap
 
