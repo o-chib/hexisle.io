@@ -1,4 +1,5 @@
-export default class Player { // extends Phaser.Physics.Matter.Sprite
+export default class Player {
+	// extends Phaser.Physics.Matter.Sprite
 	id: string;
 	xPos: number;
 	yPos: number;
@@ -10,10 +11,15 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 	// Score tracking & player stats
 	score: number;
 	health: number;
-		
+
 	socket: SocketIOClient.Socket;
 
-	constructor(socket: SocketIOClient.Socket, xPos: number, yPos: number, teamNumber: number) {
+	constructor(
+		socket: SocketIOClient.Socket,
+		xPos: number,
+		yPos: number,
+		teamNumber: number
+	) {
 		this.id = socket.id;
 		this.xPos = xPos;
 		this.yPos = yPos;
@@ -38,7 +44,7 @@ export default class Player { // extends Phaser.Physics.Matter.Sprite
 			yPos: this.yPos,
 			direction: this.direction,
 			score: this.score,
-			health: this.health
+			health: this.health,
 		};
 	}
 }

@@ -1,5 +1,5 @@
-import { Time } from "phaser";
-import Player from "./player";
+import { Time } from 'phaser';
+import Player from './player';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 
 interface State {
