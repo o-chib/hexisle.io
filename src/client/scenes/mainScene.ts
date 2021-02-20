@@ -208,7 +208,7 @@ export default class MainScene extends Phaser.Scene {
 				direction = Constant.DIRECTION.S;
 		}
 
-		if (!isNaN(direction))
+		//if (!isNaN(direction))
 			this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 	}
 
