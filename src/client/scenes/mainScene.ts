@@ -59,13 +59,12 @@ export default class MainScene extends Phaser.Scene {
 		this.cameras.main.setZoom(0.5);
 		//this.cameras.main.setBounds(0,0,1920, 1080);
 
-		
-
 		this.cursors = this.input.keyboard.addKeys({
 			up:		Phaser.Input.Keyboard.KeyCodes.W,
 			down:	Phaser.Input.Keyboard.KeyCodes.S,
 			left:	Phaser.Input.Keyboard.KeyCodes.A,
-			right:	Phaser.Input.Keyboard.KeyCodes.D
+			right:	Phaser.Input.Keyboard.KeyCodes.D,
+            select: Phaser.Input.Keyboard.KeyCodes.E
 		});
 
 		this.input.on('pointerdown', (pointer) => {
@@ -112,6 +111,14 @@ export default class MainScene extends Phaser.Scene {
 
 		if (!isNaN(direction))
 			this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
+
+        if (this.cursors.select.isDown) {
+            if (!this.alive) return;
+			let mouseX: number = this.input.mousePointer.worldX;
+			let mouseY: number = this.input.mousePointer.worldY;
+			let coord: OffsetPoint = this.hexTiles.cartesianToOffset(new Point(mouseX, mouseY));
+			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
+        }
 	}
 
 	updateState(update: any): void { //TODO may state type
@@ -128,7 +135,8 @@ export default class MainScene extends Phaser.Scene {
 		//this.updateText(currentPlayer);
 
 		this.events.emit('updateHUD', currentPlayer);
-		// Draw whole background on startup
+		
+        // Draw whole background on startup
 		// Startup: Draw tilemap
 		if (!this.hexTiles.tileMap) {
 			console.log('time to draw all tiles on startup');
@@ -145,6 +153,7 @@ export default class MainScene extends Phaser.Scene {
 
 		// Redraw any updated tiles
 		for (let tile of changedTiles) {
+            console.log('redrawing tile', tile.offset_coord.q, tile.offset_coord.r)
 			this.drawTile(tile);
 		}
 	}
@@ -303,6 +312,7 @@ export default class MainScene extends Phaser.Scene {
 	    rt.setTint(redTint);
 	    */
 	}
+
 	getTileMask(tile: Tile, graphic : Phaser.GameObjects.Graphics){
 		// returns the graphic object of a singular tile
 		// WIP
@@ -316,5 +326,4 @@ export default class MainScene extends Phaser.Scene {
 		graphic.closePath();
 		graphic.fillPath();
 	}
-
 }

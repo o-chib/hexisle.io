@@ -52,7 +52,7 @@ export default class Game {
 			aPlayer.socket.emit(Constant.MESSAGE.GAME_UPDATE, this.createUpdate(aPlayer));
 		}
 
-		
+        this.changedTiles = [];
 	}
 
 	createUpdate(player: Player) {
@@ -63,9 +63,6 @@ export default class Game {
 			if (aPlayer === player) continue;
 			nearbyPlayers.push(aPlayer);
 		}
-
-		let changedTiles: Tile[] = this.changedTiles;
-		this.changedTiles = [];
 	
 		for (const aBullet of this.bullets) {
 			nearbyBullets.push(aBullet);
@@ -76,7 +73,7 @@ export default class Game {
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map(p => p.serializeForUpdate()),
 			tileMap: this.hexTileMap.tileMap, // TODO, look into why we need this 
-			changedTiles: changedTiles,
+			changedTiles: this.changedTiles,
 			bullets: nearbyBullets.map(p => p.serializeForUpdate())
 		};
 	}
@@ -87,6 +84,20 @@ export default class Game {
 
 		player.xPos = player.xPos + 10*Math.cos(direction);
 		player.yPos = player.yPos - 10*Math.sin(direction);
+	}
+
+	rotatePlayer(socket: SocketIOClient.Socket, direction: number) {
+		if (!this.players.has(socket.id)) return;
+		const player : Player = this.players.get(socket.id)!;
+
+		player.updateDirection(direction);
+	}
+
+	shootBullet(socket: SocketIOClient.Socket, direction: number) {
+		if (!this.players.has(socket.id)) return;
+		const player : Player = this.players.get(socket.id)!;
+		this.bullets.add(new Bullet(this.bulletCount.toString(), player.xPos, player.yPos, direction, player.teamNumber));
+		this.bulletCount += 1;
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {
@@ -103,18 +114,5 @@ export default class Game {
 			tile.building = 'select';
 			this.changedTiles.push(tile);
 		}
-	}
-	rotatePlayer(socket: SocketIOClient.Socket, direction: number) {
-		if (!this.players.has(socket.id)) return;
-		const player : Player = this.players.get(socket.id)!;
-
-		player.updateDirection(direction);
-	}
-
-	shootBullet(socket: SocketIOClient.Socket, direction: number) {
-		if (!this.players.has(socket.id)) return;
-		const player : Player = this.players.get(socket.id)!;
-		this.bullets.add(new Bullet(this.bulletCount.toString(), player.xPos, player.yPos, direction, player.teamNumber));
-		this.bulletCount += 1;
 	}
 }
