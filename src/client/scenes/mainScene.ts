@@ -52,6 +52,18 @@ export default class MainScene extends Phaser.Scene {
 		this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
 
+        const graphics = this.graphic_Map;
+        graphics.lineStyle(4, 0xff00ff, 1);
+		graphics.beginPath();
+		graphics.moveTo(0, 0);
+		graphics.lineTo(1000, 0);
+        graphics.lineTo(1000, 1000);
+        graphics.lineTo(0, 1000);
+        graphics.lineTo(0, 0);
+		graphics.closePath();
+		graphics.fillPath().setDepth(-100);
+		graphics.strokePath().setDepth(-100);
+
 		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
 		this.myPlayerSprite.setVisible(false);
 		this.alive = true;
@@ -160,7 +172,7 @@ export default class MainScene extends Phaser.Scene {
 				.image(0, 0, 'texture')
 				.setDepth(-500)
 				.setScale(3);
-			this.drawAllTiles();
+			//this.drawAllTiles();
 			this.setMapMask(reveal);
 
 			console.timeEnd();
@@ -196,7 +208,7 @@ export default class MainScene extends Phaser.Scene {
 			this.otherPlayerSprites,
 			'aliem',
 			(newPlayer, playerLiteral) => {
-				newPlayer.setScale(0.25);
+				newPlayer.setScale(1);
 				newPlayer.setRotation(-1 * playerLiteral.direction);
 				return newPlayer;
 			}

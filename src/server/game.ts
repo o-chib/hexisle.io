@@ -2,6 +2,7 @@ import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 const Constant = require('../shared/constants');
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
+import { Quadtree, Rect, CollisionObject } from './quadtree';
 
 export default class Game {
 	players: Map<string, Player>;
@@ -10,6 +11,7 @@ export default class Game {
 	bulletCount: number;
 	hexTileMap: HexTiles;
 	changedTiles: Tile[];
+    quadtree: Quadtree;
 
 	constructor() {
 		this.players = new Map();
@@ -18,6 +20,7 @@ export default class Game {
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
 		this.changedTiles = [];
+        this.quadtree = new Quadtree();
 		this.previousUpdateTimestamp = Date.now();
 		this.bulletCount = 0;
 	}
@@ -34,6 +37,12 @@ export default class Game {
 			Math.floor(Math.random() * 10000) + 1
 		);
 		this.players.set(socket.id, newPlayer); //TODO rn it has a random team
+        this.quadtree.insertIntoQuadtree(this.quadtree.getTopLevelNode(),
+                                         new Rect(0, 0, 1000, 1000), 
+                                         0, 
+                                         new CollisionObject(xPos - 50, xPos + 50, 
+                                            yPos + 50, yPos - 50, newPlayer));
+        console.log("inserted", newPlayer.id);
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
@@ -77,6 +86,19 @@ export default class Game {
 		for (const aBullet of this.bullets) {
 			nearbyBullets.push(aBullet);
 		}
+
+        let results: CollisionObject[] = [];
+        this.quadtree.searchQuadtree(this.quadtree.getTopLevelNode(),
+                                    new Rect(0, 1000, 1000, 0),
+                                    new Rect(player.xPos - 50, player.xPos + 50,
+                                        player.yPos + 50, player.yPos - 50),
+                                    results);
+
+        if (results.length > 0) {
+            console.log("player at", player.xPos, player.yPos, 
+                        "is colliding with player at", 
+                        results[0].payload.xPos, results[0].payload.yPos);
+        }
 
 		return {
 			time: Date.now(),
