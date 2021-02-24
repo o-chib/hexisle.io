@@ -18,6 +18,9 @@ export default class MainScene extends Phaser.Scene {
 	private graphic_Tex: Phaser.GameObjects.Graphics; // texture data
 	private graphic_Map: Phaser.GameObjects.Graphics; // Strokes for hexagons
 	private graphic_Front: Phaser.GameObjects.Graphics; // Frontmost sprites = player, buildings, etc
+	private img_tileMap: Phaser.GameObjects.Image;
+	private rt: Phaser.GameObjects.RenderTexture;
+
 
 	private tiles: Tile[]; // Made in offset even-q coordinates
 	private hexTiles: HexTiles;
@@ -110,13 +113,35 @@ export default class MainScene extends Phaser.Scene {
 	private createTileMap(tileMap: any) {
 		if (!this.hexTiles.tileMap) {
 			this.hexTiles.tileMap = tileMap;
-			// masking logic
+			// generate tex of 1 tile
+			this.drawTile(this.hexTiles.tileMap[0][0]);
+
+			// masking logic for that tile only
 			const reveal = this.graphic_Tex.scene.add
 				.image(0, 0, 'texture')
 				.setDepth(-500)
 				.setScale(3);
-			this.drawAllTiles();
+
 			this.setMapMask(reveal);
+
+			this.graphic_Map.generateTexture('tile_outline');
+			//this.graphic_Tex.generateTexture('tile_bg'); // Doesnt work, idk why
+
+			this.graphic_Map.clear();
+			//this.graphic_Tex.clear();
+			this.rt = this.add.renderTexture(0,0,Constant.DEFAULT_WIDTH, Constant.DEFAULT_HEIGHT);
+
+			this.drawAllTiles();
+
+			//
+			// // snapshot
+			// this.renderer.snapshot
+			// this.renderer.snapshot((image) => {
+			// document.body.append(image);
+			//
+			// });
+
+
 		}
 	}
 
@@ -128,14 +153,23 @@ export default class MainScene extends Phaser.Scene {
 		}
 
 		// for each column
+		this.rt.beginDraw();
 		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
 			// for each row
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
 				if (this.hexTiles.tileMap[col][row].tileType != 'empty') {
-					this.drawTile(this.hexTiles.tileMap[col][row]);
+					this.rt.batchDraw('tile_outline',
+						this.hexTiles.tileMap[col][row].cartesian_coord.x,
+						this.hexTiles.tileMap[col][row].cartesian_coord.y).setDepth(-100);
+					//this.rt.batchDraw('tile_bg',
+					//	this.hexTiles.tileMap[col][row].cartesian_coord.x,
+					//	this.hexTiles.tileMap[col][row].cartesian_coord.y).setDepth(-500);
+					//this.drawTile(this.hexTiles.tileMap[col][row]);
 				}
 			}
 		}
+		this.rt.endDraw();
+
 	}
 
 	drawTiles(tiles: Tile[]): void {
@@ -153,9 +187,7 @@ export default class MainScene extends Phaser.Scene {
 		const graphics = this.graphic_Map;
 		graphics.fillStyle(0x000000, 0);
 
-		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
-			tile.cartesian_coord
-		);
+		const points: Point[] = this.hexTiles.getHexPointsFromCenter(tile.cartesian_coord);
 
 		if (tile.building == 'camp') {
 			graphics.lineStyle(4, 0xff0000, 1);
@@ -176,12 +208,14 @@ export default class MainScene extends Phaser.Scene {
 
 		graphics.fillPath().setDepth(-100);
 		graphics.strokePath().setDepth(-100);
+
 	}
 
 	// Masking
 	// Alpha Mask
 	setMapMask(reveal: Phaser.GameObjects.Image): void {
 		// Masks the texture image using the total hexagonal tile map
+		//const hexBrush = this.graphic_Map.createGeometryMask();
 		const hexBrush = this.graphic_Map.createGeometryMask();
 		reveal.setMask(hexBrush);
 	}
