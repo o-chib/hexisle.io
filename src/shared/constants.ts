@@ -22,5 +22,6 @@ module.exports = Object.freeze({
 		SHOOT: 'shoot',
 		ROTATE: 'rotate',
 		TEMP_HIT: 'im_hit', //TODO this is temporary
+		INITIALIZE: 'initialize_game',
 	},
 });

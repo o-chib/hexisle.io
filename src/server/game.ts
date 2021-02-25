@@ -34,6 +34,7 @@ export default class Game {
 			Math.floor(Math.random() * 10000) + 1
 		);
 		this.players.set(socket.id, newPlayer); //TODO rn it has a random team
+		socket.emit(Constant.MESSAGE.INITIALIZE, this.hexTileMap.tileMap);
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
@@ -82,7 +83,6 @@ export default class Game {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
-			tileMap: this.hexTileMap.tileMap, // TODO, look into why we need this
 			changedTiles: changedTiles,
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 		};
