@@ -56,6 +56,10 @@ export default class Game {
 		}
 
 		for (const aPlayer of this.players.values()) {
+			aPlayer.updatePosition(currentTimestamp);
+		}
+
+		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
 				Constant.MESSAGE.GAME_UPDATE,
 				this.createUpdate(aPlayer)
@@ -92,8 +96,9 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
-		player.xPos = player.xPos + 10 * Math.cos(direction);
-		player.yPos = player.yPos - 10 * Math.sin(direction);
+		player.updateVelocity(direction);
+		//player.xPos = player.xPos + 10 * Math.cos(direction);
+		//player.yPos = player.yPos - 10 * Math.sin(direction);
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {

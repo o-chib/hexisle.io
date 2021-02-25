@@ -105,6 +105,15 @@ export default class MainScene extends Phaser.Scene {
 			this.createTileMap.bind(this)
 		);
 		this.socket.emit(Constant.MESSAGE.JOIN);
+
+		this.input.keyboard.on(
+			'keydown',
+			this.updateMovementDirection.bind(this)
+		);
+		this.input.keyboard.on(
+			'keyup',
+			this.updateMovementDirection.bind(this)
+		);
 	}
 
 	private createTileMap(tileMap: any) {
@@ -187,6 +196,10 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	update(): void {
+		//this.updateMovementDirection();
+	}
+
+	private updateMovementDirection(): void {
 		let direction = NaN;
 		//TODO really gross can we clean this?
 		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
@@ -208,8 +221,8 @@ export default class MainScene extends Phaser.Scene {
 				direction = Constant.DIRECTION.S;
 		}
 
-		if (!isNaN(direction))
-			this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
+		//if (!isNaN(direction))
+		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 	}
 
 	updateState(update: any): void {
