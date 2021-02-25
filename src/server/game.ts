@@ -34,6 +34,7 @@ export default class Game {
 			Math.floor(Math.random() * 10000) + 1
 		);
 		this.players.set(socket.id, newPlayer); //TODO rn it has a random team
+		socket.emit(Constant.MESSAGE.INITIALIZE, this.hexTileMap.tileMap);
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
@@ -52,6 +53,10 @@ export default class Game {
 			if (aBullet.isExpired(currentTimestamp)) {
 				this.bullets.delete(aBullet);
 			}
+		}
+
+		for (const aPlayer of this.players.values()) {
+			aPlayer.updatePosition(currentTimestamp);
 		}
 
 		for (const aPlayer of this.players.values()) {
@@ -84,7 +89,6 @@ export default class Game {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
-			tileMap: this.hexTileMap.tileMap, // TODO, look into why we need this
 			changedTiles: changedTiles,
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 		};
@@ -94,8 +98,9 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
-		player.xPos = player.xPos + 10 * Math.cos(direction);
-		player.yPos = player.yPos - 10 * Math.sin(direction);
+		player.updateVelocity(direction);
+		//player.xPos = player.xPos + 10 * Math.cos(direction);
+		//player.yPos = player.yPos - 10 * Math.sin(direction);
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {

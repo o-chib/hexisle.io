@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { HexTiles, Tile, OffsetPoint, Point } from './../../shared/hexTiles';
+import { HexTiles, Tile, Point } from './../../shared/hexTiles';
 //import playerData from '../../shared/playerData';
 
 const Constant = require('./../../shared/constants');
@@ -21,6 +21,8 @@ export default class MainScene extends Phaser.Scene {
 
 	private tiles: Tile[]; // Made in offset even-q coordinates
 	private hexTiles: HexTiles;
+
+	// HexTile
 
 	constructor() {
 		super('MainScene');
@@ -99,71 +101,24 @@ export default class MainScene extends Phaser.Scene {
 			Constant.MESSAGE.GAME_UPDATE,
 			this.updateState.bind(this)
 		);
+		this.socket.on(
+			Constant.MESSAGE.INITIALIZE,
+			this.createTileMap.bind(this)
+		);
 		this.socket.emit(Constant.MESSAGE.JOIN);
+
+		this.input.keyboard.on(
+			'keydown',
+			this.updateMovementDirection.bind(this)
+		);
+		this.input.keyboard.on(
+			'keyup',
+			this.updateMovementDirection.bind(this)
+		);
 	}
 
-	update() {
-		let direction = NaN;
-		//TODO really gross can we clean this?
-		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
-			if (this.cursors.up.isDown && !this.cursors.down.isDown)
-				direction = Constant.DIRECTION.NW;
-			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
-				direction = Constant.DIRECTION.SW;
-			else direction = Constant.DIRECTION.W;
-		} else if (this.cursors.right.isDown && !this.cursors.left.isDown) {
-			if (this.cursors.up.isDown && !this.cursors.down.isDown)
-				direction = Constant.DIRECTION.NE;
-			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
-				direction = Constant.DIRECTION.SE;
-			else direction = Constant.DIRECTION.E;
-		} else {
-			if (this.cursors.up.isDown && !this.cursors.down.isDown)
-				direction = Constant.DIRECTION.N;
-			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
-				direction = Constant.DIRECTION.S;
-		}
-
-		if (!isNaN(direction))
-			this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
-
-        if (this.cursors.select.isDown) {
-            if (!this.alive) return;
-			let mouseX: number = this.input.mousePointer.worldX;
-			let mouseY: number = this.input.mousePointer.worldY;
-			let coord: OffsetPoint = this.hexTiles.cartesianToOffset(new Point(mouseX, mouseY));
-			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
-        }
-	}
-
-	updateState(update: any): void {
-		//TODO may state type
-		const {
-			time,
-			currentPlayer,
-			otherPlayers,
-			tileMap,
-			changedTiles,
-			bullets,
-		} = update;
-		if (currentPlayer == null) return;
-
-		this.updatePlayer(currentPlayer);
-
-		this.updateBullets(bullets);
-
-		this.updateOpponents(otherPlayers);
-
-		//this.updateText(currentPlayer);
-
-		this.events.emit('updateHUD', currentPlayer);
-		
-        // Draw whole background on startup
-		// Startup: Draw tilemap
+	private createTileMap(tileMap: any) {
 		if (!this.hexTiles.tileMap) {
-			console.log('time to draw all tiles on startup');
-			console.time();
-
 			this.hexTiles.tileMap = tileMap;
 			// masking logic
 			const reveal = this.graphic_Tex.scene.add
@@ -172,84 +127,7 @@ export default class MainScene extends Phaser.Scene {
 				.setScale(3);
 			this.drawAllTiles();
 			this.setMapMask(reveal);
-
-			console.timeEnd();
 		}
-
-		// Redraw any updated tiles
-		for (let tile of changedTiles) {
-            console.log('redrawing tile', tile.offset_coord.q, tile.offset_coord.r)
-			this.drawTile(tile);
-		}
-	}
-
-	private updatePlayer(currentPlayer: any) {
-		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-		if (this.alive && !this.myPlayerSprite.visible)
-			this.myPlayerSprite.setVisible(true);
-	}
-
-	private updateBullets(bullets: any) {
-		this.bulletSprites = this.updateMapOfObjects(
-			bullets,
-			this.bulletSprites,
-			'bullet',
-			(newBullet, newBulletLiteral) => {
-				return newBullet;
-			}
-		);
-		//TODO may not be necessary for bullets
-	}
-
-	private updateOpponents(otherPlayers: any) {
-		this.otherPlayerSprites = this.updateMapOfObjects(
-			otherPlayers,
-			this.otherPlayerSprites,
-			'aliem',
-			(newPlayer, playerLiteral) => {
-				newPlayer.setScale(0.25);
-				newPlayer.setRotation(-1 * playerLiteral.direction);
-				return newPlayer;
-			}
-		);
-	}
-
-	// private updateText(currentPlayer: any) {
-	// const text = Phaser.Utils.String.Format(
-	// info_format,
-	// [
-	// currentPlayer.health,
-	// currentPlayer.score
-	// ]
-	// )
-
-	// this.infoText?.setText(text).setScrollFactor(0);
-	// this.infoText?.setFontSize(48);
-	// this.infoText?.setScale(1/this.cameras.main.zoom, 1/this.cameras.main.zoom);
-	// }
-
-	private updateMapOfObjects(
-		currentObjects: any,
-		oldObjects: Map<string, Phaser.GameObjects.Sprite>,
-		sprite: string,
-		callback: (arg0: any, arg1: any) => any
-	) {
-		const updatedObjects = new Map();
-		currentObjects.forEach((bullet) => {
-			let newBullet;
-			if (oldObjects.has(bullet.id)) {
-				newBullet = oldObjects.get(bullet.id);
-				oldObjects.delete(bullet.id);
-				newBullet.setPosition(bullet.xPos, bullet.yPos);
-			} else {
-				newBullet = this.add.sprite(bullet.xPos, bullet.yPos, sprite);
-			}
-			updatedObjects.set(bullet.id, callback(newBullet, bullet));
-		});
-		for (const anOldBullet of oldObjects.values()) {
-			anOldBullet.destroy();
-		}
-		return updatedObjects;
 	}
 
 	drawAllTiles(): void {
@@ -263,8 +141,9 @@ export default class MainScene extends Phaser.Scene {
 		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
 			// for each row
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
-				if (this.hexTiles.tileMap[col][row].tileType != 'empty')
+				if (this.hexTiles.tileMap[col][row].tileType != 'empty') {
 					this.drawTile(this.hexTiles.tileMap[col][row]);
+				}
 			}
 		}
 	}
@@ -311,10 +190,133 @@ export default class MainScene extends Phaser.Scene {
 
 	// Masking
 	// Alpha Mask
-	setMapMask(reveal: Phaser.GameObjects.Image) {
+	setMapMask(reveal: Phaser.GameObjects.Image): void {
 		// Masks the texture image using the total hexagonal tile map
 		const hexBrush = this.graphic_Map.createGeometryMask();
 		reveal.setMask(hexBrush);
+	}
+
+	update(): void {
+		//this.updateMovementDirection();
+	}
+
+	private updateMovementDirection(): void {
+		let direction = NaN;
+		//TODO really gross can we clean this?
+		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
+			if (this.cursors.up.isDown && !this.cursors.down.isDown)
+				direction = Constant.DIRECTION.NW;
+			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
+				direction = Constant.DIRECTION.SW;
+			else direction = Constant.DIRECTION.W;
+		} else if (this.cursors.right.isDown && !this.cursors.left.isDown) {
+			if (this.cursors.up.isDown && !this.cursors.down.isDown)
+				direction = Constant.DIRECTION.NE;
+			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
+				direction = Constant.DIRECTION.SE;
+			else direction = Constant.DIRECTION.E;
+		} else {
+			if (this.cursors.up.isDown && !this.cursors.down.isDown)
+				direction = Constant.DIRECTION.N;
+			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
+				direction = Constant.DIRECTION.S;
+		}
+
+		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
+
+        if (this.cursors.select.isDown) {
+            if (!this.alive) return;
+			let mouseX: number = this.input.mousePointer.worldX;
+			let mouseY: number = this.input.mousePointer.worldY;
+			let coord: OffsetPoint = this.hexTiles.cartesianToOffset(new Point(mouseX, mouseY));
+			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
+        }
+	}
+
+	updateState(update: any): void {
+		//TODO may state type
+		const {
+			time,
+			currentPlayer,
+			otherPlayers,
+			changedTiles,
+			bullets,
+		} = update;
+		if (currentPlayer == null) return;
+
+		this.updatePlayer(currentPlayer);
+
+		this.updateBullets(bullets);
+
+		this.updateOpponents(otherPlayers);
+
+		//this.updateText(currentPlayer);
+
+		this.events.emit('updateHUD', currentPlayer);
+
+		// Draw whole background on startup
+		// Startup: Draw tilemap
+		//this.createTileMap(tileMap);
+
+		// Redraw any updated tiles
+		for (let tile of changedTiles) {
+            console.log('redrawing tile', tile.offset_coord.q, tile.offset_coord.r)
+			this.drawTile(tile);
+		}
+	}
+
+	private updatePlayer(currentPlayer: any) {
+		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
+		if (this.alive && !this.myPlayerSprite.visible)
+			this.myPlayerSprite.setVisible(true);
+	}
+
+	private updateBullets(bullets: any) {
+		this.bulletSprites = this.updateMapOfObjects(
+			bullets,
+			this.bulletSprites,
+			'bullet',
+			(newBullet, newBulletLiteral) => {
+				return newBullet;
+			}
+		);
+		//TODO may not be necessary for bullets
+	}
+
+	private updateOpponents(otherPlayers: any) {
+		this.otherPlayerSprites = this.updateMapOfObjects(
+			otherPlayers,
+			this.otherPlayerSprites,
+			'aliem',
+			(newPlayer, playerLiteral) => {
+				newPlayer.setRotation(-1 * playerLiteral.direction);
+				return newPlayer;
+			}
+		);
+	}
+
+	private updateMapOfObjects(
+		currentObjects: any,
+		oldObjects: Map<string, Phaser.GameObjects.Sprite>,
+		sprite: string,
+		callback: (arg0: any, arg1: any) => any
+	) {
+		const updatedObjects = new Map();
+		currentObjects.forEach((bullet) => {
+			let newBullet;
+			if (oldObjects.has(bullet.id)) {
+				newBullet = oldObjects.get(bullet.id);
+				oldObjects.delete(bullet.id);
+				newBullet.setPosition(bullet.xPos, bullet.yPos);
+			} else {
+				newBullet = this.add.sprite(bullet.xPos, bullet.yPos, sprite);
+			}
+			updatedObjects.set(bullet.id, callback(newBullet, bullet));
+		});
+		for (const anOldBullet of oldObjects.values()) {
+			anOldBullet.destroy();
+		}
+		return updatedObjects;
 	}
 
 	applyColorTint() {
@@ -348,7 +350,8 @@ export default class MainScene extends Phaser.Scene {
 	    rt.setTint(redTint);
 	    */
 	}
-	getTileMask(tile: Tile, graphic: Phaser.GameObjects.Graphics) {
+
+	getTileMask(tile: Tile, graphic: Phaser.GameObjects.Graphics): void {
 		// returns the graphic object of a singular tile
 		// WIP
 		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
