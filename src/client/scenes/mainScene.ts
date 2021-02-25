@@ -226,10 +226,12 @@ export default class MainScene extends Phaser.Scene {
 
 		if (this.cursors.select.isDown) {
 			if (!this.alive) return;
-			const mouseX: number = this.input.mousePointer.worldX;
-			const mouseY: number = this.input.mousePointer.worldY;
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
+			);
 			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-				new Point(mouseX, mouseY)
+				new Point(gamePos.x, gamePos.y)
 			);
 			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
 		}
