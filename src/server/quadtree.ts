@@ -18,24 +18,7 @@ export class Quadtree {
     }
 
     public collides(obj: CollisionObject, box: Rect): boolean {
-        // console.log(' ');
-        // console.log("obj " + obj.l, obj.r, obj.b, obj.t);
-        // console.log("box " + box.l, box.r, box.b, box.t);
-
-        // if (box.l <= obj.r) {
-        //     console.log("box.l <= obj.r");
-        // }
-        // if (obj.l <= box.r) {
-        //     console.log("obj.l <= box.r");
-        // }
-        // if (box.t <= obj.b) {
-        //     console.log("obj.b >= box.t");
-        // }
-        // if (obj.t <= box.b) {
-        //     console.log("box.b >= obj.t");
-        // }
         if ((box.l <= obj.r && obj.l <= box.r) && (obj.b >= box.t && box.b >= obj.t)) {
-            // console.log("*** COLLISION ***");
             return true;
         } else {
             return false;
@@ -110,7 +93,6 @@ export class Quadtree {
         if (depth > this.MAX_DEPTH) {
             let index: number = this.topLevelNode.collisionObjects.findIndex(o => o.payload === obj.payload);
             this.topLevelNode.collisionObjects.splice(index, 1);
-            // console.log("deleting at depth", depth, "at index", index);
         
         // contained within UPPER LEFT
         } else if (obj.r < splitRight && obj.b > splitTop) {

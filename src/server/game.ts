@@ -119,7 +119,6 @@ export default class Game {
                                                         new CollisionObject(bullet.xPos - 50, bullet.xPos + 50,
                                                         bullet.yPos + 50, bullet.yPos - 50,
                                                         bullet));
-
                     }
                 });
             }
