@@ -66,7 +66,7 @@ export default class Game {
 			);
 		}
 
-        this.changedTiles = [];
+		this.changedTiles = [];
 	}
 
 	createUpdate(player: Player) {

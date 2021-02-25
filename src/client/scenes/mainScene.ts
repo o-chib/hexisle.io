@@ -68,7 +68,7 @@ export default class MainScene extends Phaser.Scene {
 			down: Phaser.Input.Keyboard.KeyCodes.S,
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
-            select: Phaser.Input.Keyboard.KeyCodes.E
+			select: Phaser.Input.Keyboard.KeyCodes.E,
 		});
 
 		this.input.on('pointerdown', (pointer) => {
@@ -224,13 +224,15 @@ export default class MainScene extends Phaser.Scene {
 
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 
-        if (this.cursors.select.isDown) {
-            if (!this.alive) return;
-			let mouseX: number = this.input.mousePointer.worldX;
-			let mouseY: number = this.input.mousePointer.worldY;
-			let coord: OffsetPoint = this.hexTiles.cartesianToOffset(new Point(mouseX, mouseY));
+		if (this.cursors.select.isDown) {
+			if (!this.alive) return;
+			const mouseX: number = this.input.mousePointer.worldX;
+			const mouseY: number = this.input.mousePointer.worldY;
+			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+				new Point(mouseX, mouseY)
+			);
 			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
-        }
+		}
 	}
 
 	updateState(update: any): void {
@@ -259,8 +261,12 @@ export default class MainScene extends Phaser.Scene {
 		//this.createTileMap(tileMap);
 
 		// Redraw any updated tiles
-		for (let tile of changedTiles) {
-            console.log('redrawing tile', tile.offset_coord.q, tile.offset_coord.r)
+		for (const tile of changedTiles) {
+			console.log(
+				'redrawing tile',
+				tile.offset_coord.q,
+				tile.offset_coord.r
+			);
 			this.drawTile(tile);
 		}
 	}
