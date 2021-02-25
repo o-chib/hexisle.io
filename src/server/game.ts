@@ -38,9 +38,9 @@ export default class Game {
 		);
 		this.players.set(socket.id, newPlayer); //TODO rn it has a random team
         this.quadtree.insertIntoQuadtree(this.quadtree.getTopLevelNode(),
-                                         new Rect(0, 0, 1000, 1000), 
-                                         0, 
-                                         new CollisionObject(xPos - 50, xPos + 50, 
+                                         new Rect(0,0,0,0),
+                                         0,
+                                         new CollisionObject(xPos - 50, xPos + 50,
                                             yPos + 50, yPos - 50, newPlayer));
         console.log("inserted", newPlayer.id);
 	}
@@ -60,7 +60,14 @@ export default class Game {
 			aBullet.updatePosition(timePassed);
 			if (aBullet.isExpired(currentTimestamp)) {
 				this.bullets.delete(aBullet);
+                continue;
 			}
+
+            this.quadtree.updateInQuadtree(this.quadtree.getTopLevelNode(),
+                                        new Rect(0,0,0,0),
+                                        0,
+                                        new CollisionObject(aBullet.xPos - 50, aBullet.xPos + 50,
+                                            aBullet.yPos + 50, aBullet.yPos - 50, aBullet));
 		}
 
 		for (const aPlayer of this.players.values()) {
@@ -89,15 +96,33 @@ export default class Game {
 
         let results: CollisionObject[] = [];
         this.quadtree.searchQuadtree(this.quadtree.getTopLevelNode(),
-                                    new Rect(0, 1000, 1000, 0),
+                                    new Rect(0,0,0,0),
                                     new Rect(player.xPos - 50, player.xPos + 50,
                                         player.yPos + 50, player.yPos - 50),
-                                    results);
+                                        results);
 
         if (results.length > 0) {
-            console.log("player at", player.xPos, player.yPos, 
-                        "is colliding with player at", 
-                        results[0].payload.xPos, results[0].payload.yPos);
+            if (results[0].payload instanceof Player && results[0].payload.id != player.id) {
+                console.log("player at", player.xPos, player.yPos,
+                            "is colliding with player at",
+                            results[0].payload.xPos, results[0].payload.yPos);
+            } else if (results[0].payload instanceof Bullet) {
+                console.log("player at", player.xPos, player.yPos,
+                            "is colliding with bullet at",
+                            results[0].payload.xPos, results[0].payload.yPos);
+                this.bullets.forEach((bullet) => {
+                    if (bullet.id == results[0].payload.id) {
+                        this.bullets.delete(bullet);
+                        this.quadtree.deleteFromQuadtree(this.quadtree.getTopLevelNode(),
+                                                        new Rect(0,0,0,0),
+                                                        0,
+                                                        new CollisionObject(bullet.xPos - 50, bullet.xPos + 50,
+                                                        bullet.yPos + 50, bullet.yPos - 50,
+                                                        bullet));
+
+                    }
+                });
+            }
         }
 
 		return {
@@ -116,6 +141,12 @@ export default class Game {
 
 		player.xPos = player.xPos + 10 * Math.cos(direction);
 		player.yPos = player.yPos - 10 * Math.sin(direction);
+
+        this.quadtree.updateInQuadtree(this.quadtree.getTopLevelNode(),
+                                        new Rect(0,0,0,0),
+                                        0,
+                                        new CollisionObject(player.xPos - 50, player.xPos + 50,
+                                            player.yPos + 50, player.yPos - 50, player));
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {
@@ -133,6 +164,7 @@ export default class Game {
 			this.changedTiles.push(tile);
 		}
 	}
+
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
@@ -143,15 +175,22 @@ export default class Game {
 	shootBullet(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
-		this.bullets.add(
-			new Bullet(
-				this.bulletCount.toString(),
-				player.xPos,
-				player.yPos,
-				direction,
-				player.teamNumber
-			)
-		);
+
+        let bullet: Bullet = new Bullet(
+                                        this.bulletCount.toString(),
+                                        player.xPos,
+                                        player.yPos,
+                                        direction,
+                                        player.teamNumber)
+
+		this.bullets.add(bullet);
 		this.bulletCount += 1;
+
+        this.quadtree.updateInQuadtree(this.quadtree.getTopLevelNode(),
+                                       new Rect(0,0,0,0),
+                                       0,
+                                       new CollisionObject(bullet.xPos - 50, bullet.xPos + 50,
+                                                           bullet.yPos + 50, bullet.yPos - 50,
+                                                           bullet));
 	}
 }
