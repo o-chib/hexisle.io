@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { HexTiles, Tile, Point } from './../../shared/hexTiles';
+import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
 //import playerData from '../../shared/playerData';
 
 const Constant = require('./../../shared/constants');
