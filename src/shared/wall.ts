@@ -1,4 +1,4 @@
-import { Tile } from "./hexTiles";
+import { Tile } from './hexTiles';
 
 export default class Wall {
 	id: string;

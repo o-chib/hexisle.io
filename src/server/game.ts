@@ -1,11 +1,13 @@
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
+import Wall from './../shared/wall';
 const Constant = require('../shared/constants');
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 
 export default class Game {
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
+	walls: Set<Wall>;
 	previousUpdateTimestamp: any;
 	bulletCount: number;
 	hexTileMap: HexTiles;
@@ -14,6 +16,7 @@ export default class Game {
 	constructor() {
 		this.players = new Map();
 		this.bullets = new Set();
+		this.walls = new Set();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
@@ -72,17 +75,22 @@ export default class Game {
 	createUpdate(player: Player) {
 		const nearbyPlayers: Player[] = [];
 		const nearbyBullets: Bullet[] = [];
+		const nearbyWalls: Wall[] = [];
+		const changedTiles: Tile[] = this.changedTiles;
 
 		for (const aPlayer of this.players.values()) {
 			if (aPlayer === player) continue;
 			nearbyPlayers.push(aPlayer);
 		}
 
-		const changedTiles: Tile[] = this.changedTiles;
 		this.changedTiles = [];
 
 		for (const aBullet of this.bullets) {
 			nearbyBullets.push(aBullet);
+		}
+
+		for (const aWall of this.walls) {
+			nearbyWalls.push(aWall);
 		}
 
 		return {
@@ -91,6 +99,7 @@ export default class Game {
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
 			changedTiles: changedTiles,
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
+			walls: nearbyWalls.map((p) => p.serializeForUpdate()),
 		};
 	}
 
@@ -103,7 +112,7 @@ export default class Game {
 		//player.yPos = player.yPos - 10 * Math.sin(direction);
 	}
 
-	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {
+	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
@@ -112,17 +121,27 @@ export default class Game {
 		}
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-		this.hexTileMap.tileMap[coord.q][coord.r] = tile;
-		if (tile.building != 'select') {
-			tile.building = 'select';
-			this.changedTiles.push(tile);
-		}
-	}
-	rotatePlayer(socket: SocketIOClient.Socket, direction: number) {
-		if (!this.players.has(socket.id)) return;
-		const player: Player = this.players.get(socket.id)!;
+		if (tile.isEmpty() /*|| tile.team != player.teamNumber*/) return; //TODO
 
-		player.updateDirection(direction);
+		this.walls.add(
+			new Wall(
+				this.bulletCount.toString(),
+				tile.cartesian_coord.x,
+				tile.cartesian_coord.y,
+				player.teamNumber
+			)
+		);
+		console.log('new wall');
+		tile.building = 'structure'; //TODO enum this
+		this.changedTiles.push(tile); //TODO
+		this.bulletCount += 1;
+	}
+
+	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
+		if (!this.players.has(socket.id)) return;
+		const player = this.players.get(socket.id);
+
+		player?.updateDirection(direction);
 	}
 
 	shootBullet(socket: SocketIOClient.Socket, direction: number) {

@@ -8,6 +8,7 @@ export default class MainScene extends Phaser.Scene {
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
@@ -33,6 +34,7 @@ export default class MainScene extends Phaser.Scene {
 	preload(): void {
 		this.load.image('aliem', '../assets/Character.png');
 		this.load.image('bullet', '../assets/bullet.png');
+		this.load.image('wall', '../assets/rainbow.bmp'); //TODO
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
@@ -46,6 +48,7 @@ export default class MainScene extends Phaser.Scene {
 	create(): void {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
+		this.wallSprites = new Map();
 		this.socket = io();
 
 		// Graphic Handling
@@ -245,6 +248,7 @@ export default class MainScene extends Phaser.Scene {
 			otherPlayers,
 			changedTiles,
 			bullets,
+			walls,
 		} = update;
 		if (currentPlayer == null) return;
 
@@ -253,6 +257,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateBullets(bullets);
 
 		this.updateOpponents(otherPlayers);
+
+		this.updateWalls(walls);
 
 		//this.updateText(currentPlayer);
 
@@ -271,6 +277,17 @@ export default class MainScene extends Phaser.Scene {
 			);
 			this.drawTile(tile);
 		}
+	}
+
+	private updateWalls(walls: any) {
+		this.wallSprites = this.updateMapOfObjects(
+			walls,
+			this.wallSprites,
+			'wall',
+			(newWall, newWallLiteral) => {
+				return newWall;
+			}
+		);
 	}
 
 	private updatePlayer(currentPlayer: any) {
