@@ -5,6 +5,7 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 
 export default class Game {
+    teams: Map<number, number>;
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	previousUpdateTimestamp: any;
@@ -15,6 +16,7 @@ export default class Game {
 
 	constructor() {
 		this.players = new Map();
+        this.initTeams(2);
 		this.bullets = new Set();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 		this.hexTileMap = new HexTiles();
@@ -30,23 +32,32 @@ export default class Game {
 		//calc xPos yPos
 		const xPos = Math.floor(Math.random() * 600);
 		const yPos = Math.floor(Math.random() * 600);
+
+        // find team number, chooses smallest team
+        let team: number = this.getTeam();
+        console.log('Assigning to team '  + team);
+
 		const newPlayer = new Player(
 			socket,
 			xPos,
 			yPos,
-			Math.floor(Math.random() * 10000) + 1
+			team
 		);
-		this.players.set(socket.id, newPlayer); //TODO rn it has a random team
-        this.quadtree.insertIntoQuadtree(this.quadtree.getTopLevelNode(),
-                                         new Rect(0,0,0,0),
-                                         0,
-                                         new CollisionObject(xPos - 50, xPos + 50,
-                                            yPos + 50, yPos - 50, newPlayer));
+		this.players.set(socket.id, newPlayer);
+
+        this.quadtree.insertIntoQuadtree(new CollisionObject(xPos - Constant.PLAYER_RADIUS, xPos + Constant.PLAYER_RADIUS,
+                                            yPos + Constant.PLAYER_RADIUS, yPos - Constant.PLAYER_RADIUS, newPlayer));
         console.log("inserted", newPlayer.id);
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
 		console.log('Goodbye: ' + socket.id);
+
+        let player: Player = this.players.get(socket.id)!;
+
+        this.quadtree.deleteFromQuadtree(new CollisionObject(player.xPos - Constant.PLAYER_RADIUS, player.xPos + Constant.PLAYER_RADIUS,
+                                            player.yPos + Constant.PLAYER_RADIUS, player.yPos - Constant.PLAYER_RADIUS, player));
+
 		this.players.delete(socket.id);
 	}
 
@@ -63,11 +74,8 @@ export default class Game {
                 continue;
 			}
 
-            this.quadtree.updateInQuadtree(this.quadtree.getTopLevelNode(),
-                                        new Rect(0,0,0,0),
-                                        0,
-                                        new CollisionObject(aBullet.xPos - 50, aBullet.xPos + 50,
-                                            aBullet.yPos + 50, aBullet.yPos - 50, aBullet));
+            this.quadtree.updateInQuadtree(new CollisionObject(aBullet.xPos - Constant.BULLET_RADIUS, aBullet.xPos + Constant.BULLET_RADIUS,
+                                            aBullet.yPos + Constant.BULLET_RADIUS, aBullet.yPos - Constant.BULLET_RADIUS, aBullet));
 		}
 
 		for (const aPlayer of this.players.values()) {
@@ -95,34 +103,32 @@ export default class Game {
 		}
 
         let results: CollisionObject[] = [];
-        this.quadtree.searchQuadtree(this.quadtree.getTopLevelNode(),
-                                    new Rect(0,0,0,0),
-                                    new Rect(player.xPos - 50, player.xPos + 50,
-                                        player.yPos + 50, player.yPos - 50),
+        this.quadtree.searchQuadtree(new Rect(player.xPos - Constant.PLAYER_RADIUS, player.xPos + Constant.PLAYER_RADIUS,
+                                        player.yPos + Constant.PLAYER_RADIUS, player.yPos - Constant.PLAYER_RADIUS),
                                         results);
 
-        if (results.length > 0) {
-            if (results[0].payload instanceof Player && results[0].payload.id != player.id) {
+        results.forEach((result) => {
+            if (result.payload instanceof Player && 
+                result.payload.id != player.id) {
+                
                 console.log("player at", player.xPos, player.yPos,
                             "is colliding with player at",
-                            results[0].payload.xPos, results[0].payload.yPos);
-            } else if (results[0].payload instanceof Bullet) {
+                            result.payload.xPos, result.payload.yPos);
+
+            } else if (result.payload instanceof Bullet &&
+                        result.payload.id == result.payload.id &&
+                        result.payload.teamNumber != player.teamNumber) {
+                    
                 console.log("player at", player.xPos, player.yPos,
-                            "is colliding with bullet at",
-                            results[0].payload.xPos, results[0].payload.yPos);
-                this.bullets.forEach((bullet) => {
-                    if (bullet.id == results[0].payload.id) {
-                        this.bullets.delete(bullet);
-                        this.quadtree.deleteFromQuadtree(this.quadtree.getTopLevelNode(),
-                                                        new Rect(0,0,0,0),
-                                                        0,
-                                                        new CollisionObject(bullet.xPos - 50, bullet.xPos + 50,
-                                                        bullet.yPos + 50, bullet.yPos - 50,
-                                                        bullet));
-                    }
-                });
+                                "is colliding with bullet at",
+                                result.payload.xPos, result.payload.yPos);
+
+                this.bullets.delete(result.payload);
+                this.quadtree.deleteFromQuadtree(new CollisionObject(result.payload.xPos - Constant.BULLET_RADIUS, result.payload.xPos + Constant.BULLET_RADIUS,
+                                                    result.payload.yPos + Constant.BULLET_RADIUS, result.payload.yPos - Constant.BULLET_RADIUS,
+                                                    result.payload));
             }
-        }
+        });
 
 		return {
 			time: Date.now(),
@@ -141,11 +147,8 @@ export default class Game {
 		player.xPos = player.xPos + 10 * Math.cos(direction);
 		player.yPos = player.yPos - 10 * Math.sin(direction);
 
-        this.quadtree.updateInQuadtree(this.quadtree.getTopLevelNode(),
-                                        new Rect(0,0,0,0),
-                                        0,
-                                        new CollisionObject(player.xPos - 50, player.xPos + 50,
-                                            player.yPos + 50, player.yPos - 50, player));
+        this.quadtree.updateInQuadtree(new CollisionObject(player.xPos - Constant.PLAYER_RADIUS, player.xPos + Constant.PLAYER_RADIUS,
+                                        player.yPos + Constant.PLAYER_RADIUS, player.yPos - Constant.PLAYER_RADIUS, player));
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {
@@ -185,11 +188,27 @@ export default class Game {
 		this.bullets.add(bullet);
 		this.bulletCount += 1;
 
-        this.quadtree.updateInQuadtree(this.quadtree.getTopLevelNode(),
-                                       new Rect(0,0,0,0),
-                                       0,
-                                       new CollisionObject(bullet.xPos - 50, bullet.xPos + 50,
-                                                           bullet.yPos + 50, bullet.yPos - 50,
-                                                           bullet));
+        this.quadtree.insertIntoQuadtree(new CollisionObject(bullet.xPos - Constant.BULLET_RADIUS, bullet.xPos + Constant.BULLET_RADIUS,
+                                        bullet.yPos + Constant.BULLET_RADIUS, bullet.yPos - Constant.BULLET_RADIUS, bullet));
 	}
+
+    initTeams(teamCount: number): void {
+        this.teams = new Map();
+        for (let x: number = 0; x < teamCount; x++) {
+            this.teams.set(x, 0);
+        }
+    }
+
+    getTeam(): number {
+        let smallestTeam: number = -1;
+        let smallestPlayerCount: number = 999;
+        for (let [team, playerCount] of this.teams) {
+            if (playerCount < smallestPlayerCount) {
+                smallestTeam = team;
+                smallestPlayerCount = playerCount;
+            }
+        }
+        this.teams.set(smallestTeam, smallestPlayerCount + 1);
+        return smallestTeam;
+    }
 }
