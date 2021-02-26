@@ -391,12 +391,19 @@ export class HexTiles {
 export class Tile {
 	public offset_coord: OffsetPoint;
 	public cartesian_coord: Point;
-	public tileType: string;
+	public team: number;
 	public building: string;
+	public tileType: string;
 
-	constructor(building = 'none', tileType = 'empty') {
+	constructor(building = 'none', tileType = 'empty', team = 0) {
+		//TODO enum the building states
 		this.building = building;
-		this.tileType = tileType;
+		this.tileType = tileType; //TODO check this
+		this.team = team;
+	}
+
+	isEmpty(): boolean {
+		return this.building == 'none';
 	}
 }
 
