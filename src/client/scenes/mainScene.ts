@@ -12,6 +12,7 @@ export default class MainScene extends Phaser.Scene {
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
+	private deadObjects;
 
 	//private graphics: Phaser.GameObjects.Graphics; // OLD, will remove later
 
@@ -49,6 +50,7 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
+		this.deadObjects = new Set();
 		this.socket = io();
 
 		// Graphic Handling
@@ -280,7 +282,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateWalls(walls: any) {
-		this.wallSprites = this.updateMapOfObjects(
+		this.updateMapOfObjects(
 			walls,
 			this.wallSprites,
 			'wall',
@@ -297,7 +299,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateBullets(bullets: any) {
-		this.bulletSprites = this.updateMapOfObjects(
+		this.updateMapOfObjects(
 			bullets,
 			this.bulletSprites,
 			'bullet',
@@ -309,7 +311,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateOpponents(otherPlayers: any) {
-		this.otherPlayerSprites = this.updateMapOfObjects(
+		this.updateMapOfObjects(
 			otherPlayers,
 			this.otherPlayerSprites,
 			'aliem',
@@ -326,22 +328,24 @@ export default class MainScene extends Phaser.Scene {
 		sprite: string,
 		callback: (arg0: any, arg1: any) => any
 	) {
-		const updatedObjects = new Map();
+		this.deadObjects.clear();
 		currentObjects.forEach((bullet) => {
 			let newBullet;
 			if (oldObjects.has(bullet.id)) {
 				newBullet = oldObjects.get(bullet.id);
-				oldObjects.delete(bullet.id);
 				newBullet.setPosition(bullet.xPos, bullet.yPos);
 			} else {
 				newBullet = this.add.sprite(bullet.xPos, bullet.yPos, sprite);
+				oldObjects.set(bullet.id, newBullet);
 			}
-			updatedObjects.set(bullet.id, callback(newBullet, bullet));
+			this.deadObjects.add(bullet.id);
+			callback(newBullet, bullet);
 		});
-		for (const anOldBullet of oldObjects.values()) {
-			anOldBullet.destroy();
+		for (const anOldKey of oldObjects.keys()) {
+			if (this.deadObjects.has(anOldKey)) continue;
+			oldObjects.get(anOldKey)?.destroy();
+			oldObjects.delete(anOldKey);
 		}
-		return updatedObjects;
 	}
 
 	applyColorTint() {
