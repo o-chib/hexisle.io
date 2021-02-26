@@ -126,9 +126,13 @@ export default class MainScene extends Phaser.Scene {
 			.setDepth(-1)
 			.setScale(3);
 		this.drawAllTiles(graphic_Map);
-		this.setMapMask(reveal, graphic_Map);
+		//this.setMapMask(reveal, graphic_Map);
 
-		graphic_Map.generateTexture('hexMap', 3000, 3000);
+		graphic_Map.generateTexture(
+			'hexMap',
+			Constant.DEFAULT_WIDTH,
+			Constant.DEFAULT_HEIGHT
+		);
 		this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);
 		graphic_Map.destroy();
 	}
@@ -157,11 +161,10 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	drawTile(tile: Tile, graphic_Map: Phaser.GameObjects.Graphics): void {
+	drawTile(tile: Tile, graphics: Phaser.GameObjects.Graphics): void {
 		// takes XY coordinates of center point,
 		// generates all required vertices
 		// draws individual tile
-		const graphics = graphic_Map;
 		graphics.fillStyle(0x000000, 1);
 
 		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
@@ -175,17 +178,17 @@ export default class MainScene extends Phaser.Scene {
 		} else if (tile.building == 'select') {
 			graphics.lineStyle(2, 0xffb300, 1);
 		} else {
-			graphics.lineStyle(1, 0xffffff, 1);
+			graphics.lineStyle(2, 0xffffff, 1);
 		}
 
 		graphics.beginPath();
 		graphics.moveTo(points[0].x, points[0].y);
 		for (let i = 0; i < 6; i++) {
-			graphics.lineTo(points[i].x -10 , points[i].y -10);
+			graphics.lineTo(points[i].x, points[i].y);
 		}
 		graphics.closePath();
 
-		graphics.fillPath();
+		//graphics.fillPath();
 		graphics.strokePath();
 	}
 
