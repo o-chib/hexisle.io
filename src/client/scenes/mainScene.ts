@@ -34,7 +34,7 @@ export default class MainScene extends Phaser.Scene {
 	preload(): void {
 		this.load.image('aliem', '../assets/Character.png');
 		this.load.image('bullet', '../assets/bullet.png');
-		this.load.image('wall', '../assets/rainbow.bmp'); //TODO
+		this.load.image('wall', '../assets/tempwall.png'); //TODO
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'

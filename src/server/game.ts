@@ -121,7 +121,7 @@ export default class Game {
 		}
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-		if (tile.isEmpty() /*|| tile.team != player.teamNumber*/) return; //TODO
+		if (!tile.isEmpty() /*|| tile.team != player.teamNumber*/) return; //TODO
 
 		this.walls.add(
 			new Wall(
@@ -131,7 +131,6 @@ export default class Game {
 				player.teamNumber
 			)
 		);
-		console.log('new wall');
 		tile.building = 'structure'; //TODO enum this
 		this.changedTiles.push(tile); //TODO
 		this.bulletCount += 1;
