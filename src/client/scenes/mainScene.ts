@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { HexTiles, Tile, Point } from './../../shared/hexTiles';
+import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
 //import playerData from '../../shared/playerData';
 
 const Constant = require('./../../shared/constants');
@@ -8,6 +8,7 @@ export default class MainScene extends Phaser.Scene {
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
@@ -33,6 +34,7 @@ export default class MainScene extends Phaser.Scene {
 	preload(): void {
 		this.load.image('aliem', '../assets/Character.png');
 		this.load.image('bullet', '../assets/bullet.png');
+		this.load.image('wall', '../assets/tempwall.png'); //TODO
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
@@ -46,6 +48,7 @@ export default class MainScene extends Phaser.Scene {
 	create(): void {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
+		this.wallSprites = new Map();
 		this.socket = io();
 
 		// Graphic Handling
@@ -68,6 +71,7 @@ export default class MainScene extends Phaser.Scene {
 			down: Phaser.Input.Keyboard.KeyCodes.S,
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
+			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 		});
 
 		this.input.on('pointerdown', (pointer) => {
@@ -229,8 +233,19 @@ export default class MainScene extends Phaser.Scene {
 				direction = Constant.DIRECTION.S;
 		}
 
-		//if (!isNaN(direction))
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
+
+		if (this.cursors.buildWall.isDown) {
+			if (!this.alive) return;
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
+			);
+			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+				new Point(gamePos.x, gamePos.y)
+			);
+			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
+		}
 	}
 
 	updateState(update: any): void {
@@ -241,6 +256,7 @@ export default class MainScene extends Phaser.Scene {
 			otherPlayers,
 			changedTiles,
 			bullets,
+			walls,
 		} = update;
 		if (currentPlayer == null) return;
 
@@ -249,6 +265,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateBullets(bullets);
 
 		this.updateOpponents(otherPlayers);
+
+		this.updateWalls(walls);
 
 		//this.updateText(currentPlayer);
 
@@ -262,6 +280,17 @@ export default class MainScene extends Phaser.Scene {
 		//for (const tile of changedTiles) {
 		//	this.drawTile(tile);
 		//}
+	}
+
+	private updateWalls(walls: any) {
+		this.wallSprites = this.updateMapOfObjects(
+			walls,
+			this.wallSprites,
+			'wall',
+			(newWall, newWallLiteral) => {
+				return newWall;
+			}
+		);
 	}
 
 	private updatePlayer(currentPlayer: any) {
