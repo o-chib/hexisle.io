@@ -59,7 +59,7 @@ export default class MainScene extends Phaser.Scene {
 		this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
 
-        const graphics = this.graphic_Map;
+		const graphics = this.graphic_Map;
 
 		// this.cameras.main.startFollow(this.myPlayerSprite, true);
 		// this.cameras.main.setZoom(0.5);
@@ -122,15 +122,13 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializeGame(update: any): void {
-		const {
-			player,
-			tileMap,
-		} = update;
+		const { player, tileMap } = update;
 		if (player == null) return;
 
 		this.createTileMap(tileMap);
-		
-		if (player.teamNumber == 0) { // Change this when more than 2 teams
+
+		if (player.teamNumber == 0) {
+			// Change this when more than 2 teams
 			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
 		} else {
 			this.myPlayerSprite = this.add.sprite(0, 0, 'aliemblue');
@@ -333,7 +331,6 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateOpponents(otherPlayers: any) {
-
 		this.otherPlayerSprites = this.updateMapOfObjects(
 			otherPlayers as Player[],
 			this.otherPlayerSprites,
@@ -359,7 +356,7 @@ export default class MainScene extends Phaser.Scene {
 				oldObjects.delete(object.id);
 				newObject.setPosition(object.xPos, object.yPos);
 			} else {
-				console.log("Adding opponent now!");
+				console.log('Adding opponent now!');
 				console.log(object);
 				if (object.hasOwnProperty('teamNumber')) {
 					if (object.teamNumber == 0) {
@@ -367,7 +364,7 @@ export default class MainScene extends Phaser.Scene {
 					} else {
 						sprite = 'aliemblue';
 					}
-					console.log("Adding opponent done!");
+					console.log('Adding opponent done!');
 				}
 				newObject = this.add.sprite(object.xPos, object.yPos, sprite);
 			}

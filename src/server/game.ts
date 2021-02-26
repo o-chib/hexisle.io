@@ -6,7 +6,7 @@ const Constant = require('../shared/constants');
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 
 export default class Game {
-    teams: Map<number, number>;
+	teams: Map<number, number>;
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	walls: Set<Wall>;
@@ -18,7 +18,7 @@ export default class Game {
 
 	constructor() {
 		this.players = new Map();
-        this.initTeams(2);
+		this.initTeams(2);
 		this.bullets = new Set();
 		this.walls = new Set();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
@@ -30,33 +30,28 @@ export default class Game {
 		this.bulletCount = 0;
 	}
 
-	addPlayer(socket: SocketIOClient.Socket, ) {
+	addPlayer(socket: SocketIOClient.Socket) {
 		console.log('Hello: ' + socket.id);
 
 		//calc xPos yPos
 		const xPos = 1500 + Math.floor(Math.random() * 1000);
 		const yPos = 1500 + Math.floor(Math.random() * 1000);
 
-        // find team number, chooses smallest team
-        let team: number = this.getTeamNumber();
-        console.log('Assigning to team '  + team);
+		// find team number, chooses smallest team
+		const team: number = this.getTeamNumber();
+		console.log('Assigning to team ' + team);
 
-		const newPlayer = new Player(
-			socket,
-			xPos,
-			yPos,
-			team
-		);
-		
+		const newPlayer = new Player(socket, xPos, yPos, team);
+
 		this.players.set(socket.id, newPlayer);
 
 		this.collisionDetection.insertCollider(newPlayer);
-		console.log("inserted", newPlayer.id);
+		console.log('inserted', newPlayer.id);
 
-		let initObject = {
-							player: newPlayer.serializeForUpdate(),
-							tileMap: this.hexTileMap.tileMap
-						};
+		const initObject = {
+			player: newPlayer.serializeForUpdate(),
+			tileMap: this.hexTileMap.tileMap,
+		};
 
 		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
 	}
@@ -64,21 +59,24 @@ export default class Game {
 	removePlayer(socket: SocketIOClient.Socket) {
 		console.log('Goodbye: ' + socket.id);
 
-        let player: Player = this.players.get(socket.id)!;
+		const player: Player = this.players.get(socket.id)!;
 
 		this.collisionDetection.deleteCollider(player);
 
-        this.teams.set(player.teamNumber, (this.teams.get(player.teamNumber)!) - 1);
+		this.teams.set(
+			player.teamNumber,
+			this.teams.get(player.teamNumber)! - 1
+		);
 
 		this.players.delete(socket.id);
 	}
 
 	respawnPlayer(player: Player) {
 		console.log('Respawning: ' + player.socket.id);
-		
+
 		const xPos = 1500 + Math.floor(Math.random() * 1000);
 		const yPos = 1500 + Math.floor(Math.random() * 1000);
-		
+
 		player.health = 100;
 		player.xPos = xPos;
 		player.yPos = yPos;
@@ -101,21 +99,20 @@ export default class Game {
 			this.collisionDetection.updateCollider(aBullet);
 		}
 
-        for (const aWall of this.walls) {
+		for (const aWall of this.walls) {
 			this.collisionDetection.buildingCollision(aWall, this.bullets);
 		}
-		
+
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp);
 		}
 
 		for (const aPlayer of this.players.values()) {
-
 			this.collisionDetection.playerCollision(aPlayer, this.bullets);
 
 			// TODO: check if player's dead
 
-			if(aPlayer.health <= 0) {
+			if (aPlayer.health <= 0) {
 				this.respawnPlayer(aPlayer);
 			}
 			aPlayer.socket.emit(
@@ -162,19 +159,19 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
-        let movedPlayer: Player = new Player(
-            player.socket,
-            player.xPos,
-            player.yPos,
-            player.teamNumber
-        );
-        movedPlayer.updateMovementFromPlayer(player);
-        movedPlayer.updateVelocity(direction);
+		const movedPlayer: Player = new Player(
+			player.socket,
+			player.xPos,
+			player.yPos,
+			player.teamNumber
+		);
+		movedPlayer.updateMovementFromPlayer(player);
+		movedPlayer.updateVelocity(direction);
 
-        if (!this.collisionDetection.collidesWithWall(movedPlayer)) {
-            player.updateMovementFromPlayer(movedPlayer);
-            this.collisionDetection.updateCollider(player);
-        }
+		if (!this.collisionDetection.collidesWithWall(movedPlayer)) {
+			player.updateMovementFromPlayer(movedPlayer);
+			this.collisionDetection.updateCollider(player);
+		}
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
@@ -188,19 +185,19 @@ export default class Game {
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 		if (!tile.isEmpty() /*|| tile.team != player.teamNumber*/) return; //TODO
 
-        let wall: Wall = new Wall(
-            this.bulletCount.toString(),
-            tile.cartesian_coord.x,
-            tile.cartesian_coord.y,
-            player.teamNumber
-        );
+		const wall: Wall = new Wall(
+			this.bulletCount.toString(),
+			tile.cartesian_coord.x,
+			tile.cartesian_coord.y,
+			player.teamNumber
+		);
 
 		this.walls.add(wall);
 		tile.building = 'structure'; //TODO enum this
 		this.changedTiles.push(tile); //TODO
 		this.bulletCount += 1;
 
-        this.collisionDetection.insertCollider(wall);
+		this.collisionDetection.insertCollider(wall);
 	}
 
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
@@ -214,36 +211,36 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
-        let bullet: Bullet = new Bullet(
-                                        this.bulletCount.toString(),
-                                        player.xPos,
-                                        player.yPos,
-                                        direction,
-                                        player.teamNumber
-                                        );
+		const bullet: Bullet = new Bullet(
+			this.bulletCount.toString(),
+			player.xPos,
+			player.yPos,
+			direction,
+			player.teamNumber
+		);
 
 		this.bullets.add(bullet);
 		this.bulletCount += 1;
 		this.collisionDetection.insertCollider(bullet);
 	}
 
-    initTeams(teamCount: number): void {
-        this.teams = new Map();
-        for (let x: number = 0; x < teamCount; x++) {
-            this.teams.set(x, 0);
-        }
-    }
+	initTeams(teamCount: number): void {
+		this.teams = new Map();
+		for (let x = 0; x < teamCount; x++) {
+			this.teams.set(x, 0);
+		}
+	}
 
-    getTeamNumber(): number {
-        let smallestTeam: number = -1;
-        let smallestPlayerCount: number = 999;
-        for (let [team, playerCount] of this.teams) {
-            if (playerCount < smallestPlayerCount) {
-                smallestTeam = team;
-                smallestPlayerCount = playerCount;
-            }
-        }
-        this.teams.set(smallestTeam, smallestPlayerCount + 1);
-        return smallestTeam;
-    }
+	getTeamNumber(): number {
+		let smallestTeam = -1;
+		let smallestPlayerCount = 999;
+		for (const [team, playerCount] of this.teams) {
+			if (playerCount < smallestPlayerCount) {
+				smallestTeam = team;
+				smallestPlayerCount = playerCount;
+			}
+		}
+		this.teams.set(smallestTeam, smallestPlayerCount + 1);
+		return smallestTeam;
+	}
 }
