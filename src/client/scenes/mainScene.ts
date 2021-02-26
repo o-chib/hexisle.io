@@ -71,7 +71,7 @@ export default class MainScene extends Phaser.Scene {
 			down: Phaser.Input.Keyboard.KeyCodes.S,
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
-			select: Phaser.Input.Keyboard.KeyCodes.E,
+			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 		});
 
 		this.input.on('pointerdown', (pointer) => {
@@ -227,7 +227,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 
-		if (this.cursors.select.isDown) {
+		if (this.cursors.buildWall.isDown) {
 			if (!this.alive) return;
 			const gamePos = this.cameras.main.getWorldPoint(
 				this.input.mousePointer.x,
