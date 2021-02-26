@@ -1,8 +1,9 @@
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
+import Collision from './collision';
 const Constant = require('../shared/constants');
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
-import { Quadtree, Rect, CollisionObject } from './quadtree';
+import CollisionDetection from './collision';
 
 export default class Game {
     teams: Map<number, number>;
@@ -12,7 +13,7 @@ export default class Game {
 	bulletCount: number;
 	hexTileMap: HexTiles;
 	changedTiles: Tile[];
-    quadtree: Quadtree;
+	collisionDetection: CollisionDetection;
 
 	constructor() {
 		this.players = new Map();
@@ -22,19 +23,20 @@ export default class Game {
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
 		this.changedTiles = [];
-        this.quadtree = new Quadtree();
+		this.collisionDetection = new CollisionDetection();
 		this.previousUpdateTimestamp = Date.now();
 		this.bulletCount = 0;
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
 		console.log('Hello: ' + socket.id);
+
 		//calc xPos yPos
 		const xPos = Math.floor(Math.random() * 600);
 		const yPos = Math.floor(Math.random() * 600);
 
         // find team number, chooses smallest team
-        let team: number = this.getTeam();
+        let team: number = this.getTeamNumber();
         console.log('Assigning to team '  + team);
 
 		const newPlayer = new Player(
@@ -45,8 +47,8 @@ export default class Game {
 		);
 		this.players.set(socket.id, newPlayer);
 
-        this.quadtree.insertIntoQuadtree(new CollisionObject(xPos - Constant.PLAYER_RADIUS, xPos + Constant.PLAYER_RADIUS,
-                                            yPos + Constant.PLAYER_RADIUS, yPos - Constant.PLAYER_RADIUS, newPlayer));
+		this.collisionDetection.insertCollider(newPlayer);
+		
         console.log("inserted", newPlayer.id);
 	}
 
@@ -55,8 +57,7 @@ export default class Game {
 
         let player: Player = this.players.get(socket.id)!;
 
-        this.quadtree.deleteFromQuadtree(new CollisionObject(player.xPos - Constant.PLAYER_RADIUS, player.xPos + Constant.PLAYER_RADIUS,
-                                            player.yPos + Constant.PLAYER_RADIUS, player.yPos - Constant.PLAYER_RADIUS, player));
+		this.collisionDetection.deleteCollider(player);
 
 		this.players.delete(socket.id);
 	}
@@ -74,15 +75,24 @@ export default class Game {
                 continue;
 			}
 
-            this.quadtree.updateInQuadtree(new CollisionObject(aBullet.xPos - Constant.BULLET_RADIUS, aBullet.xPos + Constant.BULLET_RADIUS,
-                                            aBullet.yPos + Constant.BULLET_RADIUS, aBullet.yPos - Constant.BULLET_RADIUS, aBullet));
+			this.collisionDetection.updateCollider(aBullet);			
 		}
 
 		for (const aPlayer of this.players.values()) {
-			aPlayer.socket.emit(
-				Constant.MESSAGE.GAME_UPDATE,
-				this.createUpdate(aPlayer)
-			);
+
+			this.collisionDetection.playerCollision(aPlayer, this.bullets);
+
+			// TODO: check if player's dead
+
+			if(aPlayer.health <= 0) {
+				// emit player dead and change scene to 'play again' scene
+				
+			} else {
+				aPlayer.socket.emit(
+					Constant.MESSAGE.GAME_UPDATE,
+					this.createUpdate(aPlayer)
+				);
+			}
 		}
 	}
 
@@ -102,34 +112,6 @@ export default class Game {
 			nearbyBullets.push(aBullet);
 		}
 
-        let results: CollisionObject[] = [];
-        this.quadtree.searchQuadtree(new Rect(player.xPos - Constant.PLAYER_RADIUS, player.xPos + Constant.PLAYER_RADIUS,
-                                        player.yPos + Constant.PLAYER_RADIUS, player.yPos - Constant.PLAYER_RADIUS),
-                                        results);
-
-        results.forEach((result) => {
-            if (result.payload instanceof Player && 
-                result.payload.id != player.id) {
-                
-                console.log("player at", player.xPos, player.yPos,
-                            "is colliding with player at",
-                            result.payload.xPos, result.payload.yPos);
-
-            } else if (result.payload instanceof Bullet &&
-                        result.payload.id == result.payload.id &&
-                        result.payload.teamNumber != player.teamNumber) {
-                    
-                console.log("player at", player.xPos, player.yPos,
-                                "is colliding with bullet at",
-                                result.payload.xPos, result.payload.yPos);
-
-                this.bullets.delete(result.payload);
-                this.quadtree.deleteFromQuadtree(new CollisionObject(result.payload.xPos - Constant.BULLET_RADIUS, result.payload.xPos + Constant.BULLET_RADIUS,
-                                                    result.payload.yPos + Constant.BULLET_RADIUS, result.payload.yPos - Constant.BULLET_RADIUS,
-                                                    result.payload));
-            }
-        });
-
 		return {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
@@ -147,8 +129,7 @@ export default class Game {
 		player.xPos = player.xPos + 10 * Math.cos(direction);
 		player.yPos = player.yPos - 10 * Math.sin(direction);
 
-        this.quadtree.updateInQuadtree(new CollisionObject(player.xPos - Constant.PLAYER_RADIUS, player.xPos + Constant.PLAYER_RADIUS,
-                                        player.yPos + Constant.PLAYER_RADIUS, player.yPos - Constant.PLAYER_RADIUS, player));
+		this.collisionDetection.updateCollider(player);
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {
@@ -187,9 +168,6 @@ export default class Game {
 
 		this.bullets.add(bullet);
 		this.bulletCount += 1;
-
-        this.quadtree.insertIntoQuadtree(new CollisionObject(bullet.xPos - Constant.BULLET_RADIUS, bullet.xPos + Constant.BULLET_RADIUS,
-                                        bullet.yPos + Constant.BULLET_RADIUS, bullet.yPos - Constant.BULLET_RADIUS, bullet));
 	}
 
     initTeams(teamCount: number): void {
@@ -199,7 +177,7 @@ export default class Game {
         }
     }
 
-    getTeam(): number {
+    getTeamNumber(): number {
         let smallestTeam: number = -1;
         let smallestPlayerCount: number = 999;
         for (let [team, playerCount] of this.teams) {
