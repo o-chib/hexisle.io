@@ -1,5 +1,7 @@
 export default class Player {
 	// extends Phaser.Physics.Matter.Sprite
+	lastUpdateTime: number;
+
 	id: string;
 	xPos: number;
 	yPos: number;
@@ -7,6 +9,7 @@ export default class Player {
 	yVel: number;
 	direction: number;
 	teamNumber: number;
+	speed: number;
 
 	// Score tracking & player stats
 	score: number;
@@ -30,11 +33,31 @@ export default class Player {
 		this.score = 0;
 		this.health = 100;
 		//this.healthRegen = 1;
+		this.speed = 600;
 		this.socket = socket;
+		this.lastUpdateTime = Date.now();
 	}
 
-	updateDirection(newDirection: number) {
+	updateDirection(newDirection: number): void {
 		this.direction = newDirection;
+	}
+
+	updateVelocity(direction: number): void {
+		if (direction == null) {
+			this.xVel = 0;
+			this.yVel = 0;
+		} else {
+			this.xVel = this.speed * Math.cos(direction);
+			this.yVel = this.speed * Math.sin(direction);
+		}
+		this.updatePosition(Date.now());
+	}
+
+	updatePosition(presentTime: number): void {
+		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
+		this.xPos += timePassed * this.xVel;
+		this.yPos -= timePassed * this.yVel;
+		this.lastUpdateTime = presentTime;
 	}
 
 	serializeForUpdate() {
@@ -45,6 +68,7 @@ export default class Player {
 			direction: this.direction,
 			score: this.score,
 			health: this.health,
+			teamNumber: this.teamNumber,
 		};
 	}
 }

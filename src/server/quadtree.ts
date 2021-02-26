@@ -14,7 +14,7 @@ export class Quadtree {
         this.SPLIT = 0.5; // originally(with overlapping) = 0.6;
         this.MAX_DEPTH = 8;
         this.topLevelNode = new QuadtreeNode();
-        this.topLevelNodeBox = new Rect(0, 1000, 1000, 0);
+        this.topLevelNodeBox = new Rect(0, 4000, 4000, 0);
     }
 
     public collides(obj: CollisionObject, box: Rect): boolean {
@@ -110,6 +110,7 @@ export class Quadtree {
         if (depth > this.MAX_DEPTH) {
             let index: number = this.topLevelNode.collisionObjects.findIndex(o => o.payload === obj.payload);
             this.topLevelNode.collisionObjects.splice(index, 1);
+            // console.log("deleting at depth", depth, "at index", index);
         
         // contained within UPPER LEFT
         } else if (obj.r < splitRight && obj.b > splitTop) {

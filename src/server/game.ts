@@ -28,7 +28,7 @@ export default class Game {
 		this.bulletCount = 0;
 	}
 
-	addPlayer(socket: SocketIOClient.Socket) {
+	addPlayer(socket: SocketIOClient.Socket, ) {
 		console.log('Hello: ' + socket.id);
 
 		//calc xPos yPos
@@ -45,12 +45,22 @@ export default class Game {
 			yPos,
 			team
 		);
+		
 		this.players.set(socket.id, newPlayer);
 
 		this.collisionDetection.insertCollider(newPlayer);
-		
-        console.log("inserted", newPlayer.id);
+		console.log("inserted", newPlayer.id);
+
+		let initObject = {
+							player: newPlayer.serializeForUpdate(),
+							tileMap: this.hexTileMap.tileMap
+						};
+
+		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
 	}
+
+
+
 
 	removePlayer(socket: SocketIOClient.Socket) {
 		console.log('Goodbye: ' + socket.id);
@@ -62,6 +72,17 @@ export default class Game {
 		this.players.delete(socket.id);
 	}
 
+	respawnPlayer(player: Player) {
+		console.log('Respawning: ' + player.socket.id);
+		
+		const xPos = Math.floor(Math.random() * 1000);
+		const yPos = Math.floor(Math.random() * 1000);
+		
+		player.health = 100;
+		player.xPos = xPos;
+		player.yPos = yPos;
+	}
+
 	update() {
 		const currentTimestamp = Date.now();
 		const timePassed =
@@ -71,11 +92,16 @@ export default class Game {
 		for (const aBullet of this.bullets) {
 			aBullet.updatePosition(timePassed);
 			if (aBullet.isExpired(currentTimestamp)) {
+				this.collisionDetection.deleteCollider(aBullet);
 				this.bullets.delete(aBullet);
-                continue;
+				continue;
 			}
 
-			this.collisionDetection.updateCollider(aBullet);			
+			this.collisionDetection.updateCollider(aBullet);
+		}
+		
+		for (const aPlayer of this.players.values()) {
+			aPlayer.updatePosition(currentTimestamp);
 		}
 
 		for (const aPlayer of this.players.values()) {
@@ -85,14 +111,12 @@ export default class Game {
 			// TODO: check if player's dead
 
 			if(aPlayer.health <= 0) {
-				// emit player dead and change scene to 'play again' scene
-				
-			} else {
-				aPlayer.socket.emit(
-					Constant.MESSAGE.GAME_UPDATE,
-					this.createUpdate(aPlayer)
-				);
+				this.respawnPlayer(aPlayer);
 			}
+			aPlayer.socket.emit(
+				Constant.MESSAGE.GAME_UPDATE,
+				this.createUpdate(aPlayer)
+			);
 		}
 	}
 
@@ -116,7 +140,6 @@ export default class Game {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
-			tileMap: this.hexTileMap.tileMap, // TODO, look into why we need this
 			changedTiles: changedTiles,
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 		};
@@ -125,11 +148,10 @@ export default class Game {
 	movePlayer(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
-
-		player.xPos = player.xPos + 10 * Math.cos(direction);
-		player.yPos = player.yPos - 10 * Math.sin(direction);
-
+		player.updateVelocity(direction);
 		this.collisionDetection.updateCollider(player);
+		//player.xPos = player.xPos + 10 * Math.cos(direction);
+		//player.yPos = player.yPos - 10 * Math.sin(direction);
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint) {
@@ -168,6 +190,7 @@ export default class Game {
 
 		this.bullets.add(bullet);
 		this.bulletCount += 1;
+		this.collisionDetection.insertCollider(bullet);
 	}
 
     initTeams(teamCount: number): void {
