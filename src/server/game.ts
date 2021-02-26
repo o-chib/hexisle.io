@@ -34,8 +34,8 @@ export default class Game {
 		console.log('Hello: ' + socket.id);
 
 		//calc xPos yPos
-		const xPos = Math.floor(Math.random() * 600);
-		const yPos = Math.floor(Math.random() * 600);
+		const xPos = 1500 + Math.floor(Math.random() * 1000);
+		const yPos = 1500 + Math.floor(Math.random() * 1000);
 
         // find team number, chooses smallest team
         let team: number = this.getTeamNumber();
@@ -61,9 +61,6 @@ export default class Game {
 		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
 	}
 
-
-
-
 	removePlayer(socket: SocketIOClient.Socket) {
 		console.log('Goodbye: ' + socket.id);
 
@@ -71,14 +68,16 @@ export default class Game {
 
 		this.collisionDetection.deleteCollider(player);
 
+        this.teams.set(player.teamNumber, (this.teams.get(player.teamNumber)!) - 1);
+
 		this.players.delete(socket.id);
 	}
 
 	respawnPlayer(player: Player) {
 		console.log('Respawning: ' + player.socket.id);
 		
-		const xPos = Math.floor(Math.random() * 1000);
-		const yPos = Math.floor(Math.random() * 1000);
+		const xPos = 1500 + Math.floor(Math.random() * 1000);
+		const yPos = 1500 + Math.floor(Math.random() * 1000);
 		
 		player.health = 100;
 		player.xPos = xPos;
@@ -100,6 +99,10 @@ export default class Game {
 			}
 
 			this.collisionDetection.updateCollider(aBullet);
+		}
+
+        for (const aWall of this.walls) {
+			this.collisionDetection.buildingCollision(aWall, this.bullets);
 		}
 		
 		for (const aPlayer of this.players.values()) {
@@ -158,10 +161,20 @@ export default class Game {
 	movePlayer(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
-		player.updateVelocity(direction);
-		this.collisionDetection.updateCollider(player);
-		//player.xPos = player.xPos + 10 * Math.cos(direction);
-		//player.yPos = player.yPos - 10 * Math.sin(direction);
+
+        let movedPlayer: Player = new Player(
+            player.socket,
+            player.xPos,
+            player.yPos,
+            player.teamNumber
+        );
+        movedPlayer.updateMovementFromPlayer(player);
+        movedPlayer.updateVelocity(direction);
+
+        if (!this.collisionDetection.collidesWithWall(movedPlayer)) {
+            player.updateMovementFromPlayer(movedPlayer);
+            this.collisionDetection.updateCollider(player);
+        }
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
@@ -175,17 +188,19 @@ export default class Game {
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 		if (!tile.isEmpty() /*|| tile.team != player.teamNumber*/) return; //TODO
 
-		this.walls.add(
-			new Wall(
-				this.bulletCount.toString(),
-				tile.cartesian_coord.x,
-				tile.cartesian_coord.y,
-				player.teamNumber
-			)
-		);
+        let wall: Wall = new Wall(
+            this.bulletCount.toString(),
+            tile.cartesian_coord.x,
+            tile.cartesian_coord.y,
+            player.teamNumber
+        );
+
+		this.walls.add(wall);
 		tile.building = 'structure'; //TODO enum this
 		this.changedTiles.push(tile); //TODO
 		this.bulletCount += 1;
+
+        this.collisionDetection.insertCollider(wall);
 	}
 
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
@@ -204,7 +219,8 @@ export default class Game {
                                         player.xPos,
                                         player.yPos,
                                         direction,
-                                        player.teamNumber)
+                                        player.teamNumber
+                                        );
 
 		this.bullets.add(bullet);
 		this.bulletCount += 1;

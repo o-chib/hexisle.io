@@ -60,6 +60,14 @@ export default class Player {
 		this.lastUpdateTime = presentTime;
 	}
 
+    updateMovementFromPlayer(player: Player): void {
+        this.xPos = player.xPos;
+        this.xPos = player.yPos;
+        this.xVel = player.xVel;
+        this.yVel = player.yVel;
+        this.lastUpdateTime = player.lastUpdateTime;
+    }
+
 	serializeForUpdate() {
 		return {
 			id: this.id,

@@ -2,15 +2,13 @@ import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
+import Wall from '../shared/wall';
 const Constant = require('../shared/constants');
 
 export default class CollisionDetection {
-
-    // Variables
     quadtree: Quadtree;
 
     constructor() {
-        // default stuff
         this.quadtree = new Quadtree();
     }
 
@@ -58,12 +56,62 @@ export default class CollisionDetection {
     }
 
     // Wall/Turret based collision
-    buildingCollision() {
+    buildingCollision(wall: Wall, bullets: Set<Bullet>): void {
+        let results: CollisionObject[] = [];
+        this.quadtree.searchQuadtree(new Rect(wall.xPos - Constant.WALL_RADIUS,
+													wall.xPos + Constant.WALL_RADIUS,
+                                        			wall.yPos + Constant.WALL_RADIUS,
+													wall.yPos - Constant.WALL_RADIUS),
+                                        			results);
 
+        results.forEach((result) => {
+            if (result.payload instanceof Player && 
+                result.payload.id != wall.id) {
+                
+                console.log("wall at", wall.xPos, wall.yPos,
+                            "is colliding with player at",
+                            result.payload.xPos, result.payload.yPos);
+
+            } else if (result.payload instanceof Bullet &&
+                        result.payload.id == result.payload.id &&
+                        result.payload.teamNumber != wall.teamNumber) {
+                    
+                console.log("wall at", wall.xPos, wall.yPos,
+                                	"is colliding with bullet at",
+                                	result.payload.xPos, result.payload.yPos);
+
+                bullets.delete(result.payload);
+                this.quadtree.deleteFromQuadtree(new CollisionObject(result.payload.xPos - Constant.BULLET_RADIUS,
+																		result.payload.xPos + Constant.BULLET_RADIUS,
+                                                    					result.payload.yPos + Constant.BULLET_RADIUS, 
+																		result.payload.yPos - Constant.BULLET_RADIUS,
+                                                    					result.payload));
+            }
+		});
     }
 
-    zombieCollision() {
+    zombieCollision(): void {
         // future implementation
+    }
+
+    collidesWithWall(player: Player): boolean {
+        let results: CollisionObject[] = [];
+        this.quadtree.searchQuadtree(new Rect(player.xPos - Constant.PLAYER_RADIUS,
+													player.xPos + Constant.PLAYER_RADIUS,
+                                        			player.yPos + Constant.PLAYER_RADIUS,
+													player.yPos - Constant.PLAYER_RADIUS),
+                                        			results);
+        results.forEach((result) => {
+            if (result.payload instanceof Wall) {
+
+                console.log("player at", player.xPos, player.yPos,
+                            "would collide with wall at",
+                            result.payload.xPos, result.payload.yPos);
+                            
+                return true;
+            }
+		});
+        return false;
     }
 
     insertCollider(object: any): void {
@@ -80,9 +128,12 @@ export default class CollisionDetection {
                                                                     object.yPos + Constant.BULLET_RADIUS, 
                                                                     object.yPos - Constant.BULLET_RADIUS, 
                                                                     object));
-        } else if (object instanceof Tile) {
-            //TODO: add walls, turrets, etc
-            
+        } else if (object instanceof Wall) {
+            this.quadtree.insertIntoQuadtree(new CollisionObject(object.xPos - Constant.WALL_RADIUS,
+                                                                    object.xPos + Constant.WALL_RADIUS,
+                                                                    object.yPos + Constant.WALL_RADIUS,
+                                                                    object.yPos - Constant.WALL_RADIUS,
+                                                                    object));
         //} else if (object instanceof Zombie) {
         }
     }
@@ -101,9 +152,12 @@ export default class CollisionDetection {
                                                     object.yPos + Constant.BULLET_RADIUS, 
                                                     object.yPos - Constant.BULLET_RADIUS, 
                                                     object));
-        } else if (object instanceof Tile) {
-            //TODO: add walls, turrets, etc
-            
+        } else if (object instanceof Wall) {
+            this.quadtree.deleteFromQuadtree(new CollisionObject(object.xPos - Constant.WALL_RADIUS,
+                                                                    object.xPos + Constant.WALL_RADIUS,
+                                                                    object.yPos + Constant.WALL_RADIUS,
+                                                                    object.yPos - Constant.WALL_RADIUS,
+                                                                    object));
         //} else if (object instanceof Zombie) {
         }
     }
@@ -121,9 +175,12 @@ export default class CollisionDetection {
                                                                     object.yPos + Constant.BULLET_RADIUS, 
                                                                     object.yPos - Constant.BULLET_RADIUS, 
                                                                     object));
-        } else if (object instanceof Tile) {
-            //TODO: add walls, turrets, etc
-            
+        } else if (object instanceof Wall) {
+            this.quadtree.updateInQuadtree(new CollisionObject(object.xPos - Constant.WALL_RADIUS,
+                                                                    object.xPos + Constant.WALL_RADIUS,
+                                                                    object.yPos + Constant.WALL_RADIUS,
+                                                                    object.yPos - Constant.WALL_RADIUS,
+                                                                    object));
         //} else if (object instanceof Zombie) {
         }
     }

@@ -4,6 +4,8 @@ module.exports = Object.freeze({
 	DEFAULT_HEIGHT: 10000,
     PLAYER_RADIUS: 50,
     BULLET_RADIUS: 15,
+    WALL_RADIUS: 75,
+    CAMP_RADIUS: 4,
 
 	DIRECTION: {
 		E: 0,

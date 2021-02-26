@@ -1,3 +1,5 @@
+const Constant = require('../shared/constants');
+
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
 	public hexRadius: number;
@@ -6,7 +8,7 @@ export class HexTiles {
 	public mapHeight;
 
 	constructor() {
-		this.hexSize = 50;
+		this.hexSize = 75;
 		this.campRadius = 4;
 		this.mapHeight = 4000;
 		this.hexRadius = this.getMapHexRadius();

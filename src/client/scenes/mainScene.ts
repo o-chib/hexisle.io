@@ -60,21 +60,6 @@ export default class MainScene extends Phaser.Scene {
 		this.graphic_Front = this.add.graphics();
 
         const graphics = this.graphic_Map;
-        graphics.lineStyle(4, 0xff00ff, 1);
-		graphics.beginPath();
-		graphics.moveTo(0, 0);
-		graphics.lineTo(4000, 0);
-        graphics.lineTo(4000, 4000);
-        graphics.lineTo(0, 4000);
-        graphics.lineTo(0, 0);
-		graphics.closePath();
-		graphics.fillPath().setDepth(-100);
-		graphics.strokePath().setDepth(-100);
-
-		//this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
-		// this.myPlayerSprite.setVisible(false);
-		// this.alive = true;
-		// this.myPlayerSprite.setScale(1);
 
 		// this.cameras.main.startFollow(this.myPlayerSprite, true);
 		// this.cameras.main.setZoom(0.5);
