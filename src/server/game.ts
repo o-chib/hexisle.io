@@ -107,16 +107,13 @@ export default class Game {
 
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
-		}
-
-		for (const aPlayer of this.players.values()) {
 			this.collision.playerCollision(aPlayer, this.bullets);
-
-			// TODO: check if player's dead
-
 			if (aPlayer.health <= 0) {
 				this.respawnPlayer(aPlayer);
 			}
+		}
+
+		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
 				Constant.MESSAGE.GAME_UPDATE,
 				this.createUpdate(aPlayer)
