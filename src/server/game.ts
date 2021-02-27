@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from './../shared/wall';
 import CollisionDetection from './collision';
-const Constant = require('../shared/constants');
 import { HexTiles, Tile, OffsetPoint } from './../shared/hexTiles';
+const Constant = require('../shared/constants');
 
 export default class Game {
 	teams: Map<number, number>;
@@ -77,7 +78,13 @@ export default class Game {
 		do {
 			xPos = 1500 + Math.floor(Math.random() * 1000);
 			yPos = 1500 + Math.floor(Math.random() * 1000);
-		} while (this.collision.doesObjCollideWithWall(xPos, yPos, Constants.));
+		} while (
+			this.collision.doesObjCollideWithWall(
+				xPos,
+				yPos,
+				Constant.PLAYER_RADIUS
+			)
+		);
 
 		player.health = 100;
 		player.xPos = xPos;

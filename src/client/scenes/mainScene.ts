@@ -293,6 +293,7 @@ export default class MainScene extends Phaser.Scene {
 			walls,
 			this.wallSprites,
 			'wall',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newWall, newWallLiteral) => {
 				return newWall;
 			}
@@ -310,6 +311,7 @@ export default class MainScene extends Phaser.Scene {
 			bullets,
 			this.bulletSprites,
 			'bullet',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBullet, newBulletLiteral) => {
 				return newBullet;
 			}
