@@ -110,6 +110,11 @@ export default class Game {
 
 		for (const aWall of this.walls) {
 			this.collision.buildingCollision(aWall, this.bullets);
+			if (!aWall.isAlive()) {
+				this.collision.deleteCollider(aWall);
+				aWall.tile.setEmpty();
+				this.walls.delete(aWall);
+			}
 		}
 
 		for (const aPlayer of this.players.values()) {
@@ -185,7 +190,8 @@ export default class Game {
 			this.bulletCount.toString(),
 			tile.cartesian_coord.x,
 			tile.cartesian_coord.y,
-			player.teamNumber
+			player.teamNumber,
+			tile
 		);
 
 		this.walls.add(wall);

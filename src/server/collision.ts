@@ -67,6 +67,7 @@ export default class CollisionDetection {
 				result.payload.id == result.payload.id &&
 				result.payload.teamNumber != wall.teamNumber
 			) {
+				wall.hp -= 10;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(

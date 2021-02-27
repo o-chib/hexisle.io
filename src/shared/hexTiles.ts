@@ -407,6 +407,10 @@ export class Tile {
 	isEmpty(): boolean {
 		return this.building == 'none';
 	}
+
+	setEmpty(): void {
+		this.building = 'none';
+	}
 }
 
 export class OffsetPoint {
