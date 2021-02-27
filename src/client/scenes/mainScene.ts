@@ -262,13 +262,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateWalls(walls);
 
-		//this.updateText(currentPlayer);
-
 		this.events.emit('updateHUD', currentPlayer);
-
-		// Draw whole background on startup
-		// Startup: Draw tilemap
-		//this.createTileMap(tileMap);
 
 		// Redraw any updated tiles
 		for (const tile of changedTiles) {
@@ -329,17 +323,17 @@ export default class MainScene extends Phaser.Scene {
 		callback: (arg0: any, arg1: any) => any
 	) {
 		this.deadObjects.clear();
-		currentObjects.forEach((bullet) => {
-			let newBullet;
-			if (oldObjects.has(bullet.id)) {
-				newBullet = oldObjects.get(bullet.id);
-				newBullet.setPosition(bullet.xPos, bullet.yPos);
+		currentObjects.forEach((obj) => {
+			let newObj;
+			if (oldObjects.has(obj.id)) {
+				newObj = oldObjects.get(obj.id);
+				newObj.setPosition(obj.xPos, obj.yPos);
 			} else {
-				newBullet = this.add.sprite(bullet.xPos, bullet.yPos, sprite);
-				oldObjects.set(bullet.id, newBullet);
+				newObj = this.add.sprite(obj.xPos, obj.yPos, sprite);
+				oldObjects.set(obj.id, newObj);
 			}
-			this.deadObjects.add(bullet.id);
-			callback(newBullet, bullet);
+			this.deadObjects.add(obj.id);
+			callback(newObj, obj);
 		});
 		for (const anOldKey of oldObjects.keys()) {
 			if (this.deadObjects.has(anOldKey)) continue;
