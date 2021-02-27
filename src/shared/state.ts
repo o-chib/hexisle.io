@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Player from './player';
 import { Tile } from './../shared/hexTiles';
 
+//TODO use this somewhere
 interface State {
 	time: number;
 	currentPlayer: Player;

@@ -1,4 +1,4 @@
-const Constant = require('../shared/constants');
+//const Constant = require('../shared/constants');
 
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
