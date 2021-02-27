@@ -1,3 +1,6 @@
+const Constant = require('../shared/constants');
+import Collision from './../server/collision';
+
 export default class Player {
 	// extends Phaser.Physics.Matter.Sprite
 	lastUpdateTime: number;
@@ -52,11 +55,17 @@ export default class Player {
 		}
 	}
 
-	updatePosition(presentTime: number, collision): void {
+	updatePosition(presentTime: number, collision: Collision): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		const newX = this.xPos + timePassed * this.xVel;
 		const newY = this.yPos - timePassed * this.yVel;
-		if (!collision.collidesWithWall(newX, newY)) {
+		if (
+			!collision.doesObjCollideWithWall(
+				newX,
+				newY,
+				Constant.PLAYER_RADIUS
+			)
+		) {
 			this.xPos = newX;
 			this.yPos = newY;
 		} else {

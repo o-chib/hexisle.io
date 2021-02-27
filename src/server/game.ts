@@ -15,7 +15,7 @@ export default class Game {
 	bulletCount: number;
 	hexTileMap: HexTiles;
 	changedTiles: Tile[];
-	collisionDetection: CollisionDetection;
+	collision: CollisionDetection;
 
 	constructor() {
 		this.players = new Map();
@@ -26,7 +26,7 @@ export default class Game {
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
 		this.changedTiles = [];
-		this.collisionDetection = new CollisionDetection();
+		this.collision = new CollisionDetection();
 		this.previousUpdateTimestamp = Date.now();
 		this.bulletCount = 0;
 	}
@@ -43,7 +43,7 @@ export default class Game {
 
 		this.players.set(socket.id, newPlayer);
 
-		this.collisionDetection.insertCollider(newPlayer);
+		this.collision.insertCollider(newPlayer);
 		console.log('inserted', newPlayer.id);
 
 		const initObject = {
@@ -59,7 +59,7 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
-		this.collisionDetection.deleteCollider(player);
+		this.collision.deleteCollider(player);
 
 		this.teams.set(
 			player.teamNumber,
@@ -77,7 +77,7 @@ export default class Game {
 		do {
 			xPos = 1500 + Math.floor(Math.random() * 1000);
 			yPos = 1500 + Math.floor(Math.random() * 1000);
-		} while (this.collisionDetection.collidesWithWall(xPos, yPos));
+		} while (this.collision.doesObjCollideWithWall(xPos, yPos, Constants.));
 
 		player.health = 100;
 		player.xPos = xPos;
@@ -93,24 +93,24 @@ export default class Game {
 		for (const aBullet of this.bullets) {
 			aBullet.updatePosition(timePassed);
 			if (aBullet.isExpired(currentTimestamp)) {
-				this.collisionDetection.deleteCollider(aBullet);
+				this.collision.deleteCollider(aBullet);
 				this.bullets.delete(aBullet);
 				continue;
 			}
 
-			this.collisionDetection.updateCollider(aBullet);
+			this.collision.updateCollider(aBullet);
 		}
 
 		for (const aWall of this.walls) {
-			this.collisionDetection.buildingCollision(aWall, this.bullets);
+			this.collision.buildingCollision(aWall, this.bullets);
 		}
 
 		for (const aPlayer of this.players.values()) {
-			aPlayer.updatePosition(currentTimestamp, this.collisionDetection);
+			aPlayer.updatePosition(currentTimestamp, this.collision);
 		}
 
 		for (const aPlayer of this.players.values()) {
-			this.collisionDetection.playerCollision(aPlayer, this.bullets);
+			this.collision.playerCollision(aPlayer, this.bullets);
 
 			// TODO: check if player's dead
 
@@ -162,8 +162,8 @@ export default class Game {
 		const player: Player = this.players.get(socket.id)!;
 
 		player.updateVelocity(direction);
-		player.updatePosition(Date.now(), this.collisionDetection);
-		this.collisionDetection.updateCollider(player);
+		player.updatePosition(Date.now(), this.collision);
+		this.collision.updateCollider(player);
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
@@ -189,7 +189,7 @@ export default class Game {
 		this.changedTiles.push(tile); //TODO
 		this.bulletCount += 1;
 
-		this.collisionDetection.insertCollider(wall);
+		this.collision.insertCollider(wall);
 	}
 
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
@@ -213,7 +213,7 @@ export default class Game {
 
 		this.bullets.add(bullet);
 		this.bulletCount += 1;
-		this.collisionDetection.insertCollider(bullet);
+		this.collision.insertCollider(bullet);
 	}
 
 	initTeams(teamCount: number): void {

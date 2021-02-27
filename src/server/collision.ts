@@ -127,14 +127,14 @@ export default class CollisionDetection {
 		// future implementation
 	}
 
-	collidesWithWall(xPos: number, yPos: number): boolean {
+	doesObjCollideWithWall(xPos: number, yPos: number, objectRadius: number): boolean {
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
 			new Rect(
-				xPos - Constant.PLAYER_RADIUS,
-				xPos + Constant.PLAYER_RADIUS,
-				yPos + Constant.PLAYER_RADIUS,
-				yPos - Constant.PLAYER_RADIUS
+				xPos - objectRadius,
+				xPos + objectRadius,
+				yPos + objectRadius,
+				yPos - objectRadius
 			),
 			results
 		);
