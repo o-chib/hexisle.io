@@ -29,7 +29,7 @@ export default class Wall {
 			xPos: this.xPos,
 			yPos: this.yPos,
 			hp: this.hp,
-			team: this.teamNumber,
+			teamNumber: this.teamNumber,
 		};
 	}
 

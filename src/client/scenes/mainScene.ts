@@ -35,7 +35,9 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('aliem', '../assets/Character.png');
 		this.load.image('aliemblue', '../assets/CharacterBlue.png');
 		this.load.image('bullet', '../assets/bullet.png');
+		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('wall', '../assets/tempwall.png'); //TODO
+		this.load.image('wallblue', '../assets/tempwallblue.png'); //TODO
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
@@ -295,6 +297,8 @@ export default class MainScene extends Phaser.Scene {
 			'wall',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newWall, newWallLiteral) => {
+				if (newWallLiteral.teamNumber == 1)
+					newWall.setTexture('wallblue');
 				return newWall;
 			}
 		);
@@ -313,6 +317,8 @@ export default class MainScene extends Phaser.Scene {
 			'bullet',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBullet, newBulletLiteral) => {
+				if (newBulletLiteral.teamNumber == 1)
+					newBullet.setTexture('bulletblue');
 				return newBullet;
 			}
 		);
