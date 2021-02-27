@@ -29,31 +29,10 @@ export default class CollisionDetection {
 
 		results.forEach((result) => {
 			if (
-				result.payload instanceof Player &&
-				result.payload.id != player.id
-			) {
-				console.log(
-					'player at',
-					player.xPos,
-					player.yPos,
-					'is colliding with player at',
-					result.payload.xPos,
-					result.payload.yPos
-				);
-			} else if (
 				result.payload instanceof Bullet &&
 				result.payload.id == result.payload.id &&
 				result.payload.teamNumber != player.teamNumber
 			) {
-				console.log(
-					'player at',
-					player.xPos,
-					player.yPos,
-					'is colliding with bullet at',
-					result.payload.xPos,
-					result.payload.yPos
-				);
-
 				player.health -= 10;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
@@ -84,31 +63,10 @@ export default class CollisionDetection {
 
 		results.forEach((result) => {
 			if (
-				result.payload instanceof Player &&
-				result.payload.id != wall.id
-			) {
-				console.log(
-					'wall at',
-					wall.xPos,
-					wall.yPos,
-					'is colliding with player at',
-					result.payload.xPos,
-					result.payload.yPos
-				);
-			} else if (
 				result.payload instanceof Bullet &&
 				result.payload.id == result.payload.id &&
 				result.payload.teamNumber != wall.teamNumber
 			) {
-				console.log(
-					'wall at',
-					wall.xPos,
-					wall.yPos,
-					'is colliding with bullet at',
-					result.payload.xPos,
-					result.payload.yPos
-				);
-
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
@@ -127,7 +85,11 @@ export default class CollisionDetection {
 		// future implementation
 	}
 
-	doesObjCollideWithWall(xPos: number, yPos: number, objectRadius: number): boolean {
+	doesObjCollideWithWall(
+		xPos: number,
+		yPos: number,
+		objectRadius: number
+	): boolean {
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
 			new Rect(
@@ -139,18 +101,7 @@ export default class CollisionDetection {
 			results
 		);
 		for (const result of results) {
-			if (result.payload instanceof Wall) {
-				console.log(
-					'player at',
-					xPos,
-					yPos,
-					'would collide with wall at',
-					result.payload.xPos,
-					result.payload.yPos
-				);
-
-				return true;
-			}
+			if (result.payload instanceof Wall) return true;
 		}
 		return false;
 	}
