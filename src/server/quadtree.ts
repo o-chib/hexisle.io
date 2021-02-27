@@ -68,31 +68,31 @@ export class Quadtree {
 		if (depth > this.MAX_DEPTH) {
 			node.collisionObjects.push(obj);
 
-		    // contained within UPPER LEFT
+			// contained within UPPER LEFT
 		} else if (obj.r < splitRight && obj.b > splitTop) {
 			if (!node.kids[0]) node.kids[0] = new QuadtreeNode();
 			nodebox = new Rect(nodebox.l, splitRight, splitBottom, nodebox.t);
 			this.insert(node.kids[0], nodebox, depth + 1, obj);
 
-		    // contained within UPPER RIGHT
+			// contained within UPPER RIGHT
 		} else if (obj.l > splitLeft && obj.b > splitTop) {
 			if (!node.kids[1]) node.kids[1] = new QuadtreeNode();
 			nodebox = new Rect(splitLeft, nodebox.r, splitBottom, nodebox.t);
 			this.insert(node.kids[1], nodebox, depth + 1, obj);
 
-		    // contained within LOWER LEFT
+			// contained within LOWER LEFT
 		} else if (obj.r < splitRight && obj.t < splitBottom) {
 			if (!node.kids[2]) node.kids[2] = new QuadtreeNode();
 			nodebox = new Rect(nodebox.l, splitRight, nodebox.b, splitTop);
 			this.insert(node.kids[2], nodebox, depth + 1, obj);
 
-		    // contained within LOWER RIGHT
+			// contained within LOWER RIGHT
 		} else if (obj.l > splitLeft && obj.t < splitBottom) {
 			if (!node.kids[3]) node.kids[3] = new QuadtreeNode();
 			nodebox = new Rect(splitLeft, nodebox.r, nodebox.b, splitTop);
 			this.insert(node.kids[3], nodebox, depth + 1, obj);
 
-		    // object is not wholly contained in any child node
+			// object is not wholly contained in any child node
 		} else {
 			this.topLevelNode.collisionObjects.push(obj);
 		}
@@ -196,7 +196,7 @@ export class Quadtree {
 			);
 			this.search(node.kids[0], subbox, box, results);
 
-		// intersects UPPER RIGHT
+			// intersects UPPER RIGHT
 		}
 		if (box.r > splitLeft && box.t > splitBottom && node.kids[1]) {
 			const subbox = new Rect(
@@ -207,13 +207,13 @@ export class Quadtree {
 			);
 			this.search(node.kids[1], subbox, box, results);
 
-		// intersects LOWER LEFT
+			// intersects LOWER LEFT
 		}
 		if (box.l < splitRight && box.b < splitTop && node.kids[2]) {
 			const subbox = new Rect(nodebox.l, splitRight, nodebox.b, splitTop);
 			this.search(node.kids[2], subbox, box, results);
 
-		// intersects LOWER RIGHT
+			// intersects LOWER RIGHT
 		}
 		if (box.r > splitLeft && box.b < splitTop && node.kids[3]) {
 			const subbox = new Rect(splitLeft, nodebox.r, nodebox.b, splitTop);
