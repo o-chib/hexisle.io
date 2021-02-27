@@ -1,7 +1,6 @@
 import io from 'socket.io-client';
 import Player from './../../shared/player';
 import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
-//import playerData from '../../shared/playerData';
 
 const Constant = require('./../../shared/constants');
 
@@ -13,6 +12,7 @@ export default class MainScene extends Phaser.Scene {
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
+	private deadObjects;
 
 	//private graphics: Phaser.GameObjects.Graphics; // OLD, will remove later
 
@@ -51,6 +51,7 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
+		this.deadObjects = new Set();
 		this.socket = io();
 
 		// Graphic Handling
@@ -59,18 +60,12 @@ export default class MainScene extends Phaser.Scene {
 		this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
 
-		const graphics = this.graphic_Map;
-
-		// this.cameras.main.startFollow(this.myPlayerSprite, true);
-		// this.cameras.main.setZoom(0.5);
-		//this.cameras.main.setBounds(0,0,1920, 1080);
-
 		this.cursors = this.input.keyboard.addKeys({
 			up: Phaser.Input.Keyboard.KeyCodes.W,
 			down: Phaser.Input.Keyboard.KeyCodes.S,
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
-			select: Phaser.Input.Keyboard.KeyCodes.E,
+			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 		});
 
 		this.input.on('pointerdown', (pointer) => {
@@ -249,7 +244,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 
-		if (this.cursors.select.isDown) {
+		if (this.cursors.buildWall.isDown) {
 			if (!this.alive) return;
 			const gamePos = this.cameras.main.getWorldPoint(
 				this.input.mousePointer.x,
@@ -282,13 +277,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateWalls(walls);
 
-		//this.updateText(currentPlayer);
-
 		this.events.emit('updateHUD', currentPlayer);
-
-		// Draw whole background on startup
-		// Startup: Draw tilemap
-		//this.createTileMap(tileMap);
 
 		// Redraw any updated tiles
 		for (const tile of changedTiles) {
@@ -302,7 +291,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateWalls(walls: any) {
-		this.wallSprites = this.updateMapOfObjects(
+		this.updateMapOfObjects(
 			walls,
 			this.wallSprites,
 			'wall',
@@ -319,7 +308,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateBullets(bullets: any) {
-		this.bulletSprites = this.updateMapOfObjects(
+		this.updateMapOfObjects(
 			bullets,
 			this.bulletSprites,
 			'bullet',
@@ -331,12 +320,14 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateOpponents(otherPlayers: any) {
-		this.otherPlayerSprites = this.updateMapOfObjects(
-			otherPlayers as Player[],
+		this.updateMapOfObjects(
+			otherPlayers,
 			this.otherPlayerSprites,
 			'aliem',
 			(newPlayer, playerLiteral) => {
 				newPlayer.setRotation(-1 * playerLiteral.direction);
+				if (playerLiteral.teamNumber == 1)
+					newPlayer.setTexture('aliemblue');
 				return newPlayer;
 			}
 		);
@@ -348,32 +339,24 @@ export default class MainScene extends Phaser.Scene {
 		sprite: string,
 		callback: (arg0: any, arg1: any) => any
 	) {
-		const updatedObjects = new Map();
-		currentObjects.forEach((object) => {
-			let newObject;
-			if (oldObjects.has(object.id)) {
-				newObject = oldObjects.get(object.id);
-				oldObjects.delete(object.id);
-				newObject.setPosition(object.xPos, object.yPos);
+		this.deadObjects.clear();
+		currentObjects.forEach((obj) => {
+			let newObj;
+			if (oldObjects.has(obj.id)) {
+				newObj = oldObjects.get(obj.id);
+				newObj.setPosition(obj.xPos, obj.yPos);
 			} else {
-				console.log('Adding opponent now!');
-				console.log(object);
-				if (object.hasOwnProperty('teamNumber')) {
-					if (object.teamNumber == 0) {
-						sprite = 'aliem';
-					} else {
-						sprite = 'aliemblue';
-					}
-					console.log('Adding opponent done!');
-				}
-				newObject = this.add.sprite(object.xPos, object.yPos, sprite);
+				newObj = this.add.sprite(obj.xPos, obj.yPos, sprite);
+				oldObjects.set(obj.id, newObj);
 			}
-			updatedObjects.set(object.id, callback(newObject, object));
+			this.deadObjects.add(obj.id);
+			callback(newObj, obj);
 		});
-		for (const anOldObject of oldObjects.values()) {
-			anOldObject.destroy();
+		for (const anOldKey of oldObjects.keys()) {
+			if (this.deadObjects.has(anOldKey)) continue;
+			oldObjects.get(anOldKey)?.destroy();
+			oldObjects.delete(anOldKey);
 		}
-		return updatedObjects;
 	}
 
 	applyColorTint() {
