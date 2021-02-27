@@ -161,6 +161,7 @@ export default class Game {
 
 		player.updateVelocity(direction);
 		player.updatePosition(Date.now(), this.collisionDetection);
+        this.collisionDetection.updateCollider(player);
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
