@@ -52,13 +52,6 @@ export default class Player {
 		}
 	}
 
-	/*updatePosition(presentTime: number): void {
-		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
-		this.xPos += timePassed * this.xVel;
-		this.yPos -= timePassed * this.yVel;
-		this.lastUpdateTime = presentTime;
-	}*/
-
 	updatePosition(presentTime: number, collision): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		const newX = this.xPos + timePassed * this.xVel;

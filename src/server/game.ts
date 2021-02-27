@@ -34,15 +34,12 @@ export default class Game {
 	addPlayer(socket: SocketIOClient.Socket) {
 		console.log('Hello: ' + socket.id);
 
-		//calc xPos yPos
-		const xPos = 1500 + Math.floor(Math.random() * 1000);
-		const yPos = 1500 + Math.floor(Math.random() * 1000);
-
 		// find team number, chooses smallest team
 		const team: number = this.getTeamNumber();
 		console.log('Assigning to team ' + team);
 
-		const newPlayer = new Player(socket, xPos, yPos, team);
+		const newPlayer = new Player(socket, 0, 0, team);
+		this.respawnPlayer(newPlayer);
 
 		this.players.set(socket.id, newPlayer);
 
@@ -74,9 +71,13 @@ export default class Game {
 
 	respawnPlayer(player: Player) {
 		console.log('Respawning: ' + player.socket.id);
+		let xPos: number;
+		let yPos: number;
 
-		const xPos = 1500 + Math.floor(Math.random() * 1000);
-		const yPos = 1500 + Math.floor(Math.random() * 1000);
+		do {
+			xPos = 1500 + Math.floor(Math.random() * 1000);
+			yPos = 1500 + Math.floor(Math.random() * 1000);
+		} while (this.collisionDetection.collidesWithWall(xPos, yPos));
 
 		player.health = 100;
 		player.xPos = xPos;
