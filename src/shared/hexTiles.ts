@@ -6,7 +6,7 @@ export class HexTiles {
 	public mapHeight;
 
 	constructor() {
-		this.hexSize = 50;
+		this.hexSize = 75;
 		this.campRadius = 4;
 		this.mapHeight = 4000;
 		this.hexRadius = this.getMapHexRadius();
