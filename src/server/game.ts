@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from './../shared/wall';
 import CollisionDetection from './collision';
 const Constant = require('../shared/constants');
-import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
+import { HexTiles, Tile, OffsetPoint } from './../shared/hexTiles';
 
 export default class Game {
 	teams: Map<number, number>;

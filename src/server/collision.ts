@@ -1,8 +1,7 @@
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
-import { Quadtree, Rect, CollisionObject } from './quadtree';
-import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import Wall from '../shared/wall';
+import { Quadtree, Rect, CollisionObject } from './quadtree';
 const Constant = require('../shared/constants');
 
 export default class CollisionDetection {
@@ -12,9 +11,9 @@ export default class CollisionDetection {
 		this.quadtree = new Quadtree();
 	}
 
-	runGlobalCollisionDetection(): void {}
+	// runGlobalCollisionDetection(): void {}
 
-	detectCollision(): void {}
+	// detectCollision(): void {}
 
 	playerCollision(player: Player, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];

@@ -212,7 +212,7 @@ export class HexTiles {
 
 		// iterate through each corner
 		for (let i = 0; i < 6; i++) {
-			const length = hexPoints.push(this.getHexCorner(point, i));
+			hexPoints.push(this.getHexCorner(point, i));
 		}
 		return hexPoints;
 	}

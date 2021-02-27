@@ -1,5 +1,4 @@
 import io from 'socket.io-client';
-import Player from './../../shared/player';
 import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
 
 const Constant = require('./../../shared/constants');
@@ -43,7 +42,7 @@ export default class MainScene extends Phaser.Scene {
 		);
 	}
 
-	init() {
+	init(): void {
 		//TODO what should we move from create to init?
 	}
 
@@ -260,7 +259,6 @@ export default class MainScene extends Phaser.Scene {
 	updateState(update: any): void {
 		//TODO may state type
 		const {
-			time,
 			currentPlayer,
 			otherPlayers,
 			changedTiles,
@@ -359,7 +357,7 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	applyColorTint() {
+	applyColorTint(): void {
 		/*
 	    const redTint = 0xcc0000;
 
