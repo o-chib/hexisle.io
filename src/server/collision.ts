@@ -128,23 +128,23 @@ export default class CollisionDetection {
 		// future implementation
 	}
 
-	collidesWithWall(player: Player): boolean {
+	collidesWithWall(xPos: number, yPos: number): boolean {
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
 			new Rect(
-				player.xPos - Constant.PLAYER_RADIUS,
-				player.xPos + Constant.PLAYER_RADIUS,
-				player.yPos + Constant.PLAYER_RADIUS,
-				player.yPos - Constant.PLAYER_RADIUS
+				xPos - Constant.PLAYER_RADIUS,
+				xPos + Constant.PLAYER_RADIUS,
+				yPos + Constant.PLAYER_RADIUS,
+				yPos - Constant.PLAYER_RADIUS
 			),
 			results
 		);
-		results.forEach((result) => {
+		for (const result of results) {
 			if (result.payload instanceof Wall) {
 				console.log(
 					'player at',
-					player.xPos,
-					player.yPos,
+					xPos,
+					yPos,
 					'would collide with wall at',
 					result.payload.xPos,
 					result.payload.yPos
@@ -152,7 +152,7 @@ export default class CollisionDetection {
 
 				return true;
 			}
-		});
+		}
 		return false;
 	}
 

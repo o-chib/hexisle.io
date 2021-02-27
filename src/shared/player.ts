@@ -5,9 +5,9 @@ export default class Player {
 	id: string;
 	xPos: number;
 	yPos: number;
-	xVel: number;
-	yVel: number;
-	direction: number;
+	private xVel: number;
+	private yVel: number;
+	private direction: number;
 	teamNumber: number;
 	speed: number;
 
@@ -50,22 +50,27 @@ export default class Player {
 			this.xVel = this.speed * Math.cos(direction);
 			this.yVel = this.speed * Math.sin(direction);
 		}
-		this.updatePosition(Date.now());
 	}
 
-	updatePosition(presentTime: number): void {
+	/*updatePosition(presentTime: number): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		this.xPos += timePassed * this.xVel;
 		this.yPos -= timePassed * this.yVel;
 		this.lastUpdateTime = presentTime;
-	}
+	}*/
 
-	updateMovementFromPlayer(player: Player): void {
-		this.xPos = player.xPos;
-		this.xPos = player.yPos;
-		this.xVel = player.xVel;
-		this.yVel = player.yVel;
-		this.lastUpdateTime = player.lastUpdateTime;
+	updatePosition(presentTime: number, collision): void {
+		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
+		const newX = this.xPos + timePassed * this.xVel;
+		const newY = this.yPos - timePassed * this.yVel;
+		if (!collision.collidesWithWall(newX, newY)) {
+			this.xPos = newX;
+			this.yPos = newY;
+		} else {
+			this.xVel = 0;
+			this.yVel = 0;
+		}
+		this.lastUpdateTime = presentTime;
 	}
 
 	serializeForUpdate() {

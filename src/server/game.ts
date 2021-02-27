@@ -58,7 +58,7 @@ export default class Game {
 
 	removePlayer(socket: SocketIOClient.Socket) {
 		console.log('Goodbye: ' + socket.id);
-
+		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
 		this.collisionDetection.deleteCollider(player);
@@ -104,7 +104,7 @@ export default class Game {
 		}
 
 		for (const aPlayer of this.players.values()) {
-			aPlayer.updatePosition(currentTimestamp);
+			aPlayer.updatePosition(currentTimestamp, this.collisionDetection);
 		}
 
 		for (const aPlayer of this.players.values()) {
@@ -159,19 +159,8 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
-		const movedPlayer: Player = new Player(
-			player.socket,
-			player.xPos,
-			player.yPos,
-			player.teamNumber
-		);
-		movedPlayer.updateMovementFromPlayer(player);
-		movedPlayer.updateVelocity(direction);
-
-		if (!this.collisionDetection.collidesWithWall(movedPlayer)) {
-			player.updateMovementFromPlayer(movedPlayer);
-			this.collisionDetection.updateCollider(player);
-		}
+		player.updateVelocity(direction);
+		player.updatePosition(Date.now(), this.collisionDetection);
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
