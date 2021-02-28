@@ -91,7 +91,7 @@ export default class Game {
 		player.health = 100;
 		player.xPos = xPos;
 		player.yPos = yPos;
-		
+
 		this.collision.insertCollider(player, Constant.PLAYER_RADIUS);
 	}
 
@@ -188,14 +188,16 @@ export default class Game {
 		}
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-		if (!tile.isEmpty() ||
+		if (
+			!tile.isEmpty() ||
 			this.collision.doesObjCollideWithPlayers(
 				tile.cartesian_coord.x,
 				tile.cartesian_coord.y,
 				Constant.WALL_RADIUS
 			)
 			/*|| tile.team != player.teamNumber*/
-		) return; //TODO
+		)
+			return; //TODO
 
 		const wall: Wall = new Wall(
 			this.bulletCount.toString(),
