@@ -107,6 +107,27 @@ export default class CollisionDetection {
 		return false;
 	}
 
+	doesObjCollideWithPlayers(
+		xPos: number,
+		yPos: number,
+		objectRadius: number
+	): boolean {
+		const results: CollisionObject[] = [];
+		this.quadtree.searchQuadtree(
+			new Rect(
+				xPos - objectRadius,
+				xPos + objectRadius,
+				yPos + objectRadius,
+				yPos - objectRadius
+			),
+			results
+		);
+		for (const result of results) {
+			if (result.payload instanceof Player) return true;
+		}
+		return false;
+	}
+
 	insertCollider(
 		object: any,
 		radius: number
