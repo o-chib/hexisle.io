@@ -1,3 +1,5 @@
+//const Constant = require('../shared/constants');
+
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
 	public hexRadius: number;
@@ -210,7 +212,7 @@ export class HexTiles {
 
 		// iterate through each corner
 		for (let i = 0; i < 6; i++) {
-			const length = hexPoints.push(this.getHexCorner(point, i));
+			hexPoints.push(this.getHexCorner(point, i));
 		}
 		return hexPoints;
 	}
@@ -404,6 +406,10 @@ export class Tile {
 
 	isEmpty(): boolean {
 		return this.building == 'none';
+	}
+
+	setEmpty(): void {
+		this.building = 'none';
 	}
 }
 

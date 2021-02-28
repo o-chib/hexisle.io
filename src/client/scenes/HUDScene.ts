@@ -14,7 +14,7 @@ export default class HUDScene extends Phaser.Scene {
 		super({ key: 'HUDScene', active: true });
 	}
 
-	create() {
+	create(): void {
 		this.infoText = this.add.text(10, 10, '', { font: '48px Arial' });
 
 		//  Our Text object to display the Score
@@ -27,7 +27,7 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
 	}
 
-	private updateText(currentPlayer: any) {
+	private updateText(currentPlayer: any): void {
 		const text = Phaser.Utils.String.Format(info_format, [
 			currentPlayer.health,
 			currentPlayer.score,

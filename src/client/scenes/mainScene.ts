@@ -33,15 +33,18 @@ export default class MainScene extends Phaser.Scene {
 
 	preload(): void {
 		this.load.image('aliem', '../assets/Character.png');
+		this.load.image('aliemblue', '../assets/CharacterBlue.png');
 		this.load.image('bullet', '../assets/bullet.png');
+		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('wall', '../assets/tempwall.png'); //TODO
+		this.load.image('wallblue', '../assets/tempwallblue.png'); //TODO
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
 		);
 	}
 
-	init() {
+	init(): void {
 		//TODO what should we move from create to init?
 	}
 
@@ -57,15 +60,6 @@ export default class MainScene extends Phaser.Scene {
 		this.graphic_Tex = this.add.graphics();
 		this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
-
-		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
-		this.myPlayerSprite.setVisible(false);
-		this.alive = true;
-		this.myPlayerSprite.setScale(1);
-
-		this.cameras.main.startFollow(this.myPlayerSprite, true);
-		this.cameras.main.setZoom(0.5);
-		//this.cameras.main.setBounds(0,0,1920, 1080);
 
 		this.cursors = this.input.keyboard.addKeys({
 			up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -105,10 +99,12 @@ export default class MainScene extends Phaser.Scene {
 			Constant.MESSAGE.GAME_UPDATE,
 			this.updateState.bind(this)
 		);
+
 		this.socket.on(
 			Constant.MESSAGE.INITIALIZE,
-			this.createTileMap.bind(this)
+			this.initializeGame.bind(this)
 		);
+
 		this.socket.emit(Constant.MESSAGE.JOIN);
 
 		this.input.keyboard.on(
@@ -119,6 +115,27 @@ export default class MainScene extends Phaser.Scene {
 			'keyup',
 			this.updateMovementDirection.bind(this)
 		);
+	}
+
+	private initializeGame(update: any): void {
+		const { player, tileMap } = update;
+		if (player == null) return;
+
+		this.createTileMap(tileMap);
+
+		if (player.teamNumber == 0) {
+			// Change this when more than 2 teams
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
+		} else {
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliemblue');
+		}
+
+		this.myPlayerSprite.setVisible(false);
+		this.alive = true;
+		this.myPlayerSprite.setScale(1);
+
+		this.cameras.main.startFollow(this.myPlayerSprite, true);
+		this.cameras.main.setZoom(0.5);
 	}
 
 	private createTileMap(tileMap: any) {
@@ -244,7 +261,6 @@ export default class MainScene extends Phaser.Scene {
 	updateState(update: any): void {
 		//TODO may state type
 		const {
-			time,
 			currentPlayer,
 			otherPlayers,
 			changedTiles,
@@ -279,7 +295,10 @@ export default class MainScene extends Phaser.Scene {
 			walls,
 			this.wallSprites,
 			'wall',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newWall, newWallLiteral) => {
+				if (newWallLiteral.teamNumber == 1)
+					newWall.setTexture('wallblue');
 				return newWall;
 			}
 		);
@@ -296,7 +315,10 @@ export default class MainScene extends Phaser.Scene {
 			bullets,
 			this.bulletSprites,
 			'bullet',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBullet, newBulletLiteral) => {
+				if (newBulletLiteral.teamNumber == 1)
+					newBullet.setTexture('bulletblue');
 				return newBullet;
 			}
 		);
@@ -310,6 +332,8 @@ export default class MainScene extends Phaser.Scene {
 			'aliem',
 			(newPlayer, playerLiteral) => {
 				newPlayer.setRotation(-1 * playerLiteral.direction);
+				if (playerLiteral.teamNumber == 1)
+					newPlayer.setTexture('aliemblue');
 				return newPlayer;
 			}
 		);
@@ -341,7 +365,7 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	applyColorTint() {
+	applyColorTint(): void {
 		/*
 	    const redTint = 0xcc0000;
 

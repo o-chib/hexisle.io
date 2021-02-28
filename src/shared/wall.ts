@@ -4,17 +4,23 @@ export default class Wall {
 	id: string;
 	xPos: number;
 	yPos: number;
-	expirationDate: number;
 	teamNumber: number;
 	tile: Tile;
 
-	hp = 10;
+	hp = 50;
 
-	constructor(id: string, xPos: number, yPos: number, teamNumber: number) {
+	constructor(
+		id: string,
+		xPos: number,
+		yPos: number,
+		teamNumber: number,
+		tile: Tile
+	) {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.teamNumber = teamNumber;
+		this.tile = tile;
 	}
 
 	serializeForUpdate(): any {
@@ -23,7 +29,7 @@ export default class Wall {
 			xPos: this.xPos,
 			yPos: this.yPos,
 			hp: this.hp,
-			team: this.teamNumber,
+			teamNumber: this.teamNumber,
 		};
 	}
 

@@ -1,3 +1,6 @@
+const Constant = require('../shared/constants');
+import Collision from './../server/collision';
+
 export default class Player {
 	// extends Phaser.Physics.Matter.Sprite
 	lastUpdateTime: number;
@@ -5,9 +8,9 @@ export default class Player {
 	id: string;
 	xPos: number;
 	yPos: number;
-	xVel: number;
-	yVel: number;
-	direction: number;
+	private xVel: number;
+	private yVel: number;
+	private direction: number;
 	teamNumber: number;
 	speed: number;
 
@@ -50,13 +53,25 @@ export default class Player {
 			this.xVel = this.speed * Math.cos(direction);
 			this.yVel = this.speed * Math.sin(direction);
 		}
-		this.updatePosition(Date.now());
 	}
 
-	updatePosition(presentTime: number): void {
+	updatePosition(presentTime: number, collision: Collision): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
-		this.xPos += timePassed * this.xVel;
-		this.yPos -= timePassed * this.yVel;
+		const newX = this.xPos + timePassed * this.xVel;
+		const newY = this.yPos - timePassed * this.yVel;
+		if (
+			!collision.doesObjCollideWithWall(
+				newX,
+				newY,
+				Constant.PLAYER_RADIUS
+			)
+		) {
+			this.xPos = newX;
+			this.yPos = newY;
+		} else {
+			this.xVel = 0;
+			this.yVel = 0;
+		}
 		this.lastUpdateTime = presentTime;
 	}
 
@@ -68,6 +83,7 @@ export default class Player {
 			direction: this.direction,
 			score: this.score,
 			health: this.health,
+			teamNumber: this.teamNumber,
 		};
 	}
 }
