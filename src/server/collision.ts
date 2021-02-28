@@ -112,8 +112,7 @@ export default class CollisionDetection {
 			if (
 				result.payload instanceof Wall &&
 				this.doCirclesCollide(
-					{xPos: xPos,
-					yPos: yPos},
+					{ xPos: xPos, yPos: yPos },
 					Constant.PLAYER_RADIUS,
 					result.payload,
 					Constant.WALL_COL_RADIUS
@@ -142,8 +141,7 @@ export default class CollisionDetection {
 			if (
 				result.payload instanceof Player &&
 				this.doCirclesCollide(
-					{xPos: xPos,
-					yPos: yPos},
+					{ xPos: xPos, yPos: yPos },
 					objectRadius,
 					result.payload,
 					Constant.PLAYER_RADIUS
