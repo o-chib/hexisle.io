@@ -44,7 +44,7 @@ export default class Game {
 
 		this.players.set(socket.id, newPlayer);
 
-		this.collision.insertCollider(newPlayer);
+		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
 		console.log('inserted', newPlayer.id);
 
 		const initObject = {
@@ -60,7 +60,7 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
-		this.collision.deleteCollider(player);
+		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
 		this.teams.set(
 			player.teamNumber,
@@ -100,18 +100,18 @@ export default class Game {
 		for (const aBullet of this.bullets) {
 			aBullet.updatePosition(timePassed);
 			if (aBullet.isExpired(currentTimestamp)) {
-				this.collision.deleteCollider(aBullet);
+				this.collision.deleteCollider(aBullet, Constant.BULLET_RADIUS);
 				this.bullets.delete(aBullet);
 				continue;
 			}
 
-			this.collision.updateCollider(aBullet);
+			this.collision.updateCollider(aBullet, Constant.BULLET_RADIUS);
 		}
 
 		for (const aWall of this.walls) {
-			this.collision.buildingCollision(aWall, this.bullets);
+			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
-				this.collision.deleteCollider(aWall);
+				this.collision.deleteCollider(aWall, Constant.WALL_RADIUS);
 				aWall.tile.setEmpty();
 				this.walls.delete(aWall);
 			}
@@ -119,7 +119,7 @@ export default class Game {
 
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
-			this.collision.playerCollision(aPlayer, this.bullets);
+			this.collision.playerBulletCollision(aPlayer, this.bullets);
 			if (aPlayer.health <= 0) {
 				this.respawnPlayer(aPlayer);
 			}
@@ -172,7 +172,7 @@ export default class Game {
 
 		player.updateVelocity(direction);
 		player.updatePosition(Date.now(), this.collision);
-		this.collision.updateCollider(player);
+		this.collision.updateCollider(player, Constant.PLAYER_RADIUS);
 	}
 
 	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
@@ -199,7 +199,7 @@ export default class Game {
 		this.changedTiles.push(tile); //TODO
 		this.bulletCount += 1;
 
-		this.collision.insertCollider(wall);
+		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
 
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
@@ -223,7 +223,7 @@ export default class Game {
 
 		this.bullets.add(bullet);
 		this.bulletCount += 1;
-		this.collision.insertCollider(bullet);
+		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
 	}
 
 	initTeams(teamCount: number): void {

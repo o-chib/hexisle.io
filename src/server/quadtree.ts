@@ -115,7 +115,7 @@ export class Quadtree {
 
 		// if we're at our deepest level it must be in here
 		if (depth > this.MAX_DEPTH) {
-			const index: number = this.topLevelNode.collisionObjects.findIndex(
+			const index: number = node.collisionObjects.findIndex(
 				(o) => o.payload.id === obj.payload.id
 			);
 			node.collisionObjects.splice(index, 1);

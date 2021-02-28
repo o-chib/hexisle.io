@@ -15,7 +15,7 @@ export default class CollisionDetection {
 
 	// detectCollision(): void {}
 
-	playerCollision(player: Player, bullets: Set<Bullet>): void {
+	playerBulletCollision(player: Player, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
 			new Rect(
@@ -49,7 +49,7 @@ export default class CollisionDetection {
 	}
 
 	// Wall/Turret based collision
-	buildingCollision(wall: Wall, bullets: Set<Bullet>): void {
+	buildingBulletCollision(wall: Wall, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
 			new Rect(
@@ -82,7 +82,7 @@ export default class CollisionDetection {
 		});
 	}
 
-	zombieCollision(): void {
+	zombieBulletPlayerCollision(): void {
 		// future implementation
 	}
 
@@ -107,110 +107,48 @@ export default class CollisionDetection {
 		return false;
 	}
 
-	insertCollider(object: any): void {
-		// TODO: maybe save radius inside cases and do 'insertIntoQuadtree' in default
-		if (object instanceof Player) {
-			this.quadtree.insertIntoQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.PLAYER_RADIUS,
-					object.xPos + Constant.PLAYER_RADIUS,
-					object.yPos + Constant.PLAYER_RADIUS,
-					object.yPos - Constant.PLAYER_RADIUS,
-					object
-				)
-			);
-		} else if (object instanceof Bullet) {
-			this.quadtree.insertIntoQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.BULLET_RADIUS,
-					object.xPos + Constant.BULLET_RADIUS,
-					object.yPos + Constant.BULLET_RADIUS,
-					object.yPos - Constant.BULLET_RADIUS,
-					object
-				)
-			);
-		} else if (object instanceof Wall) {
-			this.quadtree.insertIntoQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.WALL_RADIUS,
-					object.xPos + Constant.WALL_RADIUS,
-					object.yPos + Constant.WALL_RADIUS,
-					object.yPos - Constant.WALL_RADIUS,
-					object
-				)
-			);
-			//} else if (object instanceof Zombie) {
-		}
+	insertCollider(
+		object: any,
+		radius: number
+	): void {
+		this.quadtree.insertIntoQuadtree(
+			new CollisionObject(
+				object.xPos - radius,
+				object.xPos + radius,
+				object.yPos + radius,
+				object.yPos - radius,
+				object
+			)
+		);
 	}
 
-	deleteCollider(object: any): void {
-		// TODO: maybe save radius inside cases and do 'insertIntoQuadtree' in default
-		if (object instanceof Player) {
-			this.quadtree.deleteFromQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.PLAYER_RADIUS,
-					object.xPos + Constant.PLAYER_RADIUS,
-					object.yPos + Constant.PLAYER_RADIUS,
-					object.yPos - Constant.PLAYER_RADIUS,
-					object
-				)
-			);
-		} else if (object instanceof Bullet) {
-			this.quadtree.deleteFromQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.BULLET_RADIUS,
-					object.xPos + Constant.BULLET_RADIUS,
-					object.yPos + Constant.BULLET_RADIUS,
-					object.yPos - Constant.BULLET_RADIUS,
-					object
-				)
-			);
-		} else if (object instanceof Wall) {
-			this.quadtree.deleteFromQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.WALL_RADIUS,
-					object.xPos + Constant.WALL_RADIUS,
-					object.yPos + Constant.WALL_RADIUS,
-					object.yPos - Constant.WALL_RADIUS,
-					object
-				)
-			);
-			//} else if (object instanceof Zombie) {
-		}
+	deleteCollider(
+		object: any,
+		radius: number
+	): void {
+		this.quadtree.deleteFromQuadtree(
+			new CollisionObject(
+				object.xPos - radius,
+				object.xPos + radius,
+				object.yPos + radius,
+				object.yPos - radius,
+				object
+			)
+		);
 	}
 
-	updateCollider(object: any): void {
-		if (object instanceof Player) {
-			this.quadtree.updateInQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.PLAYER_RADIUS,
-					object.xPos + Constant.PLAYER_RADIUS,
-					object.yPos + Constant.PLAYER_RADIUS,
-					object.yPos - Constant.PLAYER_RADIUS,
-					object
-				)
-			);
-		} else if (object instanceof Bullet) {
-			this.quadtree.updateInQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.BULLET_RADIUS,
-					object.xPos + Constant.BULLET_RADIUS,
-					object.yPos + Constant.BULLET_RADIUS,
-					object.yPos - Constant.BULLET_RADIUS,
-					object
-				)
-			);
-		} else if (object instanceof Wall) {
-			this.quadtree.updateInQuadtree(
-				new CollisionObject(
-					object.xPos - Constant.WALL_RADIUS,
-					object.xPos + Constant.WALL_RADIUS,
-					object.yPos + Constant.WALL_RADIUS,
-					object.yPos - Constant.WALL_RADIUS,
-					object
-				)
-			);
-			//} else if (object instanceof Zombie) {
-		}
+	updateCollider(
+		object: any,
+		radius: number
+	): void {
+		this.quadtree.updateInQuadtree(
+			new CollisionObject(
+				object.xPos - radius,
+				object.xPos + radius,
+				object.yPos + radius,
+				object.yPos - radius,
+				object
+			)
+		);
 	}
 }
