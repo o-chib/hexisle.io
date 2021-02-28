@@ -11,10 +11,6 @@ export default class CollisionDetection {
 		this.quadtree = new Quadtree();
 	}
 
-	// runGlobalCollisionDetection(): void {}
-
-	// detectCollision(): void {}
-
 	playerBulletCollision(player: Player, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
@@ -31,7 +27,13 @@ export default class CollisionDetection {
 			if (
 				result.payload instanceof Bullet &&
 				result.payload.id == result.payload.id &&
-				result.payload.teamNumber != player.teamNumber
+				result.payload.teamNumber != player.teamNumber &&
+				this.doCirclesCollide(
+					player,
+					Constant.PLAYER_RADIUS,
+					result.payload,
+					Constant.BULLET_RADIUS
+				)
 			) {
 				player.health -= 10;
 				bullets.delete(result.payload);
@@ -48,15 +50,14 @@ export default class CollisionDetection {
 		});
 	}
 
-	// Wall/Turret based collision
 	buildingBulletCollision(wall: Wall, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
 			new Rect(
-				wall.xPos - Constant.WALL_RADIUS,
-				wall.xPos + Constant.WALL_RADIUS,
-				wall.yPos + Constant.WALL_RADIUS,
-				wall.yPos - Constant.WALL_RADIUS
+				wall.xPos - Constant.WALL_COL_RADIUS,
+				wall.xPos + Constant.WALL_COL_RADIUS,
+				wall.yPos + Constant.WALL_COL_RADIUS,
+				wall.yPos - Constant.WALL_COL_RADIUS
 			),
 			results
 		);
@@ -65,7 +66,13 @@ export default class CollisionDetection {
 			if (
 				result.payload instanceof Bullet &&
 				result.payload.id == result.payload.id &&
-				result.payload.teamNumber != wall.teamNumber
+				result.payload.teamNumber != wall.teamNumber &&
+				this.doCirclesCollide(
+					wall,
+					Constant.WALL_COL_RADIUS,
+					result.payload,
+					Constant.BULLET_RADIUS
+				)
 			) {
 				wall.hp -= 10;
 				bullets.delete(result.payload);
@@ -102,7 +109,16 @@ export default class CollisionDetection {
 			results
 		);
 		for (const result of results) {
-			if (result.payload instanceof Wall) return true;
+			if (
+				result.payload instanceof Wall &&
+				this.doCirclesCollide(
+					{xPos: xPos,
+					yPos: yPos},
+					Constant.PLAYER_RADIUS,
+					result.payload,
+					Constant.WALL_COL_RADIUS
+				)
+				) return true;
 		}
 		return false;
 	}
@@ -123,9 +139,34 @@ export default class CollisionDetection {
 			results
 		);
 		for (const result of results) {
-			if (result.payload instanceof Player) return true;
+			if (
+				result.payload instanceof Player &&
+				this.doCirclesCollide(
+					{xPos: xPos,
+					yPos: yPos},
+					objectRadius,
+					result.payload,
+					Constant.PLAYER_RADIUS
+				)
+				) return true;
 		}
 		return false;
+	}
+	
+	doCirclesCollide(
+		object1: any,
+		radius1: number,
+		object2: any,
+		radius2: number
+	): boolean {
+		let centerDist: number = Math.sqrt(
+			((object1.xPos - object2.xPos) ** 2) + ((object1.yPos - object2.yPos) ** 2)
+		);
+		if (centerDist > (radius1 + radius2)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	insertCollider(
