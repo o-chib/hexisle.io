@@ -12,21 +12,19 @@ export default class MainScene extends Phaser.Scene {
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
 
-	//private graphics: Phaser.GameObjects.Graphics; // OLD, will remove later
-
 	private graphic_BG: Phaser.GameObjects.Graphics; // static background
 	private graphic_Tex: Phaser.GameObjects.Graphics; // texture data
 	private graphic_Map: Phaser.GameObjects.Graphics; // Strokes for hexagons
 	private graphic_Front: Phaser.GameObjects.Graphics; // Frontmost sprites = player, buildings, etc
-	private img_tileMap: Phaser.GameObjects.Image;
 
+	// HexTile
 	private tiles: Tile[]; // Made in offset even-q coordinates
 	private hexTiles: HexTiles;
 
-	// HexTile
 	constructor() {
 		super('MainScene');
 		this.tiles = [];
+		this.hexTiles = new HexTiles(Constant.HEX_TILE_SIZE, Constant.CAMPSITE_RADIUS, Constant.DEFAULT_HEIGHT);
 	}
 
 	preload(): void {
@@ -111,36 +109,13 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private createTileMap(tileMap: any) {
+		// Init the tileMap and draws all tiles to generate overall masking
 		// bakes the tiles after
 		// draws the texture file tiled to encompass the game scene
 		if (!this.hexTiles.tileMap) {
 			this.hexTiles.tileMap = tileMap;
-			// masking logic for that tile only
-			const reveal = this.graphic_Tex.scene.add
-				.image(0, 0, 'texture')
-				.setDepth(-500)
-				.setScale(3);
-
-			this.setMapMask(reveal);
-
-			this.graphic_Map.generateTexture('tile_outline');
-			//this.graphic_Tex.generateTexture('tile_bg'); // Doesnt work, idk why
-
-			this.graphic_Map.clear();
-			//this.graphic_Tex.clear();
-			this.rt = this.add.renderTexture(0,0,Constant.DEFAULT_WIDTH, Constant.DEFAULT_HEIGHT);
 
 			this.drawAllTiles();
-
-			//
-			// // snapshot
-			// this.renderer.snapshot
-			// this.renderer.snapshot((image) => {
-			// document.body.append(image);
-			//
-			// });
-
-
 		}
 	}
 
@@ -150,20 +125,16 @@ export default class MainScene extends Phaser.Scene {
 		if (!this.hexTiles.tileMap) {
 			return;
 		}
-
 		// for each column
-		this.rt.beginDraw();
 		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
 			// for each row
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
 				if (this.hexTiles.tileMap[col][row].tileType != 'empty') {
-					this.rt.batchDraw('tile_outline',
+					// draw tile
+					this.add.image(
 						this.hexTiles.tileMap[col][row].cartesian_coord.x,
-					//this.rt.batchDraw('tile_bg',
-					//	this.hexTiles.tileMap[col][row].cartesian_coord.x,
-					//	this.hexTiles.tileMap[col][row].cartesian_coord.y).setDepth(-500);
 						this.hexTiles.tileMap[col][row].cartesian_coord.y,
-						'tile_tex',)
+						'tile_tex')
 						.setDisplaySize(this.hexTiles.getHexWidth(), this.hexTiles.getHexHeight())
 						.setDepth(-100);
 				}
@@ -331,10 +302,4 @@ export default class MainScene extends Phaser.Scene {
 		return updatedObjects;
 	}
 
-	    let currTile = new Tile();
-	    for(let i = 0 ; i < offsetCoords.length ; ++i) {
-	        currTile.offset_coord = offsetCoords[i];
-	        currTile.cartesian_coord = this.axialToCartesian(offsetCoords[i]);
-	        let areaMask = this.add.graphics();
-	        this.createTile(currTile);
 }
