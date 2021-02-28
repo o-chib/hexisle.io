@@ -19,18 +19,14 @@ export default class MainScene extends Phaser.Scene {
 	private graphic_Map: Phaser.GameObjects.Graphics; // Strokes for hexagons
 	private graphic_Front: Phaser.GameObjects.Graphics; // Frontmost sprites = player, buildings, etc
 	private img_tileMap: Phaser.GameObjects.Image;
-	private rt: Phaser.GameObjects.RenderTexture;
-
 
 	private tiles: Tile[]; // Made in offset even-q coordinates
 	private hexTiles: HexTiles;
 
 	// HexTile
-
 	constructor() {
 		super('MainScene');
 		this.tiles = [];
-		this.hexTiles = new HexTiles();
 	}
 
 	preload(): void {
@@ -39,6 +35,10 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
+		);
+		this.load.image(
+			'tile_tex',
+			'../assets/tile_tex.png'
 		);
 	}
 
@@ -54,7 +54,7 @@ export default class MainScene extends Phaser.Scene {
 		// Graphic Handling
 		this.graphic_BG = this.add.graphics();
 		this.graphic_Tex = this.add.graphics();
-		this.graphic_Map = this.add.graphics();
+		this.graphic_Map = this.make.graphics({x:0,y:0}, false);
 		this.graphic_Front = this.add.graphics();
 
 		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
@@ -111,11 +111,10 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private createTileMap(tileMap: any) {
+		// bakes the tiles after
+		// draws the texture file tiled to encompass the game scene
 		if (!this.hexTiles.tileMap) {
 			this.hexTiles.tileMap = tileMap;
-			// generate tex of 1 tile
-			this.drawTile(this.hexTiles.tileMap[0][0]);
-
 			// masking logic for that tile only
 			const reveal = this.graphic_Tex.scene.add
 				.image(0, 0, 'texture')
@@ -160,15 +159,16 @@ export default class MainScene extends Phaser.Scene {
 				if (this.hexTiles.tileMap[col][row].tileType != 'empty') {
 					this.rt.batchDraw('tile_outline',
 						this.hexTiles.tileMap[col][row].cartesian_coord.x,
-						this.hexTiles.tileMap[col][row].cartesian_coord.y).setDepth(-100);
 					//this.rt.batchDraw('tile_bg',
 					//	this.hexTiles.tileMap[col][row].cartesian_coord.x,
 					//	this.hexTiles.tileMap[col][row].cartesian_coord.y).setDepth(-500);
-					//this.drawTile(this.hexTiles.tileMap[col][row]);
+						this.hexTiles.tileMap[col][row].cartesian_coord.y,
+						'tile_tex',)
+						.setDisplaySize(this.hexTiles.getHexWidth(), this.hexTiles.getHexHeight())
+						.setDepth(-100);
 				}
 			}
 		}
-		this.rt.endDraw();
 
 	}
 
@@ -184,7 +184,7 @@ export default class MainScene extends Phaser.Scene {
 		// takes XY coordinates of center point,
 		// generates all required vertices
 		// draws individual tile
-		const graphics = this.graphic_Map;
+		let graphics = this.graphic_Map;
 		graphics.fillStyle(0x000000, 0);
 
 		const points: Point[] = this.hexTiles.getHexPointsFromCenter(tile.cartesian_coord);
@@ -196,7 +196,7 @@ export default class MainScene extends Phaser.Scene {
 		} else if (tile.building == 'select') {
 			graphics.lineStyle(2, 0xffb300, 1);
 		} else {
-			graphics.lineStyle(1, 0xffffff, 1);
+			graphics.lineStyle(2, 0xffffff, 1);
 		}
 
 		graphics.beginPath();
@@ -272,9 +272,9 @@ export default class MainScene extends Phaser.Scene {
 		//this.createTileMap(tileMap);
 
 		// Redraw any updated tiles
-		for (const tile of changedTiles) {
-			this.drawTile(tile);
-		}
+		// for (const tile of changedTiles) {
+		// 	this.drawTile(tile);
+		// }
 	}
 
 	private updatePlayer(currentPlayer: any) {
@@ -331,51 +331,10 @@ export default class MainScene extends Phaser.Scene {
 		return updatedObjects;
 	}
 
-	applyColorTint() {
-		/*
-	    const redTint = 0xcc0000;
-
-	    let centerTile = new Tile();
-	    centerTile.offset_coord = new OffsetPoint(10,10);
-	    this.getHexRadiusPoints(centerTile,2);
-
 	    let currTile = new Tile();
 	    for(let i = 0 ; i < offsetCoords.length ; ++i) {
 	        currTile.offset_coord = offsetCoords[i];
 	        currTile.cartesian_coord = this.axialToCartesian(offsetCoords[i]);
 	        let areaMask = this.add.graphics();
 	        this.createTile(currTile);
-	    }*/
-		/*
-	    const redTint = 0xcc0000;
-	    const x = 400;
-	    const y = 300;
-	    const height = MAP_HEIGHT;
-	    const width = MAP_HEIGHT;
-
-	    let reveal = this.graphics.scene.add.image(x,y,'aliem');
-	    let circle = this.graphics.fillCircle(x,y,100);
-
-	    let rt = this.graphics.scene.add.renderTexture(x,y,width,height);
-	    rt.setOrigin(0.5,0.5);
-	    rt.draw(reveal,width*0.5, height * 0.5);
-	    rt.setTint(redTint);
-	    */
-	}
-
-	getTileMask(tile: Tile, graphic: Phaser.GameObjects.Graphics): void {
-		// returns the graphic object of a singular tile
-		// WIP
-		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
-			tile.cartesian_coord
-		);
-		graphic.fillStyle(0xaa0000, 0);
-		graphic.beginPath();
-		graphic.moveTo(points[0].x, points[0].y);
-		for (let i = 0; i < 6; i++) {
-			graphic.lineTo(points[i].x, points[i].y);
-		}
-		graphic.closePath();
-		graphic.fillPath();
-	}
 }

@@ -3,6 +3,9 @@ module.exports = Object.freeze({
 	DEFAULT_WIDTH: 4000,
 	DEFAULT_HEIGHT: 4000,
 
+	HEX_TILE_SIZE: 50,
+	CAMPSITE_RADIUS: 5,
+
 	DIRECTION: {
 		E: 0,
 		NE: 0.25 * Math.PI,

@@ -5,10 +5,10 @@ export class HexTiles {
 	public campRadius: number;
 	public mapHeight;
 
-	constructor() {
-		this.hexSize = 50;
-		this.campRadius = 4;
-		this.mapHeight = 4000;
+	constructor(hexSize = 50, campRadius = 4, mapHeight = 4000) {
+		this.hexSize = hexSize;
+		this.campRadius = campRadius;
+		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();
 	}
 
@@ -237,11 +237,11 @@ export class HexTiles {
 		return results;
 	}
 
-	private getHexHeight(): number {
+	public getHexHeight(): number {
 		return this.hexSize * Math.sqrt(3);
 	}
 
-	private getHexWidth(): number {
+	public getHexWidth(): number {
 		return this.hexSize * 2;
 	}
 
