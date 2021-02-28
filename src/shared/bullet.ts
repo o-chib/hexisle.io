@@ -36,7 +36,7 @@ export default class Bullet {
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos,
-			team: this.teamNumber,
+			teamNumber: this.teamNumber,
 		};
 	}
 

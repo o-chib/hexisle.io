@@ -1,3 +1,5 @@
+//const Constant = require('../shared/constants');
+
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
 	public hexRadius: number;
@@ -5,7 +7,7 @@ export class HexTiles {
 	public campRadius: number;
 	public mapHeight;
 
-	constructor(hexSize = 50, campRadius = 4, mapHeight = 4000) {
+	constructor(hexSize = 75, campRadius = 4, mapHeight = 4000) {
 		this.hexSize = hexSize;
 		this.campRadius = campRadius;
 		this.mapHeight = mapHeight;
@@ -210,7 +212,7 @@ export class HexTiles {
 
 		// iterate through each corner
 		for (let i = 0; i < 6; i++) {
-			const length = hexPoints.push(this.getHexCorner(point, i));
+			hexPoints.push(this.getHexCorner(point, i));
 		}
 		return hexPoints;
 	}
@@ -391,12 +393,23 @@ export class HexTiles {
 export class Tile {
 	public offset_coord: OffsetPoint;
 	public cartesian_coord: Point;
-	public tileType: string;
+	public team: number;
 	public building: string;
+	public tileType: string;
 
-	constructor(building = 'none', tileType = 'empty') {
+	constructor(building = 'none', tileType = 'empty', team = 0) {
+		//TODO enum the building states
 		this.building = building;
-		this.tileType = tileType;
+		this.tileType = tileType; //TODO check this
+		this.team = team;
+	}
+
+	isEmpty(): boolean {
+		return this.building == 'none';
+	}
+
+	setEmpty(): void {
+		this.building = 'none';
 	}
 }
 

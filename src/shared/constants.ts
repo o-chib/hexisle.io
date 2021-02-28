@@ -1,10 +1,11 @@
 module.exports = Object.freeze({
 	// Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
-	DEFAULT_WIDTH: 4000,
-	DEFAULT_HEIGHT: 4000,
-
-	HEX_TILE_SIZE: 50,
-	CAMPSITE_RADIUS: 5,
+	DEFAULT_WIDTH: 10000,
+	DEFAULT_HEIGHT: 10000,
+	PLAYER_RADIUS: 50,
+	BULLET_RADIUS: 15,
+	WALL_RADIUS: 75,
+	CAMP_RADIUS: 4,
 
 	DIRECTION: {
 		E: 0,
@@ -25,6 +26,7 @@ module.exports = Object.freeze({
 		SHOOT: 'shoot',
 		ROTATE: 'rotate',
 		TEMP_HIT: 'im_hit', //TODO this is temporary
+		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
 	},
 });
