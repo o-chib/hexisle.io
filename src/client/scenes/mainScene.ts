@@ -188,12 +188,8 @@ export default class MainScene extends Phaser.Scene {
 			tile.cartesian_coord
 		);
 
-		if (tile.building == 'camp') {
+		if (tile.building == Constant.BUILDING.CAMP) {
 			graphics.lineStyle(4, 0xff0000, 1);
-		} else if (tile.building == 'ring') {
-			graphics.lineStyle(1, 0x002fff, 1);
-		} else if (tile.building == 'select') {
-			graphics.lineStyle(2, 0xffb300, 1);
 		} else {
 			graphics.lineStyle(1, 0xffffff, 1);
 		}

@@ -1,4 +1,4 @@
-//const Constant = require('../shared/constants');
+const Constant = require('../shared/constants');
 
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
@@ -69,7 +69,7 @@ export class HexTiles {
 
 		// start at the center of the map, and make it a camp
 		let hex: OffsetPoint = new OffsetPoint(this.hexRadius, this.hexRadius);
-		this.tileMap[hex.q][hex.r].building = 'camp';
+		this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
 		const hexesToCheck: OffsetPoint[] = [hex];
 		const campHexes: OffsetPoint[] = [hex];
 
@@ -105,7 +105,8 @@ export class HexTiles {
 					if (!this.isHexInHexList(travHex, campHexes)) {
 						hexesToCheck.push(travHex);
 						campHexes.push(travHex);
-						this.tileMap[travHex.q][travHex.r].building = 'camp';
+						this.tileMap[travHex.q][travHex.r].building =
+							Constant.BUILDING.CAMP;
 					}
 				}
 			}
@@ -395,21 +396,19 @@ export class Tile {
 	public cartesian_coord: Point;
 	public team: number;
 	public building: string;
-	public tileType: string;
+	public tileType;
 
-	constructor(building = 'none', tileType = 'empty', team = 0) {
-		//TODO enum the building states
+	constructor(building = Constant.BUILDING.NONE, team = 0) {
 		this.building = building;
-		this.tileType = tileType; //TODO check this
 		this.team = team;
 	}
 
 	isEmpty(): boolean {
-		return this.building == 'none';
+		return this.building == Constant.BUILDING.NONE;
 	}
 
 	setEmpty(): void {
-		this.building = 'none';
+		this.building = Constant.BUILDING.NONE;
 	}
 }
 
@@ -423,14 +422,17 @@ export class OffsetPoint {
 		this.r = r;
 		this.s = -this.q - this.r;
 	}
+
 	public length(): number {
 		return (Math.abs(this.q) + Math.abs(this.r) + Math.abs(this.s)) / 2;
 	}
+
 	public scale(x: number) {
 		this.q *= x;
 		this.r *= x;
 		this.s *= x;
 	}
+
 	public add(offset_coord: OffsetPoint) {
 		this.q += offset_coord.q;
 		this.r += offset_coord.r;
