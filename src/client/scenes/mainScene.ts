@@ -25,7 +25,11 @@ export default class MainScene extends Phaser.Scene {
 	constructor() {
 		super('MainScene');
 		this.tiles = [];
-		this.hexTiles = new HexTiles(Constant.WALL_RADIUS, Constant.CAMP_RADIUS, Constant.DEFAULT_HEIGHT);
+		this.hexTiles = new HexTiles(
+			Constant.WALL_RADIUS,
+			Constant.CAMP_RADIUS,
+			Constant.DEFAULT_HEIGHT
+		);
 	}
 
 	preload(): void {
@@ -155,16 +159,20 @@ export default class MainScene extends Phaser.Scene {
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
 				if (this.hexTiles.tileMap[col][row].tileType != 'empty') {
 					// draw tile
-					this.graphic_Map.scene.add.image(
-						this.hexTiles.tileMap[col][row].cartesian_coord.x,
-						this.hexTiles.tileMap[col][row].cartesian_coord.y,
-						'tile_tex')
-						.setDisplaySize(this.hexTiles.getHexWidth(), this.hexTiles.getHexHeight())
+					this.graphic_Map.scene.add
+						.image(
+							this.hexTiles.tileMap[col][row].cartesian_coord.x,
+							this.hexTiles.tileMap[col][row].cartesian_coord.y,
+							'tile_tex'
+						)
+						.setDisplaySize(
+							this.hexTiles.getHexWidth(),
+							this.hexTiles.getHexHeight()
+						)
 						.setDepth(-100);
 				}
 			}
 		}
-
 	}
 
 	drawTiles(tiles: Tile[]): void {
@@ -179,10 +187,12 @@ export default class MainScene extends Phaser.Scene {
 		// takes XY coordinates of center point,
 		// generates all required vertices
 		// draws individual tile
-		let graphics = this.graphic_Map;
+		const graphics = this.graphic_Map;
 		graphics.fillStyle(0x000000, 0);
 
-		const points: Point[] = this.hexTiles.getHexPointsFromCenter(tile.cartesian_coord);
+		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
+			tile.cartesian_coord
+		);
 
 		if (tile.building == 'camp') {
 			graphics.lineStyle(4, 0xff0000, 1);
@@ -203,7 +213,6 @@ export default class MainScene extends Phaser.Scene {
 
 		graphics.fillPath().setDepth(-100);
 		graphics.strokePath().setDepth(-100);
-
 	}
 
 	update(): void {
@@ -353,5 +362,4 @@ export default class MainScene extends Phaser.Scene {
 			oldObjects.delete(anOldKey);
 		}
 	}
-
 }

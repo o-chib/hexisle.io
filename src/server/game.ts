@@ -24,7 +24,11 @@ export default class Game {
 		this.bullets = new Set();
 		this.walls = new Set();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
-		this.hexTileMap = new HexTiles(Constant.HEX_TILE_SIZE, Constant.CAMPSITE_RADIUS, Constant.DEFAULT_HEIGHT);
+		this.hexTileMap = new HexTiles(
+			Constant.HEX_TILE_SIZE,
+			Constant.CAMPSITE_RADIUS,
+			Constant.DEFAULT_HEIGHT
+		);
 		this.hexTileMap.generateMap();
 		this.changedTiles = [];
 		this.collision = new CollisionDetection();
