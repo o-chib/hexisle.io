@@ -101,7 +101,6 @@ export class HexTiles {
 				// check if this site exists, if it does add it to the list of hexes to check
 				// around for more campfires and set the tile as a campfire
 				if (this.checkIfValidHex(travHex)) {
-
 					// only add it if we haven't been to it before
 					if (!this.isHexInHexList(travHex, campHexes)) {
 						hexesToCheck.push(travHex);
@@ -144,7 +143,6 @@ export class HexTiles {
 
 		let k = 0;
 		for (let i = 0; i < 6; ++i) {
-
 			// Iterate in all 6 Hex Directions
 			for (let j = 0; j < radius; ++j) {
 				results[k] = new OffsetPoint(currPoint.q, currPoint.r);
