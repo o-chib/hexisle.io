@@ -20,6 +20,7 @@ module.exports = Object.freeze({
 	},
 
 	BUILDING: {
+		OUT_OF_BOUNDS: 'out of bounds',
 		NONE: 'none',
 		STRUCTURE: 'structure',
 		CAMP: 'camp',

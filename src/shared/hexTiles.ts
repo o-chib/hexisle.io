@@ -50,12 +50,12 @@ export class HexTiles {
 					this.tileMap[col][row].offset_coord
 				);
 				if (
-					this.isHexInHexList(
+					!this.isHexInHexList(
 						this.tileMap[col][row].offset_coord,
 						offsetCoords
 					)
 				) {
-					this.tileMap[col][row].tileType = 'arena';
+					this.tileMap[col][row].building = Constant.BUILDING.OUT_OF_BOUNDS;
 				}
 			}
 		}
@@ -105,8 +105,9 @@ export class HexTiles {
 					if (!this.isHexInHexList(travHex, campHexes)) {
 						hexesToCheck.push(travHex);
 						campHexes.push(travHex);
-						this.tileMap[travHex.q][travHex.r].building =
-							Constant.BUILDING.CAMP;
+						if (this.tileMap[travHex.q][travHex.r].isInBounds())
+							this.tileMap[travHex.q][travHex.r].building =
+								Constant.BUILDING.CAMP;
 					}
 				}
 			}
@@ -396,7 +397,6 @@ export class Tile {
 	public cartesian_coord: Point;
 	public team: number;
 	public building: string;
-	public tileType;
 
 	constructor(building = Constant.BUILDING.NONE, team = 0) {
 		this.building = building;
@@ -409,6 +409,10 @@ export class Tile {
 
 	setEmpty(): void {
 		this.building = Constant.BUILDING.NONE;
+	}
+
+	isInBounds(): boolean {
+		return this.building != Constant.BUILDING.OUT_OF_BOUNDS;
 	}
 }
 
