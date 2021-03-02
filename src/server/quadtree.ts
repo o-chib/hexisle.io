@@ -49,7 +49,7 @@ export class Quadtree {
 		this.search(this.topLevelNode, this.topLevelNodeBox, box, results);
 	}
 
-	public insert(
+	private insert(
 		node: QuadtreeNode,
 		nodebox: Rect,
 		depth: number,
@@ -98,7 +98,7 @@ export class Quadtree {
 		}
 	}
 
-	public delete(
+	private delete(
 		node: QuadtreeNode,
 		nodebox: Rect,
 		depth: number,
@@ -153,7 +153,7 @@ export class Quadtree {
 		}
 	}
 
-	public update(
+	private update(
 		node: QuadtreeNode,
 		nodebox: Rect,
 		depth: number,
@@ -163,7 +163,7 @@ export class Quadtree {
 		this.insert(node, nodebox, depth, obj);
 	}
 
-	public search(
+	private search(
 		node: QuadtreeNode,
 		nodebox: Rect,
 		box: Rect,
