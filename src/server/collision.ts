@@ -112,13 +112,13 @@ export default class CollisionDetection {
 			if (
 				result.payload instanceof Wall &&
 				this.doCirclesCollide(
-					{xPos: xPos,
-					yPos: yPos},
+					{ xPos: xPos, yPos: yPos },
 					Constant.PLAYER_RADIUS,
 					result.payload,
 					Constant.WALL_COL_RADIUS
 				)
-				) return true;
+			)
+				return true;
 		}
 		return false;
 	}
@@ -129,20 +129,18 @@ export default class CollisionDetection {
 		object2: any,
 		radius2: number
 	): boolean {
-		let centerDist: number = Math.sqrt(
-			((object1.xPos - object2.xPos) ** 2) + ((object1.yPos - object2.yPos) ** 2)
+		const centerDist: number = Math.sqrt(
+			(object1.xPos - object2.xPos) ** 2 +
+				(object1.yPos - object2.yPos) ** 2
 		);
-		if (centerDist > (radius1 + radius2)) {
+		if (centerDist > radius1 + radius2) {
 			return false;
 		} else {
 			return true;
 		}
 	}
 
-	insertCollider(
-		object: any,
-		radius: number
-	): void {
+	insertCollider(object: any, radius: number): void {
 		this.quadtree.insertIntoQuadtree(
 			new CollisionObject(
 				object.xPos - radius,
@@ -154,10 +152,7 @@ export default class CollisionDetection {
 		);
 	}
 
-	deleteCollider(
-		object: any,
-		radius: number
-	): void {
+	deleteCollider(object: any, radius: number): void {
 		this.quadtree.deleteFromQuadtree(
 			new CollisionObject(
 				object.xPos - radius,
@@ -169,10 +164,7 @@ export default class CollisionDetection {
 		);
 	}
 
-	updateCollider(
-		object: any,
-		radius: number
-	): void {
+	updateCollider(object: any, radius: number): void {
 		this.quadtree.updateInQuadtree(
 			new CollisionObject(
 				object.xPos - radius,
