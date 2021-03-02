@@ -5,6 +5,7 @@ module.exports = Object.freeze({
 	PLAYER_RADIUS: 50,
 	BULLET_RADIUS: 15,
 	WALL_RADIUS: 75,
+	WALL_COL_RADIUS: 75 * 0.75,
 	CAMP_RADIUS: 4,
 
 	DIRECTION: {
@@ -25,7 +26,6 @@ module.exports = Object.freeze({
 		TILE_CHANGE: 'tile_change',
 		SHOOT: 'shoot',
 		ROTATE: 'rotate',
-		TEMP_HIT: 'im_hit', //TODO this is temporary
 		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
 	},
