@@ -55,7 +55,8 @@ export class HexTiles {
 						offsetCoords
 					)
 				) {
-					this.tileMap[col][row].building = Constant.BUILDING.OUT_OF_BOUNDS;
+					this.tileMap[col][row].building =
+						Constant.BUILDING.OUT_OF_BOUNDS;
 				}
 			}
 		}
