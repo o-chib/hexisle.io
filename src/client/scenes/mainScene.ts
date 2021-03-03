@@ -1,6 +1,5 @@
 import io from 'socket.io-client';
 import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
-//import playerData from '../../shared/playerData';
 
 const Constant = require('./../../shared/constants');
 
@@ -12,6 +11,7 @@ export default class MainScene extends Phaser.Scene {
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
+	private deadObjects;
 
 	//private graphics: Phaser.GameObjects.Graphics; // OLD, will remove later
 
@@ -33,15 +33,18 @@ export default class MainScene extends Phaser.Scene {
 
 	preload(): void {
 		this.load.image('aliem', '../assets/Character.png');
+		this.load.image('aliemblue', '../assets/CharacterBlue.png');
 		this.load.image('bullet', '../assets/bullet.png');
+		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('wall', '../assets/tempwall.png'); //TODO
+		this.load.image('wallblue', '../assets/tempwallblue.png'); //TODO
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
 		);
 	}
 
-	init() {
+	init(): void {
 		//TODO what should we move from create to init?
 	}
 
@@ -49,22 +52,42 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
+		this.deadObjects = new Set();
 		this.socket = io();
+
+		this.socket.on(
+			Constant.MESSAGE.INITIALIZE,
+			this.initializeGame.bind(this)
+		);
+
+		this.socket.emit(Constant.MESSAGE.JOIN);
 
 		// Graphic Handling
 		this.graphic_BG = this.add.graphics();
 		//this.graphic_Tex = this.add.graphics();
 		//this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
+	}
 
-		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
+	private initializeGame(update: any): void {
+		const { player, tileMap } = update;
+		if (player == null) return;
+
+		this.createTileMap(tileMap);
+
+		if (player.teamNumber == 0) {
+			// Change this when more than 2 teams
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
+		} else {
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliemblue');
+		}
+
 		this.myPlayerSprite.setVisible(false);
 		this.alive = true;
 		this.myPlayerSprite.setScale(1);
 
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
 		this.cameras.main.setZoom(0.5);
-		//this.cameras.main.setBounds(0,0,1920, 1080);
 
 		this.cursors = this.input.keyboard.addKeys({
 			up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -104,11 +127,6 @@ export default class MainScene extends Phaser.Scene {
 			Constant.MESSAGE.GAME_UPDATE,
 			this.updateState.bind(this)
 		);
-		this.socket.on(
-			Constant.MESSAGE.INITIALIZE,
-			this.createTileMap.bind(this)
-		);
-		this.socket.emit(Constant.MESSAGE.JOIN);
 
 		this.input.keyboard.on(
 			'keydown',
@@ -150,7 +168,11 @@ export default class MainScene extends Phaser.Scene {
 		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
 			// for each row
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
-				if (this.hexTiles.tileMap[col][row].tileType != 'empty') {
+				if (
+					this.hexTiles.tileMap[col][row].building !=
+					Constant.BUILDING.OUT_OF_BOUNDS
+				) {
+					//TODO cannot put isInBounds here?
 					this.drawTile(this.hexTiles.tileMap[col][row], graphic_Map);
 				}
 			}
@@ -175,12 +197,8 @@ export default class MainScene extends Phaser.Scene {
 			tile.cartesian_coord
 		);
 
-		if (tile.building == 'camp') {
+		if (tile.building == Constant.BUILDING.CAMP) {
 			graphics.lineStyle(4, 0xff0000, 1);
-		} else if (tile.building == 'ring') {
-			graphics.lineStyle(1, 0x002fff, 1);
-		} else if (tile.building == 'select') {
-			graphics.lineStyle(2, 0xffb300, 1);
 		} else {
 			graphics.lineStyle(2, 0xffffff, 1);
 		}
@@ -251,7 +269,6 @@ export default class MainScene extends Phaser.Scene {
 	updateState(update: any): void {
 		//TODO may state type
 		const {
-			time,
 			currentPlayer,
 			otherPlayers,
 			changedTiles,
@@ -268,13 +285,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateWalls(walls);
 
-		//this.updateText(currentPlayer);
-
 		this.events.emit('updateHUD', currentPlayer);
-
-		// Draw whole background on startup
-		// Startup: Draw tilemap
-		//this.createTileMap(tileMap);
 
 		// Redraw any updated tiles
 		//for (const tile of changedTiles) {
@@ -283,11 +294,14 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateWalls(walls: any) {
-		this.wallSprites = this.updateMapOfObjects(
+		this.updateMapOfObjects(
 			walls,
 			this.wallSprites,
 			'wall',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newWall, newWallLiteral) => {
+				if (newWallLiteral.teamNumber == 1)
+					newWall.setTexture('wallblue');
 				return newWall;
 			}
 		);
@@ -300,11 +314,14 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateBullets(bullets: any) {
-		this.bulletSprites = this.updateMapOfObjects(
+		this.updateMapOfObjects(
 			bullets,
 			this.bulletSprites,
 			'bullet',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBullet, newBulletLiteral) => {
+				if (newBulletLiteral.teamNumber == 1)
+					newBullet.setTexture('bulletblue');
 				return newBullet;
 			}
 		);
@@ -312,12 +329,14 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateOpponents(otherPlayers: any) {
-		this.otherPlayerSprites = this.updateMapOfObjects(
+		this.updateMapOfObjects(
 			otherPlayers,
 			this.otherPlayerSprites,
 			'aliem',
 			(newPlayer, playerLiteral) => {
 				newPlayer.setRotation(-1 * playerLiteral.direction);
+				if (playerLiteral.teamNumber == 1)
+					newPlayer.setTexture('aliemblue');
 				return newPlayer;
 			}
 		);
@@ -329,25 +348,27 @@ export default class MainScene extends Phaser.Scene {
 		sprite: string,
 		callback: (arg0: any, arg1: any) => any
 	) {
-		const updatedObjects = new Map();
-		currentObjects.forEach((bullet) => {
-			let newBullet;
-			if (oldObjects.has(bullet.id)) {
-				newBullet = oldObjects.get(bullet.id);
-				oldObjects.delete(bullet.id);
-				newBullet.setPosition(bullet.xPos, bullet.yPos);
+		this.deadObjects.clear();
+		currentObjects.forEach((obj) => {
+			let newObj;
+			if (oldObjects.has(obj.id)) {
+				newObj = oldObjects.get(obj.id);
+				newObj.setPosition(obj.xPos, obj.yPos);
 			} else {
-				newBullet = this.add.sprite(bullet.xPos, bullet.yPos, sprite);
+				newObj = this.add.sprite(obj.xPos, obj.yPos, sprite);
+				oldObjects.set(obj.id, newObj);
 			}
-			updatedObjects.set(bullet.id, callback(newBullet, bullet));
+			this.deadObjects.add(obj.id);
+			callback(newObj, obj);
 		});
-		for (const anOldBullet of oldObjects.values()) {
-			anOldBullet.destroy();
+		for (const anOldKey of oldObjects.keys()) {
+			if (this.deadObjects.has(anOldKey)) continue;
+			oldObjects.get(anOldKey)?.destroy();
+			oldObjects.delete(anOldKey);
 		}
-		return updatedObjects;
 	}
 
-	applyColorTint() {
+	applyColorTint(): void {
 		/*
 	    const redTint = 0xcc0000;
 

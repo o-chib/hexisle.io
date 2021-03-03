@@ -1,7 +1,6 @@
 import path from 'path';
 import express from 'express';
 import http from 'http';
-import { Socket } from 'socket.io-client';
 import Game from './game';
 import { OffsetPoint } from '../shared/hexTiles';
 const Socketio = require('socket.io');

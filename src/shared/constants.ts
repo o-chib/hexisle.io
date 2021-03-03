@@ -2,6 +2,11 @@ module.exports = Object.freeze({
 	// Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
 	DEFAULT_WIDTH: 10000,
 	DEFAULT_HEIGHT: 10000,
+	PLAYER_RADIUS: 50,
+	BULLET_RADIUS: 15,
+	WALL_RADIUS: 75,
+	WALL_COL_RADIUS: 75 * 0.75,
+	CAMP_RADIUS: 4,
 
 	DIRECTION: {
 		E: 0,
@@ -14,6 +19,13 @@ module.exports = Object.freeze({
 		SE: 1.75 * Math.PI,
 	},
 
+	BUILDING: {
+		OUT_OF_BOUNDS: 'out of bounds',
+		NONE: 'none',
+		STRUCTURE: 'structure',
+		CAMP: 'camp',
+	},
+
 	MESSAGE: {
 		JOIN: 'join',
 		GAME_UPDATE: 'update_state',
@@ -21,7 +33,7 @@ module.exports = Object.freeze({
 		TILE_CHANGE: 'tile_change',
 		SHOOT: 'shoot',
 		ROTATE: 'rotate',
-		TEMP_HIT: 'im_hit', //TODO this is temporary
+		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
 	},
 });
