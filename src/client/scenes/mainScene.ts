@@ -16,8 +16,8 @@ export default class MainScene extends Phaser.Scene {
 	//private graphics: Phaser.GameObjects.Graphics; // OLD, will remove later
 
 	private graphic_BG: Phaser.GameObjects.Graphics; // static background
-	private graphic_Tex: Phaser.GameObjects.Graphics; // texture data
-	private graphic_Map: Phaser.GameObjects.Graphics; // Strokes for hexagons
+	//private graphic_Tex: Phaser.GameObjects.Graphics; // texture data
+	//private graphic_Map: Phaser.GameObjects.Graphics; // Strokes for hexagons
 	private graphic_Front: Phaser.GameObjects.Graphics; // Frontmost sprites = player, buildings, etc
 
 	private tiles: Tile[]; // Made in offset even-q coordinates
@@ -64,8 +64,8 @@ export default class MainScene extends Phaser.Scene {
 
 		// Graphic Handling
 		this.graphic_BG = this.add.graphics();
-		this.graphic_Tex = this.add.graphics();
-		this.graphic_Map = this.add.graphics();
+		//this.graphic_Tex = this.add.graphics();
+		//this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
 	}
 
@@ -139,24 +139,30 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private createTileMap(tileMap: any) {
-		if (!this.hexTiles.tileMap) {
-			this.hexTiles.tileMap = tileMap;
-			// masking logic
-			const reveal = this.graphic_Tex.scene.add
-				.image(0, 0, 'texture')
-				.setDepth(-500)
-				.setScale(3);
-			this.drawAllTiles();
-			this.setMapMask(reveal);
-		}
+		this.hexTiles.tileMap = tileMap;
+		const graphic_Map = this.add.graphics();
+		// masking logic
+		const reveal = this.add
+			.image(0, 0, 'texture')
+			.setOrigin(0, 0)
+			.setDepth(-1)
+			.setScale(3);
+		this.drawAllTiles(graphic_Map);
+		//this.setMapMask(reveal, graphic_Map);
+
+		graphic_Map.generateTexture(
+			'hexMap',
+			Constant.DEFAULT_WIDTH,
+			Constant.DEFAULT_HEIGHT
+		);
+		this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);
+		graphic_Map.destroy();
 	}
 
-	drawAllTiles(): void {
+	drawAllTiles(graphic_Map): void {
 		// draws every arena/map hex we have in our tilemap
 
-		if (!this.hexTiles.tileMap) {
-			return;
-		}
+		if (!this.hexTiles.tileMap) return;
 
 		// for each column
 		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
@@ -167,7 +173,7 @@ export default class MainScene extends Phaser.Scene {
 					Constant.BUILDING.OUT_OF_BOUNDS
 				) {
 					//TODO cannot put isInBounds here?
-					this.drawTile(this.hexTiles.tileMap[col][row]);
+					this.drawTile(this.hexTiles.tileMap[col][row], graphic_Map);
 				}
 			}
 		}
@@ -177,16 +183,15 @@ export default class MainScene extends Phaser.Scene {
 		// draws every tile we have in our nearby tile list
 
 		for (const tile of tiles) {
-			this.drawTile(tile);
+			// this.drawTile(tile);
 		}
 	}
 
-	drawTile(tile: Tile): void {
+	drawTile(tile: Tile, graphics: Phaser.GameObjects.Graphics): void {
 		// takes XY coordinates of center point,
 		// generates all required vertices
 		// draws individual tile
-		const graphics = this.graphic_Map;
-		graphics.fillStyle(0x000000, 0);
+		graphics.fillStyle(0x000000, 1);
 
 		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
 			tile.cartesian_coord
@@ -195,7 +200,7 @@ export default class MainScene extends Phaser.Scene {
 		if (tile.building == Constant.BUILDING.CAMP) {
 			graphics.lineStyle(4, 0xff0000, 1);
 		} else {
-			graphics.lineStyle(1, 0xffffff, 1);
+			graphics.lineStyle(2, 0xffffff, 1);
 		}
 
 		graphics.beginPath();
@@ -205,15 +210,18 @@ export default class MainScene extends Phaser.Scene {
 		}
 		graphics.closePath();
 
-		graphics.fillPath().setDepth(-100);
-		graphics.strokePath().setDepth(-100);
+		//graphics.fillPath();
+		graphics.strokePath();
 	}
 
 	// Masking
 	// Alpha Mask
-	setMapMask(reveal: Phaser.GameObjects.Image): void {
+	setMapMask(
+		reveal: Phaser.GameObjects.Image,
+		graphic_Map: Phaser.GameObjects.Graphics
+	): void {
 		// Masks the texture image using the total hexagonal tile map
-		const hexBrush = this.graphic_Map.createGeometryMask();
+		const hexBrush = graphic_Map.createGeometryMask();
 		reveal.setMask(hexBrush);
 	}
 
@@ -280,14 +288,9 @@ export default class MainScene extends Phaser.Scene {
 		this.events.emit('updateHUD', currentPlayer);
 
 		// Redraw any updated tiles
-		for (const tile of changedTiles) {
-			console.log(
-				'redrawing tile',
-				tile.offset_coord.q,
-				tile.offset_coord.r
-			);
-			this.drawTile(tile);
-		}
+		//for (const tile of changedTiles) {
+		//	this.drawTile(tile);
+		//}
 	}
 
 	private updateWalls(walls: any) {
