@@ -75,6 +75,8 @@ export default class Game {
 		let xPos: number;
 		let yPos: number;
 
+		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
+
 		do {
 			xPos = 1500 + Math.floor(Math.random() * 1000);
 			yPos = 1500 + Math.floor(Math.random() * 1000);
@@ -89,6 +91,8 @@ export default class Game {
 		player.health = 100;
 		player.xPos = xPos;
 		player.yPos = yPos;
+
+		this.collision.insertCollider(player, Constant.PLAYER_RADIUS);
 	}
 
 	update() {
@@ -184,7 +188,16 @@ export default class Game {
 		}
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-		if (!tile.isEmpty() /*|| tile.team != player.teamNumber*/) return; //TODO
+		if (
+			!tile.isEmpty() ||
+			this.collision.doesObjCollideWithPlayers(
+				tile.cartesian_coord.x,
+				tile.cartesian_coord.y,
+				Constant.WALL_RADIUS
+			)
+			/*|| tile.team != player.teamNumber*/
+		)
+			return; //TODO
 
 		const wall: Wall = new Wall(
 			this.bulletCount.toString(),

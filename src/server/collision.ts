@@ -123,6 +123,36 @@ export default class CollisionDetection {
 		return false;
 	}
 
+	doesObjCollideWithPlayers(
+		xPos: number,
+		yPos: number,
+		objectRadius: number
+	): boolean {
+		const results: CollisionObject[] = [];
+		this.quadtree.searchQuadtree(
+			new Rect(
+				xPos - objectRadius,
+				xPos + objectRadius,
+				yPos + objectRadius,
+				yPos - objectRadius
+			),
+			results
+		);
+		for (const result of results) {
+			if (
+				result.payload instanceof Player &&
+				this.doCirclesCollide(
+					{ xPos: xPos, yPos: yPos },
+					objectRadius,
+					result.payload,
+					Constant.PLAYER_RADIUS
+				)
+			)
+				return true;
+		}
+		return false;
+	}
+
 	doCirclesCollide(
 		object1: any,
 		radius1: number,

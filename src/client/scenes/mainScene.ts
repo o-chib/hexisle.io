@@ -55,11 +55,39 @@ export default class MainScene extends Phaser.Scene {
 		this.deadObjects = new Set();
 		this.socket = io();
 
+		this.socket.on(
+			Constant.MESSAGE.INITIALIZE,
+			this.initializeGame.bind(this)
+		);
+
+		this.socket.emit(Constant.MESSAGE.JOIN);
+
 		// Graphic Handling
 		this.graphic_BG = this.add.graphics();
 		this.graphic_Tex = this.add.graphics();
 		this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
+	}
+
+	private initializeGame(update: any): void {
+		const { player, tileMap } = update;
+		if (player == null) return;
+
+		this.createTileMap(tileMap);
+
+		if (player.teamNumber == 0) {
+			// Change this when more than 2 teams
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
+		} else {
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliemblue');
+		}
+
+		this.myPlayerSprite.setVisible(false);
+		this.alive = true;
+		this.myPlayerSprite.setScale(1);
+
+		this.cameras.main.startFollow(this.myPlayerSprite, true);
+		this.cameras.main.setZoom(0.5);
 
 		this.cursors = this.input.keyboard.addKeys({
 			up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -100,13 +128,6 @@ export default class MainScene extends Phaser.Scene {
 			this.updateState.bind(this)
 		);
 
-		this.socket.on(
-			Constant.MESSAGE.INITIALIZE,
-			this.initializeGame.bind(this)
-		);
-
-		this.socket.emit(Constant.MESSAGE.JOIN);
-
 		this.input.keyboard.on(
 			'keydown',
 			this.updateMovementDirection.bind(this)
@@ -115,27 +136,6 @@ export default class MainScene extends Phaser.Scene {
 			'keyup',
 			this.updateMovementDirection.bind(this)
 		);
-	}
-
-	private initializeGame(update: any): void {
-		const { player, tileMap } = update;
-		if (player == null) return;
-
-		this.createTileMap(tileMap);
-
-		if (player.teamNumber == 0) {
-			// Change this when more than 2 teams
-			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
-		} else {
-			this.myPlayerSprite = this.add.sprite(0, 0, 'aliemblue');
-		}
-
-		this.myPlayerSprite.setVisible(false);
-		this.alive = true;
-		this.myPlayerSprite.setScale(1);
-
-		this.cameras.main.startFollow(this.myPlayerSprite, true);
-		this.cameras.main.setZoom(0.5);
 	}
 
 	private createTileMap(tileMap: any) {
