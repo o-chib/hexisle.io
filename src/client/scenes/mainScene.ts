@@ -162,7 +162,11 @@ export default class MainScene extends Phaser.Scene {
 		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
 			// for each row
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
-				if (this.hexTiles.tileMap[col][row].tileType != 'empty') {
+				if (
+					this.hexTiles.tileMap[col][row].building !=
+					Constant.BUILDING.OUT_OF_BOUNDS
+				) {
+					//TODO cannot put isInBounds here?
 					this.drawTile(this.hexTiles.tileMap[col][row]);
 				}
 			}
@@ -188,12 +192,8 @@ export default class MainScene extends Phaser.Scene {
 			tile.cartesian_coord
 		);
 
-		if (tile.building == 'camp') {
+		if (tile.building == Constant.BUILDING.CAMP) {
 			graphics.lineStyle(4, 0xff0000, 1);
-		} else if (tile.building == 'ring') {
-			graphics.lineStyle(1, 0x002fff, 1);
-		} else if (tile.building == 'select') {
-			graphics.lineStyle(2, 0xffb300, 1);
 		} else {
 			graphics.lineStyle(1, 0xffffff, 1);
 		}

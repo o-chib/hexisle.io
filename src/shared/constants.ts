@@ -19,6 +19,13 @@ module.exports = Object.freeze({
 		SE: 1.75 * Math.PI,
 	},
 
+	BUILDING: {
+		OUT_OF_BOUNDS: 'out of bounds',
+		NONE: 'none',
+		STRUCTURE: 'structure',
+		CAMP: 'camp',
+	},
+
 	MESSAGE: {
 		JOIN: 'join',
 		GAME_UPDATE: 'update_state',
