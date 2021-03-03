@@ -208,7 +208,7 @@ export default class Game {
 		);
 
 		this.walls.add(wall);
-		tile.building = Constant.BUILDING.STRUCTURE; //TODO enum this
+		tile.building = Constant.BUILDING.STRUCTURE;
 		this.changedTiles.push(tile); //TODO
 		this.bulletCount += 1;
 
