@@ -179,7 +179,7 @@ export default class Game {
 		this.collision.updateCollider(player, Constant.PLAYER_RADIUS);
 	}
 
-	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
@@ -194,8 +194,9 @@ export default class Game {
 				tile.cartesian_coord.x,
 				tile.cartesian_coord.y,
 				Constant.WALL_RADIUS
-			)
-			/*|| tile.team != player.teamNumber*/
+			) ||
+			tile.team != player.teamNumber ||
+			!player.buyWall()
 		)
 			return; //TODO
 
