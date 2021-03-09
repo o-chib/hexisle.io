@@ -3,6 +3,7 @@
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from './../shared/wall';
+import Campfire from './../shared/campfire';
 import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint } from './../shared/hexTiles';
 const Constant = require('../shared/constants');
@@ -12,6 +13,7 @@ export default class Game {
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	walls: Set<Wall>;
+	campfires: Set<Campfire>;
 	previousUpdateTimestamp: any;
 	bulletCount: number;
 	hexTileMap: HexTiles;
@@ -23,6 +25,7 @@ export default class Game {
 		this.initTeams(2);
 		this.bullets = new Set();
 		this.walls = new Set();
+		this.campfires = new Set();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
