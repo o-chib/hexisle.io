@@ -15,8 +15,9 @@ export default class Player {
 	speed: number;
 
 	// Score tracking & player stats
-	score: number;
 	health: number;
+	score: number;
+	resources: number;
 
 	socket: SocketIOClient.Socket;
 
@@ -75,14 +76,21 @@ export default class Player {
 		this.lastUpdateTime = presentTime;
 	}
 
+	buyWall(): boolean {
+		if (this.resources < Constant.WALL_COST) return false;
+		this.resources -= Constant.WALL_COST;
+		return true;
+	}
+
 	serializeForUpdate() {
 		return {
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos,
 			direction: this.direction,
-			score: this.score,
 			health: this.health,
+			resources: this.resources,
+			score: this.score,
 			teamNumber: this.teamNumber,
 		};
 	}

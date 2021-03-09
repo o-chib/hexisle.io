@@ -38,7 +38,7 @@ function updateSocket(socket: SocketIOClient.Socket) {
 		game.movePlayer(socket, direction);
 	});
 	socket.on(Constant.MESSAGE.TILE_CHANGE, (coord: OffsetPoint) => {
-		game.changeTile(socket, coord);
+		game.buildWall(socket, coord);
 	});
 	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
 		game.shootBullet(socket, direction);
