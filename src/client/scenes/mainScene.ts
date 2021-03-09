@@ -320,7 +320,7 @@ export default class MainScene extends Phaser.Scene {
 			'campfire_unlit',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newCampfire, newCampfireLiteral) => {
-				if (newCampfireLiteral.teamNumber != 0)
+				if (newCampfireLiteral.teamNumber != -1)
 					newCampfire.setTexture('campfire_lit');
 				return newCampfire;
 			}

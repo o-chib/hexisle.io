@@ -26,7 +26,6 @@ export default class Game {
 		this.initTeams(2);
 		this.bullets = new Set();
 		this.walls = new Set();
-		this.campfires = new Set();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
@@ -124,6 +123,9 @@ export default class Game {
 				aWall.tile.setEmpty();
 				this.walls.delete(aWall);
 			}
+		}
+		for (const aCampfire of this.campfires) {
+			this.collision.campfirePlayerCollision(aCampfire);
 		}
 
 		for (const aPlayer of this.players.values()) {

@@ -7,9 +7,9 @@ export default class Campfire {
 	yPos: number;
 	teamNumber: number;
 
-	captureProgress : number;
-	capturingTeam : number;
-	captured: boolean;
+	captureProgress : number; // Variable Progress Bar (0-100)
+	isCaptured : boolean;
+	capturingTeam : number; // denotes who is capturing (-1 = no team)
 
 	private multiplier = 0.2;
 	private captureSpeed = 2;
@@ -23,59 +23,90 @@ export default class Campfire {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
-		this.teamNumber = 0;
+		this.teamNumber = -1;
 
+		this.isCaptured = false;
 		this.captureProgress = 0;
-		this.captured = false;
+		this.capturingTeam = -1;
 	}
 
-	updateCaptureProgress(teamNumber : number, numPlayers : number){
-		// team number here is always greater than 0 = represents team in consideration
-		// numplayers = of that team within the camp capture radius
+	updateCaptureState(playerCount: number[]) {
+		let numTeams = 0; // from total teams, how many are in the campfire radius
+		let teamMax = 0; // index of team with most players
+		for(let i = 0 ; i < playerCount.length ; ++i){
+			if(playerCount[i] > 0) {
+				++numTeams;
+				if(teamMax < playerCount[i]){
+					teamMax = playerCount[i];
+				}
+			}
+		}
 
-
-		let speed = this.captureSpeed + ((numPlayers - 1) * this.multiplier);
-
-		if(teamNumber == this.capturingTeam) {
-			this.captureProgress += speed;
+		if(this.isCaptured) {
+			// if opposing team, decayProgress (mix of teams can decay)
+			if(numTeams == 1 && teamMax != this.teamNumber){
+				this.capturingTeam = teamMax;
+				this.decayProgress(playerCount[teamMax]);
+			}
+			// if either team_number OR no team, set progress to 0 again and reset capturing team
+			if((numTeams == 1 && teamMax == this.teamNumber) || (numTeams == 0)) {
+				this.captureProgress = 0;
+				this.capturingTeam = -1;
+			}
 		}
 		else {
-			this.captureProgress -= speed;
+			// if no teams = set progress to 0, reset everything
+			if(numTeams == 0){
+				this.captureProgress = 0;
+				this.capturingTeam = -1;
+			}
+			// if one team - grow progress, set capturingTeam
+			if(numTeams == 1){
+				if(this.capturingTeam != teamMax){
+					this.captureProgress = 0;
+					this.capturingTeam = teamMax;
+				}
+				this.growProgress(playerCount[teamMax]);
+			}
 		}
-		if(this.captureProgress >= 100){
-			// captured
-			if(this.captured && this.teamNumber == this.capturingTeam) {
-				// This base is already captured, dominating team already owns this
-				// Do nothing?
+		this.checkForCapture();
+	}
+
+	growProgress(x : number){
+		if(this.captureProgress < 100){
+			this.captureProgress = Math.min(100, this.captureProgress + x);
+		}
+	}
+
+	decayProgress(x : number){
+		if(this.captureProgress > 0){
+			this.captureProgress = Math.max(0, this.captureProgress - x);
+		}
+	}
+
+	checkForCapture(){
+		if(this.captureProgress == 100){
+			if(this.isCaptured) {
+				// Turn Back to Neutral!
+				this.teamNumber = -1;
+
+				this.isCaptured = false;
+				this.captureProgress = 0;
+				this.capturingTeam = -1;
+
+				console.log("Lost Campfire: "+ this.id + ", Team Number = " + this.teamNumber);
 			}
 			else {
-				this.setCaptureState();
+				// Was Catured!
+				this.teamNumber = this.capturingTeam;
+
+				this.isCaptured = true;
+				this.captureProgress = 0;
+				this.capturingTeam = -1;
+
+				console.log("Captured Campfire: "+ this.id + ", Team Number = " + this.teamNumber);
 			}
 		}
-		if(this.captureProgress < 0){
-			this.captureProgress = 0;
-		}
-	}
-	setCaptureState(){
-		// If neutral, set to dominating team
-		this.teamNumber = this.capturingTeam;
-		this.captured = true;
-		// If captured already, set to neutral
-		this.teamNumber = 0;
-		this.captured = false;
-
-		// TODO set tiles in radius to that team color
-
-		// Reset
-		this.captureProgress = 0;
-		this.capturingTeam = 0;
-	}
-
-	decayProgress(){
-		if(this.captureProgress > 0){
-			this.captureProgress = Math.max(0, this.captureProgress - this.resetSpeed);
-		}
-
 	}
 
 	serializeForUpdate(): any {

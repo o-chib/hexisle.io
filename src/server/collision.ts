@@ -1,6 +1,7 @@
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from '../shared/wall';
+import Campfire from '../shared/campfire';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 const Constant = require('../shared/constants');
 
@@ -9,6 +10,37 @@ export default class CollisionDetection {
 
 	constructor() {
 		this.quadtree = new Quadtree();
+	}
+
+	campfirePlayerCollision(campfire: Campfire): void {
+		const results: CollisionObject[] = [];
+		// Get everything touching the campfires collider
+		this.quadtree.searchQuadtree(
+			new Rect(
+				campfire.xPos - Constant.WALL_COL_RADIUS,
+				campfire.xPos + Constant.WALL_COL_RADIUS,
+				campfire.yPos + Constant.WALL_COL_RADIUS,
+				campfire.yPos - Constant.WALL_COL_RADIUS
+			),
+			results
+		);
+
+		let playerCount : number[] = [];
+		results.forEach((result) => {
+			if (
+				result.payload instanceof Player &&
+				this.doCirclesCollide(
+					campfire,
+					Constant.WALL_COL_RADIUS,
+					result.payload,
+					Constant.PLAYER_RADIUS
+				)
+			) {
+				// Get number of players in each team
+				playerCount[result.payload.teamNumber] += 1;
+			}
+		});
+		campfire.updateCaptureState(playerCount);
 	}
 
 	playerBulletCollision(player: Player, bullets: Set<Bullet>): void {
