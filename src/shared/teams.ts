@@ -11,6 +11,7 @@ export default class Teams {
 	}
 
 	initTeams(teamCount: number): void {
+		this.teams = new Map();
 		for (let i = 0; i < teamCount; i++) {
 			this.teams.set(i, new Team());
 		}
@@ -33,7 +34,7 @@ export default class Teams {
 	}
 
 	getTeamBaseCoord(teamNumber: number): OffsetPoint {
-		return this.teams[teamNumber].baseCoord;
+		return this.teams.get(teamNumber)!.baseCoord;
 	}
 
 	private getNewPlayerTeamNumber(): number {
@@ -49,11 +50,11 @@ export default class Teams {
 	}
 
 	private addPlayerToTeam(teamNumber: number, playerID: string): void {
-		this.teams[teamNumber].addPlayer(playerID);
+		this.teams.get(teamNumber)!.addPlayer(playerID);
 	}
 
 	private removePlayerFromTeam(teamNumber: number, playerID: string): void {
-		this.teams[teamNumber].removePlayer(playerID);
+		this.teams.get(teamNumber)!.removePlayer(playerID);
 	}
 }
 
@@ -74,8 +75,6 @@ class Team {
 
 	removePlayer(playerID: string): void {
 		this.playerIDs = this.playerIDs.filter(id => id !== playerID);
-		console.log("players.length:", this.playerIDs.length);
 		this.playerCount -= 1;
-		console.log("playerCount:", this.playerCount);
 	}
 }
