@@ -70,12 +70,10 @@ export default class Game {
 
 	respawnPlayer(player: Player) {
 		console.log('Respawning: ' + player.socket.id);
-		let xPos: number;
-		let yPos: number;
 
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
-		let respawnPoint: Point = this.hexTileMap.offsetToCartesian(
+		const respawnPoint: Point = this.hexTileMap.offsetToCartesian(
 			this.teams.getTeamBaseCoord(player.teamNumber)
 		);
 

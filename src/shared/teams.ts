@@ -1,6 +1,6 @@
-import { HexTiles, OffsetPoint } from "./hexTiles";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-const Constant = require('../shared/constants');
+import { OffsetPoint } from './hexTiles';
 
 export default class Teams {
 	private teams: Map<number, Team>;
@@ -24,7 +24,7 @@ export default class Teams {
 	}
 
 	addNewPlayer(playerID: string): number {
-		let teamNumber: number = this.getNewPlayerTeamNumber();
+		const teamNumber: number = this.getNewPlayerTeamNumber();
 		this.addPlayerToTeam(teamNumber, playerID);
 		return teamNumber;
 	}
@@ -63,7 +63,7 @@ class Team {
 	public playerCount: number;
 	public baseCoord: OffsetPoint;
 
-	constructor () {
+	constructor() {
 		this.playerIDs = [];
 		this.playerCount = 0;
 	}
@@ -74,7 +74,7 @@ class Team {
 	}
 
 	removePlayer(playerID: string): void {
-		this.playerIDs = this.playerIDs.filter(id => id !== playerID);
+		this.playerIDs = this.playerIDs.filter((id) => id !== playerID);
 		this.playerCount -= 1;
 	}
 }
