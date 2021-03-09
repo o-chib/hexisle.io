@@ -8,6 +8,7 @@ export default class MainScene extends Phaser.Scene {
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
@@ -38,6 +39,8 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('wall', '../assets/tempwall.png'); //TODO
 		this.load.image('wallblue', '../assets/tempwallblue.png'); //TODO
+		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
+		this.load.image('campfire_lit', '../assets/campfire_lit.png');
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
@@ -52,6 +55,7 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
+		this.campfireSprites = new Map();
 		this.deadObjects = new Set();
 		this.socket = io();
 
@@ -274,6 +278,7 @@ export default class MainScene extends Phaser.Scene {
 			changedTiles,
 			bullets,
 			walls,
+			campfires,
 		} = update;
 		if (currentPlayer == null) return;
 
@@ -284,6 +289,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateOpponents(otherPlayers);
 
 		this.updateWalls(walls);
+
+		this.updateCampfires(campfires);
 
 		this.events.emit('updateHUD', currentPlayer);
 
@@ -303,6 +310,19 @@ export default class MainScene extends Phaser.Scene {
 				if (newWallLiteral.teamNumber == 1)
 					newWall.setTexture('wallblue');
 				return newWall;
+			}
+		);
+	}
+	private updateCampfires(campfires: any) {
+		this.updateMapOfObjects(
+			campfires,
+			this.campfireSprites,
+			'campfire_unlit',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			(newCampfire, newCampfireLiteral) => {
+				if (newCampfireLiteral.teamNumber != 0)
+					newCampfire.setTexture('campfire_lit');
+				return newCampfire;
 			}
 		);
 	}
@@ -368,6 +388,7 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
+	// TODO if not needed by updated rendering logic, delete this func
 	applyColorTint(): void {
 		/*
 	    const redTint = 0xcc0000;
@@ -399,7 +420,7 @@ export default class MainScene extends Phaser.Scene {
 	    rt.setTint(redTint);
 	    */
 	}
-
+	// TODO if not needed by updated rendering logic, delete this func
 	getTileMask(tile: Tile, graphic: Phaser.GameObjects.Graphics): void {
 		// returns the graphic object of a singular tile
 		// WIP

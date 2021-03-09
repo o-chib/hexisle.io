@@ -34,6 +34,7 @@ export default class Game {
 		this.collision = new CollisionDetection();
 		this.previousUpdateTimestamp = Date.now();
 		this.idGenerator = new IDgenerator();
+		this.initCampfires();
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
@@ -147,6 +148,7 @@ export default class Game {
 		const nearbyPlayers: Player[] = [];
 		const nearbyBullets: Bullet[] = [];
 		const nearbyWalls: Wall[] = [];
+		const nearbyCampfires: Campfire[] = [];
 		const changedTiles: Tile[] = this.changedTiles;
 
 		for (const aPlayer of this.players.values()) {
@@ -164,6 +166,10 @@ export default class Game {
 			nearbyWalls.push(aWall);
 		}
 
+		for (const aCampfire of this.campfires) {
+			nearbyCampfires.push(aCampfire);
+		}
+
 		return {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
@@ -171,6 +177,7 @@ export default class Game {
 			changedTiles: changedTiles,
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 			walls: nearbyWalls.map((p) => p.serializeForUpdate()),
+			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
 		};
 	}
 
@@ -240,6 +247,39 @@ export default class Game {
 
 		this.bullets.add(bullet);
 		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
+	}
+
+	buildCampfire(coord: OffsetPoint): void {
+		if (!this.hexTileMap.checkIfValidHex(coord)) {
+			return;
+		}
+
+		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+
+		const campfire: Campfire = new Campfire(
+			this.idGenerator.newID(),
+			tile.cartesian_coord.x,
+			tile.cartesian_coord.y,
+		);
+
+		this.campfires.add(campfire);
+		tile.building = Constant.BUILDING.CAMP;
+		this.changedTiles.push(tile); //TODO
+
+		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
+	}
+
+	initCampfires(): void{
+		this.campfires = new Set();
+
+		let tilemap = this.hexTileMap.tileMap;
+		for(let i = 0; i < tilemap.length ; i++) {
+			for(let j = 0; j < tilemap[i].length ; j++) {
+				if(tilemap[i][j].building == Constant.BUILDING.CAMP){
+					this.buildCampfire(tilemap[i][j].offset_coord);
+				}
+			}
+		}
 	}
 
 	initTeams(teamCount: number): void {

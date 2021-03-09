@@ -6,7 +6,6 @@ export default class Campfire {
 	xPos: number;
 	yPos: number;
 	teamNumber: number;
-	tile: Tile;
 
 	captureProgress : number;
 	capturingTeam : number;
@@ -20,13 +19,11 @@ export default class Campfire {
 		id: string,
 		xPos: number,
 		yPos: number,
-		tile: Tile
 	) {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.teamNumber = 0;
-		this.tile = tile;
 
 		this.captureProgress = 0;
 		this.captured = false;
@@ -74,8 +71,7 @@ export default class Campfire {
 		this.capturingTeam = 0;
 	}
 
-	resetWhenAlone(){
-		// For when no potential capturers in its radius
+	decayProgress(){
 		if(this.captureProgress > 0){
 			this.captureProgress = Math.max(0, this.captureProgress - this.resetSpeed);
 		}
