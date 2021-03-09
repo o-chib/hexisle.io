@@ -24,6 +24,7 @@ module.exports = Object.freeze({
 		NONE: 'none',
 		STRUCTURE: 'structure',
 		CAMP: 'camp',
+        BASE: 'base',
 	},
 
 	MESSAGE: {

@@ -199,6 +199,8 @@ export default class MainScene extends Phaser.Scene {
 
 		if (tile.building == Constant.BUILDING.CAMP) {
 			graphics.lineStyle(4, 0xff0000, 1);
+		} else if (tile.building == Constant.BUILDING.BASE) {
+			graphics.lineStyle(6, 0x00ffcc, 1);
 		} else {
 			graphics.lineStyle(2, 0xffffff, 1);
 		}
