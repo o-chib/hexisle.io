@@ -6,6 +6,7 @@ import Wall from './../shared/wall';
 import Campfire from './../shared/campfire';
 import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint } from './../shared/hexTiles';
+import IDgenerator from './idGenerator';
 const Constant = require('../shared/constants');
 
 export default class Game {
@@ -15,8 +16,8 @@ export default class Game {
 	walls: Set<Wall>;
 	campfires: Set<Campfire>;
 	previousUpdateTimestamp: any;
-	bulletCount: number;
 	hexTileMap: HexTiles;
+	idGenerator: IDgenerator;
 	changedTiles: Tile[];
 	collision: CollisionDetection;
 
@@ -32,7 +33,7 @@ export default class Game {
 		this.changedTiles = [];
 		this.collision = new CollisionDetection();
 		this.previousUpdateTimestamp = Date.now();
-		this.bulletCount = 0;
+		this.idGenerator = new IDgenerator();
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
@@ -182,7 +183,7 @@ export default class Game {
 		this.collision.updateCollider(player, Constant.PLAYER_RADIUS);
 	}
 
-	changeTile(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
@@ -197,13 +198,14 @@ export default class Game {
 				tile.cartesian_coord.x,
 				tile.cartesian_coord.y,
 				Constant.WALL_RADIUS
-			)
-			/*|| tile.team != player.teamNumber*/
+			) ||
+			tile.team != player.teamNumber ||
+			!player.buyWall()
 		)
 			return; //TODO
 
 		const wall: Wall = new Wall(
-			this.bulletCount.toString(),
+			this.idGenerator.newID(),
 			tile.cartesian_coord.x,
 			tile.cartesian_coord.y,
 			player.teamNumber,
@@ -213,7 +215,6 @@ export default class Game {
 		this.walls.add(wall);
 		tile.building = Constant.BUILDING.STRUCTURE;
 		this.changedTiles.push(tile); //TODO
-		this.bulletCount += 1;
 
 		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
@@ -230,7 +231,7 @@ export default class Game {
 		const player: Player = this.players.get(socket.id)!;
 
 		const bullet: Bullet = new Bullet(
-			this.bulletCount.toString(),
+			this.idGenerator.newID(),
 			player.xPos,
 			player.yPos,
 			direction,
@@ -238,7 +239,6 @@ export default class Game {
 		);
 
 		this.bullets.add(bullet);
-		this.bulletCount += 1;
 		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
 	}
 
