@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import Player from './../shared/player';
+import Teams from '../shared/teams';
 import Bullet from './../shared/bullet';
 import Wall from './../shared/wall';
 import Campfire from './../shared/campfire';
 import CollisionDetection from './collision';
-import { HexTiles, Tile, OffsetPoint } from './../shared/hexTiles';
+import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import Territory from './../shared/territory';
 const Constant = require('../shared/constants');
 
 export default class Game {
-	teams: Map<number, number>;
+	teams: Teams;
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	walls: Set<Wall>;
@@ -25,12 +26,12 @@ export default class Game {
 
 	constructor() {
 		this.players = new Map();
-		this.initTeams(2);
 		this.bullets = new Set();
 		this.walls = new Set();
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
+		this.teams = new Teams(2, this.hexTileMap.baseCoords);
 		this.changedTiles = [];
 		this.collision = new CollisionDetection();
 		this.previousUpdateTimestamp = Date.now();
@@ -42,8 +43,7 @@ export default class Game {
 	addPlayer(socket: SocketIOClient.Socket) {
 		console.log('Hello: ' + socket.id);
 
-		// find team number, chooses smallest team
-		const team: number = this.getTeamNumber();
+		const team: number = this.teams.addNewPlayer(socket.id);
 		console.log('Assigning to team ' + team);
 
 		const newPlayer = new Player(socket, 0, 0, team);
@@ -69,35 +69,23 @@ export default class Game {
 
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
-		this.teams.set(
-			player.teamNumber,
-			this.teams.get(player.teamNumber)! - 1
-		);
+		this.teams.removePlayer(socket.id, player.teamNumber);
 
 		this.players.delete(socket.id);
 	}
 
 	respawnPlayer(player: Player) {
 		console.log('Respawning: ' + player.socket.id);
-		let xPos: number;
-		let yPos: number;
 
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
-		do {
-			xPos = 1500 + Math.floor(Math.random() * 1000);
-			yPos = 1500 + Math.floor(Math.random() * 1000);
-		} while (
-			this.collision.doesObjCollideWithWall(
-				xPos,
-				yPos,
-				Constant.PLAYER_RADIUS
-			)
+		const respawnPoint: Point = this.hexTileMap.offsetToCartesian(
+			this.teams.getTeamBaseCoord(player.teamNumber)
 		);
 
 		player.health = 100;
-		player.xPos = xPos;
-		player.yPos = yPos;
+		player.xPos = respawnPoint.x;
+		player.yPos = respawnPoint.y;
 
 		this.collision.insertCollider(player, Constant.PLAYER_RADIUS);
 	}
@@ -136,14 +124,14 @@ export default class Game {
 							if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
 								continue;
 							}
-							
+
 							tempTile.team = aCampfire.teamNumber;
 							this.hexTileMap.tileMap[i][j] = tempTile;
 							this.changedTiles.push(tempTile);
 							let xPosition = tempTile.cartesian_coord.x.toString();
 							let yPosition = tempTile.cartesian_coord.y.toString();
 							let tempTerritory = new Territory(xPosition + ", " + yPosition, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
-			
+
 							this.territories.add(tempTerritory);
 						}
 					}
@@ -160,7 +148,7 @@ export default class Game {
 		// this.territories = new Set();
 		// for(let i=0; i<this.changedTiles.length; i++) {
 		// 	let tempTerritory = new Territory(this.idGenerator.newID(), this.changedTiles[i].cartesian_coord.x, this.changedTiles[i].cartesian_coord.y, this.changedTiles[i].team);
-			
+
 		// 	this.territories.add(tempTerritory);
 
 		// 	// if(this.changedTiles[i].team == -1) {
@@ -337,25 +325,5 @@ export default class Game {
 				}
 			}
 		}
-	}
-
-	initTeams(teamCount: number): void {
-		this.teams = new Map();
-		for (let x = 0; x < teamCount; x++) {
-			this.teams.set(x, 0);
-		}
-	}
-
-	getTeamNumber(): number {
-		let smallestTeam = -1;
-		let smallestPlayerCount = 999;
-		for (const [team, playerCount] of this.teams) {
-			if (playerCount < smallestPlayerCount) {
-				smallestTeam = team;
-				smallestPlayerCount = playerCount;
-			}
-		}
-		this.teams.set(smallestTeam, smallestPlayerCount + 1);
-		return smallestTeam;
 	}
 }

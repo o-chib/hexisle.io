@@ -5,24 +5,27 @@ export class HexTiles {
 	public hexRadius: number;
 	public hexSize: number;
 	public campRadius: number;
-	public mapHeight;
+	public mapHeight: number;
+	public baseCoords: OffsetPoint[];
 
 	constructor() {
 		this.hexSize = 75;
 		this.campRadius = 4;
 		this.mapHeight = 4000;
 		this.hexRadius = this.getMapHexRadius();
+		this.baseCoords = [];
 	}
 
 	generateMap(): void {
 		this.generateTileMap();
 		this.generateCamps();
+		this.generateBases(2, 1);
 	}
 
 	generateTileMap(): void {
+		// generates the hex integer coordinates from the game-size
 		console.log('time to generate tilemap');
 		console.time();
-		// generates the hex integer coordinates from the game-size
 
 		this.tileMap = [];
 
@@ -64,9 +67,9 @@ export class HexTiles {
 	}
 
 	generateCamps(): void {
+		// Takes the tilemap and sets tiles to camps dependent on the class config (private variables)
 		console.log('time to generate camps');
 		console.time();
-		// Takes the tilemap and sets tiles to camps dependent on the class config (private variables)
 
 		// start at the center of the map, and make it a camp
 		let hex: OffsetPoint = new OffsetPoint(this.hexRadius, this.hexRadius);
@@ -111,6 +114,65 @@ export class HexTiles {
 								Constant.BUILDING.CAMP;
 					}
 				}
+			}
+		}
+		console.timeEnd();
+	}
+
+	generateBases(teamCount, campDistanceFromCenter): void {
+		// Takes the tilemap and sets camps to bases dependent on the parameters
+		// teamCount is the number of teams, with a maximum of 6
+		// campDistanceFromCenter is how many camps away radially the bases should spawn
+		console.log('time to generate bases');
+		console.time();
+
+		if (teamCount == 1) {
+			this.tileMap[this.hexRadius][this.hexRadius].building =
+				Constant.BUILDING.BASE;
+			this.baseCoords.push(
+				new OffsetPoint(this.hexRadius, this.hexRadius)
+			);
+			return;
+		}
+
+		const baseDirs: number[] = this.getBaseDirectionsFromTeamCount(
+			teamCount
+		);
+
+		// For every direction we go in
+		for (let dir of baseDirs) {
+			let travHex: OffsetPoint = new OffsetPoint(
+				this.hexRadius,
+				this.hexRadius
+			);
+
+			// Traverse campDistanceFromCenter from the center hex
+			travHex = this.hexTraverse(
+				travHex,
+				dir,
+				this.campRadius * campDistanceFromCenter
+			);
+
+			// if i is at the last index, loop back to 0, or else increment it
+			if (dir == 5) {
+				dir = 0;
+			} else {
+				dir += 1;
+			}
+
+			// start and go the length of the hex radius + 1 in the original direction + 1
+			travHex = this.hexTraverse(
+				travHex,
+				dir,
+				this.campRadius * campDistanceFromCenter + 1
+			);
+
+			// Assign it to a base
+			if (this.checkIfValidHex(travHex)) {
+				if (this.tileMap[travHex.q][travHex.r].isInBounds())
+					this.tileMap[travHex.q][travHex.r].building =
+						Constant.BUILDING.BASE;
+				this.baseCoords.push(travHex);
 			}
 		}
 		console.timeEnd();
@@ -269,6 +331,35 @@ export class HexTiles {
 		const mapRadius: number = this.mapHeight / 2;
 		const freeSpace: number = mapRadius - this.getHexHeight() / 2;
 		return Math.floor(freeSpace / this.getHexHeight());
+	}
+
+	private getBaseDirectionsFromTeamCount(teamCount): number[] {
+		// takes in the number of teams and returns a list of the directions a base will be in
+		const baseDirs: number[] = [];
+		const possibleBaseDirs: number[] = [0, 1, 2, 3, 4, 5];
+		let selectBaseDirsIndex = 0;
+
+		if (teamCount > 6) {
+			teamCount = 6;
+		} else if (teamCount < 1) {
+			teamCount = 1;
+		}
+
+		for (let i = 0; i < teamCount; i++) {
+			baseDirs.push(possibleBaseDirs[selectBaseDirsIndex]);
+
+			if (teamCount < 3) {
+				selectBaseDirsIndex += 3;
+			} else {
+				selectBaseDirsIndex += 2;
+			}
+
+			if (selectBaseDirsIndex > 5) {
+				selectBaseDirsIndex = 1;
+			}
+		}
+
+		return baseDirs;
 	}
 
 	private pixelToCube(point: Point): number[] {
