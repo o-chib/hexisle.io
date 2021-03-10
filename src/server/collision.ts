@@ -26,20 +26,28 @@ export default class CollisionDetection {
 		);
 
 		let playerCount : number[] = [];
+		for(let i = 0; i < Constant.TEAM_COUNT; i++){
+			playerCount[i] = 0;
+		}
 		results.forEach((result) => {
 			if (
 				result.payload instanceof Player &&
 				this.doCirclesCollide(
 					campfire,
-					Constant.WALL_COL_RADIUS,
+					Constant.WALL_RADIUS,
 					result.payload,
 					Constant.PLAYER_RADIUS
 				)
 			) {
 				// Get number of players in each team
 				playerCount[result.payload.teamNumber] += 1;
+				console.log("Player Collides with Camp!" + campfire.captureProgress);
+				console.log("ID : " + campfire.id);
+
 			}
 		});
+		// console.log('PlayerCount : ');
+		// console.log(playerCount);
 		campfire.updateCaptureState(playerCount);
 	}
 

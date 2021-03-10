@@ -322,6 +322,10 @@ export default class MainScene extends Phaser.Scene {
 			(newCampfire, newCampfireLiteral) => {
 				if (newCampfireLiteral.teamNumber != -1)
 					newCampfire.setTexture('campfire_lit');
+				else
+					newCampfire.setTexture('campfire_unlit');
+
+
 				return newCampfire;
 			}
 		);

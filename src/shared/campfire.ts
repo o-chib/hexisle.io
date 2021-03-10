@@ -2,14 +2,14 @@ import { Tile } from './hexTiles';
 const Constant = require('../shared/constants');
 
 export default class Campfire {
-	id: string;
-	xPos: number;
-	yPos: number;
-	teamNumber: number;
+	public id: string;
+	public xPos: number;
+	public yPos: number;
+	public teamNumber: number;
 
-	captureProgress : number; // Variable Progress Bar (0-100)
-	isCaptured : boolean;
-	capturingTeam : number; // denotes who is capturing (-1 = no team)
+	public captureProgress : number; // Variable Progress Bar (0-100)
+	public isCaptured : boolean;
+	public capturingTeam : number; // denotes who is capturing (-1 = no team)
 
 	private multiplier = 0.2;
 	private captureSpeed = 2;
@@ -37,16 +37,27 @@ export default class Campfire {
 			if(playerCount[i] > 0) {
 				++numTeams;
 				if(teamMax < playerCount[i]){
-					teamMax = playerCount[i];
+					teamMax = i;
 				}
 			}
 		}
 
+		// debug
+		if (numTeams == 0)
+			return;
+		console.log("Fn Enter: " + this.id)
+		console.log("(num teams, teamMax index) = " + numTeams + ", " + teamMax);
+		console.log("is captured, teamNumber = " + this.isCaptured + ", " + this.teamNumber);
+
 		if(this.isCaptured) {
 			// if opposing team, decayProgress (mix of teams can decay)
+			console.log("is captured : (captureProg, captureTeam) = " + this.captureProgress + ", " + this.capturingTeam);
+
 			if(numTeams == 1 && teamMax != this.teamNumber){
 				this.capturingTeam = teamMax;
-				this.decayProgress(playerCount[teamMax]);
+				this.growProgress(playerCount[teamMax]);
+				console.log("capture to neutral: " + this.captureProgress);
+
 			}
 			// if either team_number OR no team, set progress to 0 again and reset capturing team
 			if((numTeams == 1 && teamMax == this.teamNumber) || (numTeams == 0)) {
@@ -66,6 +77,7 @@ export default class Campfire {
 					this.captureProgress = 0;
 					this.capturingTeam = teamMax;
 				}
+
 				this.growProgress(playerCount[teamMax]);
 			}
 		}
@@ -75,12 +87,6 @@ export default class Campfire {
 	growProgress(x : number){
 		if(this.captureProgress < 100){
 			this.captureProgress = Math.min(100, this.captureProgress + x);
-		}
-	}
-
-	decayProgress(x : number){
-		if(this.captureProgress > 0){
-			this.captureProgress = Math.max(0, this.captureProgress - x);
 		}
 	}
 
