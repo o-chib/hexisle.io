@@ -41,13 +41,8 @@ export default class CollisionDetection {
 			) {
 				// Get number of players in each team
 				playerCount[result.payload.teamNumber] += 1;
-				console.log("Player Collides with Camp!" + campfire.captureProgress);
-				console.log("ID : " + campfire.id);
-
 			}
 		});
-		// console.log('PlayerCount : ');
-		// console.log(playerCount);
 
 		campfire.updateCaptureState(playerCount);
 	}

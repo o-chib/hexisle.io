@@ -38,6 +38,7 @@ export default class Game {
 		this.idGenerator = new IDgenerator();
 		this.initCampfires();
 		this.territories = new Set();
+		this.addBaseTerritories();
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
@@ -96,6 +97,8 @@ export default class Game {
 			(currentTimestamp - this.previousUpdateTimestamp) / 1000;
 		this.previousUpdateTimestamp = currentTimestamp;
 
+		this.changedTiles = [];
+
 		for (const aBullet of this.bullets) {
 			aBullet.updatePosition(timePassed);
 			if (aBullet.isExpired(currentTimestamp)) {
@@ -106,8 +109,7 @@ export default class Game {
 
 			this.collision.updateCollider(aBullet, Constant.BULLET_RADIUS);
 		}
-
-		this.changedTiles = [];
+		// Add captured territory of campfire, and camfire itself
 		for (const aCampfire of this.campfires) {
 			this.collision.campfirePlayerCollision(aCampfire);
 
@@ -139,23 +141,6 @@ export default class Game {
 			}
 		}
 
-		// for(const aTerritory of this.territories) {
-		// 	if(aTerritory.teamNumber == -1) {
-		// 		this.territories.delete(aTerritory);
-		// 	}
-		// }
-
-		// this.territories = new Set();
-		// for(let i=0; i<this.changedTiles.length; i++) {
-		// 	let tempTerritory = new Territory(this.idGenerator.newID(), this.changedTiles[i].cartesian_coord.x, this.changedTiles[i].cartesian_coord.y, this.changedTiles[i].team);
-
-		// 	this.territories.add(tempTerritory);
-
-		// 	// if(this.changedTiles[i].team == -1) {
-		// 	// 	this.territories.delete(tempTerritory);
-		// 	// }
-		// }
-
 		for (const aWall of this.walls) {
 			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
@@ -181,6 +166,7 @@ export default class Game {
 				this.createUpdate(aPlayer)
 			);
 		}
+
 	}
 
 	createUpdate(player: Player) {
@@ -323,6 +309,28 @@ export default class Game {
 				if(tilemap[i][j].building == Constant.BUILDING.CAMP){
 					this.buildCampfire(tilemap[i][j].offset_coord);
 				}
+			}
+		}
+	}
+	addBaseTerritories() {
+		// Add permanent territory from bases
+		for(let i = 0; i < Constant.TEAM_COUNT; i++){
+			let teamBaseCoord = this.teams.getTeamBaseCoord(i)
+			let points = this.hexTileMap.getHexRadiusPoints(this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r], Constant.CAMP_RADIUS);
+			for(const pt of points) {
+				let tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
+				if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+					continue;
+				}
+				tempTile.team = i;
+				this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
+
+				this.changedTiles.push(tempTile);
+				let xPosition = tempTile.cartesian_coord.x.toString();
+				let yPosition = tempTile.cartesian_coord.y.toString();
+				let tempTerritory = new Territory(xPosition + ", " + yPosition, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
+
+				this.territories.add(tempTerritory);
 			}
 		}
 	}
