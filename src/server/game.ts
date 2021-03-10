@@ -7,6 +7,7 @@ import Campfire from './../shared/campfire';
 import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
+import Territory from './../shared/territory';
 const Constant = require('../shared/constants');
 
 export default class Game {
@@ -20,6 +21,7 @@ export default class Game {
 	idGenerator: IDgenerator;
 	changedTiles: Tile[];
 	collision: CollisionDetection;
+	territories: Set<Territory>;
 
 	constructor() {
 		this.players = new Map();
@@ -34,6 +36,7 @@ export default class Game {
 		this.previousUpdateTimestamp = Date.now();
 		this.idGenerator = new IDgenerator();
 		this.initCampfires();
+		this.territories = new Set();
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
@@ -116,6 +119,55 @@ export default class Game {
 			this.collision.updateCollider(aBullet, Constant.BULLET_RADIUS);
 		}
 
+		this.changedTiles = [];
+		for (const aCampfire of this.campfires) {
+			this.collision.campfirePlayerCollision(aCampfire);
+
+			if(aCampfire.captureProgress == 100) {
+				aCampfire.checkForCapture();
+				let points = aCampfire.territoryPoints;
+
+				// TODO: Update to iterate only chunck of tiles surround the campsite.
+				for(let i=0; i<this.hexTileMap.tileMap.length; i++) {
+					for(let j=0; j<this.hexTileMap.tileMap[i].length; j++) {
+						let tempTile = this.hexTileMap.tileMap[i][j];
+
+						if(this.hexTileMap.isHexInHexList(tempTile.offset_coord, points)) {
+							if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+								continue;
+							}
+							
+							tempTile.team = aCampfire.teamNumber;
+							this.hexTileMap.tileMap[i][j] = tempTile;
+							this.changedTiles.push(tempTile);
+							let xPosition = tempTile.cartesian_coord.x.toString();
+							let yPosition = tempTile.cartesian_coord.y.toString();
+							let tempTerritory = new Territory(xPosition + ", " + yPosition, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
+			
+							this.territories.add(tempTerritory);
+						}
+					}
+				}
+			}
+		}
+
+		// for(const aTerritory of this.territories) {
+		// 	if(aTerritory.teamNumber == -1) {
+		// 		this.territories.delete(aTerritory);
+		// 	}
+		// }
+
+		// this.territories = new Set();
+		// for(let i=0; i<this.changedTiles.length; i++) {
+		// 	let tempTerritory = new Territory(this.idGenerator.newID(), this.changedTiles[i].cartesian_coord.x, this.changedTiles[i].cartesian_coord.y, this.changedTiles[i].team);
+			
+		// 	this.territories.add(tempTerritory);
+
+		// 	// if(this.changedTiles[i].team == -1) {
+		// 	// 	this.territories.delete(tempTerritory);
+		// 	// }
+		// }
+
 		for (const aWall of this.walls) {
 			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
@@ -123,9 +175,8 @@ export default class Game {
 				aWall.tile.setEmpty();
 				this.walls.delete(aWall);
 			}
-		}
-		for (const aCampfire of this.campfires) {
-			this.collision.campfirePlayerCollision(aCampfire);
+
+			this.changedTiles.push(aWall.tile);
 		}
 
 		for (const aPlayer of this.players.values()) {
@@ -142,8 +193,6 @@ export default class Game {
 				this.createUpdate(aPlayer)
 			);
 		}
-
-		this.changedTiles = [];
 	}
 
 	createUpdate(player: Player) {
@@ -152,13 +201,12 @@ export default class Game {
 		const nearbyWalls: Wall[] = [];
 		const nearbyCampfires: Campfire[] = [];
 		const changedTiles: Tile[] = this.changedTiles;
+		const nearbyTerritories: Territory[] = [];
 
 		for (const aPlayer of this.players.values()) {
 			if (aPlayer === player) continue;
 			nearbyPlayers.push(aPlayer);
 		}
-
-		this.changedTiles = [];
 
 		for (const aBullet of this.bullets) {
 			nearbyBullets.push(aBullet);
@@ -172,6 +220,10 @@ export default class Game {
 			nearbyCampfires.push(aCampfire);
 		}
 
+		for (const aTerritory of this.territories) {
+			nearbyTerritories.push(aTerritory);
+		}
+
 		return {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
@@ -180,6 +232,7 @@ export default class Game {
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 			walls: nearbyWalls.map((p) => p.serializeForUpdate()),
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
+			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
 		};
 	}
 
@@ -223,7 +276,7 @@ export default class Game {
 
 		this.walls.add(wall);
 		tile.building = Constant.BUILDING.STRUCTURE;
-		this.changedTiles.push(tile); //TODO
+		// this.changedTiles.push(tile); //TODO
 
 		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
@@ -263,6 +316,8 @@ export default class Game {
 			tile.cartesian_coord.x,
 			tile.cartesian_coord.y,
 		);
+
+		campfire.setTerritoryPoints(this.hexTileMap.getHexRadiusPoints(tile, Constant.CAMP_RADIUS));
 
 		this.campfires.add(campfire);
 		tile.building = Constant.BUILDING.CAMP;

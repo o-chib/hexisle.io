@@ -13,6 +13,8 @@ export default class MainScene extends Phaser.Scene {
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
 	private deadObjects;
+	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
+	private globalGraphics: Phaser.GameObjects.Graphics;
 
 	//private graphics: Phaser.GameObjects.Graphics; // OLD, will remove later
 
@@ -57,6 +59,7 @@ export default class MainScene extends Phaser.Scene {
 		this.wallSprites = new Map();
 		this.campfireSprites = new Map();
 		this.deadObjects = new Set();
+		this.territorySprites = new Map();
 		this.socket = io();
 
 		this.socket.on(
@@ -81,9 +84,9 @@ export default class MainScene extends Phaser.Scene {
 
 		if (player.teamNumber == 0) {
 			// Change this when more than 2 teams
-			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem').setDepth(1000);
 		} else {
-			this.myPlayerSprite = this.add.sprite(0, 0, 'aliemblue');
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliemblue').setDepth(1000);
 		}
 
 		this.myPlayerSprite.setVisible(false);
@@ -154,6 +157,16 @@ export default class MainScene extends Phaser.Scene {
 		this.drawAllTiles(graphic_Map);
 		//this.setMapMask(reveal, graphic_Map);
 
+		this.generateTerritoryTexture(this.hexTiles.tileMap[0][0]);
+
+		// for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
+		// 	for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
+		// 		let spr = this.add.sprite(this.hexTiles.tileMap[col][row].cartesian_coord.x, this.hexTiles.tileMap[col][row].cartesian_coord.y, 'white-tile');
+		// 		//spr.setVisible(false);
+		// 		this.territorySprites.set(this.hexTiles.tileMap[col][row], spr);
+		// 	}
+		// }
+
 		graphic_Map.generateTexture(
 			'hexMap',
 			Constant.DEFAULT_WIDTH,
@@ -185,9 +198,8 @@ export default class MainScene extends Phaser.Scene {
 
 	drawTiles(tiles: Tile[]): void {
 		// draws every tile we have in our nearby tile list
-
 		for (const tile of tiles) {
-			// this.drawTile(tile);
+			//this.drawTile(tile);
 		}
 	}
 
@@ -195,7 +207,11 @@ export default class MainScene extends Phaser.Scene {
 		// takes XY coordinates of center point,
 		// generates all required vertices
 		// draws individual tile
-		graphics.fillStyle(0x000000, 1);
+		if(tile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+			return;
+		}
+
+		graphics.fillStyle(0x000000, 0);
 
 		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
 			tile.cartesian_coord
@@ -214,8 +230,58 @@ export default class MainScene extends Phaser.Scene {
 		}
 		graphics.closePath();
 
-		//graphics.fillPath();
+		graphics.fillPath();
 		graphics.strokePath();
+	}
+
+	generateTerritoryTexture(tile: Tile): void {
+		// takes XY coordinates of center point,
+		// generates all required vertices
+		// draws individual tile
+
+		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
+			tile.cartesian_coord
+		);
+
+		let colorName = '';
+		for(let i=0; i<Constant.TEAM_COUNT; i++) {
+			let graphics = this.add.graphics();
+
+			graphics.beginPath();
+			graphics.moveTo(points[0].x, points[0].y);
+
+			for (let i = 0; i < 6; i++) {
+				graphics.lineTo(points[i].x, points[i].y);
+			}
+			graphics.closePath();
+
+		
+			if(i == 0) {
+				graphics.fillStyle(0xff0000, 0.2);
+				graphics.lineStyle(4, 0xff0000, 0.2);
+				colorName = 'red-territory';
+			} else if(i == 1) {
+				graphics.fillStyle(0x3333ff, 0.2);
+				graphics.lineStyle(4, 0x3333ff, 0.2);
+				colorName = 'blue-territory';
+			}
+
+			graphics.fillPath();
+
+			graphics.generateTexture(colorName,
+				this.hexTiles.getHexWidth(),
+				this.hexTiles.getHexHeight());
+
+			graphics.destroy();
+		}
+
+		// graphics.fillStyle(0xffffff, 0.2);
+		// graphics.fillPath();
+		// graphics.generateTexture('white-tile',
+		// 	this.hexTiles.getHexWidth(),
+		// 	this.hexTiles.getHexHeight());
+
+		// graphics.destroy();
 	}
 
 	// Masking
@@ -279,11 +345,12 @@ export default class MainScene extends Phaser.Scene {
 			bullets,
 			walls,
 			campfires,
+			territories
 		} = update;
 		if (currentPlayer == null) return;
 
 		this.updatePlayer(currentPlayer);
-
+		``
 		this.updateBullets(bullets);
 
 		this.updateOpponents(otherPlayers);
@@ -292,12 +359,18 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateCampfires(campfires);
 
+		// this.updateChangedTiles(changedTiles);
+
+		this.updateTerritories(territories);
+
 		this.events.emit('updateHUD', currentPlayer);
 
+		//this.globalGraphics.destroy();
+		this.globalGraphics = this.add.graphics();
 		// Redraw any updated tiles
-		//for (const tile of changedTiles) {
-		//	this.drawTile(tile);
-		//}
+		for (const tile of changedTiles) {
+			this.hexTiles.tileMap[tile.offset_coord.q][tile.offset_coord.r] = tile;
+		}
 	}
 
 	private updateWalls(walls: any) {
@@ -321,12 +394,34 @@ export default class MainScene extends Phaser.Scene {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newCampfire, newCampfireLiteral) => {
 				if (newCampfireLiteral.teamNumber != -1)
-					newCampfire.setTexture('campfire_lit');
+					newCampfire.setTexture('campfire_lit').setDepth(0);
 				else
-					newCampfire.setTexture('campfire_unlit');
-
-
+					newCampfire.setTexture('campfire_unlit').setDepth(0);
 				return newCampfire;
+			}
+		);
+	}
+
+	private updateTerritories(territories: any) {
+		this.updateMapOfObjects(
+			territories,
+			this.territorySprites,
+			'red-territory',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			(changedTilesNewTile, changedTilesCurrentTile) => {
+				if (changedTilesCurrentTile.teamNumber == -1) {
+					changedTilesNewTile.setTexture('red-territory');
+					changedTilesNewTile.setVisible(false);
+					//console.log("hello");
+					//changedTilesCurrentTile.setVisible(false);
+				} else if (changedTilesCurrentTile.teamNumber == 0) {
+					changedTilesNewTile.setTexture('red-territory');
+					changedTilesNewTile.setVisible(true).setDepth(-1);
+				} else if (changedTilesCurrentTile.teamNumber == 1) {
+					changedTilesNewTile.setTexture('blue-territory');
+					changedTilesNewTile.setVisible(true).setDepth(-1);
+				}
+				return changedTilesNewTile;
 			}
 		);
 	}
@@ -360,7 +455,9 @@ export default class MainScene extends Phaser.Scene {
 			(newPlayer, playerLiteral) => {
 				newPlayer.setRotation(-1 * playerLiteral.direction);
 				if (playerLiteral.teamNumber == 1)
-					newPlayer.setTexture('aliemblue');
+					newPlayer.setTexture('aliemblue').setDepth(1000);
+				if (playerLiteral.teamNumber == 0)
+					newPlayer.setDepth(1000);
 				return newPlayer;
 			}
 		);

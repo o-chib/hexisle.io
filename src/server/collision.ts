@@ -48,6 +48,7 @@ export default class CollisionDetection {
 		});
 		// console.log('PlayerCount : ');
 		// console.log(playerCount);
+
 		campfire.updateCaptureState(playerCount);
 	}
 
