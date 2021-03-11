@@ -257,7 +257,7 @@ export default class MainScene extends Phaser.Scene {
 			}
 			graphics.closePath();
 
-		
+
 			if(i == 0) {
 				graphics.fillStyle(0xff0000, 0.2);
 				graphics.lineStyle(4, 0xff0000, 0.2);
@@ -368,7 +368,7 @@ export default class MainScene extends Phaser.Scene {
 		this.events.emit('updateHUD', currentPlayer);
 
 		//this.globalGraphics.destroy();
-		this.globalGraphics = this.add.graphics();
+		//this.globalGraphics = this.add.graphics();
 		// Redraw any updated tiles
 		for (const tile of changedTiles) {
 			this.hexTiles.tileMap[tile.offset_coord.q][tile.offset_coord.r] = tile;
@@ -411,12 +411,7 @@ export default class MainScene extends Phaser.Scene {
 			'red-territory',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(changedTilesNewTile, changedTilesCurrentTile) => {
-				if (changedTilesCurrentTile.teamNumber == -1) {
-					changedTilesNewTile.setTexture('red-territory');
-					changedTilesNewTile.setVisible(false);
-					//console.log("hello");
-					//changedTilesCurrentTile.setVisible(false);
-				} else if (changedTilesCurrentTile.teamNumber == 0) {
+				if (changedTilesCurrentTile.teamNumber == 0) {
 					changedTilesNewTile.setTexture('red-territory');
 					changedTilesNewTile.setVisible(true).setDepth(-1);
 				} else if (changedTilesCurrentTile.teamNumber == 1) {
@@ -489,54 +484,5 @@ export default class MainScene extends Phaser.Scene {
 			oldObjects.get(anOldKey)?.destroy();
 			oldObjects.delete(anOldKey);
 		}
-	}
-
-	// TODO if not needed by updated rendering logic, delete this func
-	applyColorTint(): void {
-		/*
-	    const redTint = 0xcc0000;
-
-	    let centerTile = new Tile();
-	    centerTile.offset_coord = new OffsetPoint(10,10);
-	    this.getHexRadiusPoints(centerTile,2);
-
-	    let currTile = new Tile();
-	    for(let i = 0 ; i < offsetCoords.length ; ++i) {
-	        currTile.offset_coord = offsetCoords[i];
-	        currTile.cartesian_coord = this.axialToCartesian(offsetCoords[i]);
-	        let areaMask = this.add.graphics();
-	        this.createTile(currTile);
-	    }*/
-		/*
-	    const redTint = 0xcc0000;
-	    const x = 400;
-	    const y = 300;
-	    const height = MAP_HEIGHT;
-	    const width = MAP_HEIGHT;
-
-	    let reveal = this.graphics.scene.add.image(x,y,'aliem');
-	    let circle = this.graphics.fillCircle(x,y,100);
-
-	    let rt = this.graphics.scene.add.renderTexture(x,y,width,height);
-	    rt.setOrigin(0.5,0.5);
-	    rt.draw(reveal,width*0.5, height * 0.5);
-	    rt.setTint(redTint);
-	    */
-	}
-	// TODO if not needed by updated rendering logic, delete this func
-	getTileMask(tile: Tile, graphic: Phaser.GameObjects.Graphics): void {
-		// returns the graphic object of a singular tile
-		// WIP
-		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
-			tile.cartesian_coord
-		);
-		graphic.fillStyle(0xaa0000, 0);
-		graphic.beginPath();
-		graphic.moveTo(points[0].x, points[0].y);
-		for (let i = 0; i < 6; i++) {
-			graphic.lineTo(points[i].x, points[i].y);
-		}
-		graphic.closePath();
-		graphic.fillPath();
 	}
 }

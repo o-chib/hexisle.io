@@ -115,6 +115,7 @@ export default class Game {
 
 			if(aCampfire.captureProgress == 100) {
 				aCampfire.checkForCapture();
+				let isCaptured = aCampfire.isCaptured;
 				let points = aCampfire.territoryPoints;
 
 				// TODO: Update to iterate only chunck of tiles surround the campsite.
@@ -122,25 +123,38 @@ export default class Game {
 					for(let j=0; j<this.hexTileMap.tileMap[i].length; j++) {
 						let tempTile = this.hexTileMap.tileMap[i][j];
 
+						if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+							continue;
+						}
 						if(this.hexTileMap.isHexInHexList(tempTile.offset_coord, points)) {
-							if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
-								continue;
-							}
-
 							tempTile.team = aCampfire.teamNumber;
 							this.hexTileMap.tileMap[i][j] = tempTile;
-							this.changedTiles.push(tempTile);
+							//this.changedTiles.push(tempTile);
+
 							let xPosition = tempTile.cartesian_coord.x.toString();
 							let yPosition = tempTile.cartesian_coord.y.toString();
-							let tempTerritory = new Territory(xPosition + ", " + yPosition, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
+							let stringID = xPosition + ", " + yPosition;
 
-							this.territories.add(tempTerritory);
+							if(isCaptured){
+								// If captured, add to list
+								let tempTerritory = new Territory(stringID, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
+								this.territories.add(tempTerritory);
+							}
+							else{
+								// If non captured, remove from list
+								for (const aTerritory of this.territories) {
+									if (aTerritory.id == stringID) {
+										this.territories.delete(aTerritory);
+										break;
+									}
+								}
+							}
 						}
 					}
 				}
 			}
 		}
-
+		
 		for (const aWall of this.walls) {
 			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
