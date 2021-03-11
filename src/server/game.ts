@@ -119,42 +119,42 @@ export default class Game {
 				let points = aCampfire.territoryPoints;
 
 				// TODO: Update to iterate only chunck of tiles surround the campsite.
-				for(let i=0; i<this.hexTileMap.tileMap.length; i++) {
-					for(let j=0; j<this.hexTileMap.tileMap[i].length; j++) {
-						let tempTile = this.hexTileMap.tileMap[i][j];
+				for(const pt of points) {
+					// TODO OUT OF BOUNDS INDEXING
+					if(!this.hexTileMap.checkIfValidHex(pt)){
+						continue;
+					}
+					let tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
+					if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+						continue;
+					}
 
-						if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
-							continue;
-						}
-						if(this.hexTileMap.isHexInHexList(tempTile.offset_coord, points)) {
-							tempTile.team = aCampfire.teamNumber;
-							this.hexTileMap.tileMap[i][j] = tempTile;
-							//this.changedTiles.push(tempTile);
+					tempTile.team = aCampfire.teamNumber;
+					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
+					//this.changedTiles.push(tempTile);
 
-							let xPosition = tempTile.cartesian_coord.x.toString();
-							let yPosition = tempTile.cartesian_coord.y.toString();
-							let stringID = xPosition + ", " + yPosition;
+					let xPosition = tempTile.cartesian_coord.x.toString();
+					let yPosition = tempTile.cartesian_coord.y.toString();
+					let stringID = xPosition + ", " + yPosition;
 
-							if(isCaptured){
-								// If captured, add to list
-								let tempTerritory = new Territory(stringID, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
-								this.territories.add(tempTerritory);
-							}
-							else{
-								// If non captured, remove from list
-								for (const aTerritory of this.territories) {
-									if (aTerritory.id == stringID) {
-										this.territories.delete(aTerritory);
-										break;
-									}
-								}
+					if(isCaptured){
+						// If captured, add to list
+						let tempTerritory = new Territory(stringID, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
+						this.territories.add(tempTerritory);
+					}
+					else{
+						// If non captured, remove from list
+						for (const aTerritory of this.territories) {
+							if (aTerritory.id == stringID) {
+								this.territories.delete(aTerritory);
+								break;
 							}
 						}
 					}
 				}
 			}
 		}
-		
+
 		for (const aWall of this.walls) {
 			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
