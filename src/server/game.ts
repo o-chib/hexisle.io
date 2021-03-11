@@ -97,7 +97,7 @@ export default class Game {
 			(currentTimestamp - this.previousUpdateTimestamp) / 1000;
 		this.previousUpdateTimestamp = currentTimestamp;
 
-		this.changedTiles = [];
+		//this.changedTiles = [];
 
 		for (const aBullet of this.bullets) {
 			aBullet.updatePosition(timePassed);
@@ -163,7 +163,7 @@ export default class Game {
 				this.walls.delete(aWall);
 			}
 
-			this.changedTiles.push(aWall.tile);
+			//this.changedTiles.push(aWall.tile);
 		}
 
 		for (const aPlayer of this.players.values()) {
@@ -309,7 +309,7 @@ export default class Game {
 
 		this.campfires.add(campfire);
 		tile.building = Constant.BUILDING.CAMP;
-		this.changedTiles.push(tile); //TODO
+		//this.changedTiles.push(tile); //TODO
 
 		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
 	}
@@ -339,7 +339,7 @@ export default class Game {
 				tempTile.team = i;
 				this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 
-				this.changedTiles.push(tempTile);
+				//this.changedTiles.push(tempTile);
 				let xPosition = tempTile.cartesian_coord.x.toString();
 				let yPosition = tempTile.cartesian_coord.y.toString();
 				let tempTerritory = new Territory(xPosition + ", " + yPosition, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
