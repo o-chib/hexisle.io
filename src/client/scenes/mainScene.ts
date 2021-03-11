@@ -201,14 +201,16 @@ export default class MainScene extends Phaser.Scene {
 			graphics.lineStyle(4, 0xff0000, 1);
 		} else if (tile.building == Constant.BUILDING.BASE) {
 			graphics.lineStyle(6, 0x00ffcc, 1);
-		} else {
+		} else if (tile.building == Constant.BOUNDARY) {
+            return;
+        } else {
 			graphics.lineStyle(2, 0xffffff, 1);
 		}
 
 		graphics.beginPath();
-		graphics.moveTo(points[0].x, points[0].y);
+		graphics.moveTo(points[0].xPos, points[0].yPos);
 		for (let i = 0; i < 6; i++) {
-			graphics.lineTo(points[i].x, points[i].y);
+			graphics.lineTo(points[i].xPos, points[i].yPos);
 		}
 		graphics.closePath();
 
@@ -410,9 +412,9 @@ export default class MainScene extends Phaser.Scene {
 		);
 		graphic.fillStyle(0xaa0000, 0);
 		graphic.beginPath();
-		graphic.moveTo(points[0].x, points[0].y);
+		graphic.moveTo(points[0].xPos, points[0].yPos);
 		for (let i = 0; i < 6; i++) {
-			graphic.lineTo(points[i].x, points[i].y);
+			graphic.lineTo(points[i].xPos, points[i].yPos);
 		}
 		graphic.closePath();
 		graphic.fillPath();
