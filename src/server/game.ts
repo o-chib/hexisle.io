@@ -183,9 +183,9 @@ export default class Game {
 				tile.cartesian_coord.x,
 				tile.cartesian_coord.y,
 				Constant.WALL_RADIUS
-			) ||
+			) /*||
 			tile.team != player.teamNumber ||
-			!player.buyWall()
+			!player.buyWall()*/
 		)
 			return; //TODO
 
