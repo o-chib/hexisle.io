@@ -170,7 +170,9 @@ export default class MainScene extends Phaser.Scene {
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
 				if (
 					this.hexTiles.tileMap[col][row].building !=
-					Constant.BUILDING.OUT_OF_BOUNDS
+					Constant.BUILDING.OUT_OF_BOUNDS &&
+                    this.hexTiles.tileMap[col][row].building != 
+                    Constant.BUILDING.BOUNDARY
 				) {
 					//TODO cannot put isInBounds here?
 					this.drawTile(this.hexTiles.tileMap[col][row], graphic_Map);
@@ -201,9 +203,7 @@ export default class MainScene extends Phaser.Scene {
 			graphics.lineStyle(4, 0xff0000, 1);
 		} else if (tile.building == Constant.BUILDING.BASE) {
 			graphics.lineStyle(6, 0x00ffcc, 1);
-		} else if (tile.building == Constant.BOUNDARY) {
-            return;
-        } else {
+		} else {
 			graphics.lineStyle(2, 0xffffff, 1);
 		}
 
