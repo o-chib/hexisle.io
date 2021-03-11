@@ -111,10 +111,8 @@ export default class CollisionDetection {
 		);
 		for (const result of results) {
 			if (
-				(
-                    result.payload instanceof Wall ||
-                    result.payload instanceof Point 
-                ) &&
+				(result.payload instanceof Wall ||
+					result.payload instanceof Point) &&
 				this.doCirclesCollide(
 					{ xPos: xPos, yPos: yPos },
 					Constant.PLAYER_RADIUS,

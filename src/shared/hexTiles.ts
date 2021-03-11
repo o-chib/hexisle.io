@@ -7,7 +7,7 @@ export class HexTiles {
 	public campRadius: number;
 	public mapHeight: number;
 	public baseCoords: OffsetPoint[];
-    public boundaryCoords: OffsetPoint[];
+	public boundaryCoords: OffsetPoint[];
 
 	constructor() {
 		this.hexSize = 75;
@@ -15,12 +15,12 @@ export class HexTiles {
 		this.mapHeight = 4000;
 		this.hexRadius = this.getMapHexRadius();
 		this.baseCoords = [];
-        this.boundaryCoords = [];
+		this.boundaryCoords = [];
 	}
 
 	generateMap(): void {
 		this.generateTileMap();
-        this.generateBoundary();
+		this.generateBoundary();
 		this.generateCamps();
 		this.generateBases(2, 1);
 	}
@@ -69,16 +69,20 @@ export class HexTiles {
 		console.timeEnd();
 	}
 
-    generateBoundary(): void {
+	generateBoundary(): void {
 		// sets the outer ring of tiles to a boundary tile
 		console.log('time to generate boundary');
 		console.time();
 
-		let boundaryHexes: OffsetPoint[] = this.getHexRingPoints(this.tileMap[this.hexRadius][this.hexRadius], this.hexRadius)
-        for (var boundaryHex of boundaryHexes) {
-            this.boundaryCoords.push(boundaryHex);
-            this.tileMap[boundaryHex.q][boundaryHex.r].building = Constant.BUILDING.BOUNDARY;
-        }
+		const boundaryHexes: OffsetPoint[] = this.getHexRingPoints(
+			this.tileMap[this.hexRadius][this.hexRadius],
+			this.hexRadius
+		);
+		for (const boundaryHex of boundaryHexes) {
+			this.boundaryCoords.push(boundaryHex);
+			this.tileMap[boundaryHex.q][boundaryHex.r].building =
+				Constant.BUILDING.BOUNDARY;
+		}
 
 		console.timeEnd();
 	}
@@ -261,7 +265,9 @@ export class HexTiles {
 		point.yPos = point.yPos - this.hexSize;
 
 		// make the offset coord into a cube format
-		let cube: number[] = this.pixelToCube(new Point(point.xPos, point.yPos));
+		let cube: number[] = this.pixelToCube(
+			new Point(point.xPos, point.yPos)
+		);
 
 		// round the cube
 		cube = this.roundCube(cube);
@@ -385,7 +391,8 @@ export class HexTiles {
 
 		const q: number = ((2 / 3) * point.xPos) / this.hexSize;
 		const r: number =
-			((-1 / 3) * point.xPos + (Math.sqrt(3) / 3) * point.yPos) / this.hexSize;
+			((-1 / 3) * point.xPos + (Math.sqrt(3) / 3) * point.yPos) /
+			this.hexSize;
 		return [q, -q - r, r];
 	}
 
@@ -522,9 +529,9 @@ export class Tile {
 
 	isInBounds(): boolean {
 		return (
-            this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
-            this.building != Constant.BUILDING.BOUNDARY
-        );
+			this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
+			this.building != Constant.BUILDING.BOUNDARY
+		);
 	}
 }
 

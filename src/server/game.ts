@@ -22,29 +22,29 @@ export default class Game {
 
 	constructor() {
 		this.players = new Map();
-		
-        this.bullets = new Set();
-		
-        this.walls = new Set();
-		
-        this.hexTileMap = new HexTiles();
+
+		this.bullets = new Set();
+
+		this.walls = new Set();
+
+		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
-		
-        this.teams = new Teams(2, this.hexTileMap.baseCoords);
-		
-        this.changedTiles = [];
-		
-        this.idGenerator = new IDgenerator();
-		
-        this.collision = new CollisionDetection();
-        this.generateBoundaryColliders();
-		
-        this.previousUpdateTimestamp = Date.now();
-		
-        setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
+
+		this.teams = new Teams(2, this.hexTileMap.baseCoords);
+
+		this.changedTiles = [];
+
+		this.idGenerator = new IDgenerator();
+
+		this.collision = new CollisionDetection();
+		this.generateBoundaryColliders();
+
+		this.previousUpdateTimestamp = Date.now();
+
+		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 	}
 
-    update() {
+	update() {
 		const currentTimestamp = Date.now();
 		const timePassed =
 			(currentTimestamp - this.previousUpdateTimestamp) / 1000;
@@ -237,12 +237,13 @@ export default class Game {
 		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
 
-    generateBoundaryColliders(): void {
-        for (var boundaryHex of this.hexTileMap.boundaryCoords) {
-            this.collision.insertCollider(
-                this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r].cartesian_coord,
-                Constant.WALL_COL_RADIUS
-            )
-        }
-    }
+	generateBoundaryColliders(): void {
+		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
+			this.collision.insertCollider(
+				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
+					.cartesian_coord,
+				Constant.WALL_COL_RADIUS
+			);
+		}
+	}
 }
