@@ -113,19 +113,19 @@ export default class Game {
 		for (const aCampfire of this.campfires) {
 			this.collision.campfirePlayerCollision(aCampfire);
 
-			if(aCampfire.captureProgress == 100) {
+			if (aCampfire.captureProgress == 100) {
 				aCampfire.checkForCapture();
-				let isCaptured = aCampfire.isCaptured;
-				let points = aCampfire.territoryPoints;
+				const isCaptured = aCampfire.isCaptured;
+				const points = aCampfire.territoryPoints;
 
 				// TODO: Update to iterate only chunck of tiles surround the campsite.
-				for(const pt of points) {
+				for (const pt of points) {
 					// TODO OUT OF BOUNDS INDEXING
-					if(!this.hexTileMap.checkIfValidHex(pt)){
+					if (!this.hexTileMap.checkIfValidHex(pt)) {
 						continue;
 					}
-					let tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
-					if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+					const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
+					if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
 						continue;
 					}
 
@@ -133,16 +133,20 @@ export default class Game {
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 					//this.changedTiles.push(tempTile);
 
-					let xPosition = tempTile.cartesian_coord.x.toString();
-					let yPosition = tempTile.cartesian_coord.y.toString();
-					let stringID = xPosition + ", " + yPosition;
+					const xPosition = tempTile.cartesian_coord.x.toString();
+					const yPosition = tempTile.cartesian_coord.y.toString();
+					const stringID = xPosition + ', ' + yPosition;
 
-					if(isCaptured){
+					if (isCaptured) {
 						// If captured, add to list
-						let tempTerritory = new Territory(stringID, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
+						const tempTerritory = new Territory(
+							stringID,
+							tempTile.cartesian_coord.x,
+							tempTile.cartesian_coord.y,
+							tempTile.team
+						);
 						this.territories.add(tempTerritory);
-					}
-					else{
+					} else {
 						// If non captured, remove from list
 						for (const aTerritory of this.territories) {
 							if (aTerritory.id == stringID) {
@@ -180,7 +184,6 @@ export default class Game {
 				this.createUpdate(aPlayer)
 			);
 		}
-
 	}
 
 	createUpdate(player: Player) {
@@ -193,30 +196,70 @@ export default class Game {
 
 		for (const aPlayer of this.players.values()) {
 			if (aPlayer === player) continue;
-			nearbyPlayers.push(aPlayer);
+			if (
+				this.collision.doCirclesCollide(
+					aPlayer,
+					Constant.PLAYER_RADIUS,
+					player,
+					Constant.VIEW_RADIUS
+				)
+			)
+				nearbyPlayers.push(aPlayer);
 		}
 
 		for (const aBullet of this.bullets) {
-			nearbyBullets.push(aBullet);
+			if (
+				this.collision.doCirclesCollide(
+					aBullet,
+					Constant.BULLET_RADIUS,
+					player,
+					Constant.VIEW_RADIUS
+				)
+			)
+				nearbyBullets.push(aBullet);
 		}
 
 		for (const aWall of this.walls) {
-			nearbyWalls.push(aWall);
+			if (
+				this.collision.doCirclesCollide(
+					aWall,
+					Constant.WALL_RADIUS,
+					player,
+					Constant.VIEW_RADIUS
+				)
+			)
+				nearbyWalls.push(aWall);
 		}
 
 		for (const aCampfire of this.campfires) {
-			nearbyCampfires.push(aCampfire);
+			if (
+				this.collision.doCirclesCollide(
+					aCampfire,
+					Constant.WALL_RADIUS,
+					player,
+					Constant.VIEW_RADIUS
+				)
+			)
+				nearbyCampfires.push(aCampfire);
 		}
 
 		for (const aTerritory of this.territories) {
-			nearbyTerritories.push(aTerritory);
+			if (
+				this.collision.doCirclesCollide(
+					aTerritory,
+					Constant.WALL_RADIUS,
+					player,
+					Constant.VIEW_RADIUS
+				)
+			)
+				nearbyTerritories.push(aTerritory);
 		}
 
 		return {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
-			changedTiles: changedTiles,
+			//		changedTiles: changedTiles,
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 			walls: nearbyWalls.map((p) => p.serializeForUpdate()),
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
@@ -302,10 +345,12 @@ export default class Game {
 		const campfire: Campfire = new Campfire(
 			this.idGenerator.newID(),
 			tile.cartesian_coord.x,
-			tile.cartesian_coord.y,
+			tile.cartesian_coord.y
 		);
 
-		campfire.setTerritoryPoints(this.hexTileMap.getHexRadiusPoints(tile, Constant.CAMP_RADIUS));
+		campfire.setTerritoryPoints(
+			this.hexTileMap.getHexRadiusPoints(tile, Constant.CAMP_RADIUS)
+		);
 
 		this.campfires.add(campfire);
 		tile.building = Constant.BUILDING.CAMP;
@@ -314,13 +359,13 @@ export default class Game {
 		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
 	}
 
-	initCampfires(): void{
+	initCampfires(): void {
 		this.campfires = new Set();
 
-		let tilemap = this.hexTileMap.tileMap;
-		for(let i = 0; i < tilemap.length ; i++) {
-			for(let j = 0; j < tilemap[i].length ; j++) {
-				if(tilemap[i][j].building == Constant.BUILDING.CAMP){
+		const tilemap = this.hexTileMap.tileMap;
+		for (let i = 0; i < tilemap.length; i++) {
+			for (let j = 0; j < tilemap[i].length; j++) {
+				if (tilemap[i][j].building == Constant.BUILDING.CAMP) {
 					this.buildCampfire(tilemap[i][j].offset_coord);
 				}
 			}
@@ -328,21 +373,29 @@ export default class Game {
 	}
 	addBaseTerritories() {
 		// Add permanent territory from bases
-		for(let i = 0; i < Constant.TEAM_COUNT; i++){
-			let teamBaseCoord = this.teams.getTeamBaseCoord(i)
-			let points = this.hexTileMap.getHexRadiusPoints(this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r], Constant.CAMP_RADIUS);
-			for(const pt of points) {
-				let tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
-				if(tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
+			const teamBaseCoord = this.teams.getTeamBaseCoord(i);
+			const points = this.hexTileMap.getHexRadiusPoints(
+				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r],
+				Constant.CAMP_RADIUS
+			);
+			for (const pt of points) {
+				const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
+				if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
 					continue;
 				}
 				tempTile.team = i;
 				this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 
 				//this.changedTiles.push(tempTile);
-				let xPosition = tempTile.cartesian_coord.x.toString();
-				let yPosition = tempTile.cartesian_coord.y.toString();
-				let tempTerritory = new Territory(xPosition + ", " + yPosition, tempTile.cartesian_coord.x, tempTile.cartesian_coord.y, tempTile.team);
+				const xPosition = tempTile.cartesian_coord.x.toString();
+				const yPosition = tempTile.cartesian_coord.y.toString();
+				const tempTerritory = new Territory(
+					xPosition + ', ' + yPosition,
+					tempTile.cartesian_coord.x,
+					tempTile.cartesian_coord.y,
+					tempTile.team
+				);
 
 				this.territories.add(tempTerritory);
 			}

@@ -6,6 +6,7 @@ module.exports = Object.freeze({
 	BULLET_RADIUS: 15,
 	WALL_RADIUS: 75,
 	WALL_COL_RADIUS: 75 * 0.75,
+	VIEW_RADIUS: 1600,
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
 	WALL_COST: 5,

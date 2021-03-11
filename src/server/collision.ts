@@ -25,8 +25,8 @@ export default class CollisionDetection {
 			results
 		);
 
-		let playerCount : number[] = [];
-		for(let i = 0; i < Constant.TEAM_COUNT; i++){
+		const playerCount: number[] = [];
+		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
 			playerCount[i] = 0;
 		}
 		results.forEach((result) => {

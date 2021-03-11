@@ -512,7 +512,7 @@ export class Tile {
 			id: this.building,
 			xPos: this.cartesian_coord.x,
 			yPos: this.cartesian_coord.y,
-		}
+		};
 	}
 }
 

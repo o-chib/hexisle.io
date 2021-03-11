@@ -86,7 +86,9 @@ export default class MainScene extends Phaser.Scene {
 			// Change this when more than 2 teams
 			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem').setDepth(1000);
 		} else {
-			this.myPlayerSprite = this.add.sprite(0, 0, 'aliemblue').setDepth(1000);
+			this.myPlayerSprite = this.add
+				.sprite(0, 0, 'aliemblue')
+				.setDepth(1000);
 		}
 
 		this.myPlayerSprite.setVisible(false);
@@ -207,7 +209,7 @@ export default class MainScene extends Phaser.Scene {
 		// takes XY coordinates of center point,
 		// generates all required vertices
 		// draws individual tile
-		if(tile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+		if (tile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
 			return;
 		}
 
@@ -246,8 +248,8 @@ export default class MainScene extends Phaser.Scene {
 		);
 
 		let colorName = '';
-		for(let i=0; i<Constant.TEAM_COUNT; i++) {
-			let graphics = this.add.graphics();
+		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
+			const graphics = this.add.graphics();
 
 			graphics.beginPath();
 			graphics.moveTo(points[0].x, points[0].y);
@@ -257,12 +259,11 @@ export default class MainScene extends Phaser.Scene {
 			}
 			graphics.closePath();
 
-
-			if(i == 0) {
+			if (i == 0) {
 				graphics.fillStyle(0xff0000, 0.2);
 				graphics.lineStyle(4, 0xff0000, 0.2);
 				colorName = 'red-territory';
-			} else if(i == 1) {
+			} else if (i == 1) {
 				graphics.fillStyle(0x3333ff, 0.2);
 				graphics.lineStyle(4, 0x3333ff, 0.2);
 				colorName = 'blue-territory';
@@ -270,9 +271,11 @@ export default class MainScene extends Phaser.Scene {
 
 			graphics.fillPath();
 
-			graphics.generateTexture(colorName,
+			graphics.generateTexture(
+				colorName,
 				this.hexTiles.getHexWidth(),
-				this.hexTiles.getHexHeight());
+				this.hexTiles.getHexHeight()
+			);
 
 			graphics.destroy();
 		}
@@ -343,16 +346,16 @@ export default class MainScene extends Phaser.Scene {
 		const {
 			currentPlayer,
 			otherPlayers,
-			changedTiles,
+			//		changedTiles,
 			bullets,
 			walls,
 			campfires,
-			territories
+			territories,
 		} = update;
 		if (currentPlayer == null) return;
 
 		this.updatePlayer(currentPlayer);
-		``
+
 		this.updateBullets(bullets);
 
 		this.updateOpponents(otherPlayers);
@@ -370,9 +373,9 @@ export default class MainScene extends Phaser.Scene {
 		//this.globalGraphics.destroy();
 		//this.globalGraphics = this.add.graphics();
 		// Redraw any updated tiles
-		for (const tile of changedTiles) {
-			this.hexTiles.tileMap[tile.offset_coord.q][tile.offset_coord.r] = tile;
-		}
+		//		for (const tile of changedTiles) {
+		//			this.hexTiles.tileMap[tile.offset_coord.q][tile.offset_coord.r] = tile;
+		//		}
 	}
 
 	private updateWalls(walls: any) {
@@ -397,8 +400,7 @@ export default class MainScene extends Phaser.Scene {
 			(newCampfire, newCampfireLiteral) => {
 				if (newCampfireLiteral.teamNumber != -1)
 					newCampfire.setTexture('campfire_lit').setDepth(0);
-				else
-					newCampfire.setTexture('campfire_unlit').setDepth(0);
+				else newCampfire.setTexture('campfire_unlit').setDepth(0);
 				return newCampfire;
 			}
 		);
@@ -453,8 +455,7 @@ export default class MainScene extends Phaser.Scene {
 				newPlayer.setRotation(-1 * playerLiteral.direction);
 				if (playerLiteral.teamNumber == 1)
 					newPlayer.setTexture('aliemblue').setDepth(1000);
-				if (playerLiteral.teamNumber == 0)
-					newPlayer.setDepth(1000);
+				if (playerLiteral.teamNumber == 0) newPlayer.setDepth(1000);
 				return newPlayer;
 			}
 		);
