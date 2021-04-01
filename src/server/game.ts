@@ -99,16 +99,16 @@ export default class Game {
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 					//this.changedTiles.push(tempTile);
 
-					const xPosition = tempTile.cartesian_coord.x.toString();
-					const yPosition = tempTile.cartesian_coord.y.toString();
+					const xPosition = tempTile.cartesian_coord.xPos.toString();
+					const yPosition = tempTile.cartesian_coord.yPos.toString();
 					const stringID = xPosition + ', ' + yPosition;
 
 					if (isCaptured) {
 						// If captured, add to list
 						const tempTerritory = new Territory(
 							stringID,
-							tempTile.cartesian_coord.x,
-							tempTile.cartesian_coord.y,
+							tempTile.cartesian_coord.xPos,
+							tempTile.cartesian_coord.yPos,
 							tempTile.team
 						);
 						this.territories.add(tempTerritory);
@@ -370,8 +370,8 @@ export default class Game {
 
 		const campfire: Campfire = new Campfire(
 			this.idGenerator.newID(),
-			tile.cartesian_coord.x,
-			tile.cartesian_coord.y
+			tile.cartesian_coord.xPos,
+			tile.cartesian_coord.yPos
 		);
 
 		campfire.setTerritoryPoints(
@@ -414,12 +414,12 @@ export default class Game {
 				this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 
 				//this.changedTiles.push(tempTile);
-				const xPosition = tempTile.cartesian_coord.x.toString();
-				const yPosition = tempTile.cartesian_coord.y.toString();
+				const xPosition = tempTile.cartesian_coord.xPos.toString();
+				const yPosition = tempTile.cartesian_coord.yPos.toString();
 				const tempTerritory = new Territory(
 					xPosition + ', ' + yPosition,
-					tempTile.cartesian_coord.x,
-					tempTile.cartesian_coord.y,
+					tempTile.cartesian_coord.xPos,
+					tempTile.cartesian_coord.yPos,
 					tempTile.team
 				);
 
