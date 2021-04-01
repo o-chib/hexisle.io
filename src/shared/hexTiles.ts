@@ -537,8 +537,8 @@ export class Tile {
 	serializeForUpdate(): any {
 		return {
 			id: this.building,
-			xPos: this.cartesian_coord.x,
-			yPos: this.cartesian_coord.y,
+			xPos: this.cartesian_coord.xPos,
+			yPos: this.cartesian_coord.yPos,
 		};
 	}
 }

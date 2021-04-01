@@ -33,21 +33,21 @@ export default class Game {
 
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
-		
-        this.teams = new Teams(2, this.hexTileMap.baseCoords);
-		
-        this.changedTiles = [];
-		
-        this.collision = new CollisionDetection();
-        this.generateBoundaryColliders();
-		
-        this.previousUpdateTimestamp = Date.now();
-		
-        this.idGenerator = new IDgenerator();
-		
-        this.initCampfires();
-		
-        this.territories = new Set();
+
+		this.teams = new Teams(2, this.hexTileMap.baseCoords);
+
+		this.changedTiles = [];
+
+		this.collision = new CollisionDetection();
+		this.generateBoundaryColliders();
+
+		this.previousUpdateTimestamp = Date.now();
+
+		this.idGenerator = new IDgenerator();
+
+		this.initCampfires();
+
+		this.territories = new Set();
 		this.addBaseTerritories();
 
 		this.changedTiles = [];
