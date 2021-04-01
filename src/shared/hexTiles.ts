@@ -304,11 +304,11 @@ export class HexTiles {
 		return results;
 	}
 
-	private getHexHeight(): number {
+	public getHexHeight(): number {
 		return this.hexSize * Math.sqrt(3);
 	}
 
-	private getHexWidth(): number {
+	public getHexWidth(): number {
 		return this.hexSize * 2;
 	}
 
@@ -471,7 +471,7 @@ export class HexTiles {
 		return hex;
 	}
 
-	private isHexInHexList(hex: OffsetPoint, hexList: OffsetPoint[]): boolean {
+	public isHexInHexList(hex: OffsetPoint, hexList: OffsetPoint[]): boolean {
 		// checks if a given hex coordinate is in a list of offset points (checks q and r)
 		// returns a true if it is in the list
 
@@ -490,7 +490,7 @@ export class Tile {
 	public team: number;
 	public building: string;
 
-	constructor(building = Constant.BUILDING.NONE, team = 0) {
+	constructor(building = Constant.BUILDING.NONE, team = -1) {
 		this.building = building;
 		this.team = team;
 	}
@@ -505,6 +505,14 @@ export class Tile {
 
 	isInBounds(): boolean {
 		return this.building != Constant.BUILDING.OUT_OF_BOUNDS;
+	}
+
+	serializeForUpdate(): any {
+		return {
+			id: this.building,
+			xPos: this.cartesian_coord.x,
+			yPos: this.cartesian_coord.y,
+		};
 	}
 }
 
