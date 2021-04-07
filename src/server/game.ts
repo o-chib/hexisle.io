@@ -28,9 +28,7 @@ export default class Game {
 
 	constructor() {
 		this.players = new Map();
-
 		this.bullets = new Set();
-
 		this.walls = new Set();
 
 		this.hexTileMap = new HexTiles();
@@ -44,11 +42,13 @@ export default class Game {
 		this.generateBoundaryColliders();
 
 		this.previousUpdateTimestamp = Date.now();
+		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 
 		this.idGenerator = new IDgenerator();
 
 		this.initCampfires();
 		this.initBases();
+
 		this.territories = new Set();
 		this.addBaseTerritories();
 	}
