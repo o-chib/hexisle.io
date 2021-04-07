@@ -136,21 +136,6 @@ export default class MainScene extends Phaser.Scene {
 		this.initializeGlobalVariables();
 	}
 
-	private initializeGlobalVariables(): void {
-		this.cursors = this.input.keyboard.addKeys({
-			up: Phaser.Input.Keyboard.KeyCodes.W,
-			down: Phaser.Input.Keyboard.KeyCodes.S,
-			left: Phaser.Input.Keyboard.KeyCodes.A,
-			right: Phaser.Input.Keyboard.KeyCodes.D,
-			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
-		});
-	}
-
-	private setCamera(): void {
-		this.cameras.main.startFollow(this.myPlayerSprite, true);
-		this.cameras.main.setZoom(0.5);
-	}
-
 	private initializePlayer(player: any): void {
 		// Change this when more than 2 teams
 		if (player.teamNumber == 0) {
@@ -165,6 +150,21 @@ export default class MainScene extends Phaser.Scene {
 		this.myPlayerSprite.setVisible(false);
 		this.myPlayerSprite.setScale(1);
 		this.alive = true;
+	}
+
+	private setCamera(): void {
+		this.cameras.main.startFollow(this.myPlayerSprite, true);
+		this.cameras.main.setZoom(0.5);
+	}
+
+	private initializeGlobalVariables(): void {
+		this.cursors = this.input.keyboard.addKeys({
+			up: Phaser.Input.Keyboard.KeyCodes.W,
+			down: Phaser.Input.Keyboard.KeyCodes.S,
+			left: Phaser.Input.Keyboard.KeyCodes.A,
+			right: Phaser.Input.Keyboard.KeyCodes.D,
+			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
+		});
 	}
 
 	private createTileMap(tileMap: any) {
@@ -199,7 +199,9 @@ export default class MainScene extends Phaser.Scene {
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
 				if (
 					this.hexTiles.tileMap[col][row].building !=
-					Constant.BUILDING.OUT_OF_BOUNDS
+						Constant.BUILDING.OUT_OF_BOUNDS &&
+					this.hexTiles.tileMap[col][row].building !=
+						Constant.BUILDING.BOUNDARY
 				) {
 					//TODO cannot put isInBounds here?
 					this.drawTile(this.hexTiles.tileMap[col][row], graphic_Map);
@@ -235,7 +237,6 @@ export default class MainScene extends Phaser.Scene {
 	drawGraphics(points: Point[], graphics: Phaser.GameObjects.Graphics) {
 		graphics.beginPath();
 		graphics.moveTo(points[0].x, points[0].y);
-
 		for (let i = 0; i < 6; i++) {
 			graphics.lineTo(points[i].x, points[i].y);
 		}
