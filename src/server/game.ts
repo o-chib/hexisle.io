@@ -381,16 +381,6 @@ export default class Game {
 		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
 
-	generateBoundaryColliders(): void {
-		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
-			this.collision.insertCollider(
-				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
-					.cartesian_coord,
-				Constant.WALL_COL_RADIUS
-			);
-		}
-	}
-
 	initCampfires(): void {
 		this.campfires = new Set();
 
@@ -466,6 +456,16 @@ export default class Game {
 		tile.building = Constant.BUILDING.BASE;
 
 		this.collision.insertCollider(base, Constant.BASE_COL_RADIUS);
+	}
+
+	generateBoundaryColliders(): void {
+		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
+			this.collision.insertCollider(
+				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
+					.cartesian_coord,
+				Constant.WALL_COL_RADIUS
+			);
+		}
 	}
 
 	addBaseTerritories() {
