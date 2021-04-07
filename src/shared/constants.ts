@@ -6,6 +6,8 @@ module.exports = Object.freeze({
 	BULLET_RADIUS: 15,
 	WALL_RADIUS: 75,
 	WALL_COL_RADIUS: 75 * 0.75,
+	BASE_RADIUS: 112.5,
+	BASE_COL_RADIUS: 112.5 * 0.75,
 	VIEW_RADIUS: 1600,
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
@@ -28,6 +30,7 @@ module.exports = Object.freeze({
 		STRUCTURE: 'structure',
 		CAMP: 'camp',
 		BASE: 'base',
+		CANT_BUILD: 'cant build'
 	},
 
 	MESSAGE: {
