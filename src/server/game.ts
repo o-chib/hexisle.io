@@ -48,7 +48,6 @@ export default class Game {
 		console.log('Hello: ' + socket.id);
 
 		const team: number = this.teams.addNewPlayer(socket.id);
-		console.log('Assigning to team ' + team);
 
 		const newPlayer = new Player(socket, 0, 0, team);
 		this.respawnPlayer(newPlayer);

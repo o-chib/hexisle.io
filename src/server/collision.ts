@@ -118,9 +118,6 @@ export default class CollisionDetection {
 					Constant.BULLET_RADIUS
 				)
 			) {
-				if (building instanceof Base) {
-					console.log("bullet is hitting a base");
-				}
 				building.hp -= 10;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(

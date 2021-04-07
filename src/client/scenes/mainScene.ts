@@ -44,7 +44,7 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('wallblue', '../assets/tempwallblue.png'); //TODO
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
-		this.load.image('base', '../assets/campfire_lit.png');
+		this.load.image('base', '../assets/base.png');
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
