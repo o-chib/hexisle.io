@@ -432,6 +432,13 @@ export default class Game {
 
 		this.teams.getTeam(teamNum).respawnCoords = this.hexTileMap.getHexRingPoints(tile, 2);
 
+		// make it so you cant build on and around the base
+		for (let i = 0; i <= 2; i++) {
+			this.hexTileMap.getHexRingPoints(tile, i).forEach(coord => {
+				this.hexTileMap.tileMap[coord.q][coord.r].building = Constant.BUILDING.CANT_BUILD;
+			});
+		}
+
 		this.bases.add(base);
 		tile.building = Constant.BUILDING.BASE;
 
