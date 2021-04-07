@@ -31,6 +31,7 @@ module.exports = Object.freeze({
 		CAMP: 'camp',
 		BASE: 'base',
 		CANT_BUILD: 'cant build',
+		BOUNDARY: 'boundary',
 	},
 
 	MESSAGE: {
