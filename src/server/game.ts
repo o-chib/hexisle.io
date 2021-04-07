@@ -95,7 +95,6 @@ export default class Game {
 	getRespawnPoint(teamNum: number): Point {
 		let coords: OffsetPoint[] = this.teams.getRespawnCoords(teamNum);
 		let index = Math.floor(Math.random() * coords.length);
-		console.log(coords.length);
 		return this.hexTileMap.offsetToCartesian(coords[index]);
 	}
 
@@ -431,7 +430,7 @@ export default class Game {
 		this.bases.add(base);
 		tile.building = Constant.BUILDING.BASE;
 
-		//this.collision.insertCollider(base, Constant.WALL_RADIUS * 1.5);
+		this.collision.insertCollider(base, Constant.BASE_COL_RADIUS);
 	}
 
 	addBaseTerritories() {

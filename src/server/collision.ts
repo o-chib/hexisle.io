@@ -2,6 +2,7 @@ import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from '../shared/wall';
 import Campfire from '../shared/campfire';
+import Base from '../shared/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 const Constant = require('../shared/constants');
 
@@ -146,12 +147,23 @@ export default class CollisionDetection {
 		);
 		for (const result of results) {
 			if (
-				result.payload instanceof Wall &&
-				this.doCirclesCollide(
-					{ xPos: xPos, yPos: yPos },
+				(
+					result.payload instanceof Wall &&
+					this.doCirclesCollide(
+						{ xPos: xPos, yPos: yPos },
 					Constant.PLAYER_RADIUS,
 					result.payload,
 					Constant.WALL_COL_RADIUS
+				)
+				) || (
+					(result.payload instanceof Base &&
+						this.doCirclesCollide(
+							{ xPos: xPos, yPos: yPos },
+							Constant.PLAYER_RADIUS,
+							result.payload,
+							Constant.BASE_COL_RADIUS
+						)
+					)
 				)
 			)
 				return true;
