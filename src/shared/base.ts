@@ -7,7 +7,7 @@ export default class Base {
 	teamNumber: number;
 	tile: Tile;
 
-	hp = 200;
+	hp = 100;
 
 	constructor(
 		id: string,

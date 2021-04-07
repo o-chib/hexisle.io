@@ -179,11 +179,16 @@ export default class Game {
 		}
 
 		for (const aBase of this.bases) {
-			//this.collision.buildingBulletCollision(aBase, this.bullets);
+			this.collision.buildingBulletCollision(aBase, this.bullets);
 			if (!aBase.isAlive()) {
-				//this.collision.deleteCollider(aBase, Constant.WALL_RADIUS);
-				aBase.tile.setEmpty();
-				this.walls.delete(aBase);
+				this.collision.deleteCollider(aBase, Constant.BASE_COL_RADIUS);
+
+				// reset all the nearby tiles (respawn points and base tile)
+				this.hexTileMap.getHexRadiusPoints(aBase.tile, 2).forEach(coord => {
+					this.hexTileMap.tileMap[coord.q][coord.r].setEmpty();
+				});
+
+				this.bases.delete(aBase);
 			}
 		}
 
