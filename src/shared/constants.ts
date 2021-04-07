@@ -30,7 +30,7 @@ module.exports = Object.freeze({
 		STRUCTURE: 'structure',
 		CAMP: 'camp',
 		BASE: 'base',
-		CANT_BUILD: 'cant build'
+		CANT_BUILD: 'cant build',
 	},
 
 	MESSAGE: {

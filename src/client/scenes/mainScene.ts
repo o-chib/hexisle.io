@@ -420,8 +420,7 @@ export default class MainScene extends Phaser.Scene {
 			'base',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBase, newBaseLiteral) => {
-				if (newBaseLiteral.teamNumber == 1)
-					newBase.setTexture('base');
+				if (newBaseLiteral.teamNumber == 1) newBase.setTexture('base');
 				return newBase;
 			}
 		);

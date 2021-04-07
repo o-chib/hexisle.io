@@ -89,11 +89,11 @@ export default class CollisionDetection {
 
 	buildingBulletCollision(building: any, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
-		let col_radius: number = 0;
+		let col_radius = 0;
 		if (building instanceof Wall) {
 			col_radius = Constant.WALL_COL_RADIUS;
 		} else if (building instanceof Base) {
-			col_radius = Constant.BASE_COL_RADIUS
+			col_radius = Constant.BASE_COL_RADIUS;
 		}
 
 		this.quadtree.searchQuadtree(
@@ -154,24 +154,20 @@ export default class CollisionDetection {
 		);
 		for (const result of results) {
 			if (
-				(
-					result.payload instanceof Wall &&
+				(result.payload instanceof Wall &&
 					this.doCirclesCollide(
 						{ xPos: xPos, yPos: yPos },
-					Constant.PLAYER_RADIUS,
-					result.payload,
-					Constant.WALL_COL_RADIUS
-				)
-				) || (
-					(result.payload instanceof Base &&
-						this.doCirclesCollide(
-							{ xPos: xPos, yPos: yPos },
-							Constant.PLAYER_RADIUS,
-							result.payload,
-							Constant.BASE_COL_RADIUS
-						)
-					)
-				)
+						Constant.PLAYER_RADIUS,
+						result.payload,
+						Constant.WALL_COL_RADIUS
+					)) ||
+				(result.payload instanceof Base &&
+					this.doCirclesCollide(
+						{ xPos: xPos, yPos: yPos },
+						Constant.PLAYER_RADIUS,
+						result.payload,
+						Constant.BASE_COL_RADIUS
+					))
 			)
 				return true;
 		}

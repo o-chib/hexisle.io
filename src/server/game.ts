@@ -18,7 +18,7 @@ export default class Game {
 	bullets: Set<Bullet>;
 	walls: Set<Wall>;
 	campfires: Set<Campfire>;
-  bases: Set<Base>;
+	bases: Set<Base>;
 	previousUpdateTimestamp: any;
 	hexTileMap: HexTiles;
 	idGenerator: IDgenerator;
@@ -92,8 +92,8 @@ export default class Game {
 	}
 
 	getRespawnPoint(teamNum: number): Point {
-		let coords: OffsetPoint[] = this.teams.getRespawnCoords(teamNum);
-		let index = Math.floor(Math.random() * coords.length);
+		const coords: OffsetPoint[] = this.teams.getRespawnCoords(teamNum);
+		const index = Math.floor(Math.random() * coords.length);
 		return this.hexTileMap.offsetToCartesian(coords[index]);
 	}
 
@@ -183,9 +183,11 @@ export default class Game {
 				this.collision.deleteCollider(aBase, Constant.BASE_COL_RADIUS);
 
 				// reset all the nearby tiles (respawn points and base tile)
-				this.hexTileMap.getHexRadiusPoints(aBase.tile, 2).forEach(coord => {
-					this.hexTileMap.tileMap[coord.q][coord.r].setEmpty();
-				});
+				this.hexTileMap
+					.getHexRadiusPoints(aBase.tile, 2)
+					.forEach((coord) => {
+						this.hexTileMap.tileMap[coord.q][coord.r].setEmpty();
+					});
 
 				this.bases.delete(aBase);
 			}
@@ -413,7 +415,7 @@ export default class Game {
 			this.buildBase(teamNum, this.teams.getTeamBaseCoord(teamNum));
 		}
 	}
-	
+
 	buildBase(teamNum: number, coord: OffsetPoint): void {
 		if (!this.hexTileMap.checkIfValidHex(coord)) {
 			return;
@@ -429,12 +431,15 @@ export default class Game {
 			tile
 		);
 
-		this.teams.getTeam(teamNum).respawnCoords = this.hexTileMap.getHexRingPoints(tile, 2);
+		this.teams.getTeam(
+			teamNum
+		).respawnCoords = this.hexTileMap.getHexRingPoints(tile, 2);
 
 		// make it so you cant build on and around the base
 		for (let i = 0; i <= 2; i++) {
-			this.hexTileMap.getHexRingPoints(tile, i).forEach(coord => {
-				this.hexTileMap.tileMap[coord.q][coord.r].building = Constant.BUILDING.CANT_BUILD;
+			this.hexTileMap.getHexRingPoints(tile, i).forEach((coord) => {
+				this.hexTileMap.tileMap[coord.q][coord.r].building =
+					Constant.BUILDING.CANT_BUILD;
 			});
 		}
 
