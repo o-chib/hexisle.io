@@ -189,7 +189,9 @@ export default class MainScene extends Phaser.Scene {
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
 				if (
 					this.hexTiles.tileMap[col][row].building !=
-					Constant.BUILDING.OUT_OF_BOUNDS
+						Constant.BUILDING.OUT_OF_BOUNDS &&
+					this.hexTiles.tileMap[col][row].building !=
+						Constant.BUILDING.BOUNDARY
 				) {
 					//TODO cannot put isInBounds here?
 					this.drawTile(this.hexTiles.tileMap[col][row], graphic_Map);
@@ -228,9 +230,9 @@ export default class MainScene extends Phaser.Scene {
 		}
 
 		graphics.beginPath();
-		graphics.moveTo(points[0].x, points[0].y);
+		graphics.moveTo(points[0].xPos, points[0].yPos);
 		for (let i = 0; i < 6; i++) {
-			graphics.lineTo(points[i].x, points[i].y);
+			graphics.lineTo(points[i].xPos, points[i].yPos);
 		}
 		graphics.closePath();
 
@@ -252,10 +254,10 @@ export default class MainScene extends Phaser.Scene {
 			const graphics = this.add.graphics();
 
 			graphics.beginPath();
-			graphics.moveTo(points[0].x, points[0].y);
+			graphics.moveTo(points[0].xPos, points[0].yPos);
 
 			for (let i = 0; i < 6; i++) {
-				graphics.lineTo(points[i].x, points[i].y);
+				graphics.lineTo(points[i].xPos, points[i].yPos);
 			}
 			graphics.closePath();
 
