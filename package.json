@@ -1,8 +1,8 @@
 {
   "name": "team-io-game",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "author": "teamIO",
-  "description": "",
+  "description": "A top down gun-action and builder webgame.",
   "license": "",
   "main": "",
   "scripts": {
@@ -13,7 +13,7 @@
     "build-client": "webpack --mode development --config webpack.client.js",
     "lint": "eslint src/",
     "lint-fix": "eslint src/ --fix",
-    "test": "jasmine-ts --config=jasmine.json"
+    "test": "karma start karma.conf.js — single-run"
   },
   "dependencies": {
     "express": "4.17.1",
@@ -37,6 +37,10 @@
     "jasmine": "^3.7.0",
     "jasmine-spec-reporter": "^6.0.0",
     "jasmine-ts": "^0.1.2",
+    "karma": "^6.3.2",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-jasmine": "^4.0.1",
+    "karma-phantomjs-launcher": "^1.0.4",
     "prettier": "^2.2.1",
     "ts-loader": "8.0.17",
     "ts-node": "^7.0.1",
