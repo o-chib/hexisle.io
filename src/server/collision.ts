@@ -156,14 +156,14 @@ export default class CollisionDetection {
 		for (const result of results) {
 			if (
 				// TODO replace Point with some better invisible collider when refactoring
-				(result.payload instanceof Wall ||
+				((result.payload instanceof Wall ||
 					result.payload instanceof Point) &&
-				this.doCirclesCollide(
-					{ xPos: xPos, yPos: yPos },
-					Constant.PLAYER_RADIUS,
-					result.payload,
-					Constant.WALL_COL_RADIUS
-				) ||
+					this.doCirclesCollide(
+						{ xPos: xPos, yPos: yPos },
+						Constant.PLAYER_RADIUS,
+						result.payload,
+						Constant.WALL_COL_RADIUS
+					)) ||
 				(result.payload instanceof Base &&
 					this.doCirclesCollide(
 						{ xPos: xPos, yPos: yPos },
