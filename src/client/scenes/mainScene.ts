@@ -285,25 +285,6 @@ export default class MainScene extends Phaser.Scene {
 		//this.updateMovementDirection();
 	}
 
-	//TODO really gross can we clean this?
-	private updateMovementDirection(): void {
-		let direction = this.calculateDirection();
-		
-		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
-
-		if (this.cursors.buildWall.isDown) {
-			if (!this.alive) return;
-			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x,
-				this.input.mousePointer.y
-			);
-			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-				new Point(gamePos.x, gamePos.y)
-			);
-			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
-		}
-	}
-
 	calculateDirection() {
 		let direction = NaN;
 		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
@@ -327,12 +308,31 @@ export default class MainScene extends Phaser.Scene {
 		return direction;
 	}
 
+	private updateMovementDirection(): void {
+		let direction = this.calculateDirection();
+		
+		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
+
+		if (this.cursors.buildWall.isDown) {
+			if (!this.alive) return;
+
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x, this.input.mousePointer.y
+			);
+			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+				new Point(gamePos.x, gamePos.y)
+			);
+
+			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
+		}
+	}
+
 	updateState(update: any): void {
 		//TODO may state type
 		const {
 			currentPlayer,
 			otherPlayers,
-			//		changedTiles,
+			//changedTiles,
 			bullets,
 			walls,
 			campfires,
@@ -350,86 +350,32 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateCampfires(campfires);
 
-		// this.updateChangedTiles(changedTiles);
-
 		this.updateTerritories(territories);
 
+		//this.updateChangedTiles(changedTiles);
+
 		this.events.emit('updateHUD', currentPlayer);
-
-		//this.globalGraphics.destroy();
-		//this.globalGraphics = this.add.graphics();
-		// Redraw any updated tiles
-		//		for (const tile of changedTiles) {
-		//			this.hexTiles.tileMap[tile.offset_coord.q][tile.offset_coord.r] = tile;
-		//		}
-	}
-
-	private updateWalls(walls: any) {
-		this.updateMapOfObjects(
-			walls,
-			this.wallSprites,
-			'wall',
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			(newWall, newWallLiteral) => {
-				if (newWallLiteral.teamNumber == 1)
-					newWall.setTexture('wallblue');
-				return newWall;
-			}
-		);
-	}
-	private updateCampfires(campfires: any) {
-		this.updateMapOfObjects(
-			campfires,
-			this.campfireSprites,
-			'campfire_unlit',
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			(newCampfire, newCampfireLiteral) => {
-				if (newCampfireLiteral.teamNumber != -1)
-					newCampfire.setTexture('campfire_lit').setDepth(0);
-				else newCampfire.setTexture('campfire_unlit').setDepth(0);
-				return newCampfire;
-			}
-		);
-	}
-
-	private updateTerritories(territories: any) {
-		this.updateMapOfObjects(
-			territories,
-			this.territorySprites,
-			'red-territory',
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			(changedTilesNewTile, changedTilesCurrentTile) => {
-				if (changedTilesCurrentTile.teamNumber == 0) {
-					changedTilesNewTile.setTexture('red-territory');
-					changedTilesNewTile.setVisible(true).setDepth(-1);
-				} else if (changedTilesCurrentTile.teamNumber == 1) {
-					changedTilesNewTile.setTexture('blue-territory');
-					changedTilesNewTile.setVisible(true).setDepth(-1);
-				}
-				return changedTilesNewTile;
-			}
-		);
 	}
 
 	private updatePlayer(currentPlayer: any) {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
+
 		if (this.alive && !this.myPlayerSprite.visible)
 			this.myPlayerSprite.setVisible(true);
 	}
 
+	//TODO may not be necessary for bullets
 	private updateBullets(bullets: any) {
 		this.updateMapOfObjects(
 			bullets,
 			this.bulletSprites,
 			'bullet',
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBullet, newBulletLiteral) => {
 				if (newBulletLiteral.teamNumber == 1)
 					newBullet.setTexture('bulletblue');
 				return newBullet;
 			}
 		);
-		//TODO may not be necessary for bullets
 	}
 
 	private updateOpponents(otherPlayers: any) {
@@ -447,6 +393,51 @@ export default class MainScene extends Phaser.Scene {
 		);
 	}
 
+	private updateWalls(walls: any) {
+		this.updateMapOfObjects(
+			walls,
+			this.wallSprites,
+			'wall',
+			(newWall, newWallLiteral) => {
+				if (newWallLiteral.teamNumber == 1)
+					newWall.setTexture('wallblue');
+				return newWall;
+			}
+		);
+	}
+
+	private updateCampfires(campfires: any) {
+		this.updateMapOfObjects(
+			campfires,
+			this.campfireSprites,
+			'campfire_unlit',
+			(newCampfire, newCampfireLiteral) => {
+				if (newCampfireLiteral.teamNumber != -1)
+					newCampfire.setTexture('campfire_lit').setDepth(0);
+				else newCampfire.setTexture('campfire_unlit').setDepth(0);
+				return newCampfire;
+			}
+		);
+	}
+
+	private updateTerritories(territories: any) {
+		this.updateMapOfObjects(
+			territories,
+			this.territorySprites,
+			'red-territory',
+			(changedTilesNewTile, changedTilesCurrentTile) => {
+				if (changedTilesCurrentTile.teamNumber == 0) {
+					changedTilesNewTile.setTexture('red-territory');
+					changedTilesNewTile.setVisible(true).setDepth(-1);
+				} else if (changedTilesCurrentTile.teamNumber == 1) {
+					changedTilesNewTile.setTexture('blue-territory');
+					changedTilesNewTile.setVisible(true).setDepth(-1);
+				}
+				return changedTilesNewTile;
+			}
+		);
+	}
+
 	private updateMapOfObjects(
 		currentObjects: any,
 		oldObjects: Map<string, Phaser.GameObjects.Sprite>,
@@ -454,8 +445,10 @@ export default class MainScene extends Phaser.Scene {
 		callback: (arg0: any, arg1: any) => any
 	) {
 		this.deadObjects.clear();
+
 		currentObjects.forEach((obj) => {
 			let newObj;
+
 			if (oldObjects.has(obj.id)) {
 				newObj = oldObjects.get(obj.id);
 				newObj.setPosition(obj.xPos, obj.yPos);
@@ -463,11 +456,14 @@ export default class MainScene extends Phaser.Scene {
 				newObj = this.add.sprite(obj.xPos, obj.yPos, sprite);
 				oldObjects.set(obj.id, newObj);
 			}
+
 			this.deadObjects.add(obj.id);
 			callback(newObj, obj);
 		});
+
 		for (const anOldKey of oldObjects.keys()) {
 			if (this.deadObjects.has(anOldKey)) continue;
+			
 			oldObjects.get(anOldKey)?.destroy();
 			oldObjects.delete(anOldKey);
 		}
