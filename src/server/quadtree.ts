@@ -1,5 +1,8 @@
 // Import Mapsize or something
 
+import Base from "../shared/base";
+import Wall from "../shared/wall";
+
 export class Quadtree {
 	// The ratio of child to parent width.  Higher numbers will push payload further down
 	// into the tree.  The resulting quadtree will require more node testing but less object
@@ -55,6 +58,7 @@ export class Quadtree {
 		depth: number,
 		obj: CollisionObject
 	): void {
+
 		const splitLeft: number =
 			nodebox.l + this.SPLIT * (nodebox.r - nodebox.l);
 		const splitRight: number =
@@ -66,6 +70,9 @@ export class Quadtree {
 
 		// if we're at our deepest level it must be in here
 		if (depth > this.MAX_DEPTH) {
+			if (obj.payload instanceof Base) {
+				console.log("inserting", obj, "at depth", depth);
+			}
 			node.collisionObjects.push(obj);
 
 			// contained within UPPER LEFT
@@ -95,6 +102,9 @@ export class Quadtree {
 			// object is not wholly contained in any child node
 		} else {
 			this.topLevelNode.collisionObjects.push(obj);
+			if (obj.payload instanceof Base) {
+				console.log("inserting", obj, "at depth", depth);
+			}
 		}
 	}
 
@@ -119,6 +129,9 @@ export class Quadtree {
 				(o) => o.payload.id === obj.payload.id
 			);
 			node.collisionObjects.splice(index, 1);
+			if (obj.payload instanceof Base) {
+				console.log("deleted from quadtree:", obj);
+			}
 
 			// contained within UPPER LEFT
 		} else if (obj.r < splitRight && obj.b > splitTop) {
@@ -150,6 +163,9 @@ export class Quadtree {
 				(o) => o.payload.id === obj.payload.id
 			);
 			this.topLevelNode.collisionObjects.splice(index, 1);
+			if (obj.payload instanceof Base) {
+				console.log("deleted from quadtree:", obj);
+			}
 		}
 	}
 

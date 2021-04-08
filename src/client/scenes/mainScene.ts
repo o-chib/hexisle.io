@@ -224,14 +224,7 @@ export default class MainScene extends Phaser.Scene {
 			tile.cartesian_coord
 		);
 
-		if (tile.building == Constant.BUILDING.CAMP) {
-			graphics.lineStyle(4, 0xff0000, 1);
-		} else if (tile.building == Constant.BUILDING.BASE) {
-			graphics.lineStyle(6, 0x00ffcc, 1);
-		} else {
-			graphics.lineStyle(2, 0xffffff, 1);
-		}
-
+		graphics.lineStyle(2, 0xffffff, 1);
 		graphics.beginPath();
 		graphics.moveTo(points[0].xPos, points[0].yPos);
 		for (let i = 0; i < 6; i++) {

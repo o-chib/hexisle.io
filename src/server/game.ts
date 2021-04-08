@@ -30,6 +30,11 @@ export default class Game {
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Set();
+		this.bases = new Set();
+		this.campfires = new Set();
+		this.territories = new Set();
+
+		this.idGenerator = new IDgenerator();
 
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
@@ -42,15 +47,13 @@ export default class Game {
 		this.generateBoundaryColliders();
 
 		this.previousUpdateTimestamp = Date.now();
-		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
-
-		this.idGenerator = new IDgenerator();
 
 		this.initCampfires();
-		this.initBases();
 
-		this.territories = new Set();
 		this.addBaseTerritories();
+		this.initBases();
+		
+		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 	}
 
 	update() {
@@ -138,7 +141,7 @@ export default class Game {
 			if (!aBase.isAlive()) {
 				this.collision.deleteCollider(aBase, Constant.BASE_COL_RADIUS);
 
-				// reset all the nearby tiles (respawn points and base tile)
+				// empty all the nearby tiles (respawn points to center base tile)
 				this.hexTileMap
 					.getHexRadiusPoints(aBase.tile, 2)
 					.forEach((coord) => {
@@ -378,12 +381,10 @@ export default class Game {
 		tile.building = Constant.BUILDING.STRUCTURE;
 		// this.changedTiles.push(tile); //TODO
 
-		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
+		this.collision.insertCollider(wall, Constant.WALL_COL_RADIUS);
 	}
 
 	initCampfires(): void {
-		this.campfires = new Set();
-
 		const tilemap = this.hexTileMap.tileMap;
 		for (let i = 0; i < tilemap.length; i++) {
 			for (let j = 0; j < tilemap[i].length; j++) {
@@ -414,15 +415,15 @@ export default class Game {
 		this.campfires.add(campfire);
 		tile.building = Constant.BUILDING.CAMP;
 		//this.changedTiles.push(tile); //TODO
-
 		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
 	}
 
 	initBases(): void {
-		this.bases = new Set();
-		for (let teamNum = 0; teamNum < this.teams.getNumTeams(); teamNum++) {
+		for (let teamNum = 0; teamNum < Constant.TEAM_COUNT; teamNum++) {
 			this.buildBase(teamNum, this.teams.getTeamBaseCoord(teamNum));
 		}
+		// this.buildBase(1, this.teams.getTeamBaseCoord(1));
+		// this.buildBase(0, this.teams.getTeamBaseCoord(0));
 	}
 
 	buildBase(teamNum: number, coord: OffsetPoint): void {
@@ -431,6 +432,8 @@ export default class Game {
 		}
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+		tile.team = teamNum;
+		tile.building = Constant.BUILDING.BASE;
 
 		const base: Base = new Base(
 			this.idGenerator.newID(),
@@ -439,6 +442,9 @@ export default class Game {
 			teamNum,
 			tile
 		);
+
+		this.bases.add(base);
+		this.collision.insertCollider(base, Constant.BASE_COL_RADIUS);
 
 		this.teams.getTeam(
 			teamNum
@@ -451,11 +457,6 @@ export default class Game {
 					Constant.BUILDING.CANT_BUILD;
 			});
 		}
-
-		this.bases.add(base);
-		tile.building = Constant.BUILDING.BASE;
-
-		this.collision.insertCollider(base, Constant.BASE_COL_RADIUS);
 	}
 
 	generateBoundaryColliders(): void {
