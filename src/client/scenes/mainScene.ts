@@ -236,9 +236,9 @@ export default class MainScene extends Phaser.Scene {
 
 	drawGraphics(points: Point[], graphics: Phaser.GameObjects.Graphics) {
 		graphics.beginPath();
-		graphics.moveTo(points[0].yPos, points[0].yPos);
+		graphics.moveTo(points[0].xPos, points[0].yPos);
 		for (let i = 0; i < 6; i++) {
-			graphics.lineTo(points[i].yPos, points[i].yPos);
+			graphics.lineTo(points[i].xPos, points[i].yPos);
 		}
 		graphics.closePath();
 	}
