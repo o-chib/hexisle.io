@@ -78,13 +78,17 @@ export default class Game {
 		console.log('Goodbye: ' + socket.id); // delete
 		if (!this.players.has(socket.id)) return;
 
-		const player: Player = this.players.get(socket.id)!;
+		const player: Player = this.getPlayer(socket.id);
 
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
 		this.teams.removePlayer(socket.id, player.teamNumber);
 
 		this.players.delete(socket.id);
+	}
+
+	private getPlayer(socketID): Player {
+		return this.players.get(socketID)!;
 	}
 
 	respawnPlayer(player: Player) {
@@ -103,16 +107,19 @@ export default class Game {
 		this.collision.insertCollider(player, Constant.PLAYER_RADIUS);
 	}
 
-	update() {
+	calculateTimePassed(): [number, number]{
 		const currentTimestamp = Date.now();
 		const timePassed =
 			(currentTimestamp - this.previousUpdateTimestamp) / 1000;
 		this.previousUpdateTimestamp = currentTimestamp;
 
-		//this.changedTiles = [];
+		return [currentTimestamp, timePassed];
+	}
 
+	updateBullets(currentTimestamp, timePassed) {
 		for (const aBullet of this.bullets) {
 			aBullet.updatePosition(timePassed);
+
 			if (aBullet.isExpired(currentTimestamp)) {
 				this.collision.deleteCollider(aBullet, Constant.BULLET_RADIUS);
 				this.bullets.delete(aBullet);
@@ -121,6 +128,9 @@ export default class Game {
 
 			this.collision.updateCollider(aBullet, Constant.BULLET_RADIUS);
 		}
+	}
+
+	updateTerritories() {
 		// Add captured territory of campfire, and camfire itself
 		for (const aCampfire of this.campfires) {
 			this.collision.campfirePlayerCollision(aCampfire);
@@ -170,7 +180,9 @@ export default class Game {
 				}
 			}
 		}
+	}
 
+	updateWalls() {
 		for (const aWall of this.walls) {
 			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
@@ -178,10 +190,23 @@ export default class Game {
 				aWall.tile.setEmpty();
 				this.walls.delete(aWall);
 			}
-
 			//this.changedTiles.push(aWall.tile);
 		}
+	}
 
+	updatePlayers(currentTimestamp) {
+		this.updatePlayerPosition(currentTimestamp);
+
+		// Send updates to player
+		for (const aPlayer of this.players.values()) {
+			aPlayer.socket.emit(
+				Constant.MESSAGE.GAME_UPDATE,
+				this.createUpdate(aPlayer)
+			);
+		}
+	}
+
+	updatePlayerPosition(currentTimestamp) {
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
 			this.collision.playerBulletCollision(aPlayer, this.bullets);
@@ -189,13 +214,20 @@ export default class Game {
 				this.respawnPlayer(aPlayer);
 			}
 		}
+	}
 
-		for (const aPlayer of this.players.values()) {
-			aPlayer.socket.emit(
-				Constant.MESSAGE.GAME_UPDATE,
-				this.createUpdate(aPlayer)
-			);
-		}
+	update() {
+		const [currentTimestamp, timePassed] = this.calculateTimePassed();
+
+		//this.changedTiles = [];
+
+		this.updateBullets(currentTimestamp, timePassed);
+
+		this.updateTerritories();
+
+		this.updateWalls();
+
+		this.updatePlayers(currentTimestamp);
 	}
 
 	createUpdate(player: Player) {
@@ -281,7 +313,7 @@ export default class Game {
 
 	movePlayer(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
-		const player: Player = this.players.get(socket.id)!;
+		const player: Player = this.getPlayer(socket.id)!;
 
 		player.updateVelocity(direction);
 		player.updatePosition(Date.now(), this.collision);
@@ -290,7 +322,7 @@ export default class Game {
 
 	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
 		if (!this.players.has(socket.id)) return;
-		const player: Player = this.players.get(socket.id)!;
+		const player: Player = this.getPlayer(socket.id)!;
 
 		if (!this.hexTileMap.checkIfValidHex(coord)) {
 			return;
@@ -326,14 +358,14 @@ export default class Game {
 
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
 		if (!this.players.has(socket.id)) return;
-		const player = this.players.get(socket.id);
+		const player = this.getPlayer(socket.id);
 
 		player?.updateDirection(direction);
 	}
 
 	shootBullet(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
-		const player: Player = this.players.get(socket.id)!;
+		const player: Player = this.getPlayer(socket.id)!;
 
 		const bullet: Bullet = new Bullet(
 			this.idGenerator.newID(),
