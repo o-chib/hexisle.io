@@ -11,9 +11,9 @@
     "build": "npm run build-server && npm run build-client",
     "build-server": "webpack --mode development --config webpack.server.js",
     "build-client": "webpack --mode development --config webpack.client.js",
-    "lint": "eslint src/",
-    "lint-fix": "eslint src/ --fix",
-    "test": "karma start karma.conf.js — single-run"
+    "lint": "eslint src/ && eslint tests/",
+    "lint-fix": "eslint src/ --fix && eslint tests/ --fix",
+    "test": "karma start karma.conf.js --single-run"
   },
   "dependencies": {
     "express": "4.17.1",
@@ -39,8 +39,10 @@
     "jasmine-ts": "^0.1.2",
     "karma": "^6.3.2",
     "karma-chrome-launcher": "^3.1.0",
+    "karma-cli": "^2.0.0",
     "karma-jasmine": "^4.0.1",
     "karma-phantomjs-launcher": "^1.0.4",
+    "phantomjs-prebuilt": "^2.1.16",
     "prettier": "^2.2.1",
     "ts-loader": "8.0.17",
     "ts-node": "^7.0.1",
