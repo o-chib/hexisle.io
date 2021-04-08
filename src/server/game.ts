@@ -28,7 +28,6 @@ export default class Game {
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Set();
-		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
 		this.teams = new Teams(2, this.hexTileMap.baseCoords);
@@ -39,22 +38,34 @@ export default class Game {
 		this.initCampfires();
 		this.territories = new Set();
 		this.addBaseTerritories();
+
+		setInterval(this.update.bind(this), 1000 / 60);
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
-		console.log('Hello: ' + socket.id);
+		const newPlayer = this.generateNewPlayer(socket);
 
-		const team: number = this.teams.addNewPlayer(socket.id);
-		console.log('Assigning to team ' + team);
-
-		const newPlayer = new Player(socket, 0, 0, team);
 		this.respawnPlayer(newPlayer);
 
 		this.players.set(socket.id, newPlayer);
 
 		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
-		console.log('inserted', newPlayer.id);
+		console.log('inserted', newPlayer.id); // delete
 
+		this.initiateGame(newPlayer, socket)
+	}
+
+	generateNewPlayer(socket) {
+		console.log('Hello: ' + socket.id); // delete
+		const team: number = this.teams.addNewPlayer(socket.id);
+
+		console.log('Assigning to team ' + team); // delete
+		const newPlayer = new Player(socket, 0, 0, team);
+
+		return newPlayer;
+	}
+
+	initiateGame(newPlayer, socket) {
 		const initObject = {
 			player: newPlayer.serializeForUpdate(),
 			tileMap: this.hexTileMap.tileMap,
@@ -64,8 +75,9 @@ export default class Game {
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
-		console.log('Goodbye: ' + socket.id);
+		console.log('Goodbye: ' + socket.id); // delete
 		if (!this.players.has(socket.id)) return;
+
 		const player: Player = this.players.get(socket.id)!;
 
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
