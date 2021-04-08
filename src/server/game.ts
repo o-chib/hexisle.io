@@ -10,6 +10,7 @@ import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import Territory from './../shared/territory';
+import { CollisionObject, Rect } from './quadtree';
 const Constant = require('../shared/constants');
 
 export default class Game {
@@ -352,6 +353,8 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
+		this.test();
+
 		if (!this.hexTileMap.checkIfValidHex(coord)) {
 			return;
 		}
@@ -382,6 +385,21 @@ export default class Game {
 		// this.changedTiles.push(tile); //TODO
 
 		this.collision.insertCollider(wall, Constant.WALL_COL_RADIUS);
+	}
+
+	test(): void {
+		let rect: Rect = new Rect(-4000, 8000, 8000, -4000);
+		let results: CollisionObject[] = [];
+		this.collision.quadtree.searchQuadtree(rect, results);
+		console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+		results.forEach(obj => {
+			if (obj.payload instanceof Base) {
+				console.log(obj);
+				console.log("           ----------------------------");
+			}
+		});
+		console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		console.log.apply("")
 	}
 
 	initCampfires(): void {
