@@ -3,6 +3,7 @@ import Bullet from './../shared/bullet';
 import Wall from '../shared/wall';
 import Campfire from '../shared/campfire';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
+import { Point } from '../shared/hexTiles';
 const Constant = require('../shared/constants');
 
 export default class CollisionDetection {
@@ -146,7 +147,9 @@ export default class CollisionDetection {
 		);
 		for (const result of results) {
 			if (
-				result.payload instanceof Wall &&
+				// TODO replace Point with some better invisible collider when refactoring
+				(result.payload instanceof Wall ||
+					result.payload instanceof Point) &&
 				this.doCirclesCollide(
 					{ xPos: xPos, yPos: yPos },
 					Constant.PLAYER_RADIUS,
