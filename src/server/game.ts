@@ -350,15 +350,13 @@ export default class Game {
 		this.collision.updateCollider(player, Constant.PLAYER_RADIUS);
 	}
 
-	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
-		if (!this.players.has(socket.id)) return;
+	isAValidWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
+		if (!this.players.has(socket.id)) return false;
+		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
+
 		const player: Player = this.getPlayer(socket.id)!;
-
-		if (!this.hexTileMap.checkIfValidHex(coord)) {
-			return;
-		}
-
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+		
 		if (
 			!tile.isEmpty() ||
 			this.collision.doesObjCollideWithPlayers(
@@ -369,7 +367,16 @@ export default class Game {
 			tile.team != player.teamNumber ||
 			!player.buyWall()
 		)
-			return; //TODO
+			return false; //TODO
+		
+		return true;
+	}
+
+	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+		if(!this.isAValidWall(socket, coord)) return;
+
+		const player: Player = this.getPlayer(socket.id)!;
+		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 
 		const wall: Wall = new Wall(
 			this.idGenerator.newID(),
@@ -410,9 +417,7 @@ export default class Game {
 	}
 
 	buildCampfire(coord: OffsetPoint): void {
-		if (!this.hexTileMap.checkIfValidHex(coord)) {
-			return;
-		}
+		if (!this.hexTileMap.checkIfValidHex(coord)) return;
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 
@@ -445,6 +450,30 @@ export default class Game {
 			}
 		}
 	}
+
+	setBaseTerritory(teamNumber, points) {
+		for (const pt of points) {
+			const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
+			if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+				continue;
+			}
+			tempTile.team = teamNumber;
+			this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
+
+			//this.changedTiles.push(tempTile);
+			const xPosition = tempTile.cartesian_coord.x.toString();
+			const yPosition = tempTile.cartesian_coord.y.toString();
+			const tempTerritory = new Territory(
+				xPosition + ', ' + yPosition,
+				tempTile.cartesian_coord.x,
+				tempTile.cartesian_coord.y,
+				tempTile.team
+			);
+
+			this.territories.add(tempTerritory);
+		}
+	}
+
 	addBaseTerritories() {
 		// Add permanent territory from bases
 		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
@@ -453,26 +482,8 @@ export default class Game {
 				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r],
 				Constant.CAMP_RADIUS
 			);
-			for (const pt of points) {
-				const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
-				if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
-					continue;
-				}
-				tempTile.team = i;
-				this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
-
-				//this.changedTiles.push(tempTile);
-				const xPosition = tempTile.cartesian_coord.x.toString();
-				const yPosition = tempTile.cartesian_coord.y.toString();
-				const tempTerritory = new Territory(
-					xPosition + ', ' + yPosition,
-					tempTile.cartesian_coord.x,
-					tempTile.cartesian_coord.y,
-					tempTile.team
-				);
-
-				this.territories.add(tempTerritory);
-			}
+			
+			this.setBaseTerritory(i, points);
 		}
 	}
 }
