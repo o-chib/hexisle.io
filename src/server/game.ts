@@ -356,8 +356,6 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
-		this.test();
-
 		if (!this.hexTileMap.checkIfValidHex(coord)) {
 			return;
 		}
@@ -388,21 +386,6 @@ export default class Game {
 		// this.changedTiles.push(tile); //TODO
 
 		this.collision.insertCollider(wall, Constant.WALL_COL_RADIUS);
-	}
-
-	test(): void {
-		let rect: Rect = new Rect(0, 4000, 4000, 0);
-		let results: CollisionObject[] = [];
-		this.collision.quadtree.searchQuadtreeTest(rect, results);
-		// console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-		// results.forEach(obj => {
-		// 	if (obj.payload instanceof Base) {
-		// 		console.log(obj);
-		// 		console.log("           ----------------------------");
-		// 	}
-		// });
-		// console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		// console.log.apply("")
 	}
 
 	initCampfires(): void {
@@ -443,8 +426,6 @@ export default class Game {
 		for (let teamNum = 0; teamNum < Constant.TEAM_COUNT; teamNum++) {
 			this.buildBase(teamNum, this.teams.getTeamBaseCoord(teamNum));
 		}
-		// this.buildBase(1, this.teams.getTeamBaseCoord(1));
-		// this.buildBase(0, this.teams.getTeamBaseCoord(0));
 	}
 
 	buildBase(teamNum: number, coord: OffsetPoint): void {
