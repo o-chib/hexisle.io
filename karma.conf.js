@@ -71,10 +71,7 @@ module.exports = function(config) {
     concurrency: Infinity,
 
     karmaTypescriptConfig: {
-      compilerOptions: {
-        target: "ES6",
-        esModuleInterop: true
-      }
+      tsconfig: "./tsconfig.eslint.json",
     }
   })
 }
