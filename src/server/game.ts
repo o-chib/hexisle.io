@@ -45,11 +45,11 @@ export default class Game {
 		this.changedTiles = [];
 
 		this.collision = new CollisionDetection();
-		this.generateBoundaryColliders();
+		//this.generateBoundaryColliders();
 
 		this.previousUpdateTimestamp = Date.now();
 
-		this.initCampfires();
+		//this.initCampfires();
 
 		this.addBaseTerritories();
 		this.initBases();
@@ -270,7 +270,10 @@ export default class Game {
 		const team: number = this.teams.addNewPlayer(socket.id);
 
 		const newPlayer = new Player(socket, 0, 0, team);
-		this.respawnPlayer(newPlayer);
+
+		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
+		newPlayer.xPos = respawnPoint.xPos;
+		newPlayer.yPos = respawnPoint.yPos;
 
 		this.players.set(socket.id, newPlayer);
 
@@ -388,18 +391,18 @@ export default class Game {
 	}
 
 	test(): void {
-		let rect: Rect = new Rect(-4000, 8000, 8000, -4000);
+		let rect: Rect = new Rect(0, 4000, 4000, 0);
 		let results: CollisionObject[] = [];
-		this.collision.quadtree.searchQuadtree(rect, results);
-		console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-		results.forEach(obj => {
-			if (obj.payload instanceof Base) {
-				console.log(obj);
-				console.log("           ----------------------------");
-			}
-		});
-		console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		console.log.apply("")
+		this.collision.quadtree.searchQuadtreeTest(rect, results);
+		// console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+		// results.forEach(obj => {
+		// 	if (obj.payload instanceof Base) {
+		// 		console.log(obj);
+		// 		console.log("           ----------------------------");
+		// 	}
+		// });
+		// console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		// console.log.apply("")
 	}
 
 	initCampfires(): void {
