@@ -17,6 +17,7 @@ module.exports = function(config) {
     files: [
       'tests/**/*.js',
       'tests/**/*.ts',
+      'src/**/*.ts',
     ],
 
 
