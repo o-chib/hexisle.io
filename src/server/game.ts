@@ -265,7 +265,7 @@ export default class Game {
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
-		console.log('Hello: ' + socket.id);
+		console.log('Hello:' + socket.id);
 
 		const team: number = this.teams.addNewPlayer(socket.id);
 
@@ -278,7 +278,7 @@ export default class Game {
 		this.players.set(socket.id, newPlayer);
 
 		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
-		console.log('inserted', newPlayer.id);
+		console.log('Spawned:', newPlayer.id);
 
 		const initObject = {
 			player: newPlayer.serializeForUpdate(),
@@ -289,7 +289,7 @@ export default class Game {
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
-		console.log('Goodbye: ' + socket.id);
+		console.log('Goodbye:' + socket.id);
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
@@ -301,7 +301,7 @@ export default class Game {
 	}
 
 	respawnPlayer(player: Player) {
-		console.log('Respawning: ' + player.socket.id);
+		console.log('Respawning:' + player.socket.id);
 
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
