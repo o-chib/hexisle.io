@@ -1,9 +1,5 @@
 // Import Mapsize or something
 
-import { brotliCompress } from "node:zlib";
-import Base from "../shared/base";
-import Wall from "../shared/wall";
-
 export class Quadtree {
 	// The ratio of child to parent width.  Higher numbers will push payload further down
 	// into the tree.  The resulting quadtree will require more node testing but less object
@@ -123,9 +119,6 @@ export class Quadtree {
 				(o) => o.payload.id === obj.payload.id
 			);
 			node.collisionObjects.splice(index, 1);
-			if (obj.payload instanceof Base) {
-				console.log("deleted from quadtree:", obj);
-			}
 
 			// contained within UPPER LEFT
 		} else if (obj.r < splitRight && obj.b > splitTop) {
@@ -157,9 +150,6 @@ export class Quadtree {
 				(o) => o.payload.id === obj.payload.id
 			);
 			this.topLevelNode.collisionObjects.splice(index, 1);
-			if (obj.payload instanceof Base) {
-				console.log("deleted from quadtree:", obj);
-			}
 		}
 	}
 
@@ -198,13 +188,23 @@ export class Quadtree {
 
 		// intersects UPPER LEFT
 		if (box.l < splitRight && box.t < splitBottom && node.kids[0]) {
-			const subbox = new Rect(nodebox.l, splitRight, splitBottom, nodebox.t);
+			const subbox = new Rect(
+				nodebox.l,
+				splitRight,
+				splitBottom,
+				nodebox.t
+			);
 			this.search(node.kids[0], subbox, box, results);
 
 			// intersects UPPER RIGHT
 		}
 		if (box.r > splitLeft && box.t < splitBottom && node.kids[1]) {
-			const subbox = new Rect(splitLeft, nodebox.r, splitBottom, nodebox.t);
+			const subbox = new Rect(
+				splitLeft,
+				nodebox.r,
+				splitBottom,
+				nodebox.t
+			);
 			this.search(node.kids[1], subbox, box, results);
 
 			// intersects LOWER LEFT

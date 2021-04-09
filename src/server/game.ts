@@ -10,7 +10,6 @@ import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import Territory from './../shared/territory';
-import { CollisionObject, Rect } from './quadtree';
 const Constant = require('../shared/constants');
 
 export default class Game {
@@ -53,7 +52,7 @@ export default class Game {
 
 		this.addBaseTerritories();
 		this.initBases();
-		
+
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 	}
 
