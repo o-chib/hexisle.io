@@ -45,11 +45,11 @@ export default class Game {
 		this.changedTiles = [];
 
 		this.collision = new CollisionDetection();
-		//this.generateBoundaryColliders();
+		this.generateBoundaryColliders();
 
 		this.previousUpdateTimestamp = Date.now();
 
-		//this.initCampfires();
+		this.initCampfires();
 
 		this.addBaseTerritories();
 		this.initBases();
