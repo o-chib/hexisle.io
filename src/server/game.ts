@@ -230,13 +230,8 @@ export default class Game {
 		this.updatePlayers(currentTimestamp);
 	}
 
-	createUpdate(player: Player) {
+	createPlayerUpdate(player: Player){
 		const nearbyPlayers: Player[] = [];
-		const nearbyBullets: Bullet[] = [];
-		const nearbyWalls: Wall[] = [];
-		const nearbyCampfires: Campfire[] = [];
-		const changedTiles: Tile[] = this.changedTiles;
-		const nearbyTerritories: Territory[] = [];
 
 		for (const aPlayer of this.players.values()) {
 			if (aPlayer === player) continue;
@@ -251,6 +246,12 @@ export default class Game {
 				nearbyPlayers.push(aPlayer);
 		}
 
+		return nearbyPlayers;
+	}
+
+	createBulletUpdate(player: Player) {
+		const nearbyBullets: Bullet[] = [];
+
 		for (const aBullet of this.bullets) {
 			if (
 				this.collision.doCirclesCollide(
@@ -262,6 +263,12 @@ export default class Game {
 			)
 				nearbyBullets.push(aBullet);
 		}
+
+		return nearbyBullets;
+	}
+
+	createWallUpdate(player: Player) {
+		const nearbyWalls: Wall[] = [];
 
 		for (const aWall of this.walls) {
 			if (
@@ -275,6 +282,12 @@ export default class Game {
 				nearbyWalls.push(aWall);
 		}
 
+		return nearbyWalls;
+	}
+
+	createCampfireUpdate(player: Player) {
+		const nearbyCampfires: Campfire[] = [];
+
 		for (const aCampfire of this.campfires) {
 			if (
 				this.collision.doCirclesCollide(
@@ -286,6 +299,12 @@ export default class Game {
 			)
 				nearbyCampfires.push(aCampfire);
 		}
+
+		return nearbyCampfires;
+	}
+
+	createTerritoryUpdate(player: Player) {
+		const nearbyTerritories: Territory[] = [];
 
 		for (const aTerritory of this.territories) {
 			if (
@@ -299,15 +318,26 @@ export default class Game {
 				nearbyTerritories.push(aTerritory);
 		}
 
+		return nearbyTerritories;
+	}
+
+	createUpdate(player: Player) {
+		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
+		const nearbyBullets: Bullet[] = this.createBulletUpdate(player);;
+		const nearbyWalls: Wall[] = this.createWallUpdate(player);
+		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
+		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(player);
+		//const changedTiles: Tile[] = this.changedTiles;
+
 		return {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
-			//		changedTiles: changedTiles,
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 			walls: nearbyWalls.map((p) => p.serializeForUpdate()),
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
 			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
+			//changedTiles: changedTiles,
 		};
 	}
 
