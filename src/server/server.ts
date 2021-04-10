@@ -3,7 +3,7 @@ import express from 'express';
 import http from 'http';
 import Game from './game';
 import { OffsetPoint } from '../shared/hexTiles';
-const Socketio = require('socket.io');
+import * as SocketIO from 'socket.io';
 const Constant = require('../shared/constants');
 
 // Serve up the static files from public
@@ -24,13 +24,13 @@ const server = http.createServer(app).listen(port, () => {
 const game = new Game();
 
 // Start Socket.io connection
-const websocket = Socketio(server);
-websocket.on('connection', function (socket: SocketIOClient.Socket) {
+const websocket = new SocketIO.Server(server);
+websocket.on('connection', function (socket: SocketIO.Socket) {
 	console.log('Player connected!', socket.id);
 	updateSocket(socket);
 });
 
-function updateSocket(socket: SocketIOClient.Socket) {
+function updateSocket(socket: any) { //TODO fix typing issue
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
 	});
