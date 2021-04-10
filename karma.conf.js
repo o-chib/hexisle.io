@@ -5,7 +5,7 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: '.',
 
 
     // frameworks to use
@@ -17,8 +17,12 @@ module.exports = function(config) {
     files: [
       'tests/**/*.ts',
       'src/**/*.ts',
+      {pattern: 'public/assets/*', watched: false, included: false, served: true},
     ],
 
+    proxies:  {
+      '/assets/': '/base/public/assets/'
+    },
 
     // list of files / patterns to exclude
     exclude: [
@@ -36,7 +40,7 @@ module.exports = function(config) {
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: [
-      //'karma-typescript',
+      'karma-typescript',
       'progress'
   ],
 
