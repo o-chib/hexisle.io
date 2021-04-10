@@ -30,7 +30,8 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 	updateSocket(socket);
 });
 
-function updateSocket(socket: any) { //TODO fix typing issue
+function updateSocket(socket: any) {
+	//TODO fix typing issue
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
 	});
