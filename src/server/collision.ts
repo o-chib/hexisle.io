@@ -2,7 +2,7 @@ import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from '../shared/wall';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
-const Constant = require('../shared/constants');
+import { Constant } from '../shared/constants';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;

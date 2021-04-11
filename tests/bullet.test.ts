@@ -1,5 +1,5 @@
 import Bullet from '../src/shared/bullet';
-const Constant = require('../src/shared/constants');
+import { Constant } from '../src/shared/constants';
 
 describe('Bullet', () => {
 	it('should move at right speed', () => {

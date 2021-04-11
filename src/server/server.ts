@@ -4,7 +4,7 @@ import http from 'http';
 import Game from './game';
 import { OffsetPoint } from '../shared/hexTiles';
 import * as SocketIO from 'socket.io';
-const Constant = require('../shared/constants');
+import { Constant } from '../shared/constants';
 
 // Serve up the static files from public
 const app = express();

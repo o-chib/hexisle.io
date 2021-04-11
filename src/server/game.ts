@@ -7,7 +7,7 @@ import Wall from './../shared/wall';
 import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
-const Constant = require('../shared/constants');
+import { Constant } from '../shared/constants';
 
 export default class Game {
 	teams: Teams;
