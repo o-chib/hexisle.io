@@ -37,6 +37,10 @@ export default class MainScene extends Phaser.Scene {
 	preload(): void {
 		this.load.image('aliem', '../assets/Character.png');
 		this.load.image('aliemblue', '../assets/CharacterBlue.png');
+
+		this.load.spritesheet('player_red', '../assets/Char_Red.png',{frameWidth: 94, frameHeight: 120});
+		this.load.spritesheet('player_blue', '../assets/Char_Blue.png',{frameWidth: 94, frameHeight: 120});
+
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('wall', '../assets/tempwall.png'); //TODO
@@ -82,14 +86,28 @@ export default class MainScene extends Phaser.Scene {
 
 		this.createTileMap(tileMap);
 
+		// Initialize player animation
+		let playerSprite : string = "";
 		if (player.teamNumber == 0) {
 			// Change this when more than 2 teams
-			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem').setDepth(1000);
+			playerSprite = "player_red";
 		} else {
-			this.myPlayerSprite = this.add
-				.sprite(0, 0, 'aliemblue')
-				.setDepth(1000);
+			playerSprite = "player_blue";
 		}
+		this.myPlayerSprite = this.add.sprite(0, 0, playerSprite).setDepth(1000);
+
+		this.anims.create({
+			key: 'player_red_walk',
+			frames: this.anims.generateFrameNames('player_red', {start: 0, end: 3}),
+			frameRate: 8,
+			repeat: -1
+		});
+		this.anims.create({
+			key: 'player_blue_walk',
+			frames: this.anims.generateFrameNames('player_blue', {start: 0, end: 3}),
+			frameRate: 8,
+			repeat: -1
+		});
 
 		this.myPlayerSprite.setVisible(false);
 		this.alive = true;
@@ -429,8 +447,31 @@ export default class MainScene extends Phaser.Scene {
 
 	private updatePlayer(currentPlayer: any) {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-		if (this.alive && !this.myPlayerSprite.visible)
+		if (this.alive && !this.myPlayerSprite.visible){
 			this.myPlayerSprite.setVisible(true);
+		}
+
+		//  Local Animation control
+		if(this.myPlayerSprite.anims.getName() != 'walk'){
+			this.myPlayerSprite.anims.create({
+				key: 'walk',
+				frames: this.anims.generateFrameNames(this.myPlayerSprite.texture.key, {start: 0, end: 3}),
+				frameRate: 8,
+				repeat: -1
+			});
+			this.myPlayerSprite.anims.pause();
+		}
+
+		if(currentPlayer.xVel != 0 || currentPlayer.yVel != 0){
+			if(this.myPlayerSprite.anims.isPaused) {
+				this.myPlayerSprite.anims.play('walk');
+			}
+		} else {
+			if(this.myPlayerSprite.anims.isPlaying) {
+				this.myPlayerSprite.anims.pause();
+			}
+		}
+
 	}
 
 	private updateBullets(bullets: any) {
@@ -452,12 +493,48 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			otherPlayers,
 			this.otherPlayerSprites,
-			'aliem',
+			'',
 			(newPlayer, playerLiteral) => {
 				newPlayer.setRotation(-1 * playerLiteral.direction);
-				if (playerLiteral.teamNumber == 1)
-					newPlayer.setTexture('aliemblue').setDepth(1000);
-				if (playerLiteral.teamNumber == 0) newPlayer.setDepth(1000);
+
+				// Set Walk/Standing textures based on team
+				let playerTexture : string = '';
+				if (playerLiteral.teamNumber == 0) {
+					playerTexture = 'player_red';
+				}
+				if (playerLiteral.teamNumber == 1) {
+					playerTexture = 'player_blue';
+				}
+				if(newPlayer.texture.key != playerTexture)
+					newPlayer.setTexture(playerTexture).setDepth(1000);
+
+				// Opponent Animation Control
+				if(!newPlayer.anims.get(playerTexture + '_walk')){
+					newPlayer.anims.create({
+						key: playerTexture + '_walk',
+						frames: this.anims.generateFrameNames(playerTexture, {start: 0, end: 3}),
+						frameRate: 8,
+						repeat: -1
+					});
+					newPlayer.anims.play(playerTexture + '_walk');
+					newPlayer.anims.pause();
+				}
+				if(playerLiteral.xVel != 0 || playerLiteral.yVel != 0){
+					if(newPlayer.anims.isPaused){
+						newPlayer.anims.resume();
+					}
+
+					let progressIncrement = 0.002;
+					let progress = newPlayer.anims.getProgress() + progressIncrement;
+					if(progress > 1)
+						progress = progress % 1;
+					console.log(progress);
+					newPlayer.anims.setProgress(progress);
+				} else {
+					if(newPlayer.anims.isPlaying){
+						newPlayer.anims.pause();
+					}
+				}
 				return newPlayer;
 			}
 		);
