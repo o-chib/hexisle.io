@@ -17,7 +17,7 @@ module.exports = function(config) {
     files: [
       'tests/**/*.ts',
       'src/**/!(server|main).ts',
-      {pattern: 'public/assets/*', watched: false, included: false, served: true},
+      {pattern: 'public/**/*!(.js)', watched: false, included: false, served: true},
     ],
 
     proxies:  {
