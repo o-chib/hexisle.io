@@ -12,26 +12,13 @@ export default class MainScene extends Phaser.Scene {
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
-	private deadObjects;
+	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
-	private globalGraphics: Phaser.GameObjects.Graphics;
 
-	//private graphics: Phaser.GameObjects.Graphics; // OLD, will remove later
-
-	private graphic_BG: Phaser.GameObjects.Graphics; // static background
-	//private graphic_Tex: Phaser.GameObjects.Graphics; // texture data
-	//private graphic_Map: Phaser.GameObjects.Graphics; // Strokes for hexagons
-	private graphic_Front: Phaser.GameObjects.Graphics; // Frontmost sprites = player, buildings, etc
-
-	private tiles: Tile[]; // Made in offset even-q coordinates
 	private hexTiles: HexTiles;
-
-	// HexTile
 
 	constructor() {
 		super('MainScene');
-		this.tiles = [];
-		this.hexTiles = new HexTiles();
 	}
 
 	preload(): void {
@@ -50,7 +37,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	init(): void {
-		//TODO what should we move from create to init?
+		this.initializeKeys();
+
+		this.hexTiles = new HexTiles();
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
@@ -58,12 +47,6 @@ export default class MainScene extends Phaser.Scene {
 		this.deadObjects = new Set();
 		this.territorySprites = new Map();
 		this.socket = io();
-
-		// Graphic Handling
-		this.graphic_BG = this.add.graphics();
-		//this.graphic_Tex = this.add.graphics();
-		//this.graphic_Map = this.add.graphics();
-		this.graphic_Front = this.add.graphics();
 	}
 
 	create(): void {
@@ -136,8 +119,6 @@ export default class MainScene extends Phaser.Scene {
 		this.initializePlayer(player);
 
 		this.setCamera();
-
-		this.initializeGlobalVariables();
 	}
 
 	private initializePlayer(player: any): void {
@@ -161,7 +142,7 @@ export default class MainScene extends Phaser.Scene {
 		this.cameras.main.setZoom(0.5);
 	}
 
-	private initializeGlobalVariables(): void {
+	private initializeKeys(): void {
 		this.cursors = this.input.keyboard.addKeys({
 			up: Phaser.Input.Keyboard.KeyCodes.W,
 			down: Phaser.Input.Keyboard.KeyCodes.S,
