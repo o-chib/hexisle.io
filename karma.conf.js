@@ -16,7 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'tests/**/*.ts',
-      'src/**/*.ts',
+      'src/**/!(server).ts',
       {pattern: 'public/assets/*', watched: false, included: false, served: true},
     ],
 
@@ -75,6 +75,7 @@ module.exports = function(config) {
     concurrency: Infinity,
 
     karmaTypescriptConfig: {
+      compilerOptions: {},
       tsconfig: "./tsconfig.eslint.json",
     }
   })
