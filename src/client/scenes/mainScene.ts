@@ -51,6 +51,9 @@ export default class MainScene extends Phaser.Scene {
 
 	init(): void {
 		//TODO what should we move from create to init?
+	}
+
+	create(): void {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
@@ -59,68 +62,18 @@ export default class MainScene extends Phaser.Scene {
 		this.territorySprites = new Map();
 		this.socket = io();
 
+		this.socket.on(
+			Constant.MESSAGE.INITIALIZE,
+			this.initializeGame.bind(this)
+		);
+
+		this.socket.emit(Constant.MESSAGE.JOIN);
+
 		// Graphic Handling
 		this.graphic_BG = this.add.graphics();
 		//this.graphic_Tex = this.add.graphics();
 		//this.graphic_Map = this.add.graphics();
 		this.graphic_Front = this.add.graphics();
-	}
-
-	create(): void {
-		this.registerListeners();
-
-		this.socket.emit(Constant.MESSAGE.JOIN);
-	}
-
-	private registerListeners(): void {
-		this.registerSocketListeners();
-
-		this.registerInputListeners();
-
-		this.registerIntervals();
-	}
-
-	private registerSocketListeners(): void {
-		this.socket.on(Constant.MESSAGE.INITIALIZE,
-			this.initializeGame.bind(this));
-
-		this.socket.on(Constant.MESSAGE.GAME_UPDATE,
-			this.updateState.bind(this)
-		);
-	}
-		
-	private registerInputListeners(): void {
-		this.input.on('pointerdown', (pointer) => {
-			if (!this.alive) return;
-            const direction = this.getMouseDirection(pointer);
-            
-			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
-		});
-
-		this.input.keyboard.on('keydown',
-			this.updateMovementDirection.bind(this)
-		);
-
-		this.input.keyboard.on('keyup',
-			this.updateMovementDirection.bind(this)
-		);
-	}
-
-	private registerIntervals(): void {
-		setInterval(() => {
-			const direction = this.getMouseDirection(this.input.mousePointer);
-
-			this.myPlayerSprite.setRotation(-1 * direction);
-			this.socket.emit(Constant.MESSAGE.ROTATE, direction);
-		}, 1000 / 60);
-	}
-
-	private getMouseDirection(pointer: any): any {
-		const gamePos = this.cameras.main.getWorldPoint(pointer.x,
-			pointer.y);
-
-        return Math.atan2(gamePos.x - this.myPlayerSprite.x,
-			gamePos.y - this.myPlayerSprite.y);
 	}
 
 	private initializeGame(update: any): void {
@@ -129,14 +82,22 @@ export default class MainScene extends Phaser.Scene {
 
 		this.createTileMap(tileMap);
 
-		this.initializePlayer(player);
+		if (player.teamNumber == 0) {
+			// Change this when more than 2 teams
+			this.myPlayerSprite = this.add.sprite(0, 0, 'aliem').setDepth(1000);
+		} else {
+			this.myPlayerSprite = this.add
+				.sprite(0, 0, 'aliemblue')
+				.setDepth(1000);
+		}
 
-		this.setCamera();
+		this.myPlayerSprite.setVisible(false);
+		this.alive = true;
+		this.myPlayerSprite.setScale(1);
 
-		this.initializeGlobalVariables();
-	}
+		this.cameras.main.startFollow(this.myPlayerSprite, true);
+		this.cameras.main.setZoom(0.5);
 
-	private initializeGlobalVariables(): void {
 		this.cursors = this.input.keyboard.addKeys({
 			up: Phaser.Input.Keyboard.KeyCodes.W,
 			down: Phaser.Input.Keyboard.KeyCodes.S,
@@ -144,62 +105,93 @@ export default class MainScene extends Phaser.Scene {
 			right: Phaser.Input.Keyboard.KeyCodes.D,
 			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 		});
-	}
 
-	private setCamera(): void {
-		this.cameras.main.startFollow(this.myPlayerSprite, true);
-		this.cameras.main.setZoom(0.5);
-	}
+		this.input.on('pointerdown', (pointer) => {
+			if (!this.alive) return;
+			const gamePos = this.cameras.main.getWorldPoint(
+				pointer.x,
+				pointer.y
+			);
+			const direction = Math.atan2(
+				gamePos.x - this.myPlayerSprite.x,
+				gamePos.y - this.myPlayerSprite.y
+			);
+			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
+		});
 
-	private initializePlayer(player: any): void {
-		// Change this when more than 2 teams
-		if (player.teamNumber == 0) {
-			this.generatePlayerSprite('aliem');
-		} else {
-			this.generatePlayerSprite('aliemblue');
-		}
-	}
+		setInterval(() => {
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
+			);
+			const direction = Math.atan2(
+				gamePos.x - this.myPlayerSprite.x,
+				gamePos.y - this.myPlayerSprite.y
+			);
+			this.myPlayerSprite.setRotation(-1 * direction);
+			this.socket.emit(Constant.MESSAGE.ROTATE, direction);
+		}, 1000 / 60);
 
-	private generatePlayerSprite(spriteName: string): void {
-		this.myPlayerSprite = this.add.sprite(0, 0, spriteName).setDepth(1000);
-		this.myPlayerSprite.setVisible(false);
-		this.myPlayerSprite.setScale(1);
-		this.alive = true;
+		this.socket.on(
+			Constant.MESSAGE.GAME_UPDATE,
+			this.updateState.bind(this)
+		);
+
+		this.input.keyboard.on(
+			'keydown',
+			this.updateMovementDirection.bind(this)
+		);
+		this.input.keyboard.on(
+			'keyup',
+			this.updateMovementDirection.bind(this)
+		);
 	}
 
 	private createTileMap(tileMap: any) {
 		this.hexTiles.tileMap = tileMap;
 		const graphic_Map = this.add.graphics();
-
 		// masking logic
-		const reveal = this.add.image(0, 0, 'texture')
+		const reveal = this.add
+			.image(0, 0, 'texture')
 			.setOrigin(0, 0)
 			.setDepth(-1)
 			.setScale(3);
-
-
 		this.drawAllTiles(graphic_Map);
+		//this.setMapMask(reveal, graphic_Map);
 
 		this.generateTerritoryTexture(this.hexTiles.tileMap[0][0]);
+
+		// for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
+		// 	for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
+		// 		let spr = this.add.sprite(this.hexTiles.tileMap[col][row].cartesian_coord.x, this.hexTiles.tileMap[col][row].cartesian_coord.y, 'white-tile');
+		// 		//spr.setVisible(false);
+		// 		this.territorySprites.set(this.hexTiles.tileMap[col][row], spr);
+		// 	}
+		// }
+
 		graphic_Map.generateTexture(
 			'hexMap',
 			Constant.DEFAULT_WIDTH,
 			Constant.DEFAULT_HEIGHT
 		);
-
 		this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);
 		graphic_Map.destroy();
 	}
 
-	// draws every arena/map hex we have in our tilemap
 	drawAllTiles(graphic_Map): void {
+		// draws every arena/map hex we have in our tilemap
+
 		if (!this.hexTiles.tileMap) return;
 
+		// for each column
 		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
+			// for each row
 			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
 				if (
 					this.hexTiles.tileMap[col][row].building !=
-					Constant.BUILDING.OUT_OF_BOUNDS
+						Constant.BUILDING.OUT_OF_BOUNDS &&
+					this.hexTiles.tileMap[col][row].building !=
+						Constant.BUILDING.BOUNDARY
 				) {
 					//TODO cannot put isInBounds here?
 					this.drawTile(this.hexTiles.tileMap[col][row], graphic_Map);
@@ -208,9 +200,20 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	// takes XY coordinates of center point, generates all required vertices, draws individual tile
+	drawTiles(tiles: Tile[]): void {
+		// draws every tile we have in our nearby tile list
+		for (const tile of tiles) {
+			//this.drawTile(tile);
+		}
+	}
+
 	drawTile(tile: Tile, graphics: Phaser.GameObjects.Graphics): void {
-		if (tile.building == Constant.BUILDING.OUT_OF_BOUNDS) return;
+		// takes XY coordinates of center point,
+		// generates all required vertices
+		// draws individual tile
+		if (tile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+			return;
+		}
 
 		graphics.fillStyle(0x000000, 0);
 
@@ -226,31 +229,37 @@ export default class MainScene extends Phaser.Scene {
 			graphics.lineStyle(2, 0xffffff, 1);
 		}
 
-		this.drawGraphics(points, graphics);
+		graphics.beginPath();
+		graphics.moveTo(points[0].xPos, points[0].yPos);
+		for (let i = 0; i < 6; i++) {
+			graphics.lineTo(points[i].xPos, points[i].yPos);
+		}
+		graphics.closePath();
 
 		graphics.fillPath();
 		graphics.strokePath();
 	}
 
-	drawGraphics(points: Point[], graphics: Phaser.GameObjects.Graphics) {
-		graphics.beginPath();
-		graphics.moveTo(points[0].x, points[0].y);
-
-		for (let i = 0; i < 6; i++) {
-			graphics.lineTo(points[i].x, points[i].y);
-		}
-		graphics.closePath();
-	}
-
-	// takes XY coordinates of center point, generates all required vertices, draws individual tile
 	generateTerritoryTexture(tile: Tile): void {
-		const points: Point[] = this.hexTiles.getHexPointsFromCenter(tile.cartesian_coord);
+		// takes XY coordinates of center point,
+		// generates all required vertices
+		// draws individual tile
+
+		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
+			tile.cartesian_coord
+		);
 
 		let colorName = '';
 		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
 			const graphics = this.add.graphics();
 
-			this.drawGraphics(points, graphics);
+			graphics.beginPath();
+			graphics.moveTo(points[0].xPos, points[0].yPos);
+
+			for (let i = 0; i < 6; i++) {
+				graphics.lineTo(points[i].xPos, points[i].yPos);
+			}
+			graphics.closePath();
 
 			if (i == 0) {
 				graphics.fillStyle(0xff0000, 0.2);
@@ -272,11 +281,23 @@ export default class MainScene extends Phaser.Scene {
 
 			graphics.destroy();
 		}
+
+		// graphics.fillStyle(0xffffff, 0.2);
+		// graphics.fillPath();
+		// graphics.generateTexture('white-tile',
+		// 	this.hexTiles.getHexWidth(),
+		// 	this.hexTiles.getHexHeight());
+
+		// graphics.destroy();
 	}
 
-	// Masking, Alpha Mask
-	// Masks the texture image using the total hexagonal tile map
-	setMapMask(reveal: Phaser.GameObjects.Image, graphic_Map: Phaser.GameObjects.Graphics): void {
+	// Masking
+	// Alpha Mask
+	setMapMask(
+		reveal: Phaser.GameObjects.Image,
+		graphic_Map: Phaser.GameObjects.Graphics
+	): void {
+		// Masks the texture image using the total hexagonal tile map
 		const hexBrush = graphic_Map.createGeometryMask();
 		reveal.setMask(hexBrush);
 	}
@@ -285,27 +306,9 @@ export default class MainScene extends Phaser.Scene {
 		//this.updateMovementDirection();
 	}
 
-	//TODO really gross can we clean this?
 	private updateMovementDirection(): void {
-		let direction = this.calculateDirection();
-		
-		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
-
-		if (this.cursors.buildWall.isDown) {
-			if (!this.alive) return;
-			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x,
-				this.input.mousePointer.y
-			);
-			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-				new Point(gamePos.x, gamePos.y)
-			);
-			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
-		}
-	}
-
-	calculateDirection() {
 		let direction = NaN;
+		//TODO really gross can we clean this?
 		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
 			if (this.cursors.up.isDown && !this.cursors.down.isDown)
 				direction = Constant.DIRECTION.NW;
@@ -324,7 +327,20 @@ export default class MainScene extends Phaser.Scene {
 			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
 				direction = Constant.DIRECTION.S;
 		}
-		return direction;
+
+		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
+
+		if (this.cursors.buildWall.isDown) {
+			if (!this.alive) return;
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
+			);
+			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+				new Point(gamePos.x, gamePos.y)
+			);
+			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
+		}
 	}
 
 	updateState(update: any): void {
