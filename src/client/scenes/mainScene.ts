@@ -81,27 +81,32 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private registerSocketListeners(): void {
-		this.socket.on(Constant.MESSAGE.INITIALIZE,
-			this.initializeGame.bind(this));
+		this.socket.on(
+			Constant.MESSAGE.INITIALIZE,
+			this.initializeGame.bind(this)
+		);
 
-		this.socket.on(Constant.MESSAGE.GAME_UPDATE,
+		this.socket.on(
+			Constant.MESSAGE.GAME_UPDATE,
 			this.updateState.bind(this)
 		);
 	}
-		
+
 	private registerInputListeners(): void {
 		this.input.on('pointerdown', (pointer) => {
 			if (!this.alive) return;
-            const direction = this.getMouseDirection(pointer);
-            
+			const direction = this.getMouseDirection(pointer);
+
 			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 		});
 
-		this.input.keyboard.on('keydown',
+		this.input.keyboard.on(
+			'keydown',
 			this.updateMovementDirection.bind(this)
 		);
 
-		this.input.keyboard.on('keyup',
+		this.input.keyboard.on(
+			'keyup',
 			this.updateMovementDirection.bind(this)
 		);
 	}
@@ -116,11 +121,12 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private getMouseDirection(pointer: any): any {
-		const gamePos = this.cameras.main.getWorldPoint(pointer.x,
-			pointer.y);
+		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 
-        return Math.atan2(gamePos.x - this.myPlayerSprite.x,
-			gamePos.y - this.myPlayerSprite.y);
+		return Math.atan2(
+			gamePos.x - this.myPlayerSprite.x,
+			gamePos.y - this.myPlayerSprite.y
+		);
 	}
 
 	private initializeGame(update: any): void {
@@ -172,11 +178,11 @@ export default class MainScene extends Phaser.Scene {
 		const graphic_Map = this.add.graphics();
 
 		// masking logic
-		const reveal = this.add.image(0, 0, 'texture')
+		const reveal = this.add
+			.image(0, 0, 'texture')
 			.setOrigin(0, 0)
 			.setDepth(-1)
 			.setScale(3);
-
 
 		this.drawAllTiles(graphic_Map);
 
@@ -245,7 +251,9 @@ export default class MainScene extends Phaser.Scene {
 
 	// takes XY coordinates of center point, generates all required vertices, draws individual tile
 	generateTerritoryTexture(tile: Tile): void {
-		const points: Point[] = this.hexTiles.getHexPointsFromCenter(tile.cartesian_coord);
+		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
+			tile.cartesian_coord
+		);
 
 		let colorName = '';
 		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
@@ -277,7 +285,10 @@ export default class MainScene extends Phaser.Scene {
 
 	// Masking, Alpha Mask
 	// Masks the texture image using the total hexagonal tile map
-	setMapMask(reveal: Phaser.GameObjects.Image, graphic_Map: Phaser.GameObjects.Graphics): void {
+	setMapMask(
+		reveal: Phaser.GameObjects.Image,
+		graphic_Map: Phaser.GameObjects.Graphics
+	): void {
 		const hexBrush = graphic_Map.createGeometryMask();
 		reveal.setMask(hexBrush);
 	}
@@ -310,15 +321,16 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateMovementDirection(): void {
-		let direction = this.calculateDirection();
-		
+		const direction = this.calculateDirection();
+
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 
 		if (this.cursors.buildWall.isDown) {
 			if (!this.alive) return;
 
 			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x, this.input.mousePointer.y
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
 			);
 			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
 				new Point(gamePos.x, gamePos.y)
@@ -464,7 +476,7 @@ export default class MainScene extends Phaser.Scene {
 
 		for (const anOldKey of oldObjects.keys()) {
 			if (this.deadObjects.has(anOldKey)) continue;
-			
+
 			oldObjects.get(anOldKey)?.destroy();
 			oldObjects.delete(anOldKey);
 		}
