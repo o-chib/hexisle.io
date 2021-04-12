@@ -7,6 +7,7 @@ export class HexTiles {
 	public campRadius: number;
 	public mapHeight: number;
 	public baseCoords: OffsetPoint[];
+	public boundaryCoords: OffsetPoint[];
 
 	constructor() {
 		this.hexSize = 75;
@@ -14,10 +15,12 @@ export class HexTiles {
 		this.mapHeight = 4000;
 		this.hexRadius = this.getMapHexRadius();
 		this.baseCoords = [];
+		this.boundaryCoords = [];
 	}
 
 	generateMap(): void {
 		this.generateTileMap();
+		this.generateBoundary();
 		this.generateCamps();
 		this.generateBases(2, 1);
 	}
@@ -63,6 +66,24 @@ export class HexTiles {
 				}
 			}
 		}
+		console.timeEnd();
+	}
+
+	generateBoundary(): void {
+		// sets the outer ring of tiles to a boundary tile
+		console.log('time to generate boundary');
+		console.time();
+
+		const boundaryHexes: OffsetPoint[] = this.getHexRingPoints(
+			this.tileMap[this.hexRadius][this.hexRadius],
+			this.hexRadius
+		);
+		for (const boundaryHex of boundaryHexes) {
+			this.boundaryCoords.push(boundaryHex);
+			this.tileMap[boundaryHex.q][boundaryHex.r].building =
+				Constant.BUILDING.BOUNDARY;
+		}
+
 		console.timeEnd();
 	}
 
@@ -240,11 +261,13 @@ export class HexTiles {
 		// returns the offset odd-q coordinate of the hex it's in
 
 		// account for the half a hex to the bottom right we're pushing the map
-		point.x = point.x - this.hexSize;
-		point.y = point.y - this.hexSize;
+		point.xPos = point.xPos - this.hexSize;
+		point.yPos = point.yPos - this.hexSize;
 
 		// make the offset coord into a cube format
-		let cube: number[] = this.pixelToCube(new Point(point.x, point.y));
+		let cube: number[] = this.pixelToCube(
+			new Point(point.xPos, point.yPos)
+		);
 
 		// round the cube
 		cube = this.roundCube(cube);
@@ -289,7 +312,7 @@ export class HexTiles {
 		const results: Tile[] = [];
 		const centerTile: Tile = new Tile();
 		centerTile.offset_coord = this.cartesianToOffset(
-			new Point(point.x, point.y)
+			new Point(point.xPos, point.yPos)
 		);
 		const screenCoords: OffsetPoint[] = this.getHexRadiusPoints(
 			centerTile,
@@ -304,11 +327,11 @@ export class HexTiles {
 		return results;
 	}
 
-	private getHexHeight(): number {
+	public getHexHeight(): number {
 		return this.hexSize * Math.sqrt(3);
 	}
 
-	private getHexWidth(): number {
+	public getHexWidth(): number {
 		return this.hexSize * 2;
 	}
 
@@ -319,8 +342,8 @@ export class HexTiles {
 		const angle_deg: number = 60 * angle;
 		const angle_rad: number = (Math.PI / 180) * angle_deg;
 		return new Point(
-			point.x + this.hexSize * Math.cos(angle_rad),
-			point.y + this.hexSize * Math.sin(angle_rad)
+			point.xPos + this.hexSize * Math.cos(angle_rad),
+			point.yPos + this.hexSize * Math.sin(angle_rad)
 		);
 	}
 
@@ -366,9 +389,10 @@ export class HexTiles {
 		// used for conversions from cartesian to offset odd-q
 		// returns the cube: x, y, z in that order in a list
 
-		const q: number = ((2 / 3) * point.x) / this.hexSize;
+		const q: number = ((2 / 3) * point.xPos) / this.hexSize;
 		const r: number =
-			((-1 / 3) * point.x + (Math.sqrt(3) / 3) * point.y) / this.hexSize;
+			((-1 / 3) * point.xPos + (Math.sqrt(3) / 3) * point.yPos) /
+			this.hexSize;
 		return [q, -q - r, r];
 	}
 
@@ -471,7 +495,7 @@ export class HexTiles {
 		return hex;
 	}
 
-	private isHexInHexList(hex: OffsetPoint, hexList: OffsetPoint[]): boolean {
+	public isHexInHexList(hex: OffsetPoint, hexList: OffsetPoint[]): boolean {
 		// checks if a given hex coordinate is in a list of offset points (checks q and r)
 		// returns a true if it is in the list
 
@@ -490,7 +514,7 @@ export class Tile {
 	public team: number;
 	public building: string;
 
-	constructor(building = Constant.BUILDING.NONE, team = 0) {
+	constructor(building = Constant.BUILDING.NONE, team = -1) {
 		this.building = building;
 		this.team = team;
 	}
@@ -504,7 +528,18 @@ export class Tile {
 	}
 
 	isInBounds(): boolean {
-		return this.building != Constant.BUILDING.OUT_OF_BOUNDS;
+		return (
+			this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
+			this.building != Constant.BUILDING.BOUNDARY
+		);
+	}
+
+	serializeForUpdate(): any {
+		return {
+			id: this.building,
+			xPos: this.cartesian_coord.xPos,
+			yPos: this.cartesian_coord.yPos,
+		};
 	}
 }
 
@@ -537,11 +572,11 @@ export class OffsetPoint {
 }
 
 export class Point {
-	public x: number;
-	public y: number;
+	public xPos: number;
+	public yPos: number;
 
 	constructor(x = 0, y = 0) {
-		this.x = x;
-		this.y = y;
+		this.xPos = x;
+		this.yPos = y;
 	}
 }

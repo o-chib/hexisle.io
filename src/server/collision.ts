@@ -1,14 +1,51 @@
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from '../shared/wall';
+import Campfire from '../shared/campfire';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
+import { Point } from '../shared/hexTiles';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
 
 	constructor() {
 		this.quadtree = new Quadtree();
+	}
+
+	campfirePlayerCollision(campfire: Campfire): void {
+		const results: CollisionObject[] = [];
+		// Get everything touching the campfires collider
+		this.quadtree.searchQuadtree(
+			new Rect(
+				campfire.xPos - Constant.WALL_COL_RADIUS,
+				campfire.xPos + Constant.WALL_COL_RADIUS,
+				campfire.yPos + Constant.WALL_COL_RADIUS,
+				campfire.yPos - Constant.WALL_COL_RADIUS
+			),
+			results
+		);
+
+		const playerCount: number[] = [];
+		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
+			playerCount[i] = 0;
+		}
+		results.forEach((result) => {
+			if (
+				result.payload instanceof Player &&
+				this.doCirclesCollide(
+					campfire,
+					Constant.WALL_RADIUS,
+					result.payload,
+					Constant.PLAYER_RADIUS
+				)
+			) {
+				// Get number of players in each team
+				playerCount[result.payload.teamNumber] += 1;
+			}
+		});
+
+		campfire.updateCaptureState(playerCount);
 	}
 
 	playerBulletCollision(player: Player, bullets: Set<Bullet>): void {
@@ -110,7 +147,9 @@ export default class CollisionDetection {
 		);
 		for (const result of results) {
 			if (
-				result.payload instanceof Wall &&
+				// TODO replace Point with some better invisible collider when refactoring
+				(result.payload instanceof Wall ||
+					result.payload instanceof Point) &&
 				this.doCirclesCollide(
 					{ xPos: xPos, yPos: yPos },
 					Constant.PLAYER_RADIUS,
