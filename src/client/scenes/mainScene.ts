@@ -157,7 +157,7 @@ export default class MainScene extends Phaser.Scene {
 		const graphic_Map = this.add.graphics();
 
 		// masking logic
-		const reveal = this.add
+		this.add
 			.image(0, 0, 'texture')
 			.setOrigin(0, 0)
 			.setDepth(-1)
