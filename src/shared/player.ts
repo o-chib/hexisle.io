@@ -1,4 +1,4 @@
-const Constant = require('../shared/constants');
+import { Constant } from '../shared/constants';
 import Collision from './../server/collision';
 
 export default class Player {
