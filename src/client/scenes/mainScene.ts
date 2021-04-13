@@ -1,3 +1,4 @@
+import { CANCELLED } from 'node:dns';
 import io from 'socket.io-client';
 import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
 
@@ -424,10 +425,12 @@ export default class MainScene extends Phaser.Scene {
 			this.territorySprites,
 			'red-territory',
 			(changedTilesNewTile, changedTilesCurrentTile) => {
-				if (changedTilesCurrentTile.teamNumber == 0) {
+				if (changedTilesCurrentTile.teamNumber == Constant.TEAM.RED) {
 					changedTilesNewTile.setTexture('red-territory');
 					changedTilesNewTile.setVisible(true).setDepth(-1);
-				} else if (changedTilesCurrentTile.teamNumber == 1) {
+				} else if (
+					changedTilesCurrentTile.teamNumber == Constant.TEAM.BLUE
+				) {
 					changedTilesNewTile.setTexture('blue-territory');
 					changedTilesNewTile.setVisible(true).setDepth(-1);
 				}

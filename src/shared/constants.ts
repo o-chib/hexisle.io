@@ -11,6 +11,11 @@ module.exports = Object.freeze({
 	TEAM_COUNT: 2,
 	WALL_COST: 5,
 
+	TEAM: {
+		RED: 0,
+		BLUE: 1,
+	},
+
 	DIRECTION: {
 		E: 0,
 		NE: 0.25 * Math.PI,
