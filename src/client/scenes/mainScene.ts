@@ -44,8 +44,9 @@ export default class MainScene extends Phaser.Scene {
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
 		this.campfireSprites = new Map();
-		this.deadObjects = new Set();
 		this.territorySprites = new Map();
+		this.deadObjects = new Set();
+
 		this.socket = io();
 	}
 
@@ -93,12 +94,16 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private registerIntervals(): void {
-		setInterval(() => {
-			const direction = this.getMouseDirection(this.input.mousePointer);
+		//setInterval(() => {
+		//	this.updateDirection();
+		//}, 1000 / 60);
+	}
 
-			this.myPlayerSprite.setRotation(-1 * direction);
-			this.socket.emit(Constant.MESSAGE.ROTATE, direction);
-		}, 1000 / 60);
+	private updateDirection() {
+		const direction = this.getMouseDirection(this.input.mousePointer);
+
+		this.myPlayerSprite.setRotation(-1 * direction);
+		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
 	}
 
 	private getMouseDirection(pointer: any): any {
@@ -273,6 +278,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	update(): void {
+		this.updateDirection();
 		//this.updateMovementDirection();
 	}
 
