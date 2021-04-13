@@ -92,6 +92,8 @@ export default class Player {
 			resources: this.resources,
 			score: this.score,
 			teamNumber: this.teamNumber,
+			xVel: this.xVel,
+			yVel: this.yVel,
 		};
 	}
 }
