@@ -23,8 +23,14 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	preload(): void {
-		this.load.spritesheet('player_red', '../assets/Char_Red.png',{frameWidth: 94, frameHeight: 120});
-		this.load.spritesheet('player_blue', '../assets/Char_Blue.png',{frameWidth: 94, frameHeight: 120});
+		this.load.spritesheet('player_red', '../assets/Char_Red.png', {
+			frameWidth: 94,
+			frameHeight: 120,
+		});
+		this.load.spritesheet('player_blue', '../assets/Char_Blue.png', {
+			frameWidth: 94,
+			frameHeight: 120,
+		});
 
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
@@ -286,15 +292,23 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	// Animation control
-	private handleWalkAnimation(player: Phaser.GameObjects.Sprite, playerTextureName : string, xVel : number, yVel : number){
+	private handleWalkAnimation(
+		player: Phaser.GameObjects.Sprite,
+		playerTextureName: string,
+		xVel: number,
+		yVel: number
+	) {
 		// Create local animation on each sprite if it doesn't exist
 		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
-		if(!player.anims.get(playerTextureName + '_walk')) {
+		if (!player.anims.get(playerTextureName + '_walk')) {
 			player.anims.create({
 				key: playerTextureName + '_walk',
-				frames: this.anims.generateFrameNames(playerTextureName, {start: 0, end: 3}),
+				frames: this.anims.generateFrameNames(playerTextureName, {
+					start: 0,
+					end: 3,
+				}),
 				frameRate: 8,
-				repeat: -1
+				repeat: -1,
 			});
 
 			// Update anims internal isPlaying/isPaused variables.
@@ -304,11 +318,11 @@ export default class MainScene extends Phaser.Scene {
 
 		// Use overall player velocity to continue animation
 		if (xVel != 0 || yVel != 0) {
-			if(player.anims.isPaused) {
+			if (player.anims.isPaused) {
 				player.anims.resume();
 			}
 		} else {
-			if(player.anims.isPlaying) {
+			if (player.anims.isPlaying) {
 				player.anims.pause();
 			}
 		}
@@ -394,12 +408,17 @@ export default class MainScene extends Phaser.Scene {
 
 	private updatePlayer(currentPlayer: any) {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-		if (this.alive && !this.myPlayerSprite.visible){
+		if (this.alive && !this.myPlayerSprite.visible) {
 			this.myPlayerSprite.setVisible(true);
 		}
 
 		//  Local Animation control
-		this.myPlayerSprite = this.handleWalkAnimation(this.myPlayerSprite, this.myPlayerSprite.texture.key, currentPlayer.xVel, currentPlayer.yVel);
+		this.myPlayerSprite = this.handleWalkAnimation(
+			this.myPlayerSprite,
+			this.myPlayerSprite.texture.key,
+			currentPlayer.xVel,
+			currentPlayer.yVel
+		);
 	}
 
 	//TODO may not be necessary for bullets
@@ -425,17 +444,23 @@ export default class MainScene extends Phaser.Scene {
 				newPlayer.setRotation(playerLiteral.direction);
 
 				// Set Walk/Standing textures based on team
-				let playerTexture : string = '';
+				let playerTexture = '';
 				if (playerLiteral.teamNumber == Constant.TEAM.RED)
 					playerTexture = 'player_red';
 				else if (playerLiteral.teamNumber == Constant.TEAM.BLUE)
 					playerTexture = 'player_blue';
 
-				if(newPlayer.texture.key != playerTexture) //TODO faster lookup somehow? check null?
+				if (newPlayer.texture.key != playerTexture)
+					//TODO faster lookup somehow? check null?
 					newPlayer.setTexture(playerTexture).setDepth(1000);
 
 				// Opponent Animation Control
-				newPlayer = this.handleWalkAnimation(newPlayer, playerTexture, playerLiteral.xVel, playerLiteral.yVel);
+				newPlayer = this.handleWalkAnimation(
+					newPlayer,
+					playerTexture,
+					playerLiteral.xVel,
+					playerLiteral.yVel
+				);
 
 				return newPlayer;
 			}
