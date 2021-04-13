@@ -2,7 +2,7 @@ import { CANCELLED } from 'node:dns';
 import io from 'socket.io-client';
 import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
 
-const Constant = require('./../../shared/constants');
+import { Constant } from './../../shared/constants';
 
 export default class MainScene extends Phaser.Scene {
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
@@ -134,8 +134,8 @@ export default class MainScene extends Phaser.Scene {
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 
 		return Math.atan2(
-			gamePos.x - this.myPlayerSprite.x,
-			gamePos.y - this.myPlayerSprite.y
+			gamePos.y - this.myPlayerSprite.y,
+			gamePos.x - this.myPlayerSprite.x
 		);
 	}
 

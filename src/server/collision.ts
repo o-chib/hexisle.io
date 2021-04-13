@@ -3,8 +3,8 @@ import Bullet from './../shared/bullet';
 import Wall from '../shared/wall';
 import Campfire from '../shared/campfire';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
+import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';
-const Constant = require('../shared/constants');
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
