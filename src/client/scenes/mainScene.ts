@@ -221,6 +221,8 @@ export default class MainScene extends Phaser.Scene {
 		);
 
 		graphics.lineStyle(2, 0xffffff, 1);
+		if (tile.building == Constant.BUILDING.CAMP)
+			graphics.lineStyle(5, 0xffffff, 1);
 
 		this.drawGraphics(points, graphics);
 
