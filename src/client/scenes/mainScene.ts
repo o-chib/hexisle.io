@@ -23,8 +23,15 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	preload(): void {
-		this.load.image('aliem', '../assets/Character.png');
-		this.load.image('aliemblue', '../assets/CharacterBlue.png');
+		this.load.spritesheet('player_red', '../assets/Char_Red.png', {
+			frameWidth: 94,
+			frameHeight: 120,
+		});
+		this.load.spritesheet('player_blue', '../assets/Char_Blue.png', {
+			frameWidth: 94,
+			frameHeight: 120,
+		});
+
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('wall', '../assets/tempwall.png'); //TODO
@@ -67,7 +74,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private generatePlayerSprite(): void {
-		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
+		this.myPlayerSprite = this.add.sprite(0, 0, 'player_red');
 		this.myPlayerSprite.setDepth(1000);
 		this.myPlayerSprite.setVisible(false);
 		this.myPlayerSprite.setScale(1);
@@ -156,8 +163,9 @@ export default class MainScene extends Phaser.Scene {
 	private initializePlayer(player: any): void {
 		// Change this when more than 2 teams
 		if (player.teamNumber == Constant.TEAM.RED)
-			this.myPlayerSprite.setTexture('aliem');
-		else this.myPlayerSprite.setTexture('aliemblue');
+			this.myPlayerSprite.setTexture('player_red');
+		else if (player.teamNumber == Constant.TEAM.BLUE)
+			this.myPlayerSprite.setTexture('player_blue');
 
 		this.alive = true;
 	}
@@ -283,6 +291,45 @@ export default class MainScene extends Phaser.Scene {
 		reveal.setMask(hexBrush);
 	}
 
+	// Animation control
+	private handleWalkAnimation(
+		player: Phaser.GameObjects.Sprite,
+		playerTextureName: string,
+		xVel: number,
+		yVel: number
+	) {
+		// Create local animation on each sprite if it doesn't exist
+		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
+		if (!player.anims.get(playerTextureName + '_walk')) {
+			player.anims.create({
+				key: playerTextureName + '_walk',
+				frames: this.anims.generateFrameNames(playerTextureName, {
+					start: 0,
+					end: 3,
+				}),
+				frameRate: 8,
+				repeat: -1,
+			});
+
+			// Update anims internal isPlaying/isPaused variables.
+			player.anims.play(playerTextureName + '_walk');
+			player.anims.pause();
+		}
+
+		// Use overall player velocity to continue animation
+		if (xVel != 0 || yVel != 0) {
+			if (player.anims.isPaused) {
+				player.anims.resume();
+			}
+		} else {
+			if (player.anims.isPlaying) {
+				player.anims.pause();
+			}
+		}
+
+		return player;
+	}
+
 	calculateDirection() {
 		let direction = NaN;
 		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
@@ -361,9 +408,17 @@ export default class MainScene extends Phaser.Scene {
 
 	private updatePlayer(currentPlayer: any) {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-
-		if (this.alive && !this.myPlayerSprite.visible)
+		if (this.alive && !this.myPlayerSprite.visible) {
 			this.myPlayerSprite.setVisible(true);
+		}
+
+		//  Local Animation control
+		this.myPlayerSprite = this.handleWalkAnimation(
+			this.myPlayerSprite,
+			this.myPlayerSprite.texture.key,
+			currentPlayer.xVel,
+			currentPlayer.yVel
+		);
 	}
 
 	//TODO may not be necessary for bullets
@@ -384,12 +439,29 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			otherPlayers,
 			this.otherPlayerSprites,
-			'aliem',
+			'',
 			(newPlayer, playerLiteral) => {
 				newPlayer.setRotation(playerLiteral.direction);
-				if (playerLiteral.teamNumber == 1)
-					newPlayer.setTexture('aliemblue').setDepth(1000);
-				if (playerLiteral.teamNumber == 0) newPlayer.setDepth(1000);
+
+				// Set Walk/Standing textures based on team
+				let playerTexture = '';
+				if (playerLiteral.teamNumber == Constant.TEAM.RED)
+					playerTexture = 'player_red';
+				else if (playerLiteral.teamNumber == Constant.TEAM.BLUE)
+					playerTexture = 'player_blue';
+
+				if (newPlayer.texture.key != playerTexture)
+					//TODO faster lookup somehow? check null?
+					newPlayer.setTexture(playerTexture).setDepth(1000);
+
+				// Opponent Animation Control
+				newPlayer = this.handleWalkAnimation(
+					newPlayer,
+					playerTexture,
+					playerLiteral.xVel,
+					playerLiteral.yVel
+				);
+
 				return newPlayer;
 			}
 		);
