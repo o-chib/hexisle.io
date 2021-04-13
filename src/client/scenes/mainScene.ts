@@ -39,6 +39,7 @@ export default class MainScene extends Phaser.Scene {
 
 	init(): void {
 		this.initializeKeys();
+		this.generatePlayerSprite();
 
 		this.hexTiles = new HexTiles();
 		this.otherPlayerSprites = new Map();
@@ -61,6 +62,23 @@ export default class MainScene extends Phaser.Scene {
 	update(): void {
 		this.updateDirection();
 		//this.updateMovementDirection();
+	}
+
+	private generatePlayerSprite(): void {
+		this.myPlayerSprite = this.add.sprite(0, 0, 'aliem');
+		this.myPlayerSprite.setDepth(1000);
+		this.myPlayerSprite.setVisible(false);
+		this.myPlayerSprite.setScale(1);
+	}
+
+	private initializeKeys(): void {
+		this.cursors = this.input.keyboard.addKeys({
+			up: Phaser.Input.Keyboard.KeyCodes.W,
+			down: Phaser.Input.Keyboard.KeyCodes.S,
+			left: Phaser.Input.Keyboard.KeyCodes.A,
+			right: Phaser.Input.Keyboard.KeyCodes.D,
+			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
+		});
 	}
 
 	private registerListeners(): void {
@@ -134,33 +152,16 @@ export default class MainScene extends Phaser.Scene {
 
 	private initializePlayer(player: any): void {
 		// Change this when more than 2 teams
-		if (player.teamNumber == 0) {
-			this.generatePlayerSprite('aliem');
-		} else {
-			this.generatePlayerSprite('aliemblue');
-		}
-	}
+		if (player.teamNumber == Constant.TEAM.RED)
+			this.myPlayerSprite.setTexture('aliem');
+		else this.myPlayerSprite.setTexture('aliemblue');
 
-	private generatePlayerSprite(spriteName: string): void {
-		this.myPlayerSprite = this.add.sprite(0, 0, spriteName).setDepth(1000);
-		this.myPlayerSprite.setVisible(false);
-		this.myPlayerSprite.setScale(1);
 		this.alive = true;
 	}
 
 	private setCamera(): void {
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
 		this.cameras.main.setZoom(0.5);
-	}
-
-	private initializeKeys(): void {
-		this.cursors = this.input.keyboard.addKeys({
-			up: Phaser.Input.Keyboard.KeyCodes.W,
-			down: Phaser.Input.Keyboard.KeyCodes.S,
-			left: Phaser.Input.Keyboard.KeyCodes.A,
-			right: Phaser.Input.Keyboard.KeyCodes.D,
-			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
-		});
 	}
 
 	private createTileMap(tileMap: any) {
