@@ -1,4 +1,4 @@
-module.exports = Object.freeze({
+export const Constant = Object.freeze({
 	// Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
 	DEFAULT_WIDTH: 10000,
 	DEFAULT_HEIGHT: 10000,
@@ -12,6 +12,11 @@ module.exports = Object.freeze({
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
 	WALL_COST: 5,
+
+	TEAM: {
+		RED: 0,
+		BLUE: 1,
+	},
 
 	DIRECTION: {
 		E: 0,
