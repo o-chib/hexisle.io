@@ -1,4 +1,3 @@
-import { CANCELLED } from 'node:dns';
 import io from 'socket.io-client';
 import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
 
@@ -124,7 +123,8 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateDirection() {
-		const direction = this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
+		const direction =
+			this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
 
 		this.myPlayerSprite.setRotation(direction);
 		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
