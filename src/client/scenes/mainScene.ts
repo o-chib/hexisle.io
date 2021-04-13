@@ -57,6 +57,11 @@ export default class MainScene extends Phaser.Scene {
 		this.socket.emit(Constant.MESSAGE.JOIN);
 	}
 
+	update(): void {
+		this.updateDirection();
+		//this.updateMovementDirection();
+	}
+
 	private registerListeners(): void {
 		this.registerSocketListeners();
 		this.registerInputListeners();
@@ -275,11 +280,6 @@ export default class MainScene extends Phaser.Scene {
 	): void {
 		const hexBrush = graphic_Map.createGeometryMask();
 		reveal.setMask(hexBrush);
-	}
-
-	update(): void {
-		this.updateDirection();
-		//this.updateMovementDirection();
 	}
 
 	calculateDirection() {
