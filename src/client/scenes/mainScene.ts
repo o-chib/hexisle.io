@@ -124,9 +124,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateDirection() {
-		const direction = this.getMouseDirection(this.input.mousePointer);
+		const direction = this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
 
-		this.myPlayerSprite.setRotation(-1 * direction);
+		this.myPlayerSprite.setRotation(direction);
 		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
 	}
 
@@ -384,7 +384,7 @@ export default class MainScene extends Phaser.Scene {
 			this.otherPlayerSprites,
 			'aliem',
 			(newPlayer, playerLiteral) => {
-				newPlayer.setRotation(-1 * playerLiteral.direction);
+				newPlayer.setRotation(playerLiteral.direction);
 				if (playerLiteral.teamNumber == 1)
 					newPlayer.setTexture('aliemblue').setDepth(1000);
 				if (playerLiteral.teamNumber == 0) newPlayer.setDepth(1000);
