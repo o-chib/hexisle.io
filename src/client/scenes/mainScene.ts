@@ -9,6 +9,7 @@ export default class MainScene extends Phaser.Scene {
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
@@ -30,6 +31,7 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('wallblue', '../assets/tempwallblue.png'); //TODO
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
+		this.load.image('base', '../assets/base.png');
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
@@ -45,6 +47,7 @@ export default class MainScene extends Phaser.Scene {
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
 		this.campfireSprites = new Map();
+		this.baseSprites = new Map();
 		this.territorySprites = new Map();
 		this.deadObjects = new Set();
 
@@ -217,13 +220,9 @@ export default class MainScene extends Phaser.Scene {
 			tile.cartesian_coord
 		);
 
-		if (tile.building == Constant.BUILDING.CAMP) {
-			graphics.lineStyle(4, 0xff0000, 1);
-		} else if (tile.building == Constant.BUILDING.BASE) {
-			graphics.lineStyle(6, 0x00ffcc, 1);
-		} else {
-			graphics.lineStyle(2, 0xffffff, 1);
-		}
+		graphics.lineStyle(2, 0xffffff, 1);
+		if (tile.building == Constant.BUILDING.CAMP)
+			graphics.lineStyle(5, 0xffffff, 1);
 
 		this.drawGraphics(points, graphics);
 
@@ -336,6 +335,7 @@ export default class MainScene extends Phaser.Scene {
 			bullets,
 			walls,
 			campfires,
+			bases,
 			territories,
 		} = update;
 		if (currentPlayer == null) return;
@@ -349,6 +349,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateWalls(walls);
 
 		this.updateCampfires(campfires);
+
+		this.updateBases(bases);
 
 		this.updateTerritories(territories);
 
@@ -416,6 +418,19 @@ export default class MainScene extends Phaser.Scene {
 					newCampfire.setTexture('campfire_lit').setDepth(0);
 				else newCampfire.setTexture('campfire_unlit').setDepth(0);
 				return newCampfire;
+			}
+		);
+	}
+
+	private updateBases(bases: any) {
+		this.updateMapOfObjects(
+			bases,
+			this.baseSprites,
+			'base',
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			(newBase, newBaseLiteral) => {
+				if (newBaseLiteral.teamNumber == 1) newBase.setTexture('base');
+				return newBase;
 			}
 		);
 	}

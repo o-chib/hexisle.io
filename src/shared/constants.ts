@@ -6,6 +6,8 @@ export const Constant = Object.freeze({
 	BULLET_RADIUS: 15,
 	WALL_RADIUS: 75,
 	WALL_COL_RADIUS: 75 * 0.75,
+	BASE_RADIUS: 200,
+	BASE_COL_RADIUS: 200 * 0.75,
 	VIEW_RADIUS: 1600,
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
@@ -33,6 +35,7 @@ export const Constant = Object.freeze({
 		STRUCTURE: 'structure',
 		CAMP: 'camp',
 		BASE: 'base',
+		CANT_BUILD: 'cant build',
 		BOUNDARY: 'boundary',
 	},
 

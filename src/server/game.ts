@@ -5,6 +5,7 @@ import Teams from '../shared/teams';
 import Bullet from './../shared/bullet';
 import Wall from './../shared/wall';
 import Campfire from './../shared/campfire';
+import Base from './../shared/base';
 import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
@@ -17,6 +18,7 @@ export default class Game {
 	bullets: Set<Bullet>;
 	walls: Set<Wall>;
 	campfires: Set<Campfire>;
+	bases: Set<Base>;
 	previousUpdateTimestamp: any;
 	hexTileMap: HexTiles;
 	idGenerator: IDgenerator;
@@ -26,10 +28,13 @@ export default class Game {
 
 	constructor() {
 		this.players = new Map();
-
 		this.bullets = new Set();
-
 		this.walls = new Set();
+		this.bases = new Set();
+		this.campfires = new Set();
+		this.territories = new Set();
+
+		this.idGenerator = new IDgenerator();
 
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
@@ -43,16 +48,10 @@ export default class Game {
 
 		this.previousUpdateTimestamp = Date.now();
 
-		this.idGenerator = new IDgenerator();
-
 		this.initCampfires();
 
-		this.territories = new Set();
 		this.addBaseTerritories();
-
-		this.changedTiles = [];
-
-		this.idGenerator = new IDgenerator();
+		this.initBases();
 
 		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
 	}
@@ -75,6 +74,7 @@ export default class Game {
 
 			this.collision.updateCollider(aBullet, Constant.BULLET_RADIUS);
 		}
+
 		// Add captured territory of campfire, and camfire itself
 		for (const aCampfire of this.campfires) {
 			this.collision.campfirePlayerCollision(aCampfire);
@@ -136,6 +136,22 @@ export default class Game {
 			//this.changedTiles.push(aWall.tile);
 		}
 
+		for (const aBase of this.bases) {
+			this.collision.buildingBulletCollision(aBase, this.bullets);
+			if (!aBase.isAlive()) {
+				this.collision.deleteCollider(aBase, Constant.BASE_COL_RADIUS);
+
+				// empty all the nearby tiles (respawn points to center base tile)
+				this.hexTileMap
+					.getHexRadiusPoints(aBase.tile, 2)
+					.forEach((coord) => {
+						this.hexTileMap.tileMap[coord.q][coord.r].setEmpty();
+					});
+
+				this.bases.delete(aBase);
+			}
+		}
+
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
 			this.collision.playerBulletCollision(aPlayer, this.bullets);
@@ -157,6 +173,7 @@ export default class Game {
 		const nearbyBullets: Bullet[] = [];
 		const nearbyWalls: Wall[] = [];
 		const nearbyCampfires: Campfire[] = [];
+		const nearbyBases: Base[] = [];
 		const changedTiles: Tile[] = this.changedTiles;
 		const nearbyTerritories: Territory[] = [];
 
@@ -209,6 +226,18 @@ export default class Game {
 				nearbyCampfires.push(aCampfire);
 		}
 
+		for (const aBase of this.bases) {
+			if (
+				this.collision.doCirclesCollide(
+					aBase,
+					Constant.BASE_RADIUS,
+					player,
+					Constant.VIEW_RADIUS
+				)
+			)
+				nearbyBases.push(aBase);
+		}
+
 		for (const aTerritory of this.territories) {
 			if (
 				this.collision.doCirclesCollide(
@@ -229,23 +258,26 @@ export default class Game {
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 			walls: nearbyWalls.map((p) => p.serializeForUpdate()),
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
+			bases: nearbyBases.map((p) => p.serializeForUpdate()),
 			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
 		};
 	}
 
 	addPlayer(socket: SocketIOClient.Socket) {
-		console.log('Hello: ' + socket.id);
+		console.log('Hello:' + socket.id);
 
 		const team: number = this.teams.addNewPlayer(socket.id);
-		console.log('Assigning to team ' + team);
 
 		const newPlayer = new Player(socket, 0, 0, team);
-		this.respawnPlayer(newPlayer);
+
+		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
+		newPlayer.xPos = respawnPoint.xPos;
+		newPlayer.yPos = respawnPoint.yPos;
 
 		this.players.set(socket.id, newPlayer);
 
 		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
-		console.log('inserted', newPlayer.id);
+		console.log('Spawned:', newPlayer.id);
 
 		const initObject = {
 			player: newPlayer.serializeForUpdate(),
@@ -256,7 +288,7 @@ export default class Game {
 	}
 
 	removePlayer(socket: SocketIOClient.Socket) {
-		console.log('Goodbye: ' + socket.id);
+		console.log('Goodbye:' + socket.id);
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.players.get(socket.id)!;
 
@@ -268,19 +300,23 @@ export default class Game {
 	}
 
 	respawnPlayer(player: Player) {
-		console.log('Respawning: ' + player.socket.id);
+		console.log('Respawning:' + player.socket.id);
 
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
-		const respawnPoint: Point = this.hexTileMap.offsetToCartesian(
-			this.teams.getTeamBaseCoord(player.teamNumber)
-		);
+		const respawnPoint: Point = this.getRespawnPoint(player.teamNumber);
 
 		player.health = 100;
 		player.xPos = respawnPoint.xPos;
 		player.yPos = respawnPoint.yPos;
 
 		this.collision.insertCollider(player, Constant.PLAYER_RADIUS);
+	}
+
+	getRespawnPoint(teamNum: number): Point {
+		const coords: OffsetPoint[] = this.teams.getRespawnCoords(teamNum);
+		const index = Math.floor(Math.random() * coords.length);
+		return this.hexTileMap.offsetToCartesian(coords[index]);
 	}
 
 	movePlayer(socket: SocketIOClient.Socket, direction: number) {
@@ -348,16 +384,17 @@ export default class Game {
 		tile.building = Constant.BUILDING.STRUCTURE;
 		// this.changedTiles.push(tile); //TODO
 
-		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
+		this.collision.insertCollider(wall, Constant.WALL_COL_RADIUS);
 	}
 
-	generateBoundaryColliders(): void {
-		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
-			this.collision.insertCollider(
-				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
-					.cartesian_coord,
-				Constant.WALL_COL_RADIUS
-			);
+	initCampfires(): void {
+		const tilemap = this.hexTileMap.tileMap;
+		for (let i = 0; i < tilemap.length; i++) {
+			for (let j = 0; j < tilemap[i].length; j++) {
+				if (tilemap[i][j].building == Constant.BUILDING.CAMP) {
+					this.buildCampfire(tilemap[i][j].offset_coord);
+				}
+			}
 		}
 	}
 
@@ -381,22 +418,58 @@ export default class Game {
 		this.campfires.add(campfire);
 		tile.building = Constant.BUILDING.CAMP;
 		//this.changedTiles.push(tile); //TODO
-
 		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
 	}
 
-	initCampfires(): void {
-		this.campfires = new Set();
-
-		const tilemap = this.hexTileMap.tileMap;
-		for (let i = 0; i < tilemap.length; i++) {
-			for (let j = 0; j < tilemap[i].length; j++) {
-				if (tilemap[i][j].building == Constant.BUILDING.CAMP) {
-					this.buildCampfire(tilemap[i][j].offset_coord);
-				}
-			}
+	initBases(): void {
+		for (let teamNum = 0; teamNum < Constant.TEAM_COUNT; teamNum++) {
+			this.buildBase(teamNum, this.teams.getTeamBaseCoord(teamNum));
 		}
 	}
+
+	buildBase(teamNum: number, coord: OffsetPoint): void {
+		if (!this.hexTileMap.checkIfValidHex(coord)) {
+			return;
+		}
+
+		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+		tile.team = teamNum;
+		tile.building = Constant.BUILDING.BASE;
+
+		const base: Base = new Base(
+			this.idGenerator.newID(),
+			tile.cartesian_coord.xPos,
+			tile.cartesian_coord.yPos,
+			teamNum,
+			tile
+		);
+
+		this.bases.add(base);
+		this.collision.insertCollider(base, Constant.BASE_COL_RADIUS);
+
+		this.teams.getTeam(
+			teamNum
+		).respawnCoords = this.hexTileMap.getHexRingPoints(tile, 2);
+
+		// make it so you cant build on and around the base
+		for (let i = 0; i <= 2; i++) {
+			this.hexTileMap.getHexRingPoints(tile, i).forEach((coord) => {
+				this.hexTileMap.tileMap[coord.q][coord.r].building =
+					Constant.BUILDING.CANT_BUILD;
+			});
+		}
+	}
+
+	generateBoundaryColliders(): void {
+		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
+			this.collision.insertCollider(
+				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
+					.cartesian_coord,
+				Constant.WALL_COL_RADIUS
+			);
+		}
+	}
+
 	addBaseTerritories() {
 		// Add permanent territory from bases
 		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
