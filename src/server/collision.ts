@@ -2,8 +2,10 @@ import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from '../shared/wall';
 import Campfire from '../shared/campfire';
+import Base from '../shared/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
-const Constant = require('../shared/constants');
+import { Constant } from '../shared/constants';
+import { Point } from '../shared/hexTiles';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
@@ -86,14 +88,21 @@ export default class CollisionDetection {
 		});
 	}
 
-	buildingBulletCollision(wall: Wall, bullets: Set<Bullet>): void {
+	buildingBulletCollision(building: any, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
+		let col_radius = 0;
+		if (building instanceof Wall) {
+			col_radius = Constant.WALL_COL_RADIUS;
+		} else if (building instanceof Base) {
+			col_radius = Constant.BASE_COL_RADIUS;
+		}
+
 		this.quadtree.searchQuadtree(
 			new Rect(
-				wall.xPos - Constant.WALL_COL_RADIUS,
-				wall.xPos + Constant.WALL_COL_RADIUS,
-				wall.yPos + Constant.WALL_COL_RADIUS,
-				wall.yPos - Constant.WALL_COL_RADIUS
+				building.xPos - col_radius,
+				building.xPos + col_radius,
+				building.yPos + col_radius,
+				building.yPos - col_radius
 			),
 			results
 		);
@@ -102,15 +111,15 @@ export default class CollisionDetection {
 			if (
 				result.payload instanceof Bullet &&
 				result.payload.id == result.payload.id &&
-				result.payload.teamNumber != wall.teamNumber &&
+				result.payload.teamNumber != building.teamNumber &&
 				this.doCirclesCollide(
-					wall,
-					Constant.WALL_COL_RADIUS,
+					building,
+					col_radius,
 					result.payload,
 					Constant.BULLET_RADIUS
 				)
 			) {
-				wall.hp -= 10;
+				building.hp -= 10;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
@@ -144,15 +153,28 @@ export default class CollisionDetection {
 			),
 			results
 		);
+
 		for (const result of results) {
+			if (result.payload instanceof Base) {
+				//console.log(result.payload.constructor.name);
+			}
 			if (
-				result.payload instanceof Wall &&
-				this.doCirclesCollide(
-					{ xPos: xPos, yPos: yPos },
-					Constant.PLAYER_RADIUS,
-					result.payload,
-					Constant.WALL_COL_RADIUS
-				)
+				// TODO replace Point with some better invisible collider when refactoring
+				((result.payload instanceof Wall ||
+					result.payload instanceof Point) &&
+					this.doCirclesCollide(
+						{ xPos: xPos, yPos: yPos },
+						Constant.PLAYER_RADIUS,
+						result.payload,
+						Constant.WALL_COL_RADIUS
+					)) ||
+				(result.payload instanceof Base &&
+					this.doCirclesCollide(
+						{ xPos: xPos, yPos: yPos },
+						Constant.PLAYER_RADIUS,
+						result.payload,
+						Constant.BASE_COL_RADIUS
+					))
 			)
 				return true;
 		}
