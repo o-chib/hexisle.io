@@ -96,19 +96,6 @@ export default class MainScene extends Phaser.Scene {
 		}
 		this.myPlayerSprite = this.add.sprite(0, 0, playerSprite).setDepth(1000);
 
-		this.anims.create({
-			key: 'player_red_walk',
-			frames: this.anims.generateFrameNames('player_red', {start: 0, end: 3}),
-			frameRate: 8,
-			repeat: -1
-		});
-		this.anims.create({
-			key: 'player_blue_walk',
-			frames: this.anims.generateFrameNames('player_blue', {start: 0, end: 3}),
-			frameRate: 8,
-			repeat: -1
-		});
-
 		this.myPlayerSprite.setVisible(false);
 		this.alive = true;
 		this.myPlayerSprite.setScale(1);
@@ -320,6 +307,38 @@ export default class MainScene extends Phaser.Scene {
 		reveal.setMask(hexBrush);
 	}
 
+	// Animation control
+	private handleWalkAnimation(player: Phaser.GameObjects.Sprite, playerTextureName : string, xVel : number, yVel : number){
+		// Create local animation on each sprite if it doesn't exist
+		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
+		if(!player.anims.get(playerTextureName + '_walk')) {
+			player.anims.create({
+				key: playerTextureName + '_walk',
+				frames: this.anims.generateFrameNames(playerTextureName, {start: 0, end: 3}),
+				frameRate: 8,
+				repeat: -1
+			});
+
+			// Update anims internal isPlaying/isPaused variables.
+			player.anims.play(playerTextureName + '_walk');
+			player.anims.pause();
+		}
+
+		// Use overall player velocity to continue animation
+		if (xVel != 0 || yVel != 0) {
+			if(player.anims.isPaused) {
+				player.anims.resume();
+			}
+		} else {
+			if(player.anims.isPlaying) {
+				player.anims.pause();
+			}
+		}
+
+		return player;
+	}
+
+
 	update(): void {
 		//this.updateMovementDirection();
 	}
@@ -452,26 +471,7 @@ export default class MainScene extends Phaser.Scene {
 		}
 
 		//  Local Animation control
-		if(this.myPlayerSprite.anims.getName() != 'walk'){
-			this.myPlayerSprite.anims.create({
-				key: 'walk',
-				frames: this.anims.generateFrameNames(this.myPlayerSprite.texture.key, {start: 0, end: 3}),
-				frameRate: 8,
-				repeat: -1
-			});
-			this.myPlayerSprite.anims.pause();
-		}
-
-		if(currentPlayer.xVel != 0 || currentPlayer.yVel != 0){
-			if(this.myPlayerSprite.anims.isPaused) {
-				this.myPlayerSprite.anims.play('walk');
-			}
-		} else {
-			if(this.myPlayerSprite.anims.isPlaying) {
-				this.myPlayerSprite.anims.pause();
-			}
-		}
-
+		this.myPlayerSprite = this.handleWalkAnimation(this.myPlayerSprite, this.myPlayerSprite.texture.key, currentPlayer.xVel, currentPlayer.yVel);
 	}
 
 	private updateBullets(bullets: any) {
@@ -509,32 +509,8 @@ export default class MainScene extends Phaser.Scene {
 					newPlayer.setTexture(playerTexture).setDepth(1000);
 
 				// Opponent Animation Control
-				if(!newPlayer.anims.get(playerTexture + '_walk')){
-					newPlayer.anims.create({
-						key: playerTexture + '_walk',
-						frames: this.anims.generateFrameNames(playerTexture, {start: 0, end: 3}),
-						frameRate: 8,
-						repeat: -1
-					});
-					newPlayer.anims.play(playerTexture + '_walk');
-					newPlayer.anims.pause();
-				}
-				if(playerLiteral.xVel != 0 || playerLiteral.yVel != 0){
-					if(newPlayer.anims.isPaused){
-						newPlayer.anims.resume();
-					}
+				newPlayer = this.handleWalkAnimation(newPlayer, playerTexture,playerLiteral.xVel, playerLiteral.yVel);
 
-					let progressIncrement = 0.002;
-					let progress = newPlayer.anims.getProgress() + progressIncrement;
-					if(progress > 1)
-						progress = progress % 1;
-					console.log(progress);
-					newPlayer.anims.setProgress(progress);
-				} else {
-					if(newPlayer.anims.isPlaying){
-						newPlayer.anims.pause();
-					}
-				}
 				return newPlayer;
 			}
 		);
