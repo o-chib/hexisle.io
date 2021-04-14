@@ -155,9 +155,6 @@ export default class CollisionDetection {
 		);
 
 		for (const result of results) {
-			if (result.payload instanceof Base) {
-				//console.log(result.payload.constructor.name);
-			}
 			if (
 				// TODO replace Point with some better invisible collider when refactoring
 				((result.payload instanceof Wall ||

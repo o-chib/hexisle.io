@@ -35,18 +35,23 @@ function updateSocket(socket: any) {
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
 	});
+
 	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
 		game.movePlayer(socket, direction);
 	});
+
 	socket.on(Constant.MESSAGE.TILE_CHANGE, (coord: OffsetPoint) => {
 		game.buildWall(socket, coord);
 	});
+
 	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
 		game.shootBullet(socket, direction);
 	});
+
 	socket.on(Constant.MESSAGE.ROTATE, (direction: number) => {
 		game.rotatePlayer(socket, direction);
 	});
+
 	socket.on('disconnect', () => {
 		game.removePlayer(socket);
 	});

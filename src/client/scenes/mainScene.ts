@@ -31,7 +31,6 @@ export default class MainScene extends Phaser.Scene {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
-
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('wall', '../assets/tempwall.png'); //TODO
@@ -378,7 +377,6 @@ export default class MainScene extends Phaser.Scene {
 		const {
 			currentPlayer,
 			otherPlayers,
-			//changedTiles,
 			bullets,
 			walls,
 			campfires,
@@ -400,8 +398,6 @@ export default class MainScene extends Phaser.Scene {
 		this.updateBases(bases);
 
 		this.updateTerritories(territories);
-
-		//this.updateChangedTiles(changedTiles);
 
 		this.events.emit('updateHUD', currentPlayer);
 	}
