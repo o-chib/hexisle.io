@@ -33,6 +33,8 @@ export default class Game {
 		this.campfires = new Set();
 		this.bases = new Set();
 		this.territories = new Set();
+		
+		this.idGenerator = new IDgenerator();
 
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
@@ -40,12 +42,11 @@ export default class Game {
 		this.teams = new Teams(2, this.hexTileMap.baseCoords);
 
 		this.collision = new CollisionDetection();
+		this.generateBoundaryColliders();
 
 		this.initCampfires();
 		this.addBaseTerritories();
 		this.initBases();
-
-		this.idGenerator = new IDgenerator();
 
 		this.previousUpdateTimestamp = Date.now();
 		setInterval(this.update.bind(this), 1000 / 60);
