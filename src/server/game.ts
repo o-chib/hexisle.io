@@ -52,6 +52,18 @@ export default class Game {
 		setInterval(this.update.bind(this), 1000 / 60);
 	}
 
+	update() {
+		const [currentTimestamp, timePassed] = this.calculateTimePassed();
+
+		this.updateBullets(currentTimestamp, timePassed);
+
+		this.updateTerritories();
+
+		this.updateWalls();
+
+		this.updatePlayers(currentTimestamp);
+	}
+
 	calculateTimePassed(): [number, number]{
 		const currentTimestamp = Date.now();
 		const timePassed =
@@ -175,18 +187,6 @@ export default class Game {
 				this.respawnPlayer(aPlayer);
 			}
 		}
-	}
-
-	update() {
-		const [currentTimestamp, timePassed] = this.calculateTimePassed();
-
-		this.updateBullets(currentTimestamp, timePassed);
-
-		this.updateTerritories();
-
-		this.updateWalls();
-
-		this.updatePlayers(currentTimestamp);
 	}
 
 	createPlayerUpdate(player: Player){
