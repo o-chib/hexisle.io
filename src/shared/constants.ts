@@ -15,7 +15,7 @@ export const Constant = Object.freeze({
 
 	INCOME: {
 		UPDATE_RATE: 1,
-		INCOME_PER_CAMP: 0.5,
+		INCOME_PER_CAMP: 1,
 	},
 
 	TEAM: {
