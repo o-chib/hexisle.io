@@ -47,7 +47,7 @@ export default class Player {
 		if(type == 'increase') {
 			this.resources = this.resources + resourceValue;
 		}else if(type == 'decrease') {
-			this.resources = this.resources + resourceValue;
+			this.resources = this.resources - resourceValue;
 		}
 	}
 
