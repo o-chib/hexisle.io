@@ -15,7 +15,6 @@ export default class MainScene extends Phaser.Scene {
 	private alive: boolean;
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
-
 	private hexTiles: HexTiles;
 
 	constructor() {
@@ -86,6 +85,7 @@ export default class MainScene extends Phaser.Scene {
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
 			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
+			demolishWall: Phaser.Input.Keyboard.KeyCodes.R,
 		});
 	}
 
@@ -368,7 +368,19 @@ export default class MainScene extends Phaser.Scene {
 				new Point(gamePos.x, gamePos.y)
 			);
 
-			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
+			this.socket.emit(Constant.MESSAGE.BUILD_WALL, coord);
+		} else if (this.cursors.demolishWall.isDown) {
+			if (!this.alive) return;
+
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
+			);
+			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+				new Point(gamePos.x, gamePos.y)
+			);
+
+			this.socket.emit(Constant.MESSAGE.DEMOLISH_WALL, coord);
 		}
 	}
 
