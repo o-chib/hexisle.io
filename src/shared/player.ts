@@ -39,7 +39,16 @@ export default class Player {
 		//this.healthRegen = 1;
 		this.speed = 600;
 		this.socket = socket;
+		this.resources = 0;
 		this.lastUpdateTime = Date.now();
+	}
+
+	updateResource(resourceValue: number, type: string) {
+		if(type == 'increase') {
+			this.resources = this.resources + resourceValue;
+		}else if(type == 'decrease') {
+			this.resources = this.resources + resourceValue;
+		}
 	}
 
 	updateDirection(newDirection: number): void {

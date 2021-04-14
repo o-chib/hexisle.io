@@ -50,6 +50,15 @@ export default class Game {
 
 		this.previousUpdateTimestamp = Date.now();
 		setInterval(this.update.bind(this), 1000 / 60);
+		setInterval(this.updatePlayerResource.bind(this), Constant.INCOME.UPDATE_RATE * 1000);
+	}
+
+	updatePlayerResource() {
+		for (const aPlayer of this.players.values()) {
+			let newResourceValue: number = this.teams.getTeam(aPlayer.teamNumber).numCapturedCamps
+											* Constant.INCOME.INCOME_PER_CAMP;
+			aPlayer.updateResource(newResourceValue, 'increase');
+		}
 	}
 
 	update() {
