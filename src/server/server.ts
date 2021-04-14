@@ -51,7 +51,7 @@ function updateSocket(socket: any) {
 	socket.on(Constant.MESSAGE.ROTATE, (direction: number) => {
 		game.rotatePlayer(socket, direction);
 	});
-	
+
 	socket.on('disconnect', () => {
 		game.removePlayer(socket);
 	});

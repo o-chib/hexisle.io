@@ -33,7 +33,7 @@ export default class Game {
 		this.campfires = new Set();
 		this.bases = new Set();
 		this.territories = new Set();
-		
+
 		this.idGenerator = new IDgenerator();
 
 		this.hexTileMap = new HexTiles();
@@ -66,7 +66,7 @@ export default class Game {
 		this.updatePlayers(currentTimestamp);
 	}
 
-	calculateTimePassed(): [number, number]{
+	calculateTimePassed(): [number, number] {
 		const currentTimestamp = Date.now();
 		const timePassed =
 			(currentTimestamp - this.previousUpdateTimestamp) / 1000;
@@ -191,7 +191,7 @@ export default class Game {
 		}
 	}
 
-	createPlayerUpdate(player: Player){
+	createPlayerUpdate(player: Player) {
 		const nearbyPlayers: Player[] = [];
 
 		for (const aPlayer of this.players.values()) {
@@ -306,7 +306,9 @@ export default class Game {
 		const nearbyWalls: Wall[] = this.createWallUpdate(player);
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
 		const nearbyBases: Base[] = this.createBaseUpdate(player);
-		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(player);
+		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
+			player
+		);
 
 		return {
 			time: Date.now(),
@@ -420,7 +422,7 @@ export default class Game {
 
 		const player: Player = this.getPlayer(socket.id)!;
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-		
+
 		if (
 			!tile.isEmpty() ||
 			this.collision.doesObjCollideWithPlayers(
@@ -432,12 +434,12 @@ export default class Game {
 			!player.buyWall()
 		)
 			return false; //TODO
-		
+
 		return true;
 	}
 
 	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
-		if(!this.isAValidWall(socket, coord)) return;
+		if (!this.isAValidWall(socket, coord)) return;
 
 		const player: Player = this.getPlayer(socket.id)!;
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
