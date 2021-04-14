@@ -61,6 +61,8 @@ export default class Game {
 
 		this.updateWalls();
 
+		this.updateBases();
+
 		this.updatePlayers(currentTimestamp);
 	}
 
