@@ -513,6 +513,7 @@ export class Tile {
 	public cartesian_coord: Point;
 	public team: number;
 	public building: string;
+	public buildingId: string;
 
 	constructor(building = Constant.BUILDING.NONE, team = -1) {
 		this.building = building;
@@ -532,6 +533,11 @@ export class Tile {
 			this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
 			this.building != Constant.BUILDING.BOUNDARY
 		);
+	}
+
+	removeBuilding(): void {
+		this.building = Constant.BUILDING.NONE;
+		this.buildingId = '';
 	}
 
 	serializeForUpdate(): any {
