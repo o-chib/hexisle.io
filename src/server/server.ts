@@ -26,7 +26,6 @@ const game = new Game();
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
-	console.log('Player connected!', socket.id);
 	updateSocket(socket);
 });
 
@@ -40,10 +39,6 @@ function updateSocket(socket: any) {
 		game.movePlayer(socket, direction);
 	});
 
-	socket.on(Constant.MESSAGE.TILE_CHANGE, (coord: OffsetPoint) => {
-		game.buildWall(socket, coord);
-	});
-
 	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
 		game.shootBullet(socket, direction);
 	});
@@ -52,7 +47,15 @@ function updateSocket(socket: any) {
 		game.rotatePlayer(socket, direction);
 	});
 
-	socket.on('disconnect', () => {
+	socket.on(Constant.MESSAGE.BUILD_WALL, (coord: OffsetPoint) => {
+		game.buildWall(socket, coord);
+	});
+
+	socket.on(Constant.MESSAGE.DEMOLISH_WALL, (coord: OffsetPoint) => {
+		game.demolishWall(socket, coord);
+	});
+
+	socket.on(Constant.MESSAGE.DISCONNECT, () => {
 		game.removePlayer(socket);
 	});
 }
