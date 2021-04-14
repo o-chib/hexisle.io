@@ -43,10 +43,12 @@ export const Constant = Object.freeze({
 		JOIN: 'join',
 		GAME_UPDATE: 'update_state',
 		MOVEMENT: 'move',
-		TILE_CHANGE: 'tile_change',
+		BUILD_WALL: 'build_wall',
+		DEMOLISH_WALL: 'demolish_wall',
 		SHOOT: 'shoot',
 		ROTATE: 'rotate',
 		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
+		DISCONNECT: 'disconnect',
 	},
 });
