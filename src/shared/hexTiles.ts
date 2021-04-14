@@ -520,12 +520,13 @@ export class Tile {
 		this.team = team;
 	}
 
-	isEmpty(): boolean {
+	hasBuilding(): boolean {
 		return this.building == Constant.BUILDING.NONE;
 	}
 
-	setEmpty(): void {
+	removeBuilding(): void {
 		this.building = Constant.BUILDING.NONE;
+		this.buildingId = '';
 	}
 
 	isInBounds(): boolean {
@@ -533,11 +534,6 @@ export class Tile {
 			this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
 			this.building != Constant.BUILDING.BOUNDARY
 		);
-	}
-
-	removeBuilding(): void {
-		this.building = Constant.BUILDING.NONE;
-		this.buildingId = '';
 	}
 
 	serializeForUpdate(): any {
