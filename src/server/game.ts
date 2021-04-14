@@ -161,7 +161,9 @@ export default class Game {
 				this.hexTileMap
 					.getHexRadiusPoints(aBase.tile, 2)
 					.forEach((coord) => {
-						this.hexTileMap.tileMap[coord.q][coord.r].removeBuilding();
+						this.hexTileMap.tileMap[coord.q][
+							coord.r
+						].removeBuilding();
 					});
 
 				this.bases.delete(aBase);
@@ -454,7 +456,10 @@ export default class Game {
 		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
 
-	canDemolishWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
+	canDemolishWall(
+		socket: SocketIOClient.Socket,
+		coord: OffsetPoint
+	): boolean {
 		if (!this.players.has(socket.id)) return false;
 		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
 
@@ -474,10 +479,12 @@ export default class Game {
 	demolishWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
 		if (!this.canDemolishWall(socket, coord)) return;
 
-		const player: Player = this.getPlayer(socket.id)!;
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 
-		this.collision.deleteCollider(this.walls.get(tile.buildingId), Constant.WALL_RADIUS);
+		this.collision.deleteCollider(
+			this.walls.get(tile.buildingId),
+			Constant.WALL_RADIUS
+		);
 		this.walls.delete(tile.buildingId);
 		tile.removeBuilding();
 	}
