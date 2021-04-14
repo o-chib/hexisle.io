@@ -30,8 +30,8 @@ export default class Game {
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Set();
-		this.bases = new Set();
 		this.campfires = new Set();
+		this.bases = new Set();
 		this.territories = new Set();
 
 		this.idGenerator = new IDgenerator();
@@ -41,31 +41,44 @@ export default class Game {
 
 		this.teams = new Teams(2, this.hexTileMap.baseCoords);
 
-		this.changedTiles = [];
-
 		this.collision = new CollisionDetection();
 		this.generateBoundaryColliders();
 
-		this.previousUpdateTimestamp = Date.now();
-
 		this.initCampfires();
-
 		this.addBaseTerritories();
 		this.initBases();
 
-		setInterval(this.update.bind(this), 1000 / 60); //TODO lean what bind is, and make it 1000 / 60
+		this.previousUpdateTimestamp = Date.now();
+		setInterval(this.update.bind(this), 1000 / 60);
 	}
 
 	update() {
+		const [currentTimestamp, timePassed] = this.calculateTimePassed();
+
+		this.updateBullets(currentTimestamp, timePassed);
+
+		this.updateTerritories();
+
+		this.updateWalls();
+
+		this.updateBases();
+
+		this.updatePlayers(currentTimestamp);
+	}
+
+	calculateTimePassed(): [number, number] {
 		const currentTimestamp = Date.now();
 		const timePassed =
 			(currentTimestamp - this.previousUpdateTimestamp) / 1000;
 		this.previousUpdateTimestamp = currentTimestamp;
 
-		//this.changedTiles = [];
+		return [currentTimestamp, timePassed];
+	}
 
+	updateBullets(currentTimestamp, timePassed) {
 		for (const aBullet of this.bullets) {
 			aBullet.updatePosition(timePassed);
+
 			if (aBullet.isExpired(currentTimestamp)) {
 				this.collision.deleteCollider(aBullet, Constant.BULLET_RADIUS);
 				this.bullets.delete(aBullet);
@@ -74,7 +87,9 @@ export default class Game {
 
 			this.collision.updateCollider(aBullet, Constant.BULLET_RADIUS);
 		}
+	}
 
+	updateTerritories() {
 		// Add captured territory of campfire, and camfire itself
 		for (const aCampfire of this.campfires) {
 			this.collision.campfirePlayerCollision(aCampfire);
@@ -97,7 +112,6 @@ export default class Game {
 
 					tempTile.team = aCampfire.teamNumber;
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
-					//this.changedTiles.push(tempTile);
 
 					const xPosition = tempTile.cartesian_coord.xPos.toString();
 					const yPosition = tempTile.cartesian_coord.yPos.toString();
@@ -124,7 +138,9 @@ export default class Game {
 				}
 			}
 		}
+	}
 
+	updateWalls() {
 		for (const aWall of this.walls) {
 			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
@@ -132,10 +148,10 @@ export default class Game {
 				aWall.tile.setEmpty();
 				this.walls.delete(aWall);
 			}
-
-			//this.changedTiles.push(aWall.tile);
 		}
+	}
 
+	updateBases() {
 		for (const aBase of this.bases) {
 			this.collision.buildingBulletCollision(aBase, this.bullets);
 			if (!aBase.isAlive()) {
@@ -151,15 +167,12 @@ export default class Game {
 				this.bases.delete(aBase);
 			}
 		}
+	}
 
-		for (const aPlayer of this.players.values()) {
-			aPlayer.updatePosition(currentTimestamp, this.collision);
-			this.collision.playerBulletCollision(aPlayer, this.bullets);
-			if (aPlayer.health <= 0) {
-				this.respawnPlayer(aPlayer);
-			}
-		}
+	updatePlayers(currentTimestamp) {
+		this.updatePlayerPosition(currentTimestamp);
 
+		// Send updates to player
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
 				Constant.MESSAGE.GAME_UPDATE,
@@ -168,14 +181,18 @@ export default class Game {
 		}
 	}
 
-	createUpdate(player: Player) {
+	updatePlayerPosition(currentTimestamp) {
+		for (const aPlayer of this.players.values()) {
+			aPlayer.updatePosition(currentTimestamp, this.collision);
+			this.collision.playerBulletCollision(aPlayer, this.bullets);
+			if (aPlayer.health <= 0) {
+				this.respawnPlayer(aPlayer);
+			}
+		}
+	}
+
+	createPlayerUpdate(player: Player) {
 		const nearbyPlayers: Player[] = [];
-		const nearbyBullets: Bullet[] = [];
-		const nearbyWalls: Wall[] = [];
-		const nearbyCampfires: Campfire[] = [];
-		const nearbyBases: Base[] = [];
-		const changedTiles: Tile[] = this.changedTiles;
-		const nearbyTerritories: Territory[] = [];
 
 		for (const aPlayer of this.players.values()) {
 			if (aPlayer === player) continue;
@@ -190,6 +207,12 @@ export default class Game {
 				nearbyPlayers.push(aPlayer);
 		}
 
+		return nearbyPlayers;
+	}
+
+	createBulletUpdate(player: Player) {
+		const nearbyBullets: Bullet[] = [];
+
 		for (const aBullet of this.bullets) {
 			if (
 				this.collision.doCirclesCollide(
@@ -201,6 +224,12 @@ export default class Game {
 			)
 				nearbyBullets.push(aBullet);
 		}
+
+		return nearbyBullets;
+	}
+
+	createWallUpdate(player: Player) {
+		const nearbyWalls: Wall[] = [];
 
 		for (const aWall of this.walls) {
 			if (
@@ -214,6 +243,12 @@ export default class Game {
 				nearbyWalls.push(aWall);
 		}
 
+		return nearbyWalls;
+	}
+
+	createCampfireUpdate(player: Player) {
+		const nearbyCampfires: Campfire[] = [];
+
 		for (const aCampfire of this.campfires) {
 			if (
 				this.collision.doCirclesCollide(
@@ -225,6 +260,12 @@ export default class Game {
 			)
 				nearbyCampfires.push(aCampfire);
 		}
+
+		return nearbyCampfires;
+	}
+
+	createBaseUpdate(player: Player) {
+		const nearbyBases: Base[] = [];
 
 		for (const aBase of this.bases) {
 			if (
@@ -238,6 +279,12 @@ export default class Game {
 				nearbyBases.push(aBase);
 		}
 
+		return nearbyBases;
+	}
+
+	createTerritoryUpdate(player: Player) {
+		const nearbyTerritories: Territory[] = [];
+
 		for (const aTerritory of this.territories) {
 			if (
 				this.collision.doCirclesCollide(
@@ -250,11 +297,23 @@ export default class Game {
 				nearbyTerritories.push(aTerritory);
 		}
 
+		return nearbyTerritories;
+	}
+
+	createUpdate(player: Player) {
+		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
+		const nearbyBullets: Bullet[] = this.createBulletUpdate(player);
+		const nearbyWalls: Wall[] = this.createWallUpdate(player);
+		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
+		const nearbyBases: Base[] = this.createBaseUpdate(player);
+		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
+			player
+		);
+
 		return {
 			time: Date.now(),
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
-			//		changedTiles: changedTiles,
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
 			walls: nearbyWalls.map((p) => p.serializeForUpdate()),
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
@@ -263,22 +322,7 @@ export default class Game {
 		};
 	}
 
-	addPlayer(socket: SocketIOClient.Socket) {
-		console.log('Hello:' + socket.id);
-
-		const team: number = this.teams.addNewPlayer(socket.id);
-
-		const newPlayer = new Player(socket, 0, 0, team);
-
-		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
-		newPlayer.xPos = respawnPoint.xPos;
-		newPlayer.yPos = respawnPoint.yPos;
-
-		this.players.set(socket.id, newPlayer);
-
-		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
-		console.log('Spawned:', newPlayer.id);
-
+	initiateGame(newPlayer, socket) {
 		const initObject = {
 			player: newPlayer.serializeForUpdate(),
 			tileMap: this.hexTileMap.tileMap,
@@ -287,10 +331,29 @@ export default class Game {
 		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
 	}
 
+	generateNewPlayer(socket) {
+		const team: number = this.teams.addNewPlayer(socket.id);
+		const newPlayer = new Player(socket, 0, 0, team);
+		this.players.set(socket.id, newPlayer);
+		return newPlayer;
+	}
+
+	addPlayer(socket: SocketIOClient.Socket) {
+		const newPlayer = this.generateNewPlayer(socket);
+
+		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
+		newPlayer.xPos = respawnPoint.xPos;
+		newPlayer.yPos = respawnPoint.yPos;
+
+		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
+
+		this.initiateGame(newPlayer, socket);
+	}
+
 	removePlayer(socket: SocketIOClient.Socket) {
-		console.log('Goodbye:' + socket.id);
 		if (!this.players.has(socket.id)) return;
-		const player: Player = this.players.get(socket.id)!;
+
+		const player: Player = this.getPlayer(socket.id);
 
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
@@ -299,9 +362,11 @@ export default class Game {
 		this.players.delete(socket.id);
 	}
 
-	respawnPlayer(player: Player) {
-		console.log('Respawning:' + player.socket.id);
+	private getPlayer(socketID): Player {
+		return this.players.get(socketID)!;
+	}
 
+	respawnPlayer(player: Player) {
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
 		const respawnPoint: Point = this.getRespawnPoint(player.teamNumber);
@@ -321,7 +386,7 @@ export default class Game {
 
 	movePlayer(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
-		const player: Player = this.players.get(socket.id)!;
+		const player: Player = this.getPlayer(socket.id)!;
 
 		player.updateVelocity(direction);
 		player.updatePosition(Date.now(), this.collision);
@@ -330,14 +395,14 @@ export default class Game {
 
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
 		if (!this.players.has(socket.id)) return;
-		const player = this.players.get(socket.id);
+		const player = this.getPlayer(socket.id);
 
 		player?.updateDirection(direction);
 	}
 
 	shootBullet(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
-		const player: Player = this.players.get(socket.id)!;
+		const player: Player = this.getPlayer(socket.id)!;
 
 		const bullet: Bullet = new Bullet(
 			this.idGenerator.newID(),
@@ -351,15 +416,13 @@ export default class Game {
 		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
 	}
 
-	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
-		if (!this.players.has(socket.id)) return;
-		const player: Player = this.players.get(socket.id)!;
+	isAValidWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
+		if (!this.players.has(socket.id)) return false;
+		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
 
-		if (!this.hexTileMap.checkIfValidHex(coord)) {
-			return;
-		}
-
+		const player: Player = this.getPlayer(socket.id)!;
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+
 		if (
 			!tile.isEmpty() ||
 			this.collision.doesObjCollideWithPlayers(
@@ -370,7 +433,16 @@ export default class Game {
 			tile.team != player.teamNumber ||
 			!player.buyWall()
 		)
-			return; //TODO
+			return false; //TODO
+
+		return true;
+	}
+
+	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+		if (!this.isAValidWall(socket, coord)) return;
+
+		const player: Player = this.getPlayer(socket.id)!;
+		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 
 		const wall: Wall = new Wall(
 			this.idGenerator.newID(),
@@ -382,20 +454,8 @@ export default class Game {
 
 		this.walls.add(wall);
 		tile.building = Constant.BUILDING.STRUCTURE;
-		// this.changedTiles.push(tile); //TODO
 
-		this.collision.insertCollider(wall, Constant.WALL_COL_RADIUS);
-	}
-
-	initCampfires(): void {
-		const tilemap = this.hexTileMap.tileMap;
-		for (let i = 0; i < tilemap.length; i++) {
-			for (let j = 0; j < tilemap[i].length; j++) {
-				if (tilemap[i][j].building == Constant.BUILDING.CAMP) {
-					this.buildCampfire(tilemap[i][j].offset_coord);
-				}
-			}
-		}
+		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
 
 	buildCampfire(coord: OffsetPoint): void {
@@ -417,13 +477,18 @@ export default class Game {
 
 		this.campfires.add(campfire);
 		tile.building = Constant.BUILDING.CAMP;
-		//this.changedTiles.push(tile); //TODO
+
 		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
 	}
 
-	initBases(): void {
-		for (let teamNum = 0; teamNum < Constant.TEAM_COUNT; teamNum++) {
-			this.buildBase(teamNum, this.teams.getTeamBaseCoord(teamNum));
+	initCampfires(): void {
+		const tilemap = this.hexTileMap.tileMap;
+		for (let i = 0; i < tilemap.length; i++) {
+			for (let j = 0; j < tilemap[i].length; j++) {
+				if (tilemap[i][j].building == Constant.BUILDING.CAMP) {
+					this.buildCampfire(tilemap[i][j].offset_coord);
+				}
+			}
 		}
 	}
 
@@ -460,13 +525,31 @@ export default class Game {
 		}
 	}
 
-	generateBoundaryColliders(): void {
-		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
-			this.collision.insertCollider(
-				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
-					.cartesian_coord,
-				Constant.WALL_COL_RADIUS
+	initBases(): void {
+		for (let teamNum = 0; teamNum < Constant.TEAM_COUNT; teamNum++) {
+			this.buildBase(teamNum, this.teams.getTeamBaseCoord(teamNum));
+		}
+	}
+
+	setBaseTerritory(teamNumber, points) {
+		for (const pt of points) {
+			const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
+			if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+				continue;
+			}
+			tempTile.team = teamNumber;
+			this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
+
+			const xPosition = tempTile.cartesian_coord.xPos.toString();
+			const yPosition = tempTile.cartesian_coord.yPos.toString();
+			const tempTerritory = new Territory(
+				xPosition + ', ' + yPosition,
+				tempTile.cartesian_coord.xPos,
+				tempTile.cartesian_coord.yPos,
+				tempTile.team
 			);
+
+			this.territories.add(tempTerritory);
 		}
 	}
 
@@ -478,26 +561,17 @@ export default class Game {
 				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r],
 				Constant.CAMP_RADIUS
 			);
-			for (const pt of points) {
-				const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
-				if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
-					continue;
-				}
-				tempTile.team = i;
-				this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
+			this.setBaseTerritory(i, points);
+		}
+	}
 
-				//this.changedTiles.push(tempTile);
-				const xPosition = tempTile.cartesian_coord.xPos.toString();
-				const yPosition = tempTile.cartesian_coord.yPos.toString();
-				const tempTerritory = new Territory(
-					xPosition + ', ' + yPosition,
-					tempTile.cartesian_coord.xPos,
-					tempTile.cartesian_coord.yPos,
-					tempTile.team
-				);
-
-				this.territories.add(tempTerritory);
-			}
+	generateBoundaryColliders(): void {
+		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
+			this.collision.insertCollider(
+				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
+					.cartesian_coord,
+				Constant.WALL_COL_RADIUS
+			);
 		}
 	}
 }
