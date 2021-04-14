@@ -3,7 +3,7 @@
 // Text Structure
 const info_format = `Health:	%1
 Score:	%2
-Resource:	%2`;
+Resource:	%3`;
 
 export default class HUDScene extends Phaser.Scene {
 	private mainSceneObj: any;
