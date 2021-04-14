@@ -362,10 +362,6 @@ export default class Game {
 		this.players.delete(socket.id);
 	}
 
-	private getPlayer(socketID): Player {
-		return this.players.get(socketID)!;
-	}
-
 	respawnPlayer(player: Player) {
 		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
 
@@ -601,5 +597,9 @@ export default class Game {
 				Constant.WALL_COL_RADIUS
 			);
 		}
+	}
+
+	private getPlayer(socketID): Player {
+		return this.players.get(socketID)!;
 	}
 }
