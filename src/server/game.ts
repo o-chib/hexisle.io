@@ -99,6 +99,14 @@ export default class Game {
 				const isCaptured = aCampfire.isCaptured;
 				const points = aCampfire.territoryPoints;
 
+				if (isCaptured) {
+					// If captured, updated numCapturedCamps
+					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps++; 
+				} else {
+					// If uncaptured, updated numCapturedCamps
+					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps--; 
+				}
+
 				// TODO: Update to iterate only chunck of tiles surround the campsite.
 				for (const pt of points) {
 					// TODO OUT OF BOUNDS INDEXING
@@ -126,7 +134,7 @@ export default class Game {
 							tempTile.team
 						);
 						this.territories.add(tempTerritory);
-					} else {
+					} else {						
 						// If non captured, remove from list
 						for (const aTerritory of this.territories) {
 							if (aTerritory.id == stringID) {
