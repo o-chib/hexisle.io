@@ -1,4 +1,4 @@
-import { Constant } from '../shared/constants';
+const Constant = require('../shared/constants');
 
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
@@ -7,7 +7,6 @@ export class HexTiles {
 	public campRadius: number;
 	public mapHeight: number;
 	public baseCoords: OffsetPoint[];
-	public boundaryCoords: OffsetPoint[];
 
 	constructor() {
 		this.hexSize = 75;
@@ -15,12 +14,10 @@ export class HexTiles {
 		this.mapHeight = 4000;
 		this.hexRadius = this.getMapHexRadius();
 		this.baseCoords = [];
-		this.boundaryCoords = [];
 	}
 
 	generateMap(): void {
 		this.generateTileMap();
-		this.generateBoundary();
 		this.generateCamps();
 		this.generateBases(2, 1);
 	}
@@ -66,24 +63,6 @@ export class HexTiles {
 				}
 			}
 		}
-		console.timeEnd();
-	}
-
-	generateBoundary(): void {
-		// sets the outer ring of tiles to a boundary tile
-		console.log('time to generate boundary');
-		console.time();
-
-		const boundaryHexes: OffsetPoint[] = this.getHexRingPoints(
-			this.tileMap[this.hexRadius][this.hexRadius],
-			this.hexRadius
-		);
-		for (const boundaryHex of boundaryHexes) {
-			this.boundaryCoords.push(boundaryHex);
-			this.tileMap[boundaryHex.q][boundaryHex.r].building =
-				Constant.BUILDING.BOUNDARY;
-		}
-
 		console.timeEnd();
 	}
 
@@ -261,13 +240,11 @@ export class HexTiles {
 		// returns the offset odd-q coordinate of the hex it's in
 
 		// account for the half a hex to the bottom right we're pushing the map
-		point.xPos = point.xPos - this.hexSize;
-		point.yPos = point.yPos - this.hexSize;
+		point.x = point.x - this.hexSize;
+		point.y = point.y - this.hexSize;
 
 		// make the offset coord into a cube format
-		let cube: number[] = this.pixelToCube(
-			new Point(point.xPos, point.yPos)
-		);
+		let cube: number[] = this.pixelToCube(new Point(point.x, point.y));
 
 		// round the cube
 		cube = this.roundCube(cube);
@@ -312,7 +289,7 @@ export class HexTiles {
 		const results: Tile[] = [];
 		const centerTile: Tile = new Tile();
 		centerTile.offset_coord = this.cartesianToOffset(
-			new Point(point.xPos, point.yPos)
+			new Point(point.x, point.y)
 		);
 		const screenCoords: OffsetPoint[] = this.getHexRadiusPoints(
 			centerTile,
@@ -342,8 +319,8 @@ export class HexTiles {
 		const angle_deg: number = 60 * angle;
 		const angle_rad: number = (Math.PI / 180) * angle_deg;
 		return new Point(
-			point.xPos + this.hexSize * Math.cos(angle_rad),
-			point.yPos + this.hexSize * Math.sin(angle_rad)
+			point.x + this.hexSize * Math.cos(angle_rad),
+			point.y + this.hexSize * Math.sin(angle_rad)
 		);
 	}
 
@@ -389,10 +366,9 @@ export class HexTiles {
 		// used for conversions from cartesian to offset odd-q
 		// returns the cube: x, y, z in that order in a list
 
-		const q: number = ((2 / 3) * point.xPos) / this.hexSize;
+		const q: number = ((2 / 3) * point.x) / this.hexSize;
 		const r: number =
-			((-1 / 3) * point.xPos + (Math.sqrt(3) / 3) * point.yPos) /
-			this.hexSize;
+			((-1 / 3) * point.x + (Math.sqrt(3) / 3) * point.y) / this.hexSize;
 		return [q, -q - r, r];
 	}
 
@@ -528,17 +504,14 @@ export class Tile {
 	}
 
 	isInBounds(): boolean {
-		return (
-			this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
-			this.building != Constant.BUILDING.BOUNDARY
-		);
+		return this.building != Constant.BUILDING.OUT_OF_BOUNDS;
 	}
 
 	serializeForUpdate(): any {
 		return {
 			id: this.building,
-			xPos: this.cartesian_coord.xPos,
-			yPos: this.cartesian_coord.yPos,
+			xPos: this.cartesian_coord.x,
+			yPos: this.cartesian_coord.y,
 		};
 	}
 }
@@ -572,11 +545,11 @@ export class OffsetPoint {
 }
 
 export class Point {
-	public xPos: number;
-	public yPos: number;
+	public x: number;
+	public y: number;
 
 	constructor(x = 0, y = 0) {
-		this.xPos = x;
-		this.yPos = y;
+		this.x = x;
+		this.y = y;
 	}
 }

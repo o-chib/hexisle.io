@@ -20,8 +20,8 @@ export default class Bullet {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
-		this.xVel = this.speed * Math.cos(direction);
-		this.yVel = this.speed * Math.sin(direction);
+		this.xVel = this.speed * Math.sin(direction);
+		this.yVel = this.speed * Math.cos(direction);
 		this.expirationDate = Date.now() + this.lifeLength;
 		this.teamNumber = teamNumber;
 	}

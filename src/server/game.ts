@@ -8,8 +8,8 @@ import Campfire from './../shared/campfire';
 import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
-import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
+const Constant = require('../shared/constants');
 
 export default class Game {
 	teams: Teams;
@@ -31,15 +31,80 @@ export default class Game {
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
 		this.teams = new Teams(2, this.hexTileMap.baseCoords);
+		this.changedTiles = [];
 		this.collision = new CollisionDetection();
 		this.previousUpdateTimestamp = Date.now();
+		this.idGenerator = new IDgenerator();
 		this.initCampfires();
 		this.territories = new Set();
 		this.addBaseTerritories();
-		this.idGenerator = new IDgenerator();
-		this.changedTiles = []; // delete
 
 		setInterval(this.update.bind(this), 1000 / 60);
+	}
+
+	addPlayer(socket: SocketIOClient.Socket) {
+		const newPlayer = this.generateNewPlayer(socket);
+
+		this.respawnPlayer(newPlayer);
+
+		this.players.set(socket.id, newPlayer);
+
+		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
+		console.log('inserted', newPlayer.id); // delete
+
+		this.initiateGame(newPlayer, socket)
+	}
+
+	generateNewPlayer(socket) {
+		console.log('Hello: ' + socket.id); // delete
+		const team: number = this.teams.addNewPlayer(socket.id);
+
+		console.log('Assigning to team ' + team); // delete
+		const newPlayer = new Player(socket, 0, 0, team);
+
+		return newPlayer;
+	}
+
+	initiateGame(newPlayer, socket) {
+		const initObject = {
+			player: newPlayer.serializeForUpdate(),
+			tileMap: this.hexTileMap.tileMap,
+		};
+
+		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
+	}
+
+	removePlayer(socket: SocketIOClient.Socket) {
+		console.log('Goodbye: ' + socket.id); // delete
+		if (!this.players.has(socket.id)) return;
+
+		const player: Player = this.getPlayer(socket.id);
+
+		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
+
+		this.teams.removePlayer(socket.id, player.teamNumber);
+
+		this.players.delete(socket.id);
+	}
+
+	private getPlayer(socketID): Player {
+		return this.players.get(socketID)!;
+	}
+
+	respawnPlayer(player: Player) {
+		console.log('Respawning: ' + player.socket.id);
+
+		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
+
+		const respawnPoint: Point = this.hexTileMap.offsetToCartesian(
+			this.teams.getTeamBaseCoord(player.teamNumber)
+		);
+
+		player.health = 100;
+		player.xPos = respawnPoint.x;
+		player.yPos = respawnPoint.y;
+
+		this.collision.insertCollider(player, Constant.PLAYER_RADIUS);
 	}
 
 	calculateTimePassed(): [number, number]{
@@ -90,16 +155,16 @@ export default class Game {
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 					//this.changedTiles.push(tempTile);
 
-					const xPosition = tempTile.cartesian_coord.xPos.toString();
-					const yPosition = tempTile.cartesian_coord.yPos.toString();
+					const xPosition = tempTile.cartesian_coord.x.toString();
+					const yPosition = tempTile.cartesian_coord.y.toString();
 					const stringID = xPosition + ', ' + yPosition;
 
 					if (isCaptured) {
 						// If captured, add to list
 						const tempTerritory = new Territory(
 							stringID,
-							tempTile.cartesian_coord.xPos,
-							tempTile.cartesian_coord.yPos,
+							tempTile.cartesian_coord.x,
+							tempTile.cartesian_coord.y,
 							tempTile.team
 						);
 						this.territories.add(tempTerritory);
@@ -272,73 +337,8 @@ export default class Game {
 			walls: nearbyWalls.map((p) => p.serializeForUpdate()),
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
 			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
- 			//changedTiles: changedTiles, // delete
+			//changedTiles: changedTiles,
 		};
-	}
-
-	generateNewPlayer(socket) {
-		console.log('Hello: ' + socket.id); // delete
-		const team: number = this.teams.addNewPlayer(socket.id);
-
-		console.log('Assigning to team ' + team); // delete
-		const newPlayer = new Player(socket, 0, 0, team);
-
-		return newPlayer;
-	}
-
-	initiateGame(newPlayer, socket) {
-		const initObject = {
-			player: newPlayer.serializeForUpdate(),
-			tileMap: this.hexTileMap.tileMap,
-		};
-
-		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
-	}
-
-	addPlayer(socket: SocketIOClient.Socket) {
-		const newPlayer = this.generateNewPlayer(socket);
-
-		this.respawnPlayer(newPlayer);
-
-		this.players.set(socket.id, newPlayer);
-
-		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
-		console.log('inserted', newPlayer.id); // delete
-
-		this.initiateGame(newPlayer, socket);
-	}
-
-	removePlayer(socket: SocketIOClient.Socket) {
-		console.log('Goodbye: ' + socket.id); // delete
-		if (!this.players.has(socket.id)) return;
-
-		const player: Player = this.getPlayer(socket.id);
-
-		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
-
-		this.teams.removePlayer(socket.id, player.teamNumber);
-
-		this.players.delete(socket.id);
-	}
-
-	private getPlayer(socketID): Player {
-		return this.players.get(socketID)!;
-	}
-
-	respawnPlayer(player: Player) {
-		console.log('Respawning: ' + player.socket.id);
-
-		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
-
-		const respawnPoint: Point = this.hexTileMap.offsetToCartesian(
-			this.teams.getTeamBaseCoord(player.teamNumber)
-		);
-
-		player.health = 100;
-		player.xPos = respawnPoint.xPos;
-		player.yPos = respawnPoint.yPos;
-
-		this.collision.insertCollider(player, Constant.PLAYER_RADIUS);
 	}
 
 	movePlayer(socket: SocketIOClient.Socket, direction: number) {
@@ -348,6 +348,49 @@ export default class Game {
 		player.updateVelocity(direction);
 		player.updatePosition(Date.now(), this.collision);
 		this.collision.updateCollider(player, Constant.PLAYER_RADIUS);
+	}
+
+	isAValidWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
+		if (!this.players.has(socket.id)) return false;
+		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
+
+		const player: Player = this.getPlayer(socket.id)!;
+		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+		
+		if (
+			!tile.isEmpty() ||
+			this.collision.doesObjCollideWithPlayers(
+				tile.cartesian_coord.x,
+				tile.cartesian_coord.y,
+				Constant.WALL_RADIUS
+			) ||
+			tile.team != player.teamNumber ||
+			!player.buyWall()
+		)
+			return false; //TODO
+		
+		return true;
+	}
+
+	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+		if(!this.isAValidWall(socket, coord)) return;
+
+		const player: Player = this.getPlayer(socket.id)!;
+		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+
+		const wall: Wall = new Wall(
+			this.idGenerator.newID(),
+			tile.cartesian_coord.x,
+			tile.cartesian_coord.y,
+			player.teamNumber,
+			tile
+		);
+
+		this.walls.add(wall);
+		tile.building = Constant.BUILDING.STRUCTURE;
+		// this.changedTiles.push(tile); //TODO
+
+		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
 
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
@@ -373,70 +416,15 @@ export default class Game {
 		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
 	}
 
-	isAValidWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
-		if (!this.players.has(socket.id)) return false;
-		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
-
-		const player: Player = this.getPlayer(socket.id)!;
-		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-		
-		if (
-			!tile.isEmpty() ||
-			this.collision.doesObjCollideWithPlayers(
-				tile.cartesian_coord.xPos,
-				tile.cartesian_coord.yPos,
-				Constant.WALL_RADIUS
-			) ||
-			tile.team != player.teamNumber ||
-			!player.buyWall()
-		)
-			return false; //TODO
-		
-		return true;
-	}
-
-	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
-		if(!this.isAValidWall(socket, coord)) return;
-
-		const player: Player = this.getPlayer(socket.id)!;
-		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-
-		const wall: Wall = new Wall(
-			this.idGenerator.newID(),
-			tile.cartesian_coord.xPos,
-			tile.cartesian_coord.yPos,
-			player.teamNumber,
-			tile
-		);
-
-		this.walls.add(wall);
-		tile.building = Constant.BUILDING.STRUCTURE;
-		// this.changedTiles.push(tile); //TODO
-
-		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
-	}
-
-	generateBoundaryColliders(): void {
-		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
-			this.collision.insertCollider(
-				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
-					.cartesian_coord,
-				Constant.WALL_COL_RADIUS
-			);
-		}
-	}
-
 	buildCampfire(coord: OffsetPoint): void {
-		if (!this.hexTileMap.checkIfValidHex(coord)) {
-			return;
-		}
+		if (!this.hexTileMap.checkIfValidHex(coord)) return;
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 
 		const campfire: Campfire = new Campfire(
 			this.idGenerator.newID(),
-			tile.cartesian_coord.xPos,
-			tile.cartesian_coord.yPos
+			tile.cartesian_coord.x,
+			tile.cartesian_coord.y
 		);
 
 		campfire.setTerritoryPoints(
@@ -473,12 +461,12 @@ export default class Game {
 			this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 
 			//this.changedTiles.push(tempTile);
-			const xPosition = tempTile.cartesian_coord.xPos.toString();
-			const yPosition = tempTile.cartesian_coord.yPos.toString();
+			const xPosition = tempTile.cartesian_coord.x.toString();
+			const yPosition = tempTile.cartesian_coord.y.toString();
 			const tempTerritory = new Territory(
 				xPosition + ', ' + yPosition,
-				tempTile.cartesian_coord.xPos,
-				tempTile.cartesian_coord.yPos,
+				tempTile.cartesian_coord.x,
+				tempTile.cartesian_coord.y,
 				tempTile.team
 			);
 
@@ -494,6 +482,7 @@ export default class Game {
 				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r],
 				Constant.CAMP_RADIUS
 			);
+			
 			this.setBaseTerritory(i, points);
 		}
 	}
