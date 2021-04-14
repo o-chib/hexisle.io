@@ -377,7 +377,6 @@ export default class MainScene extends Phaser.Scene {
 		const {
 			currentPlayer,
 			otherPlayers,
-			//changedTiles,
 			bullets,
 			walls,
 			campfires,
@@ -399,8 +398,6 @@ export default class MainScene extends Phaser.Scene {
 		this.updateBases(bases);
 
 		this.updateTerritories(territories);
-
-		//this.updateChangedTiles(changedTiles);
 
 		this.events.emit('updateHUD', currentPlayer);
 	}
