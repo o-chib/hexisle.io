@@ -55,7 +55,7 @@ function updateSocket(socket: any) {
 		game.demolishWall(socket, coord);
 	});
 
-	socket.on(Constant.MESSAGE.DISCONNECT, () => {
+	socket.on('disconnect', () => {
 		game.removePlayer(socket);
 	});
 }

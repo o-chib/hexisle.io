@@ -55,6 +55,5 @@ export const Constant = Object.freeze({
 		ROTATE: 'rotate',
 		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
-		DISCONNECT: 'disconnect',
 	},
 });
