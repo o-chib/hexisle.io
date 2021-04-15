@@ -53,14 +53,6 @@ export default class Game {
 		setInterval(this.updatePlayerResource.bind(this), Constant.INCOME.UPDATE_RATE * 1000);
 	}
 
-	updatePlayerResource() {
-		for (const aPlayer of this.players.values()) {
-			let newResourceValue: number = this.teams.getTeam(aPlayer.teamNumber).numCapturedCamps
-											* Constant.INCOME.INCOME_PER_CAMP;
-			aPlayer.updateResource(newResourceValue, 'increase');
-		}
-	}
-
 	update() {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 
@@ -82,6 +74,14 @@ export default class Game {
 		this.previousUpdateTimestamp = currentTimestamp;
 
 		return [currentTimestamp, timePassed];
+	}
+
+	updatePlayerResource() {
+		for (const aPlayer of this.players.values()) {
+			let newResourceValue: number = this.teams.getTeam(aPlayer.teamNumber).numCapturedCamps
+											* Constant.INCOME.INCOME_PER_CAMP;
+			aPlayer.updateResource(newResourceValue);
+		}
 	}
 
 	updateBullets(currentTimestamp, timePassed) {

@@ -43,12 +43,8 @@ export default class Player {
 		this.lastUpdateTime = Date.now();
 	}
 
-	updateResource(resourceValue: number, type: string) {
-		if(type == 'increase') {
-			this.resources = this.resources + resourceValue;
-		}else if(type == 'decrease') {
-			this.resources = this.resources - resourceValue;
-		}
+	updateResource(resourceValue: number) {
+		this.resources += resourceValue;
 	}
 
 	updateDirection(newDirection: number): void {
