@@ -27,6 +27,7 @@ export default class Game {
 	territories: Set<Territory>;
 	gameInterval: NodeJS.Timeout;
 	resourceInterval: NodeJS.Timeout;
+	isGameOver: boolean;
 
 	constructor() {
 		this.players = new Map();
@@ -35,6 +36,7 @@ export default class Game {
 		this.campfires = new Set();
 		this.bases = new Set();
 		this.territories = new Set();
+		this.isGameOver = false;
 
 		this.idGenerator = new IDgenerator();
 
@@ -216,6 +218,7 @@ export default class Game {
 			);
 		}
 		this.stopAllIntervals();
+		this.isGameOver = true;
 	}
 
 	stopAllIntervals(): void {
