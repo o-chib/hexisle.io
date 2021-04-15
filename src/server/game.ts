@@ -25,6 +25,8 @@ export default class Game {
 	changedTiles: Tile[];
 	collision: CollisionDetection;
 	territories: Set<Territory>;
+	gameInterval: NodeJS.Timeout;
+	resourceInterval: NodeJS.Timeout;
 
 	constructor() {
 		this.players = new Map();
@@ -49,8 +51,8 @@ export default class Game {
 		this.initBases();
 
 		this.previousUpdateTimestamp = Date.now();
-		setInterval(this.update.bind(this), 1000 / 60);
-		setInterval(
+		this.gameInterval = setInterval(this.update.bind(this), 1000 / 60);
+		this.resourceInterval = setInterval(
 			this.updatePlayerResource.bind(this),
 			Constant.INCOME.UPDATE_RATE * 1000
 		);
@@ -188,6 +190,11 @@ export default class Game {
 				this.bases.delete(aBase);
 			}
 		}
+
+		// Check if there's only 1 base left to end the game
+		if (this.bases.size == 1) {
+			this.endGame();
+		}
 	}
 
 	updatePlayers(currentTimestamp) {
@@ -200,6 +207,20 @@ export default class Game {
 				this.createUpdate(aPlayer)
 			);
 		}
+	}
+
+	endGame(): void {
+		for (const aPlayer of this.players.values()) {
+			aPlayer.socket.emit(
+				Constant.MESSAGE.GAME_END
+			);
+		}
+		this.stopAllIntervals();
+	}
+
+	stopAllIntervals(): void {
+		clearInterval(this.gameInterval);
+		clearInterval(this.resourceInterval);
 	}
 
 	updatePlayerPosition(currentTimestamp) {

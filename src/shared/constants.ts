@@ -47,6 +47,7 @@ export const Constant = Object.freeze({
 	MESSAGE: {
 		JOIN: 'join',
 		GAME_UPDATE: 'update_state',
+		GAME_END: 'game_end',
 		MOVEMENT: 'move',
 		TILE_CHANGE: 'tile_change',
 		SHOOT: 'shoot',
