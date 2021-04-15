@@ -16,6 +16,9 @@ export default class MainScene extends Phaser.Scene {
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 
+	private baseRedAnimConfig : Phaser.Types.Animations.Animation;
+	private baseBlueAnimConfig : Phaser.Types.Animations.Animation;
+
 	private hexTiles: HexTiles;
 
 	constructor() {
@@ -31,13 +34,32 @@ export default class MainScene extends Phaser.Scene {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
+
+		this.load.spritesheet('base_red', '../assets/base_red.png', {
+			frameWidth: 385,
+			frameHeight: 400,
+		});
+		this.baseRedAnimConfig = {
+			key: 'base_red_destroying',
+			frames: this.anims.generateFrameNames('base_red'),
+			repeat: -1,
+		}
+		this.load.spritesheet('base_blue', '../assets/base_blue.png', {
+			frameWidth: 385,
+			frameHeight: 400,
+		});
+		this.baseBlueAnimConfig = {
+			key: 'base_blue_destroying',
+			frames: this.anims.generateFrameNames('base_blue'),
+			repeat: -1,
+		}
+
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
-		this.load.image('wall', '../assets/tempwall.png'); //TODO
-		this.load.image('wallblue', '../assets/tempwallblue.png'); //TODO
+		this.load.image('wall', '../assets/wall_red.png'); //TODO
+		this.load.image('wallblue', '../assets/wall_blue.png'); //TODO
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
-		this.load.image('base', '../assets/base.png');
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
@@ -494,10 +516,37 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			bases,
 			this.baseSprites,
-			'base',
+			'',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBase, newBaseLiteral) => {
-				if (newBaseLiteral.teamNumber == 1) newBase.setTexture('base');
+				if(newBaseLiteral.teamNumber == 0){
+					newBase.setTexture('base_red');
+					// will create only if it key does not exist at all
+					// newBase.anims.create(this.baseRedAnimConfig);
+					// newBase.anims.play('base_red_destroying');
+					// newBase.anims.stop();
+				}
+				if (newBaseLiteral.teamNumber == 1){
+					newBase.setTexture('base_blue');
+					// will create only if it key does not exist at all
+					// newBase.anims.create(this.baseRedAnimConfig);
+					// newBase.anims.play('base_blue_destroying');
+					// newBase.anims.stop();
+				}
+
+				// if (newBaseLiteral.hp >= 90) {
+				// 	newBase.anims.setProgress(0);
+				// }
+				// else if(newBaseLiteral.hp >= 50){
+				// 	newBase.anims.setProgress(1/3);
+				// }else if(newBaseLiteral.hp >= 20){
+				// 	newBase.anims.setProgress(2/3);
+				//
+				// }else if(newBaseLiteral.hp > 0){
+				// 	newBase.anims.setProgress(1);
+				// }
+				//console.log("team " + newBaseLiteral.teamNumber + " : " + newBase.anims.getProgress());
+
 				return newBase;
 			}
 		);
