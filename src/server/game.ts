@@ -473,6 +473,8 @@ export default class Game {
 		)
 			return false; //TODO
 
+		player.refundWall();
+
 		return true;
 	}
 

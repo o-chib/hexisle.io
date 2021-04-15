@@ -82,6 +82,10 @@ export default class Player {
 		return true;
 	}
 
+	refundWall(): void {
+		this.resources += Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER;
+	}
+
 	serializeForUpdate() {
 		return {
 			id: this.id,
