@@ -50,7 +50,10 @@ export default class Game {
 
 		this.previousUpdateTimestamp = Date.now();
 		setInterval(this.update.bind(this), 1000 / 60);
-		setInterval(this.updatePlayerResource.bind(this), Constant.INCOME.UPDATE_RATE * 1000);
+		setInterval(
+			this.updatePlayerResource.bind(this),
+			Constant.INCOME.UPDATE_RATE * 1000
+		);
 	}
 
 	update() {
@@ -78,8 +81,9 @@ export default class Game {
 
 	updatePlayerResource() {
 		for (const aPlayer of this.players.values()) {
-			let newResourceValue: number = this.teams.getTeam(aPlayer.teamNumber).numCapturedCamps
-											* Constant.INCOME.INCOME_PER_CAMP;
+			const newResourceValue: number =
+				this.teams.getTeam(aPlayer.teamNumber).numCapturedCamps *
+				Constant.INCOME.INCOME_PER_CAMP;
 			aPlayer.updateResource(newResourceValue);
 		}
 	}
@@ -110,10 +114,10 @@ export default class Game {
 
 				if (isCaptured) {
 					// If captured, updated numCapturedCamps
-					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps++; 
+					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps++;
 				} else {
 					// If uncaptured, updated numCapturedCamps
-					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps--; 
+					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps--;
 				}
 
 				// TODO: Update to iterate only chunck of tiles surround the campsite.
@@ -143,7 +147,7 @@ export default class Game {
 							tempTile.team
 						);
 						this.territories.add(tempTerritory);
-					} else {						
+					} else {
 						// If non captured, remove from list
 						for (const aTerritory of this.territories) {
 							if (aTerritory.id == stringID) {
