@@ -88,7 +88,9 @@ export default class Player {
 	}
 
 	refundWall(): void {
-		this.updateResource(Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER);
+		this.updateResource(
+			Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER
+		);
 	}
 
 	serializeForUpdate() {
