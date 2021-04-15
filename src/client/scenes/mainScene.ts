@@ -15,8 +15,8 @@ export default class MainScene extends Phaser.Scene {
 	private alive: boolean;
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
-
 	private hexTiles: HexTiles;
+	private initialized: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -104,6 +104,11 @@ export default class MainScene extends Phaser.Scene {
 			Constant.MESSAGE.GAME_UPDATE,
 			this.updateState.bind(this)
 		);
+
+		this.socket.on(
+			Constant.MESSAGE.GAME_END,
+			this.endGame.bind(this)
+		);
 	}
 
 	private registerInputListeners(): void {
@@ -152,11 +157,13 @@ export default class MainScene extends Phaser.Scene {
 		const { player, tileMap } = update;
 		if (player == null) return;
 
-		this.createTileMap(tileMap);
-
+		if (this.initialized != true) {
+			this.createTileMap(tileMap);
+			this.setCamera();
+		}
 		this.initializePlayer(player);
 
-		this.setCamera();
+		this.initialized = true;
 	}
 
 	private initializePlayer(player: any): void {
@@ -552,5 +559,20 @@ export default class MainScene extends Phaser.Scene {
 			oldObjects.get(anOldKey)?.destroy();
 			oldObjects.delete(anOldKey);
 		}
+	}
+
+	private endGame(): void {
+		this.emptyAllObjects();
+	}
+
+	private emptyAllObjects(): void {
+		this.hexTiles = new HexTiles();
+		this.otherPlayerSprites.clear();
+		this.bulletSprites.clear();
+		this.wallSprites.clear();
+		this.campfireSprites.clear();
+		this.baseSprites.clear();
+		this.territorySprites.clear();
+		this.deadObjects.clear();
 	}
 }
