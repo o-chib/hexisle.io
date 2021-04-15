@@ -69,7 +69,6 @@ function checkGameEnd(): void {
 		console.log("ending game");
 		clearInterval(checkGameEndInterval);
 		setTimeout(restartGame, Constant.TIMING.GAME_END_SCREEN);
-		checkGameEndInterval = setInterval(checkGameEnd, Constant.TIMING.CHECK_GAME_END);
 	}
 }
 
@@ -79,4 +78,5 @@ function restartGame(): void {
 	for (const aSocket of socketsConnected) {
 		game.addPlayer(aSocket);
 	}
+	checkGameEndInterval = setInterval(checkGameEnd, Constant.TIMING.CHECK_GAME_END);
 }
