@@ -31,6 +31,17 @@ export default class MainScene extends Phaser.Scene {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
+		this.load.spritesheet('ghost', '../assets/Ghost.png', {
+			frameWidth: 94,
+			frameHeight: 120,
+		});
+		let ghostAnimConfig = {
+			key: 'boo',
+			frames: this.anims.generateFrameNames('ghost'),
+			repeat: -1,
+			duration: 1000,
+		};
+
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('wall', '../assets/tempwall.png'); //TODO
