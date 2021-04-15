@@ -37,7 +37,6 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 });
 
 function updateSocket(socket: any) {
-
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
 		socketsConnected.add(socket);
@@ -67,11 +66,13 @@ function updateSocket(socket: any) {
 
 function checkGameEnd(): void {
 	if (game.isGameOver == true) {
-		restartGame();
+		console.log("ending game");
+		setTimeout(restartGame, 5 * 1000);
 	}
 }
 
 function restartGame(): void {
+	console.log("restarting game");
 	game = new Game();
 	for (const aSocket of socketsConnected) {
 		game.addPlayer(aSocket);
