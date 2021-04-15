@@ -14,6 +14,11 @@ export const Constant = Object.freeze({
 	WALL_COST: 5,
 	BUILDING_REFUND_MULTIPLIER: 0.5,
 
+	INCOME: {
+		UPDATE_RATE: 1,
+		INCOME_PER_CAMP: 1,
+	},
+
 	TEAM: {
 		RED: 0,
 		BLUE: 1,

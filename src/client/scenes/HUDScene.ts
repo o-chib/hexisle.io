@@ -1,8 +1,9 @@
 //import mainScene from './scenes/mainScene'
 
 // Text Structure
-const info_format = `Health: 			%1
-Score:		%2`;
+const info_format = `Health:	%1
+Score:	%2
+Resource:	%3`;
 
 export default class HUDScene extends Phaser.Scene {
 	private mainSceneObj: any;
@@ -31,6 +32,7 @@ export default class HUDScene extends Phaser.Scene {
 		const text = Phaser.Utils.String.Format(info_format, [
 			currentPlayer.health,
 			currentPlayer.score,
+			currentPlayer.resources,
 		]);
 		this.infoText?.setText(text);
 	}
