@@ -561,18 +561,25 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
+	clearMapOfObjects(objects: Map<string, Phaser.GameObjects.Sprite>) {
+		for (const anOldKey of objects.keys()) {
+			objects.get(anOldKey)?.destroy();
+			objects.delete(anOldKey);
+		}
+	}
+
 	private endGame(): void {
 		this.emptyAllObjects();
 	}
 
 	private emptyAllObjects(): void {
 		this.hexTiles = new HexTiles();
-		this.otherPlayerSprites.clear();
-		this.bulletSprites.clear();
-		this.wallSprites.clear();
-		this.campfireSprites.clear();
-		this.baseSprites.clear();
-		this.territorySprites.clear();
+		this.clearMapOfObjects(this.otherPlayerSprites);
+		this.clearMapOfObjects(this.bulletSprites);
+		this.clearMapOfObjects(this.wallSprites);
+		this.clearMapOfObjects(this.campfireSprites);
+		this.clearMapOfObjects(this.baseSprites);
+		this.clearMapOfObjects(this.territorySprites);
 		this.deadObjects.clear();
 	}
 }
