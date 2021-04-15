@@ -1,4 +1,4 @@
-//import mainScene from './scenes/mainScene'
+import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 
 // Text Structure
 const info_format = `Health: 			%1
@@ -15,10 +15,11 @@ export default class HUDScene extends Phaser.Scene {
 	}
 
 	create(): void {
-		this.infoText = this.add.text(10, 10, '', { font: '48px Arial' });
-
-		//  Our Text object to display the Score
-		//let info = this.add.text(10, 10, 'Score: 0', { font: '48px Arial', fill: '#000000' });
+		this.infoText = this.add.text(0, 0, '', { font: '48px Arial' });
+		new Anchor(this.infoText, {
+			left: 'left+10',
+			top: 'top+10',
+		});
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
