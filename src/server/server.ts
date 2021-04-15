@@ -30,7 +30,6 @@ const game = new Game();
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
-	console.log('Player connected!', socket.id);
 	updateSocket(socket);
 });
 
