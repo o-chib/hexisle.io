@@ -190,8 +190,8 @@ export default class MainScene extends Phaser.Scene {
 		this.generateTerritoryTexture(this.hexTiles.tileMap[0][0]);
 		graphic_Map.generateTexture(
 			'hexMap',
-			Constant.DEFAULT_WIDTH,
-			Constant.DEFAULT_HEIGHT
+			Constant.MAP_WIDTH,
+			Constant.MAP_HEIGHT
 		);
 
 		this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);

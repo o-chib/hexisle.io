@@ -5,11 +5,11 @@ import { Constant } from './../shared/constants';
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
-	width: Constant.DEFAULT_WIDTH,
-	height: Constant.DEFAULT_HEIGHT,
+	width: 2000,
+	height: 1080,
 	type: Phaser.AUTO,
 	scale: {
-		mode: Phaser.Scale.RESIZE,
+		mode: Phaser.Scale.ENVELOP,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
 	scene: [mainScene, HUDScene],

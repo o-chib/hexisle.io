@@ -1,7 +1,7 @@
 export const Constant = Object.freeze({
 	// Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
-	DEFAULT_WIDTH: 10000,
-	DEFAULT_HEIGHT: 10000,
+	MAP_WIDTH: 10000,
+	MAP_HEIGHT: 10000,
 	PLAYER_RADIUS: 50,
 	BULLET_RADIUS: 15,
 	WALL_RADIUS: 75,
