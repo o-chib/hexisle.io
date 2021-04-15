@@ -22,6 +22,7 @@ export default class Teams {
 	initBases(baseCoords: OffsetPoint[]): void {
 		for (const [teamNumber, team] of this.teams) {
 			team.baseCoord = baseCoords[teamNumber];
+			team.numCapturedCamps = 1;
 		}
 	}
 
@@ -77,6 +78,7 @@ class Team {
 	public playerCount: number;
 	public baseCoord: OffsetPoint;
 	public respawnCoords: OffsetPoint[];
+	public numCapturedCamps: number;
 
 	constructor() {
 		this.playerIDs = [];

@@ -88,7 +88,7 @@ export default class Campfire {
 	checkForCapture() {
 		if (this.isCaptured) {
 			// Turn Back to Neutral!
-			this.teamNumber = -1;
+			//this.teamNumber = -1;
 
 			this.isCaptured = false;
 			this.captureProgress = 0;

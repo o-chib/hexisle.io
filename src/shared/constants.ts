@@ -13,6 +13,11 @@ export const Constant = Object.freeze({
 	TEAM_COUNT: 2,
 	WALL_COST: 5,
 
+	INCOME: {
+		UPDATE_RATE: 1,
+		INCOME_PER_CAMP: 1,
+	},
+
 	TEAM: {
 		RED: 0,
 		BLUE: 1,
