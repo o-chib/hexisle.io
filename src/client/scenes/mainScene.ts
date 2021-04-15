@@ -105,10 +105,7 @@ export default class MainScene extends Phaser.Scene {
 			this.updateState.bind(this)
 		);
 
-		this.socket.on(
-			Constant.MESSAGE.GAME_END,
-			this.endGame.bind(this)
-		);
+		this.socket.on(Constant.MESSAGE.GAME_END, this.endGame.bind(this));
 	}
 
 	private registerInputListeners(): void {
@@ -561,7 +558,7 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	clearMapOfObjects(objects: Map<string, Phaser.GameObjects.Sprite>) {
+	private clearMapOfObjects(objects: Map<string, Phaser.GameObjects.Sprite>) {
 		for (const anOldKey of objects.keys()) {
 			objects.get(anOldKey)?.destroy();
 			objects.delete(anOldKey);

@@ -213,9 +213,7 @@ export default class Game {
 
 	endGame(): void {
 		for (const aPlayer of this.players.values()) {
-			aPlayer.socket.emit(
-				Constant.MESSAGE.GAME_END
-			);
+			aPlayer.socket.emit(Constant.MESSAGE.GAME_END);
 		}
 		this.stopAllIntervals();
 		this.isGameOver = true;
