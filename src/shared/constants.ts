@@ -14,7 +14,7 @@ export const Constant = Object.freeze({
 	WALL_COST: 5,
 
 	INCOME: {
-		UPDATE_RATE: 1,
+		UPDATE_RATE: 1 * 1000,
 		INCOME_PER_CAMP: 1,
 	},
 
@@ -55,4 +55,11 @@ export const Constant = Object.freeze({
 		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
 	},
+
+	TIMING: {
+		SERVER_GAME_UPDATE: 1000 / 60,
+		GAME_END_SCREEN: 5 * 1000,
+		GAME_TIME_LIMIT: 5 * (60 * 1000),
+		CHECK_GAME_END: 1000 / 60,
+	}
 });

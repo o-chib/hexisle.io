@@ -28,7 +28,7 @@ let game = new Game();
 const socketsConnected: Set<SocketIOClient.Socket> = new Set();
 
 // Set up an interval to check when the game ends
-const gameInterval = setInterval(checkGameEnd, 1000 / 60);
+let checkGameEndInterval = setInterval(checkGameEnd, Constant.TIMING.CHECK_GAME_END);
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
@@ -67,7 +67,9 @@ function updateSocket(socket: any) {
 function checkGameEnd(): void {
 	if (game.isGameOver == true) {
 		console.log("ending game");
-		setTimeout(restartGame, 5 * 1000);
+		clearInterval(checkGameEndInterval);
+		setTimeout(restartGame, Constant.TIMING.GAME_END_SCREEN);
+		checkGameEndInterval = setInterval(checkGameEnd, Constant.TIMING.CHECK_GAME_END);
 	}
 }
 

@@ -53,11 +53,8 @@ export default class Game {
 		this.initBases();
 
 		this.previousUpdateTimestamp = Date.now();
-		this.gameInterval = setInterval(this.update.bind(this), 1000 / 60);
-		this.resourceInterval = setInterval(
-			this.updatePlayerResource.bind(this),
-			Constant.INCOME.UPDATE_RATE * 1000
-		);
+		this.gameInterval = setInterval(this.update.bind(this), Constant.TIMING.SERVER_GAME_UPDATE);
+		this.resourceInterval = setInterval(this.updatePlayerResource.bind(this), Constant.INCOME.UPDATE_RATE);
 	}
 
 	update() {
