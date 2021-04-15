@@ -1,7 +1,6 @@
 import 'phaser';
 import mainScene from './scenes/mainScene';
 import HUDScene from './scenes/HUDScene';
-import { Constant } from './../shared/constants';
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
