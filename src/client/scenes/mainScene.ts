@@ -39,25 +39,22 @@ export default class MainScene extends Phaser.Scene {
 			frameWidth: 385,
 			frameHeight: 400,
 		});
-		this.baseRedAnimConfig = {
-			key: 'base_red_destroying',
-			frames: this.anims.generateFrameNames('base_red'),
-			repeat: -1,
-		}
 		this.load.spritesheet('base_blue', '../assets/base_blue.png', {
 			frameWidth: 385,
 			frameHeight: 400,
 		});
-		this.baseBlueAnimConfig = {
-			key: 'base_blue_destroying',
-			frames: this.anims.generateFrameNames('base_blue'),
-			repeat: -1,
-		}
+
+		this.load.spritesheet('wall_red', '../assets/wall_red.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
+		this.load.spritesheet('wall_blue', '../assets/wall_blue.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
 
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
-		this.load.image('wall', '../assets/wall_red.png'); //TODO
-		this.load.image('wallblue', '../assets/wall_blue.png'); //TODO
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
 		this.load.image(
@@ -179,6 +176,9 @@ export default class MainScene extends Phaser.Scene {
 		this.initializePlayer(player);
 
 		this.setCamera();
+
+		console.log(this.anims.generateFrameNames('base_blue'));
+		console.log(this.anims.generateFrameNames('base_red'));
 	}
 
 	private initializePlayer(player: any): void {
@@ -332,7 +332,7 @@ export default class MainScene extends Phaser.Scene {
 				repeat: -1,
 			});
 
-			// Update anims internal isPlaying/isPaused variables.
+			// Update anims internal isPlaying/isPaused variables, and loaded anim.
 			player.anims.play(playerTextureName + '_walk');
 			player.anims.pause();
 		}
@@ -349,6 +349,42 @@ export default class MainScene extends Phaser.Scene {
 		}
 
 		return player;
+	}
+
+	private handleDamageAnimation(
+		structureSprite: Phaser.GameObjects.Sprite,
+		structureTextureName: string,
+		healthPercent: number
+	) {
+		// Every structure (Wall/Turret/Base) has 4 states or frames.
+		// Create local animation and load by playing and pausing the animation.
+		// Sets the required frame based on health %
+
+		if (!structureSprite.anims.get(structureTextureName + '_destroying')) {
+			structureSprite.anims.create({
+				key: structureTextureName + '_destroying',
+				frames: this.anims.generateFrameNames(structureTextureName),
+				frameRate: 1,
+				repeat: -1,
+			});
+
+			// Update anims internal isPlaying/isPaused variables, and loaded anim.
+			structureSprite.anims.play(structureTextureName + '_destroying');
+			structureSprite.anims.pause();
+		}
+
+		// Use overall player health to continue animation
+		if (healthPercent >= 0.75) {
+			structureSprite.anims.setProgress(0);
+		} else if (healthPercent >= 0.50) {
+			structureSprite.anims.setProgress(1/3);
+		} else if (healthPercent >= 0.25) {
+			structureSprite.anims.setProgress(2/3);
+		} else if (healthPercent > 0.00) {
+			structureSprite.anims.setProgress(1);
+		}
+
+		return structureSprite;
 	}
 
 	calculateDirection() {
@@ -489,10 +525,25 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			walls,
 			this.wallSprites,
-			'wall',
+			'',
 			(newWall, newWallLiteral) => {
-				if (newWallLiteral.teamNumber == 1)
-					newWall.setTexture('wallblue');
+				let wallTexture = '';
+				if (newWallLiteral.teamNumber == Constant.TEAM.RED)
+					wallTexture = 'wall_red';
+				else if (newWallLiteral.teamNumber == Constant.TEAM.BLUE)
+					wallTexture = 'wall_blue';
+
+				if (newWall.texture.key != wallTexture){
+					newWall.setTexture(wallTexture);
+				}
+
+				let healthPercent = newWallLiteral.hp/50; // 50 = Total health determined from wall.ts
+				newWall = this.handleDamageAnimation(
+					newWall,
+					wallTexture,
+					healthPercent
+				);
+
 				return newWall;
 			}
 		);
@@ -519,33 +570,23 @@ export default class MainScene extends Phaser.Scene {
 			'',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBase, newBaseLiteral) => {
-				if(newBaseLiteral.teamNumber == 0){
-					newBase.setTexture('base_red');
-					// will create only if it key does not exist at all
-					// newBase.anims.create(this.baseRedAnimConfig);
-					// newBase.anims.play('base_red_destroying');
-					// newBase.anims.stop();
-				}
-				if (newBaseLiteral.teamNumber == 1){
-					newBase.setTexture('base_blue');
-					// will create only if it key does not exist at all
-					// newBase.anims.create(this.baseRedAnimConfig);
-					// newBase.anims.play('base_blue_destroying');
-					// newBase.anims.stop();
+
+				let baseTexture = '';
+				if (newBaseLiteral.teamNumber == Constant.TEAM.RED)
+					baseTexture = 'base_red';
+				else if (newBaseLiteral.teamNumber == Constant.TEAM.BLUE)
+					baseTexture = 'base_blue';
+
+				if (newBase.texture.key != baseTexture){
+					newBase.setTexture(baseTexture);
 				}
 
-				// if (newBaseLiteral.hp >= 90) {
-				// 	newBase.anims.setProgress(0);
-				// }
-				// else if(newBaseLiteral.hp >= 50){
-				// 	newBase.anims.setProgress(1/3);
-				// }else if(newBaseLiteral.hp >= 20){
-				// 	newBase.anims.setProgress(2/3);
-				//
-				// }else if(newBaseLiteral.hp > 0){
-				// 	newBase.anims.setProgress(1);
-				// }
-				//console.log("team " + newBaseLiteral.teamNumber + " : " + newBase.anims.getProgress());
+				let healthPercent = newBaseLiteral.hp/100; // 100 = Total health determined from base.ts
+				newBase = this.handleDamageAnimation(
+					newBase,
+					baseTexture,
+					healthPercent
+				);
 
 				return newBase;
 			}
