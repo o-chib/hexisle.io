@@ -390,6 +390,7 @@ export default class MainScene extends Phaser.Scene {
 		player: Phaser.GameObjects.Sprite,
 		playerTextureName: string
 	) {
+		player.setRotation(0);
 		// Create local animation on each sprite if it doesn't exist
 		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
 		if (!player.anims.get(playerTextureName + '_death')) {
