@@ -28,13 +28,13 @@ export default class Game {
 	resourceInterval: NodeJS.Timeout;
 	gameOverCallback: () => void;
 	previousUpdateTimestamp: any;
-	startGameTimestamp: number;
-	gameTime: number;
+	endGameTimestamp: number;
+	gameTimeRemaining: number;
 
 	constructor(gameOverCallback) {
 		this.gameOverCallback = gameOverCallback;
 
-		this.startGameTimestamp = Date.now();
+		this.endGameTimestamp = Date.now() + Constant.TIMING.GAME_TIME_LIMIT;
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Set();
@@ -69,7 +69,7 @@ export default class Game {
 
 	update() {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
-		this.gameTime = currentTimestamp - this.startGameTimestamp;
+		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -221,10 +221,7 @@ export default class Game {
 	}
 
 	isGameOver(): boolean {
-		if (
-			this.bases.size == 1 ||
-			this.gameTime >= Constant.TIMING.GAME_LENGTH
-		) {
+		if (this.bases.size == 1 || this.gameTimeRemaining <= 0) {
 			return true;
 		}
 		return false;
@@ -410,7 +407,7 @@ export default class Game {
 		);
 
 		return {
-			time: this.gameTime,
+			time: this.gameTimeRemaining,
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
