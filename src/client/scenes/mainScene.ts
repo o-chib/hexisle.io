@@ -23,14 +23,15 @@ export default class MainScene extends Phaser.Scene {
 
 	preload(): void {
 		// Players
-		this.load.spritesheet('player_red', '../assets/Char_Red.png', {
+		this.load.spritesheet('player_red', '../assets/player_red.png', {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
-		this.load.spritesheet('player_blue', '../assets/Char_Blue.png', {
+		this.load.spritesheet('player_blue', '../assets/player_blue.png', {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
+
 		// Team Bases
 		this.load.spritesheet('base_red', '../assets/base_red.png', {
 			frameWidth: 385,
@@ -177,6 +178,12 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateDirection() {
+		if (!this.alive) {
+			this.myPlayerSprite.setRotation(0);
+			this.socket.emit(Constant.MESSAGE.ROTATE, 0);
+			return;
+		}
+
 		const direction =
 			this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
 
@@ -202,9 +209,6 @@ export default class MainScene extends Phaser.Scene {
 		this.initializePlayer(player);
 
 		this.setCamera();
-
-		console.log(this.anims.generateFrameNames('base_blue'));
-		console.log(this.anims.generateFrameNames('base_red'));
 	}
 
 	private initializePlayer(player: any): void {
@@ -357,8 +361,13 @@ export default class MainScene extends Phaser.Scene {
 				frameRate: 8,
 				repeat: -1,
 			});
+			player.anims.play(playerTextureName + '_walk');
+			player.anims.pause();
+		}
 
+		if (player.anims.currentAnim.key != playerTextureName + '_walk') {
 			// Update anims internal isPlaying/isPaused variables, and loaded anim.
+			player.anims.stop();
 			player.anims.play(playerTextureName + '_walk');
 			player.anims.pause();
 		}
@@ -374,6 +383,31 @@ export default class MainScene extends Phaser.Scene {
 			}
 		}
 
+		return player;
+	}
+
+	private handleDeathAnimation(
+		player: Phaser.GameObjects.Sprite,
+		playerTextureName: string
+	) {
+		player.setRotation(0);
+		// Create local animation on each sprite if it doesn't exist
+		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
+		if (!player.anims.get(playerTextureName + '_death')) {
+			player.anims.create({
+				key: playerTextureName + '_death',
+				frames: this.anims.generateFrameNames(playerTextureName, {
+					start: 4,
+					end: 12,
+				}),
+				frameRate: 8,
+				hideOnComplete: true,
+			});
+		}
+		if (player.anims.currentAnim.key == playerTextureName + '_walk') {
+			player.anims.stop();
+			player.anims.play(playerTextureName + '_death', true);
+		}
 		return player;
 	}
 
@@ -437,6 +471,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateMovementDirection(): void {
+		if (!this.alive) return;
 		const direction = this.calculateDirection();
 
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
@@ -500,17 +535,25 @@ export default class MainScene extends Phaser.Scene {
 
 	private updatePlayer(currentPlayer: any) {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-		if (this.alive && !this.myPlayerSprite.visible) {
-			this.myPlayerSprite.setVisible(true);
-		}
 
 		//  Local Animation control
-		this.myPlayerSprite = this.handleWalkAnimation(
-			this.myPlayerSprite,
-			this.myPlayerSprite.texture.key,
-			currentPlayer.xVel,
-			currentPlayer.yVel
-		);
+		if (currentPlayer.health > 0) {
+			this.alive = true;
+			this.myPlayerSprite.setVisible(true);
+
+			this.myPlayerSprite = this.handleWalkAnimation(
+				this.myPlayerSprite,
+				this.myPlayerSprite.texture.key,
+				currentPlayer.xVel,
+				currentPlayer.yVel
+			);
+		} else if (currentPlayer.health <= 0) {
+			this.alive = false;
+			this.handleDeathAnimation(
+				this.myPlayerSprite,
+				this.myPlayerSprite.texture.key
+			);
+		}
 	}
 
 	//TODO may not be necessary for bullets
@@ -547,12 +590,18 @@ export default class MainScene extends Phaser.Scene {
 					newPlayer.setTexture(playerTexture).setDepth(1000);
 
 				// Opponent Animation Control
-				newPlayer = this.handleWalkAnimation(
-					newPlayer,
-					playerTexture,
-					playerLiteral.xVel,
-					playerLiteral.yVel
-				);
+				if (playerLiteral.health > 0) {
+					newPlayer.setVisible(true);
+					newPlayer = this.handleWalkAnimation(
+						newPlayer,
+						playerTexture,
+						playerLiteral.xVel,
+						playerLiteral.yVel
+					);
+				}
+				if (playerLiteral.health <= 0) {
+					this.handleDeathAnimation(newPlayer, playerTexture);
+				}
 
 				return newPlayer;
 			}
