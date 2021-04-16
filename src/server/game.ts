@@ -19,7 +19,6 @@ export default class Game {
 	walls: Set<Wall>;
 	campfires: Set<Campfire>;
 	bases: Set<Base>;
-	previousUpdateTimestamp: any;
 	hexTileMap: HexTiles;
 	idGenerator: IDgenerator;
 	changedTiles: Tile[];
@@ -27,10 +26,17 @@ export default class Game {
 	territories: Set<Territory>;
 	gameInterval: NodeJS.Timeout;
 	resourceInterval: NodeJS.Timeout;
-	gameOverCallback;
+	gameOverCallback: () => void;
+	previousUpdateTimestamp: any;
+	startGameTimestamp: number;
+	endGameTimestamp: number;
 
 	constructor(gameOverCallback) {
 		this.gameOverCallback = gameOverCallback;
+
+		this.startGameTimestamp = Date.now();
+		this.endGameTimestamp =
+			this.startGameTimestamp + Constant.TIMING.GAME_LENGTH;
 
 		this.players = new Map();
 		this.bullets = new Set();
@@ -77,7 +83,7 @@ export default class Game {
 
 		this.updatePlayers(currentTimestamp);
 
-		if (this.isGameOver()) this.endGame();
+		if (this.isGameOver(currentTimestamp)) this.endGame();
 
 		this.sendStateToPlayers();
 	}
@@ -216,8 +222,8 @@ export default class Game {
 		}
 	}
 
-	isGameOver(): boolean {
-		if (this.bases.size == 1) {
+	isGameOver(currentTimestamp: number): boolean {
+		if (this.bases.size == 1 || currentTimestamp >= this.endGameTimestamp) {
 			return true;
 		}
 		return false;
