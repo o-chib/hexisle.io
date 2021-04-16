@@ -29,15 +29,12 @@ export default class Game {
 	gameOverCallback: () => void;
 	previousUpdateTimestamp: any;
 	startGameTimestamp: number;
-	endGameTimestamp: number;
+	gameTime: number;
 
 	constructor(gameOverCallback) {
 		this.gameOverCallback = gameOverCallback;
 
 		this.startGameTimestamp = Date.now();
-		this.endGameTimestamp =
-			this.startGameTimestamp + Constant.TIMING.GAME_LENGTH;
-
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Set();
@@ -72,6 +69,7 @@ export default class Game {
 
 	update() {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
+		this.gameTime = currentTimestamp - this.startGameTimestamp;
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -83,7 +81,7 @@ export default class Game {
 
 		this.updatePlayers(currentTimestamp);
 
-		if (this.isGameOver(currentTimestamp)) this.endGame();
+		if (this.isGameOver()) this.endGame();
 
 		this.sendStateToPlayers();
 	}
@@ -222,8 +220,11 @@ export default class Game {
 		}
 	}
 
-	isGameOver(currentTimestamp: number): boolean {
-		if (this.bases.size == 1 || currentTimestamp >= this.endGameTimestamp) {
+	isGameOver(): boolean {
+		if (
+			this.bases.size == 1 ||
+			this.gameTime >= Constant.TIMING.GAME_LENGTH
+		) {
 			return true;
 		}
 		return false;
@@ -409,7 +410,7 @@ export default class Game {
 		);
 
 		return {
-			time: Date.now(),
+			time: this.gameTime,
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
