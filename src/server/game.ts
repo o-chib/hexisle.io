@@ -77,6 +77,8 @@ export default class Game {
 
 		this.updateBases();
 
+		this.checkGameOver();
+
 		this.updatePlayers(currentTimestamp);
 	}
 
@@ -198,11 +200,6 @@ export default class Game {
 				this.bases.delete(aBase);
 			}
 		}
-
-		// Check if there's only 1 base left to end the game
-		if (this.bases.size == 1) {
-			this.endGame();
-		}
 	}
 
 	updatePlayers(currentTimestamp) {
@@ -217,13 +214,19 @@ export default class Game {
 		}
 	}
 
+	checkGameOver(): void {
+		if (this.bases.size == 1) {
+			this.endGame();
+		}
+	}
+
 	endGame(): void {
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(Constant.MESSAGE.GAME_END);
 		}
 		this.stopAllIntervals();
 		this.isGameOver = true;
-		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN);
+		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
 	}
 
 	stopAllIntervals(): void {
