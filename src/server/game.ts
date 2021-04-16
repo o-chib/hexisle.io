@@ -27,7 +27,6 @@ export default class Game {
 	territories: Set<Territory>;
 	gameInterval: NodeJS.Timeout;
 	resourceInterval: NodeJS.Timeout;
-	isGameOver: boolean;
 	gameOverCallback;
 
 	constructor(gameOverCallback) {
@@ -39,7 +38,6 @@ export default class Game {
 		this.campfires = new Set();
 		this.bases = new Set();
 		this.territories = new Set();
-		this.isGameOver = false;
 
 		this.idGenerator = new IDgenerator();
 
@@ -77,9 +75,10 @@ export default class Game {
 
 		this.updateBases();
 
-		this.checkGameOver();
-
 		this.updatePlayers(currentTimestamp);
+
+		if (this.isGameOver()) this.endGame();
+		else this.sendStateToPlayers();
 	}
 
 	calculateTimePassed(): [number, number] {
@@ -204,7 +203,9 @@ export default class Game {
 
 	updatePlayers(currentTimestamp) {
 		this.updatePlayerPosition(currentTimestamp);
+	}
 
+	sendStateToPlayers() {
 		// Send updates to player
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
@@ -214,10 +215,11 @@ export default class Game {
 		}
 	}
 
-	checkGameOver(): void {
+	isGameOver(): boolean {
 		if (this.bases.size == 1) {
-			this.endGame();
+			return true;
 		}
+		return false;
 	}
 
 	endGame(): void {
@@ -225,7 +227,6 @@ export default class Game {
 			aPlayer.socket.emit(Constant.MESSAGE.GAME_END);
 		}
 		this.stopAllIntervals();
-		this.isGameOver = true;
 		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
 	}
 
