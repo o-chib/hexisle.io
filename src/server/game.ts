@@ -28,8 +28,11 @@ export default class Game {
 	gameInterval: NodeJS.Timeout;
 	resourceInterval: NodeJS.Timeout;
 	isGameOver: boolean;
+	gameOverCallback;
 
-	constructor() {
+	constructor(gameOverCallback) {
+		this.gameOverCallback = gameOverCallback;
+
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Set();
@@ -220,6 +223,7 @@ export default class Game {
 		}
 		this.stopAllIntervals();
 		this.isGameOver = true;
+		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN);
 	}
 
 	stopAllIntervals(): void {

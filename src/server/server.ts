@@ -20,18 +20,19 @@ const server = http.createServer(app).listen(port, () => {
 	console.log('Server started:  http://' + ip + ':' + port);
 });
 
+const restartGame = () => {
+	game = new Game(restartGame);
+	for (const aSocket of socketsConnected) {
+		game.addPlayer(aSocket);
+	}
+};
+
 // Start the game
-let game = new Game();
+let game = new Game(restartGame);
 
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
 const socketsConnected: Set<SocketIOClient.Socket> = new Set();
-
-// Set up an interval to check when the game ends
-let checkGameEndInterval = setInterval(
-	checkGameEnd,
-	Constant.TIMING.CHECK_GAME_END
-);
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
@@ -65,22 +66,4 @@ function updateSocket(socket: any) {
 		game.removePlayer(socket);
 		socketsConnected.delete(socket);
 	});
-}
-
-function checkGameEnd(): void {
-	if (game.isGameOver == true) {
-		clearInterval(checkGameEndInterval);
-		setTimeout(restartGame, Constant.TIMING.GAME_END_SCREEN);
-	}
-}
-
-function restartGame(): void {
-	game = new Game();
-	for (const aSocket of socketsConnected) {
-		game.addPlayer(aSocket);
-	}
-	checkGameEndInterval = setInterval(
-		checkGameEnd,
-		Constant.TIMING.CHECK_GAME_END
-	);
 }
