@@ -565,7 +565,8 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	private endGame(): void {
+	private endGame(endState: any): void {
+		//TODO
 		this.emptyAllObjects();
 	}
 
