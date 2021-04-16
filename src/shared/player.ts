@@ -89,7 +89,7 @@ export default class Player {
 
 	refundWall(): void {
 		this.updateResource(
-			Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER
+			Math.ceil(Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER)
 		);
 	}
 
