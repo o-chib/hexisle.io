@@ -12,6 +12,7 @@ export const Constant = Object.freeze({
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
 	WALL_COST: 5,
+	BUILDING_REFUND_MULTIPLIER: 0.5,
 
 	INCOME: {
 		UPDATE_RATE: 1,
@@ -48,7 +49,8 @@ export const Constant = Object.freeze({
 		JOIN: 'join',
 		GAME_UPDATE: 'update_state',
 		MOVEMENT: 'move',
-		TILE_CHANGE: 'tile_change',
+		BUILD_WALL: 'build_wall',
+		DEMOLISH_WALL: 'demolish_wall',
 		SHOOT: 'shoot',
 		ROTATE: 'rotate',
 		RESPAWN: 'respawn',
