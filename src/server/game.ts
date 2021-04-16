@@ -209,15 +209,10 @@ export default class Game {
 			if (aPlayer.health == 0) {
 				// Give time for player to play death animation
 				// Only call timeout once
+				this.collision.deleteCollider(aPlayer, Constant.PLAYER_RADIUS);
 				aPlayer.health = -1;
-				let timerID = setInterval(
-					() => console.log('Respawning...'),
-					1000
-				);
 				setTimeout(
 					() => {
-						clearInterval(timerID);
-						console.log("Respawned Character!");
 						this.respawnPlayer(aPlayer);
 					},
 					3000
@@ -402,8 +397,6 @@ export default class Game {
 	}
 
 	respawnPlayer(player: Player) {
-		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
-
 		const respawnPoint: Point = this.getRespawnPoint(player.teamNumber);
 
 		player.health = 100;
