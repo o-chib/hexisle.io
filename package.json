@@ -43,6 +43,7 @@
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^4.0.1",
     "karma-typescript": "^5.5.1",
+    "phaser3-rex-plugins": "^1.1.44",
     "prettier": "^2.2.1",
     "ts-loader": "8.1.0",
     "ts-node": "^9.1.1",
