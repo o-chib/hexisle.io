@@ -206,11 +206,22 @@ export default class Game {
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
 			this.collision.playerBulletCollision(aPlayer, this.bullets);
-			if (aPlayer.health <= 0) {
+			if (aPlayer.health == 0) {
 				// Give time for player to play death animation
-				aPlayer.health -=1 ;
-				if(aPlayer.health <= -150)
-					this.respawnPlayer(aPlayer);
+				// Only call timeout once
+				aPlayer.health = -1;
+				let timerID = setInterval(
+					() => console.log('Respawning...'),
+					1000
+				);
+				setTimeout(
+					() => {
+						clearInterval(timerID);
+						console.log("Respawned Character!");
+						this.respawnPlayer(aPlayer);
+					},
+					3000
+				);
 			}
 		}
 	}

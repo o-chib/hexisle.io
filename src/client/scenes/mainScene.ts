@@ -399,14 +399,14 @@ export default class MainScene extends Phaser.Scene {
 					start: 4,
 					end: 7,
 				}),
-				duration: 3000,
+				frameRate: 8,
+				hideOnComplete: true,
 			});
 		}
 		if(player.anims.currentAnim.key == (playerTextureName + '_walk')) {
 			player.anims.stop();
-			player.anims.play(playerTextureName + '_death');
+			player.anims.play(playerTextureName + '_death',true);
 		}
-		player.setRotation(0);
 		return player;
 	}
 
