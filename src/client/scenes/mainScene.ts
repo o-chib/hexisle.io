@@ -397,7 +397,7 @@ export default class MainScene extends Phaser.Scene {
 				key: playerTextureName + '_death',
 				frames: this.anims.generateFrameNames(playerTextureName, {
 					start: 4,
-					end: 7,
+					end: 12,
 				}),
 				frameRate: 8,
 				hideOnComplete: true,
