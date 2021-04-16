@@ -4,8 +4,10 @@ import { OffsetPoint } from './hexTiles';
 
 export default class Teams {
 	private teams: Map<number, Team>;
+	private numTeams: number;
 
 	constructor(teamCount: number, baseCoords: OffsetPoint[]) {
+		this.numTeams = teamCount;
 		this.initTeams(teamCount);
 		this.initBases(baseCoords);
 	}
@@ -20,21 +22,24 @@ export default class Teams {
 	initBases(baseCoords: OffsetPoint[]): void {
 		for (const [teamNumber, team] of this.teams) {
 			team.baseCoord = baseCoords[teamNumber];
+			team.numCapturedCamps = 1;
 		}
 	}
 
-	addNewPlayer(playerID: string): number {
-		const teamNumber: number = this.getNewPlayerTeamNumber();
-		this.addPlayerToTeam(teamNumber, playerID);
-		return teamNumber;
+	getTeam(teamNum: number): Team {
+		return this.teams.get(teamNum)!;
 	}
 
-	removePlayer(playerID: string, teamNumber: number): void {
-		this.removePlayerFromTeam(teamNumber, playerID);
+	getNumTeams(): number {
+		return this.numTeams;
 	}
 
-	getTeamBaseCoord(teamNumber: number): OffsetPoint {
-		return this.teams.get(teamNumber)!.baseCoord;
+	getTeamBaseCoord(teamNum: number): OffsetPoint {
+		return this.teams.get(teamNum)!.baseCoord;
+	}
+
+	getRespawnCoords(teamNum: number): OffsetPoint[] {
+		return this.teams.get(teamNum)!.respawnCoords;
 	}
 
 	private getNewPlayerTeamNumber(): number {
@@ -49,12 +54,22 @@ export default class Teams {
 		return smallestTeam;
 	}
 
-	private addPlayerToTeam(teamNumber: number, playerID: string): void {
-		this.teams.get(teamNumber)!.addPlayer(playerID);
+	addNewPlayer(playerID: string): number {
+		const teamNumber: number = this.getNewPlayerTeamNumber();
+		this.addPlayerToTeam(teamNumber, playerID);
+		return teamNumber;
 	}
 
-	private removePlayerFromTeam(teamNumber: number, playerID: string): void {
-		this.teams.get(teamNumber)!.removePlayer(playerID);
+	removePlayer(playerID: string, teamNumber: number): void {
+		this.removePlayerFromTeam(teamNumber, playerID);
+	}
+
+	private addPlayerToTeam(teamNum: number, playerID: string): void {
+		this.teams.get(teamNum)!.addPlayer(playerID);
+	}
+
+	private removePlayerFromTeam(teamNum: number, playerID: string): void {
+		this.teams.get(teamNum)!.removePlayer(playerID);
 	}
 }
 
@@ -62,6 +77,8 @@ class Team {
 	public playerIDs: string[];
 	public playerCount: number;
 	public baseCoord: OffsetPoint;
+	public respawnCoords: OffsetPoint[];
+	public numCapturedCamps: number;
 
 	constructor() {
 		this.playerIDs = [];

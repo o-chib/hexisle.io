@@ -1,15 +1,14 @@
 import 'phaser';
 import mainScene from './scenes/mainScene';
 import HUDScene from './scenes/HUDScene';
-const Constant = require('./../shared/constants');
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
-	width: Constant.DEFAULT_WIDTH,
-	height: Constant.DEFAULT_HEIGHT,
+	width: 1920,
+	height: 1080,
 	type: Phaser.AUTO,
 	scale: {
-		mode: Phaser.Scale.RESIZE,
+		mode: Phaser.Scale.ENVELOP,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
 	scene: [mainScene, HUDScene],

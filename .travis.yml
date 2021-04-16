@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+    - 14
+addons:
+    chrome: stable
+services:
+    - xvfb
+before_install:
+    - export DISPLAY=:99.0
+before_script:
+    - npm install
+script: node_modules/karma/bin/karma start karma.conf.js --single-run
+notifications:
+    email:
+        on_success: change
+        on_failure: change

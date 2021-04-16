@@ -1,4 +1,4 @@
-const Constant = require('../shared/constants');
+import { Constant } from '../shared/constants';
 import Collision from './../server/collision';
 
 export default class Player {
@@ -39,7 +39,12 @@ export default class Player {
 		//this.healthRegen = 1;
 		this.speed = 600;
 		this.socket = socket;
+		this.resources = 0;
 		this.lastUpdateTime = Date.now();
+	}
+
+	updateResource(resourceValue: number) {
+		this.resources += resourceValue;
 	}
 
 	updateDirection(newDirection: number): void {
@@ -78,8 +83,14 @@ export default class Player {
 
 	buyWall(): boolean {
 		if (this.resources < Constant.WALL_COST) return false;
-		this.resources -= Constant.WALL_COST;
+		this.updateResource(-Constant.WALL_COST);
 		return true;
+	}
+
+	refundWall(): void {
+		this.updateResource(
+			Math.ceil(Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER)
+		);
 	}
 
 	serializeForUpdate() {
@@ -92,6 +103,8 @@ export default class Player {
 			resources: this.resources,
 			score: this.score,
 			teamNumber: this.teamNumber,
+			xVel: this.xVel,
+			yVel: this.yVel,
 		};
 	}
 }

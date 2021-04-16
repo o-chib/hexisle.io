@@ -3,8 +3,8 @@ import express from 'express';
 import http from 'http';
 import Game from './game';
 import { OffsetPoint } from '../shared/hexTiles';
-const Socketio = require('socket.io');
-const Constant = require('../shared/constants');
+import * as SocketIO from 'socket.io';
+import { Constant } from '../shared/constants';
 
 // Serve up the static files from public
 const app = express();
@@ -24,28 +24,37 @@ const server = http.createServer(app).listen(port, () => {
 const game = new Game();
 
 // Start Socket.io connection
-const websocket = Socketio(server);
-websocket.on('connection', function (socket: SocketIOClient.Socket) {
-	console.log('Player connected!', socket.id);
+const websocket = new SocketIO.Server(server);
+websocket.on('connection', function (socket: SocketIO.Socket) {
 	updateSocket(socket);
 });
 
-function updateSocket(socket: SocketIOClient.Socket) {
+function updateSocket(socket: any) {
+	//TODO fix typing issue
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
 	});
+
 	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
 		game.movePlayer(socket, direction);
 	});
-	socket.on(Constant.MESSAGE.TILE_CHANGE, (coord: OffsetPoint) => {
-		game.buildWall(socket, coord);
-	});
+
 	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
 		game.shootBullet(socket, direction);
 	});
+
 	socket.on(Constant.MESSAGE.ROTATE, (direction: number) => {
 		game.rotatePlayer(socket, direction);
 	});
+
+	socket.on(Constant.MESSAGE.BUILD_WALL, (coord: OffsetPoint) => {
+		game.buildWall(socket, coord);
+	});
+
+	socket.on(Constant.MESSAGE.DEMOLISH_WALL, (coord: OffsetPoint) => {
+		game.demolishWall(socket, coord);
+	});
+
 	socket.on('disconnect', () => {
 		game.removePlayer(socket);
 	});
