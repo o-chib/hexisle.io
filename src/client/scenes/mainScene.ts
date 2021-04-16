@@ -16,9 +16,6 @@ export default class MainScene extends Phaser.Scene {
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 
-	private baseRedAnimConfig: Phaser.Types.Animations.Animation;
-	private baseBlueAnimConfig: Phaser.Types.Animations.Animation;
-
 	private hexTiles: HexTiles;
 
 	constructor() {
@@ -26,6 +23,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	preload(): void {
+		// Players
 		this.load.spritesheet('player_red', '../assets/Char_Red.png', {
 			frameWidth: 94,
 			frameHeight: 120,
@@ -34,7 +32,7 @@ export default class MainScene extends Phaser.Scene {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
-
+		// Team Bases
 		this.load.spritesheet('base_red', '../assets/base_red.png', {
 			frameWidth: 385,
 			frameHeight: 400,
@@ -44,6 +42,7 @@ export default class MainScene extends Phaser.Scene {
 			frameHeight: 400,
 		});
 
+		// Walls
 		this.load.spritesheet('wall_red', '../assets/wall_red.png', {
 			frameWidth: 154,
 			frameHeight: 134,
@@ -53,6 +52,21 @@ export default class MainScene extends Phaser.Scene {
 			frameHeight: 134,
 		});
 
+		// Turrets
+		this.load.spritesheet('turret_base_red', '../assets/turret_base_red.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
+		this.load.spritesheet('turret_base_blue', '../assets/turret_base_blue.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
+		this.load.spritesheet('turret_shooter', '../assets/turret_shooter.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
+
+		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
