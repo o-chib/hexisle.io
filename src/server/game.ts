@@ -78,7 +78,8 @@ export default class Game {
 		this.updatePlayers(currentTimestamp);
 
 		if (this.isGameOver()) this.endGame();
-		else this.sendStateToPlayers();
+
+		this.sendStateToPlayers();
 	}
 
 	calculateTimePassed(): [number, number] {
