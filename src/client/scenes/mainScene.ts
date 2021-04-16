@@ -16,8 +16,8 @@ export default class MainScene extends Phaser.Scene {
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 
-	private baseRedAnimConfig : Phaser.Types.Animations.Animation;
-	private baseBlueAnimConfig : Phaser.Types.Animations.Animation;
+	private baseRedAnimConfig: Phaser.Types.Animations.Animation;
+	private baseBlueAnimConfig: Phaser.Types.Animations.Animation;
 
 	private hexTiles: HexTiles;
 
@@ -376,11 +376,11 @@ export default class MainScene extends Phaser.Scene {
 		// Use overall player health to continue animation
 		if (healthPercent >= 0.75) {
 			structureSprite.anims.setProgress(0);
-		} else if (healthPercent >= 0.50) {
-			structureSprite.anims.setProgress(1/3);
+		} else if (healthPercent >= 0.5) {
+			structureSprite.anims.setProgress(1 / 3);
 		} else if (healthPercent >= 0.25) {
-			structureSprite.anims.setProgress(2/3);
-		} else if (healthPercent > 0.00) {
+			structureSprite.anims.setProgress(2 / 3);
+		} else if (healthPercent > 0.0) {
 			structureSprite.anims.setProgress(1);
 		}
 
@@ -533,11 +533,11 @@ export default class MainScene extends Phaser.Scene {
 				else if (newWallLiteral.teamNumber == Constant.TEAM.BLUE)
 					wallTexture = 'wall_blue';
 
-				if (newWall.texture.key != wallTexture){
+				if (newWall.texture.key != wallTexture) {
 					newWall.setTexture(wallTexture);
 				}
 
-				let healthPercent = newWallLiteral.hp/50; // 50 = Total health determined from wall.ts
+				const healthPercent = newWallLiteral.hp / 50; // 50 = Total health determined from wall.ts
 				newWall = this.handleDamageAnimation(
 					newWall,
 					wallTexture,
@@ -570,18 +570,17 @@ export default class MainScene extends Phaser.Scene {
 			'',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBase, newBaseLiteral) => {
-
 				let baseTexture = '';
 				if (newBaseLiteral.teamNumber == Constant.TEAM.RED)
 					baseTexture = 'base_red';
 				else if (newBaseLiteral.teamNumber == Constant.TEAM.BLUE)
 					baseTexture = 'base_blue';
 
-				if (newBase.texture.key != baseTexture){
+				if (newBase.texture.key != baseTexture) {
 					newBase.setTexture(baseTexture);
 				}
 
-				let healthPercent = newBaseLiteral.hp/100; // 100 = Total health determined from base.ts
+				const healthPercent = newBaseLiteral.hp / 100; // 100 = Total health determined from base.ts
 				newBase = this.handleDamageAnimation(
 					newBase,
 					baseTexture,
