@@ -379,6 +379,7 @@ export default class MainScene extends Phaser.Scene {
 	updateState(update: any): void {
 		//TODO may state type
 		const {
+			time,
 			currentPlayer,
 			otherPlayers,
 			bullets,
@@ -403,7 +404,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateTerritories(territories);
 
-		this.events.emit('updateHUD', currentPlayer);
+		this.events.emit('updateHUD', currentPlayer, time);
 	}
 
 	private updatePlayer(currentPlayer: any) {
