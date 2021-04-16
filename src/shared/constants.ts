@@ -19,6 +19,7 @@ export const Constant = Object.freeze({
 	},
 
 	TEAM: {
+		NONE: -1,
 		RED: 0,
 		BLUE: 1,
 	},

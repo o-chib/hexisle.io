@@ -224,10 +224,46 @@ export default class Game {
 
 	endGame(): void {
 		for (const aPlayer of this.players.values()) {
-			aPlayer.socket.emit(Constant.MESSAGE.GAME_END);
+			aPlayer.socket.emit(
+				Constant.MESSAGE.GAME_END,
+				this.createGameEndRecap()
+			);
 		}
 		this.stopAllIntervals();
 		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
+	}
+
+	createGameEndRecap() {
+		let redCamps = 0;
+		let blueCamps = 0;
+		for (const camp of this.campfires) {
+			if (camp.teamNumber == Constant.TEAM.RED) redCamps++;
+			else if (camp.teamNumber == Constant.TEAM.RED) blueCamps++;
+		}
+
+		let winner = Constant.TEAM.NONE;
+		let message: string;
+
+		if (this.bases.size == 1) {
+			for (const base of this.bases) { //TODO do we need to do a loop?
+				winner = base.teamNumber;
+			}
+			message = 'All other team bases eliminated!';
+		} else {
+			if (redCamps > blueCamps) winner = Constant.TEAM.RED;
+			else if (redCamps < blueCamps) winner = Constant.TEAM.BLUE;
+
+			message = 'Time Up!';
+		}
+
+		return {
+			winner: winner,
+			message: message,
+			campCount: {
+				red: redCamps,
+				blue: blueCamps,
+			},
+		};
 	}
 
 	stopAllIntervals(): void {
