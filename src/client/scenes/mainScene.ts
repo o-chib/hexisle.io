@@ -61,6 +61,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create(): void {
+		this.game.canvas.oncontextmenu = function (e) {
+			e.preventDefault();
+		};
 		this.registerListeners();
 		this.registerIntervals();
 
