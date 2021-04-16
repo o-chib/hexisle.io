@@ -178,7 +178,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateDirection() {
-		if (!this.alive){
+		if (!this.alive) {
 			this.myPlayerSprite.setRotation(0);
 			this.socket.emit(Constant.MESSAGE.ROTATE, 0);
 			return;
@@ -365,7 +365,7 @@ export default class MainScene extends Phaser.Scene {
 			player.anims.pause();
 		}
 
-		if(player.anims.currentAnim.key != (playerTextureName + '_walk')){
+		if (player.anims.currentAnim.key != playerTextureName + '_walk') {
 			// Update anims internal isPlaying/isPaused variables, and loaded anim.
 			player.anims.stop();
 			player.anims.play(playerTextureName + '_walk');
@@ -403,9 +403,9 @@ export default class MainScene extends Phaser.Scene {
 				hideOnComplete: true,
 			});
 		}
-		if(player.anims.currentAnim.key == (playerTextureName + '_walk')) {
+		if (player.anims.currentAnim.key == playerTextureName + '_walk') {
 			player.anims.stop();
-			player.anims.play(playerTextureName + '_death',true);
+			player.anims.play(playerTextureName + '_death', true);
 		}
 		return player;
 	}
@@ -534,7 +534,7 @@ export default class MainScene extends Phaser.Scene {
 				currentPlayer.xVel,
 				currentPlayer.yVel
 			);
-		} else if (currentPlayer.health <= 0){
+		} else if (currentPlayer.health <= 0) {
 			this.alive = false;
 			this.handleDeathAnimation(
 				this.myPlayerSprite,
@@ -577,7 +577,7 @@ export default class MainScene extends Phaser.Scene {
 					newPlayer.setTexture(playerTexture).setDepth(1000);
 
 				// Opponent Animation Control
-				if(playerLiteral.health > 0){
+				if (playerLiteral.health > 0) {
 					newPlayer.setVisible(true);
 					newPlayer = this.handleWalkAnimation(
 						newPlayer,
@@ -586,11 +586,8 @@ export default class MainScene extends Phaser.Scene {
 						playerLiteral.yVel
 					);
 				}
-				if(playerLiteral.health <= 0){
-					this.handleDeathAnimation(
-						newPlayer,
-						playerTexture
-					);
+				if (playerLiteral.health <= 0) {
+					this.handleDeathAnimation(newPlayer, playerTexture);
 				}
 
 				return newPlayer;

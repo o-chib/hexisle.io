@@ -211,12 +211,9 @@ export default class Game {
 				// Only call timeout once
 				this.collision.deleteCollider(aPlayer, Constant.PLAYER_RADIUS);
 				aPlayer.health = -1;
-				setTimeout(
-					() => {
-						this.respawnPlayer(aPlayer);
-					},
-					3000
-				);
+				setTimeout(() => {
+					this.respawnPlayer(aPlayer);
+				}, 3000);
 			}
 		}
 	}
