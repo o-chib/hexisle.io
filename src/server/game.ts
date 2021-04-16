@@ -207,7 +207,10 @@ export default class Game {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
 			this.collision.playerBulletCollision(aPlayer, this.bullets);
 			if (aPlayer.health <= 0) {
-				this.respawnPlayer(aPlayer);
+				// Give time for player to play death animation
+				aPlayer.health -=1 ;
+				if(aPlayer.health <= -150)
+					this.respawnPlayer(aPlayer);
 			}
 		}
 	}
