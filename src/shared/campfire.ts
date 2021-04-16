@@ -94,12 +94,12 @@ export default class Campfire {
 			this.captureProgress = 0;
 			this.capturingTeam = -1;
 
-			console.log(
-				'Lost Campfire: ' +
-					this.id +
-					', Team Number = ' +
-					this.teamNumber
-			);
+			// console.log(
+			// 	'Lost Campfire: ' +
+			// 		this.id +
+			// 		', Team Number = ' +
+			// 		this.teamNumber
+			// );
 		} else {
 			// Was Catured!
 			this.teamNumber = this.capturingTeam;
@@ -108,12 +108,12 @@ export default class Campfire {
 			this.captureProgress = 0;
 			this.capturingTeam = -1;
 
-			console.log(
-				'Captured Campfire: ' +
-					this.id +
-					', Team Number = ' +
-					this.teamNumber
-			);
+			// console.log(
+			// 	'Captured Campfire: ' +
+			// 		this.id +
+			// 		', Team Number = ' +
+			// 		this.teamNumber
+			// );
 		}
 	}
 

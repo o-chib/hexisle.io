@@ -23,21 +23,67 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	preload(): void {
-		this.load.spritesheet('player_red', '../assets/Char_Red.png', {
+		// Players
+		this.load.spritesheet('player_red', '../assets/player_red.png', {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
-		this.load.spritesheet('player_blue', '../assets/Char_Blue.png', {
+		this.load.spritesheet('player_blue', '../assets/player_blue.png', {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
+
+		// Team Bases
+		this.load.spritesheet('base_red', '../assets/base_red.png', {
+			frameWidth: 385,
+			frameHeight: 400,
+		});
+		this.load.spritesheet('base_blue', '../assets/base_blue.png', {
+			frameWidth: 385,
+			frameHeight: 400,
+		});
+
+		// Walls
+		this.load.spritesheet('wall_red', '../assets/wall_red.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
+		this.load.spritesheet('wall_blue', '../assets/wall_blue.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
+
+		// Turrets
+		this.load.spritesheet(
+			'turret_base_red',
+			'../assets/turret_base_red.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
+		this.load.spritesheet(
+			'turret_base_blue',
+			'../assets/turret_base_blue.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
+		this.load.spritesheet(
+			'turret_shooter',
+			'../assets/turret_shooter.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
+
+		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
-		this.load.image('wall', '../assets/tempwall.png'); //TODO
-		this.load.image('wallblue', '../assets/tempwallblue.png'); //TODO
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
-		this.load.image('base', '../assets/base.png');
 		this.load.image(
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
@@ -89,6 +135,7 @@ export default class MainScene extends Phaser.Scene {
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
 			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
+			demolishWall: Phaser.Input.Keyboard.KeyCodes.R,
 		});
 	}
 
@@ -137,6 +184,12 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateDirection() {
+		if (!this.alive) {
+			this.myPlayerSprite.setRotation(0);
+			this.socket.emit(Constant.MESSAGE.ROTATE, 0);
+			return;
+		}
+
 		const direction =
 			this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
 
@@ -316,8 +369,13 @@ export default class MainScene extends Phaser.Scene {
 				frameRate: 8,
 				repeat: -1,
 			});
+			player.anims.play(playerTextureName + '_walk');
+			player.anims.pause();
+		}
 
-			// Update anims internal isPlaying/isPaused variables.
+		if (player.anims.currentAnim.key != playerTextureName + '_walk') {
+			// Update anims internal isPlaying/isPaused variables, and loaded anim.
+			player.anims.stop();
 			player.anims.play(playerTextureName + '_walk');
 			player.anims.pause();
 		}
@@ -334,6 +392,67 @@ export default class MainScene extends Phaser.Scene {
 		}
 
 		return player;
+	}
+
+	private handleDeathAnimation(
+		player: Phaser.GameObjects.Sprite,
+		playerTextureName: string
+	) {
+		player.setRotation(0);
+		// Create local animation on each sprite if it doesn't exist
+		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
+		if (!player.anims.get(playerTextureName + '_death')) {
+			player.anims.create({
+				key: playerTextureName + '_death',
+				frames: this.anims.generateFrameNames(playerTextureName, {
+					start: 4,
+					end: 12,
+				}),
+				frameRate: 8,
+				hideOnComplete: true,
+			});
+		}
+		if (player.anims.currentAnim.key == playerTextureName + '_walk') {
+			player.anims.stop();
+			player.anims.play(playerTextureName + '_death', true);
+		}
+		return player;
+	}
+
+	private handleDamageAnimation(
+		structureSprite: Phaser.GameObjects.Sprite,
+		structureTextureName: string,
+		healthPercent: number
+	) {
+		// Every structure (Wall/Turret/Base) has 4 states or frames.
+		// Create local animation and load by playing and pausing the animation.
+		// Sets the required frame based on health %
+
+		if (!structureSprite.anims.get(structureTextureName + '_destroying')) {
+			structureSprite.anims.create({
+				key: structureTextureName + '_destroying',
+				frames: this.anims.generateFrameNames(structureTextureName),
+				frameRate: 1,
+				repeat: -1,
+			});
+
+			// Update anims internal isPlaying/isPaused variables, and loaded anim.
+			structureSprite.anims.play(structureTextureName + '_destroying');
+			structureSprite.anims.pause();
+		}
+
+		// Use overall player health to continue animation
+		if (healthPercent >= 0.75) {
+			structureSprite.anims.setProgress(0);
+		} else if (healthPercent >= 0.5) {
+			structureSprite.anims.setProgress(1 / 3);
+		} else if (healthPercent >= 0.25) {
+			structureSprite.anims.setProgress(2 / 3);
+		} else if (healthPercent > 0.0) {
+			structureSprite.anims.setProgress(1);
+		}
+
+		return structureSprite;
 	}
 
 	calculateDirection() {
@@ -360,6 +479,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateMovementDirection(): void {
+		if (!this.alive) return;
 		const direction = this.calculateDirection();
 
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
@@ -375,7 +495,19 @@ export default class MainScene extends Phaser.Scene {
 				new Point(gamePos.x, gamePos.y)
 			);
 
-			this.socket.emit(Constant.MESSAGE.TILE_CHANGE, coord);
+			this.socket.emit(Constant.MESSAGE.BUILD_WALL, coord);
+		} else if (this.cursors.demolishWall.isDown) {
+			if (!this.alive) return;
+
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
+			);
+			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+				new Point(gamePos.x, gamePos.y)
+			);
+
+			this.socket.emit(Constant.MESSAGE.DEMOLISH_WALL, coord);
 		}
 	}
 
@@ -412,17 +544,25 @@ export default class MainScene extends Phaser.Scene {
 
 	private updatePlayer(currentPlayer: any) {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-		if (this.alive && !this.myPlayerSprite.visible) {
-			this.myPlayerSprite.setVisible(true);
-		}
 
 		//  Local Animation control
-		this.myPlayerSprite = this.handleWalkAnimation(
-			this.myPlayerSprite,
-			this.myPlayerSprite.texture.key,
-			currentPlayer.xVel,
-			currentPlayer.yVel
-		);
+		if (currentPlayer.health > 0) {
+			this.alive = true;
+			this.myPlayerSprite.setVisible(true);
+
+			this.myPlayerSprite = this.handleWalkAnimation(
+				this.myPlayerSprite,
+				this.myPlayerSprite.texture.key,
+				currentPlayer.xVel,
+				currentPlayer.yVel
+			);
+		} else if (currentPlayer.health <= 0) {
+			this.alive = false;
+			this.handleDeathAnimation(
+				this.myPlayerSprite,
+				this.myPlayerSprite.texture.key
+			);
+		}
 	}
 
 	//TODO may not be necessary for bullets
@@ -459,12 +599,18 @@ export default class MainScene extends Phaser.Scene {
 					newPlayer.setTexture(playerTexture).setDepth(1000);
 
 				// Opponent Animation Control
-				newPlayer = this.handleWalkAnimation(
-					newPlayer,
-					playerTexture,
-					playerLiteral.xVel,
-					playerLiteral.yVel
-				);
+				if (playerLiteral.health > 0) {
+					newPlayer.setVisible(true);
+					newPlayer = this.handleWalkAnimation(
+						newPlayer,
+						playerTexture,
+						playerLiteral.xVel,
+						playerLiteral.yVel
+					);
+				}
+				if (playerLiteral.health <= 0) {
+					this.handleDeathAnimation(newPlayer, playerTexture);
+				}
 
 				return newPlayer;
 			}
@@ -475,10 +621,25 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			walls,
 			this.wallSprites,
-			'wall',
+			'',
 			(newWall, newWallLiteral) => {
-				if (newWallLiteral.teamNumber == 1)
-					newWall.setTexture('wallblue');
+				let wallTexture = '';
+				if (newWallLiteral.teamNumber == Constant.TEAM.RED)
+					wallTexture = 'wall_red';
+				else if (newWallLiteral.teamNumber == Constant.TEAM.BLUE)
+					wallTexture = 'wall_blue';
+
+				if (newWall.texture.key != wallTexture) {
+					newWall.setTexture(wallTexture);
+				}
+
+				const healthPercent = newWallLiteral.hp / 50; // 50 = Total health determined from wall.ts
+				newWall = this.handleDamageAnimation(
+					newWall,
+					wallTexture,
+					healthPercent
+				);
+
 				return newWall;
 			}
 		);
@@ -502,10 +663,26 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			bases,
 			this.baseSprites,
-			'base',
+			'',
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(newBase, newBaseLiteral) => {
-				if (newBaseLiteral.teamNumber == 1) newBase.setTexture('base');
+				let baseTexture = '';
+				if (newBaseLiteral.teamNumber == Constant.TEAM.RED)
+					baseTexture = 'base_red';
+				else if (newBaseLiteral.teamNumber == Constant.TEAM.BLUE)
+					baseTexture = 'base_blue';
+
+				if (newBase.texture.key != baseTexture) {
+					newBase.setTexture(baseTexture);
+				}
+
+				const healthPercent = newBaseLiteral.hp / 100; // 100 = Total health determined from base.ts
+				newBase = this.handleDamageAnimation(
+					newBase,
+					baseTexture,
+					healthPercent
+				);
+
 				return newBase;
 			}
 		);
