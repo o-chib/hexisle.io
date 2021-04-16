@@ -53,18 +53,30 @@ export default class MainScene extends Phaser.Scene {
 		});
 
 		// Turrets
-		this.load.spritesheet('turret_base_red', '../assets/turret_base_red.png', {
-			frameWidth: 154,
-			frameHeight: 134,
-		});
-		this.load.spritesheet('turret_base_blue', '../assets/turret_base_blue.png', {
-			frameWidth: 154,
-			frameHeight: 134,
-		});
-		this.load.spritesheet('turret_shooter', '../assets/turret_shooter.png', {
-			frameWidth: 154,
-			frameHeight: 134,
-		});
+		this.load.spritesheet(
+			'turret_base_red',
+			'../assets/turret_base_red.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
+		this.load.spritesheet(
+			'turret_base_blue',
+			'../assets/turret_base_blue.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
+		this.load.spritesheet(
+			'turret_shooter',
+			'../assets/turret_shooter.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
 
 		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
