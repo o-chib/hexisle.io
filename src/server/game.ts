@@ -443,7 +443,7 @@ export default class Game {
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 
 		if (
-			!tile.hasBuilding() ||
+			!tile.hasNoBuilding() ||
 			this.collision.doesObjCollideWithPlayers(
 				tile.cartesian_coord.xPos,
 				tile.cartesian_coord.yPos,
@@ -488,7 +488,7 @@ export default class Game {
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 
 		if (
-			tile.hasBuilding() ||
+			tile.hasNoBuilding() ||
 			tile.building != Constant.BUILDING.STRUCTURE ||
 			tile.team != player.teamNumber
 		)

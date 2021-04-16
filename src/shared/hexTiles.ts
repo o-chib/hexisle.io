@@ -520,7 +520,7 @@ export class Tile {
 		this.team = team;
 	}
 
-	hasBuilding(): boolean {
+	hasNoBuilding(): boolean {
 		return this.building == Constant.BUILDING.NONE;
 	}
 
