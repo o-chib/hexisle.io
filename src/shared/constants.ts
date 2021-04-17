@@ -15,11 +15,12 @@ export const Constant = Object.freeze({
 	BUILDING_REFUND_MULTIPLIER: 0.5,
 
 	INCOME: {
-		UPDATE_RATE: 1,
+		UPDATE_RATE: 1 * 1000,
 		INCOME_PER_CAMP: 1,
 	},
 
 	TEAM: {
+		NONE: -1,
 		RED: 0,
 		BLUE: 1,
 	},
@@ -48,6 +49,7 @@ export const Constant = Object.freeze({
 	MESSAGE: {
 		JOIN: 'join',
 		GAME_UPDATE: 'update_state',
+		GAME_END: 'game_end',
 		MOVEMENT: 'move',
 		BUILD_WALL: 'build_wall',
 		DEMOLISH_WALL: 'demolish_wall',
@@ -55,5 +57,12 @@ export const Constant = Object.freeze({
 		ROTATE: 'rotate',
 		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
+	},
+
+	TIMING: {
+		SERVER_GAME_UPDATE: 1000 / 60,
+		CHECK_GAME_END: 1000 / 60,
+		GAME_END_SCREEN: 5 * 1000,
+		GAME_TIME_LIMIT: 5 * (60 * 1000),
 	},
 });

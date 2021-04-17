@@ -20,8 +20,19 @@ const server = http.createServer(app).listen(port, () => {
 	console.log('Server started:  http://' + ip + ':' + port);
 });
 
+const restartGame = () => {
+	game = new Game(restartGame);
+	for (const aSocket of socketsConnected) {
+		game.addPlayer(aSocket);
+	}
+};
+
 // Start the game
-const game = new Game();
+let game = new Game(restartGame);
+
+// Store all the socket connections to this server so we can
+// add people back to a restarted game
+const socketsConnected: Set<SocketIOClient.Socket> = new Set();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
@@ -30,9 +41,9 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 });
 
 function updateSocket(socket: any) {
-	//TODO fix typing issue
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
+		socketsConnected.add(socket);
 	});
 
 	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
@@ -57,5 +68,6 @@ function updateSocket(socket: any) {
 
 	socket.on('disconnect', () => {
 		game.removePlayer(socket);
+		socketsConnected.delete(socket);
 	});
 }
