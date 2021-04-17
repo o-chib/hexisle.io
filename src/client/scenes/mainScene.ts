@@ -16,6 +16,7 @@ export default class MainScene extends Phaser.Scene {
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 	private hexTiles: HexTiles;
+	private initialized: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -106,6 +107,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create(): void {
+		this.game.canvas.oncontextmenu = function (e) {
+			e.preventDefault();
+		};
 		this.registerListeners();
 		this.registerIntervals();
 
@@ -150,6 +154,8 @@ export default class MainScene extends Phaser.Scene {
 			Constant.MESSAGE.GAME_UPDATE,
 			this.updateState.bind(this)
 		);
+
+		this.socket.on(Constant.MESSAGE.GAME_END, this.endGame.bind(this));
 	}
 
 	private registerInputListeners(): void {
@@ -204,11 +210,13 @@ export default class MainScene extends Phaser.Scene {
 		const { player, tileMap } = update;
 		if (player == null) return;
 
-		this.createTileMap(tileMap);
-
+		if (this.initialized != true) {
+			this.createTileMap(tileMap);
+			this.setCamera();
+		}
 		this.initializePlayer(player);
 
-		this.setCamera();
+		this.initialized = true;
 	}
 
 	private initializePlayer(player: any): void {
@@ -506,6 +514,7 @@ export default class MainScene extends Phaser.Scene {
 	updateState(update: any): void {
 		//TODO may state type
 		const {
+			time,
 			currentPlayer,
 			otherPlayers,
 			bullets,
@@ -530,7 +539,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateTerritories(territories);
 
-		this.events.emit('updateHUD', currentPlayer);
+		this.events.emit('updateHUD', currentPlayer, time);
 	}
 
 	private updatePlayer(currentPlayer: any) {
@@ -728,5 +737,28 @@ export default class MainScene extends Phaser.Scene {
 			oldObjects.get(anOldKey)?.destroy();
 			oldObjects.delete(anOldKey);
 		}
+	}
+
+	private clearMapOfObjects(objects: Map<string, Phaser.GameObjects.Sprite>) {
+		for (const anOldKey of objects.keys()) {
+			objects.get(anOldKey)?.destroy();
+			objects.delete(anOldKey);
+		}
+	}
+
+	private endGame(endState: any): void {
+		//TODO
+		this.emptyAllObjects();
+	}
+
+	private emptyAllObjects(): void {
+		this.hexTiles = new HexTiles();
+		this.clearMapOfObjects(this.otherPlayerSprites);
+		this.clearMapOfObjects(this.bulletSprites);
+		this.clearMapOfObjects(this.wallSprites);
+		this.clearMapOfObjects(this.campfireSprites);
+		this.clearMapOfObjects(this.baseSprites);
+		this.clearMapOfObjects(this.territorySprites);
+		this.deadObjects.clear();
 	}
 }

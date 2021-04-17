@@ -19,14 +19,22 @@ export default class Game {
 	walls: Map<string, Wall>;
 	campfires: Set<Campfire>;
 	bases: Set<Base>;
-	previousUpdateTimestamp: any;
 	hexTileMap: HexTiles;
 	idGenerator: IDgenerator;
 	changedTiles: Tile[];
 	collision: CollisionDetection;
 	territories: Set<Territory>;
+	gameInterval: NodeJS.Timeout;
+	resourceInterval: NodeJS.Timeout;
+	gameOverCallback: () => void;
+	previousUpdateTimestamp: any;
+	endGameTimestamp: number;
+	gameTimeRemaining: number;
 
-	constructor() {
+	constructor(gameOverCallback) {
+		this.gameOverCallback = gameOverCallback;
+
+		this.endGameTimestamp = Date.now() + Constant.TIMING.GAME_TIME_LIMIT;
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Map();
@@ -49,15 +57,19 @@ export default class Game {
 		this.initBases();
 
 		this.previousUpdateTimestamp = Date.now();
-		setInterval(this.update.bind(this), 1000 / 60);
-		setInterval(
+		this.gameInterval = setInterval(
+			this.update.bind(this),
+			Constant.TIMING.SERVER_GAME_UPDATE
+		);
+		this.resourceInterval = setInterval(
 			this.updatePlayerResource.bind(this),
-			Constant.INCOME.UPDATE_RATE * 1000
+			Constant.INCOME.UPDATE_RATE
 		);
 	}
 
 	update() {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
+		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -68,6 +80,10 @@ export default class Game {
 		this.updateBases();
 
 		this.updatePlayers(currentTimestamp);
+
+		if (this.isGameOver()) this.endGame();
+
+		this.sendStateToPlayers();
 	}
 
 	calculateTimePassed(): [number, number] {
@@ -194,7 +210,9 @@ export default class Game {
 
 	updatePlayers(currentTimestamp) {
 		this.updatePlayerPosition(currentTimestamp);
+	}
 
+	sendStateToPlayers() {
 		// Send updates to player
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
@@ -202,6 +220,63 @@ export default class Game {
 				this.createUpdate(aPlayer)
 			);
 		}
+	}
+
+	isGameOver(): boolean {
+		if (this.bases.size == 1 || this.gameTimeRemaining <= 0) {
+			return true;
+		}
+		return false;
+	}
+
+	endGame(): void {
+		for (const aPlayer of this.players.values()) {
+			aPlayer.socket.emit(
+				Constant.MESSAGE.GAME_END,
+				this.createGameEndRecap()
+			);
+		}
+		this.stopAllIntervals();
+		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
+	}
+
+	createGameEndRecap() {
+		let redCamps = 0;
+		let blueCamps = 0;
+		for (const camp of this.campfires) {
+			if (camp.teamNumber == Constant.TEAM.RED) redCamps++;
+			else if (camp.teamNumber == Constant.TEAM.RED) blueCamps++;
+		}
+
+		let winner = Constant.TEAM.NONE;
+		let message: string;
+
+		if (this.bases.size == 1) {
+			for (const base of this.bases) {
+				//TODO do we need to do a loop?
+				winner = base.teamNumber;
+			}
+			message = 'All other team bases eliminated!';
+		} else {
+			if (redCamps > blueCamps) winner = Constant.TEAM.RED;
+			else if (redCamps < blueCamps) winner = Constant.TEAM.BLUE;
+
+			message = 'Time Up!';
+		}
+
+		return {
+			winner: winner,
+			message: message,
+			campCount: {
+				red: redCamps,
+				blue: blueCamps,
+			},
+		};
+	}
+
+	stopAllIntervals(): void {
+		clearInterval(this.gameInterval);
+		clearInterval(this.resourceInterval);
 	}
 
 	updatePlayerPosition(currentTimestamp) {
@@ -340,7 +415,7 @@ export default class Game {
 		);
 
 		return {
-			time: Date.now(),
+			time: this.gameTimeRemaining,
 			currentPlayer: player.serializeForUpdate(),
 			otherPlayers: nearbyPlayers.map((p) => p.serializeForUpdate()),
 			bullets: nearbyBullets.map((p) => p.serializeForUpdate()),
