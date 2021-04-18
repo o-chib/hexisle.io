@@ -119,7 +119,8 @@ export default class Game {
 	}
 
 	updateTerritories() {
-		// Add captured territory of campfire, and camfire itself
+		// update tileMap with captured tiles
+		// update territories with campfire status
 		for (const aCampfire of this.campfires) {
 			this.collision.campfirePlayerCollision(aCampfire);
 
@@ -136,9 +137,8 @@ export default class Game {
 					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps--;
 				}
 
-				// TODO: Update to iterate only chunck of tiles surround the campsite.
+				// Update the TileMap structure
 				for (const pt of points) {
-					// TODO OUT OF BOUNDS INDEXING
 					if (!this.hexTileMap.checkIfValidHex(pt)) {
 						continue;
 					}
@@ -149,30 +149,27 @@ export default class Game {
 
 					tempTile.team = aCampfire.teamNumber;
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
+				}
 
-					const xPosition = tempTile.cartesian_coord.xPos.toString();
-					const yPosition = tempTile.cartesian_coord.yPos.toString();
-					const stringID = xPosition + ', ' + yPosition;
+				// Update the territory status of the camp
+				const xPosition = aCampfire.xPos.toString();
+				const yPosition = aCampfire.yPos.toString();
+				const stringID = xPosition + ', ' + yPosition;
 
-					if (isCaptured) {
-						// If captured, add to list
-						const tempTerritory = new Territory(
-							stringID,
-							tempTile.cartesian_coord.xPos,
-							tempTile.cartesian_coord.yPos,
-							tempTile.team
-						);
-						this.territories.add(tempTerritory);
-					} else {
-						// If non captured, remove from list
-						for (const aTerritory of this.territories) {
-							if (aTerritory.id == stringID) {
-								this.territories.delete(aTerritory);
-								break;
-							}
-						}
+				// Replace old object
+				for (const aTerritory of this.territories) {
+					if (aTerritory.id == stringID) {
+						this.territories.delete(aTerritory);
+						break;
 					}
 				}
+				const tempTerritory = new Territory(
+					stringID,
+					aCampfire.xPos,
+					aCampfire.yPos,
+					aCampfire.teamNumber
+				);
+				this.territories.add(tempTerritory);
 			}
 		}
 	}
@@ -609,6 +606,15 @@ export default class Game {
 		);
 
 		this.campfires.add(campfire);
+
+		const territory: Territory = new Territory(
+			campfire.xPos.toString() + ', ' + campfire.yPos.toString(),
+			campfire.xPos,
+			campfire.yPos,
+			Constant.TEAM.NONE
+		);
+		this.territories.add(territory);
+
 		tile.building = Constant.BUILDING.CAMP;
 
 		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
@@ -660,7 +666,8 @@ export default class Game {
 
 	initBases(): void {
 		for (let teamNum = 0; teamNum < Constant.TEAM_COUNT; teamNum++) {
-			this.buildBase(teamNum, this.teams.getTeamBaseCoord(teamNum));
+			let offset_coords = this.teams.getTeamBaseCoord(teamNum);
+			this.buildBase(teamNum, offset_coords);
 		}
 	}
 
@@ -672,17 +679,6 @@ export default class Game {
 			}
 			tempTile.team = teamNumber;
 			this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
-
-			const xPosition = tempTile.cartesian_coord.xPos.toString();
-			const yPosition = tempTile.cartesian_coord.yPos.toString();
-			const tempTerritory = new Territory(
-				xPosition + ', ' + yPosition,
-				tempTile.cartesian_coord.xPos,
-				tempTile.cartesian_coord.yPos,
-				tempTile.team
-			);
-
-			this.territories.add(tempTerritory);
 		}
 	}
 
@@ -694,7 +690,19 @@ export default class Game {
 				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r],
 				Constant.CAMP_RADIUS
 			);
+			// Update the tileMap with territory tiles
 			this.setBaseTerritory(i, points);
+			// Add chunk center to terriitories list
+			const xPosition = this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r].cartesian_coord.xPos;
+			const yPosition = this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r].cartesian_coord.yPos;
+			const tempTerritory = new Territory(
+				xPosition.toString() + ', ' + yPosition.toString(),
+				xPosition,
+				yPosition,
+				i
+			);
+
+			this.territories.add(tempTerritory);
 		}
 	}
 

@@ -88,6 +88,12 @@ export default class MainScene extends Phaser.Scene {
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
 		);
+		this.load.image('grass_chunk', '../assets/chunk.png');
+		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
+		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
+
+		this.load.image('wall', '../assets/wall.png');
+
 	}
 
 	init(): void {
@@ -242,7 +248,7 @@ export default class MainScene extends Phaser.Scene {
 		this.add
 			.image(0, 0, 'texture')
 			.setOrigin(0, 0)
-			.setDepth(-1)
+			.setDepth(-2000)
 			.setScale(3);
 
 		this.drawAllTiles(graphic_Map);
@@ -254,7 +260,22 @@ export default class MainScene extends Phaser.Scene {
 			Constant.MAP_HEIGHT
 		);
 
-		this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);
+		//this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);
+
+		for(let i = 0 ; i < this.hexTiles.tileMap.length; ++i) {
+			for(let j = 0 ; j < this.hexTiles.tileMap[i].length; ++j){
+				// if(this.hexTiles.tileMap[i][j].building == Constant.BUILDING.BASE || this.hexTiles.tileMap[i][j].building == Constant.BUILDING.CAMP){
+				// 	this.add.image(this.hexTiles.tileMap[i][j].cartesian_coord.xPos,this.hexTiles.tileMap[i][j].cartesian_coord.yPos,'grass_chunk').setDepth(-1);
+				// }
+
+				// DEBUG
+				if(this.hexTiles.tileMap[i][j].building == Constant.BUILDING.BOUNDARY){
+					this.add.image(this.hexTiles.tileMap[i][j].cartesian_coord.xPos,this.hexTiles.tileMap[i][j].cartesian_coord.yPos,'wall').setDepth(100);
+
+				}
+			}
+		}
+
 		graphic_Map.destroy();
 	}
 
@@ -300,10 +321,12 @@ export default class MainScene extends Phaser.Scene {
 	drawGraphics(points: Point[], graphics: Phaser.GameObjects.Graphics) {
 		graphics.beginPath();
 		graphics.moveTo(points[0].xPos, points[0].yPos);
-		for (let i = 0; i < 6; i++) {
+		for (let i = 1; i < 6; i++) {
 			graphics.lineTo(points[i].xPos, points[i].yPos);
+			console.log("X: " + (points[i-1].xPos-points[i].xPos) + ", Y: "+ (points[i-1].yPos-points[i].yPos));
 		}
 		graphics.closePath();
+
 	}
 
 	// takes XY coordinates of center point, generates all required vertices, draws individual tile
@@ -692,17 +715,21 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			territories,
 			this.territorySprites,
-			'red-territory',
+			'grass_chunk',
 			(changedTilesNewTile, changedTilesCurrentTile) => {
 				if (changedTilesCurrentTile.teamNumber == Constant.TEAM.RED) {
-					changedTilesNewTile.setTexture('red-territory');
-					changedTilesNewTile.setVisible(true).setDepth(-1);
+					changedTilesNewTile.setTexture('grass_chunk_red');
 				} else if (
 					changedTilesCurrentTile.teamNumber == Constant.TEAM.BLUE
 				) {
-					changedTilesNewTile.setTexture('blue-territory');
-					changedTilesNewTile.setVisible(true).setDepth(-1);
+					changedTilesNewTile.setTexture('grass_chunk_blue');
+				}else if(changedTilesCurrentTile.teamNumber == Constant.TEAM.NONE){
+					changedTilesNewTile.setTexture('grass_chunk');
 				}
+
+				changedTilesNewTile.setDepth(-1000);
+
+
 				return changedTilesNewTile;
 			}
 		);
