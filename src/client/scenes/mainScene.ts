@@ -251,14 +251,14 @@ export default class MainScene extends Phaser.Scene {
 			.setDepth(-2000)
 			.setScale(3);
 
-		this.drawAllTiles(graphic_Map);
-
-		this.generateTerritoryTexture(this.hexTiles.tileMap[0][0]);
-		graphic_Map.generateTexture(
-			'hexMap',
-			Constant.MAP_WIDTH,
-			Constant.MAP_HEIGHT
-		);
+		// this.drawAllTiles(graphic_Map);
+		//
+		// this.generateTerritoryTexture(this.hexTiles.tileMap[0][0]);
+		// graphic_Map.generateTexture(
+		// 	'hexMap',
+		// 	Constant.MAP_WIDTH,
+		// 	Constant.MAP_HEIGHT
+		// );
 
 		//this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);
 
@@ -323,7 +323,6 @@ export default class MainScene extends Phaser.Scene {
 		graphics.moveTo(points[0].xPos, points[0].yPos);
 		for (let i = 1; i < 6; i++) {
 			graphics.lineTo(points[i].xPos, points[i].yPos);
-			console.log("X: " + (points[i-1].xPos-points[i].xPos) + ", Y: "+ (points[i-1].yPos-points[i].yPos));
 		}
 		graphics.closePath();
 
@@ -674,7 +673,7 @@ export default class MainScene extends Phaser.Scene {
 			this.campfireSprites,
 			'campfire_unlit',
 			(newCampfire, newCampfireLiteral) => {
-				if (newCampfireLiteral.teamNumber != -1)
+				if (newCampfireLiteral.teamNumber != Constant.TEAM.NONE)
 					newCampfire.setTexture('campfire_lit').setDepth(0);
 				else newCampfire.setTexture('campfire_unlit').setDepth(0);
 				return newCampfire;

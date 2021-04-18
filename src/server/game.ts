@@ -125,9 +125,14 @@ export default class Game {
 			this.collision.campfirePlayerCollision(aCampfire);
 
 			if (aCampfire.captureProgress == 100) {
+				console.log('captured : ' + aCampfire.id);
 				aCampfire.checkForCapture();
+
 				const isCaptured = aCampfire.isCaptured;
 				const points = aCampfire.territoryPoints;
+
+				console.log('isCaptured : ' + aCampfire.isCaptured);
+				console.log('teamNum : ' + aCampfire.teamNumber);
 
 				if (isCaptured) {
 					// If captured, updated numCapturedCamps
@@ -151,26 +156,31 @@ export default class Game {
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 				}
 
-				// Update the territory status of the camp
-				const xPosition = aCampfire.xPos.toString();
-				const yPosition = aCampfire.yPos.toString();
-				const stringID = xPosition + ', ' + yPosition;
+				console.log('teamNum after loop: ' + aCampfire.teamNumber);
 
-				// Replace old object
+				// Update team num of territory
+				const xPosition = aCampfire.xPos;
+				const yPosition = aCampfire.yPos;
+				const stringID = xPosition.toString() + ', ' + yPosition.toString();
+
 				for (const aTerritory of this.territories) {
 					if (aTerritory.id == stringID) {
 						this.territories.delete(aTerritory);
+						console.log('deleted : '+ stringID);
 						break;
 					}
 				}
 				const tempTerritory = new Territory(
 					stringID,
-					aCampfire.xPos,
-					aCampfire.yPos,
+					xPosition,
+					yPosition,
 					aCampfire.teamNumber
 				);
 				this.territories.add(tempTerritory);
+				console.log('added : '+ stringID);
+
 			}
+
 		}
 	}
 
@@ -614,7 +624,6 @@ export default class Game {
 			Constant.TEAM.NONE
 		);
 		this.territories.add(territory);
-
 		tile.building = Constant.BUILDING.CAMP;
 
 		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
