@@ -88,12 +88,9 @@ export default class Campfire {
 	checkForCapture() {
 		if (this.isCaptured) {
 			// Turn Back to Neutral!
-			//this.teamNumber = -1;
+			this.teamNumber = -1;
 
 			this.isCaptured = false;
-			this.captureProgress = 0;
-			this.capturingTeam = -1;
-
 			// console.log(
 			// 	'Lost Campfire: ' +
 			// 		this.id +
@@ -103,10 +100,7 @@ export default class Campfire {
 		} else {
 			// Was Catured!
 			this.teamNumber = this.capturingTeam;
-
 			this.isCaptured = true;
-			this.captureProgress = 0;
-			this.capturingTeam = -1;
 
 			// console.log(
 			// 	'Captured Campfire: ' +
@@ -115,6 +109,10 @@ export default class Campfire {
 			// 		this.teamNumber
 			// );
 		}
+	}
+	resetProgress(){
+		this.captureProgress = 0;
+		this.capturingTeam = -1;
 	}
 
 	serializeForUpdate(): any {

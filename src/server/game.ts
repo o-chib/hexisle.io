@@ -136,11 +136,14 @@ export default class Game {
 
 				if (isCaptured) {
 					// If captured, updated numCapturedCamps
-					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps++;
+					this.teams.getTeam(aCampfire.capturingTeam).numCapturedCamps++;
 				} else {
 					// If uncaptured, updated numCapturedCamps
-					this.teams.getTeam(aCampfire.teamNumber).numCapturedCamps--;
+					this.teams.getTeam(aCampfire.capturingTeam).numCapturedCamps--;
 				}
+
+				aCampfire.resetProgress();
+
 
 				// Update the TileMap structure
 				for (const pt of points) {
@@ -156,8 +159,6 @@ export default class Game {
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 				}
 
-				console.log('teamNum after loop: ' + aCampfire.teamNumber);
-
 				// Update team num of territory
 				const xPosition = aCampfire.xPos;
 				const yPosition = aCampfire.yPos;
@@ -166,7 +167,6 @@ export default class Game {
 				for (const aTerritory of this.territories) {
 					if (aTerritory.id == stringID) {
 						this.territories.delete(aTerritory);
-						console.log('deleted : '+ stringID);
 						break;
 					}
 				}
@@ -177,7 +177,6 @@ export default class Game {
 					aCampfire.teamNumber
 				);
 				this.territories.add(tempTerritory);
-				console.log('added : '+ stringID);
 
 			}
 

@@ -242,134 +242,24 @@ export default class MainScene extends Phaser.Scene {
 
 	private createTileMap(tileMap: any) {
 		this.hexTiles.tileMap = tileMap;
-		const graphic_Map = this.add.graphics();
-
-		// masking logic
+		
+		// TODO remove this grass
 		this.add
 			.image(0, 0, 'texture')
 			.setOrigin(0, 0)
 			.setDepth(-2000)
 			.setScale(3);
 
-		// this.drawAllTiles(graphic_Map);
-		//
-		// this.generateTerritoryTexture(this.hexTiles.tileMap[0][0]);
-		// graphic_Map.generateTexture(
-		// 	'hexMap',
-		// 	Constant.MAP_WIDTH,
-		// 	Constant.MAP_HEIGHT
-		// );
-
-		//this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);
-
+		// DEBUG : DRAW BOUNDARY FOR NOW
 		for(let i = 0 ; i < this.hexTiles.tileMap.length; ++i) {
 			for(let j = 0 ; j < this.hexTiles.tileMap[i].length; ++j){
-				// if(this.hexTiles.tileMap[i][j].building == Constant.BUILDING.BASE || this.hexTiles.tileMap[i][j].building == Constant.BUILDING.CAMP){
-				// 	this.add.image(this.hexTiles.tileMap[i][j].cartesian_coord.xPos,this.hexTiles.tileMap[i][j].cartesian_coord.yPos,'grass_chunk').setDepth(-1);
-				// }
 
-				// DEBUG
 				if(this.hexTiles.tileMap[i][j].building == Constant.BUILDING.BOUNDARY){
 					this.add.image(this.hexTiles.tileMap[i][j].cartesian_coord.xPos,this.hexTiles.tileMap[i][j].cartesian_coord.yPos,'wall').setDepth(100);
 
 				}
 			}
 		}
-
-		graphic_Map.destroy();
-	}
-
-	// draws every arena/map hex we have in our tilemap
-	drawAllTiles(graphic_Map): void {
-		if (!this.hexTiles.tileMap) return;
-
-		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
-			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
-				if (
-					this.hexTiles.tileMap[col][row].building !=
-						Constant.BUILDING.OUT_OF_BOUNDS &&
-					this.hexTiles.tileMap[col][row].building !=
-						Constant.BUILDING.BOUNDARY
-				) {
-					//TODO cannot put isInBounds here?
-					this.drawTile(this.hexTiles.tileMap[col][row], graphic_Map);
-				}
-			}
-		}
-	}
-
-	// takes XY coordinates of center point, generates all required vertices, draws individual tile
-	drawTile(tile: Tile, graphics: Phaser.GameObjects.Graphics): void {
-		if (tile.building == Constant.BUILDING.OUT_OF_BOUNDS) return;
-
-		graphics.fillStyle(0x000000, 0);
-
-		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
-			tile.cartesian_coord
-		);
-
-		graphics.lineStyle(2, 0xffffff, 1);
-		if (tile.building == Constant.BUILDING.CAMP)
-			graphics.lineStyle(5, 0xffffff, 1);
-
-		this.drawGraphics(points, graphics);
-
-		graphics.fillPath();
-		graphics.strokePath();
-	}
-
-	drawGraphics(points: Point[], graphics: Phaser.GameObjects.Graphics) {
-		graphics.beginPath();
-		graphics.moveTo(points[0].xPos, points[0].yPos);
-		for (let i = 1; i < 6; i++) {
-			graphics.lineTo(points[i].xPos, points[i].yPos);
-		}
-		graphics.closePath();
-
-	}
-
-	// takes XY coordinates of center point, generates all required vertices, draws individual tile
-	generateTerritoryTexture(tile: Tile): void {
-		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
-			tile.cartesian_coord
-		);
-
-		let colorName = '';
-		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
-			const graphics = this.add.graphics();
-
-			this.drawGraphics(points, graphics);
-
-			if (i == 0) {
-				graphics.fillStyle(0xff0000, 0.2);
-				graphics.lineStyle(4, 0xff0000, 0.2);
-				colorName = 'red-territory';
-			} else if (i == 1) {
-				graphics.fillStyle(0x3333ff, 0.2);
-				graphics.lineStyle(4, 0x3333ff, 0.2);
-				colorName = 'blue-territory';
-			}
-
-			graphics.fillPath();
-
-			graphics.generateTexture(
-				colorName,
-				this.hexTiles.getHexWidth(),
-				this.hexTiles.getHexHeight()
-			);
-
-			graphics.destroy();
-		}
-	}
-
-	// Masking, Alpha Mask
-	// Masks the texture image using the total hexagonal tile map
-	setMapMask(
-		reveal: Phaser.GameObjects.Image,
-		graphic_Map: Phaser.GameObjects.Graphics
-	): void {
-		const hexBrush = graphic_Map.createGeometryMask();
-		reveal.setMask(hexBrush);
 	}
 
 	// Animation control
