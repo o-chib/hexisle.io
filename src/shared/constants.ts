@@ -4,6 +4,7 @@ export const Constant = Object.freeze({
 	DEFAULT_HEIGHT: 10000,
 	PLAYER_RADIUS: 50,
 	BULLET_RADIUS: 15,
+	RESOURCE_RADIUS: 15,
 	WALL_RADIUS: 75,
 	WALL_COL_RADIUS: 75 * 0.75,
 	BASE_RADIUS: 200,
@@ -12,6 +13,25 @@ export const Constant = Object.freeze({
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
 	WALL_COST: 5,
+
+	RESOURCE: {
+		RESOURCE_ID: [0, 1, 2],
+		RESOURCE_RARITY: [0.4, 0.4, 0.2],
+
+		RESOURCE_NAME: {
+			0: 'WHITE',
+			1: 'GREEN',
+			2: 'YELLOW',
+		},
+
+		DROP_AMOUNT: {
+			WHITE: 1,
+			GREEN: 1,
+			YELLOW: 5,
+		},
+
+		UPDATE_RATE: 2,
+	},
 
 	INCOME: {
 		UPDATE_RATE: 1,
