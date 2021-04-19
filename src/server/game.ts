@@ -11,6 +11,7 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
+import { ResourceSystem, Resource } from './../shared/resources'
 
 export default class Game {
 	teams: Teams;
@@ -25,6 +26,7 @@ export default class Game {
 	changedTiles: Tile[];
 	collision: CollisionDetection;
 	territories: Set<Territory>;
+	resourceSystem: ResourceSystem;
 
 	constructor() {
 		this.players = new Map();
@@ -48,11 +50,21 @@ export default class Game {
 		this.addBaseTerritories();
 		this.initBases();
 
+		this.resourceSystem = new ResourceSystem();
+		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount()
+										+ this.resourceSystem.minResource;
+		this.addResources(numResourceToGenerate);
+		console.log(this.resourceSystem.resources);
+
 		this.previousUpdateTimestamp = Date.now();
 		setInterval(this.update.bind(this), 1000 / 60);
 		setInterval(
 			this.updatePlayerResource.bind(this),
 			Constant.INCOME.UPDATE_RATE * 1000
+		);
+		setInterval(
+			this.updateResources.bind(this),
+			Constant.RESOURCE.UPDATE_RATE * 1000
 		);
 	}
 
@@ -77,6 +89,43 @@ export default class Game {
 		this.previousUpdateTimestamp = currentTimestamp;
 
 		return [currentTimestamp, timePassed];
+	}
+
+	updateResources() {
+		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount();
+
+		console.log(numResourceToGenerate);
+
+		if(this.resourceSystem.resourceCount - this.resourceSystem.minResource
+			> numResourceToGenerate) return;
+
+		//this.addResources(numResourceToGenerate);
+		//this.resourceSystem.generateResource(numResourceToGenerate);
+	}
+
+	addResources(numResource: number) {
+		let randomPoint;
+		while(numResource > 0) {
+			if(this.resourceSystem.resourceCount > this.resourceSystem.maxResource) return;
+			randomPoint = this.getRandomPointOnMap();
+
+			const newResource = this.resourceSystem.generateResource(randomPoint);
+			this.collision.insertCollider(newResource, Constant.RESOURCE_RADIUS);
+
+            numResource -= 1;
+        }
+	}
+
+	getRandomPointOnMap(): Point {
+		let point: Point = this.hexTileMap.getRandomMapPoint();
+		let validPoint: boolean = this.hexTileMap.checkIfValidPointOnGrid(point);
+
+		while(!validPoint) {
+			point = this.hexTileMap.getRandomMapPoint();
+			validPoint = this.hexTileMap.checkIfValidPointOnGrid(point);
+		}
+
+		return point;
 	}
 
 	updatePlayerResource() {
