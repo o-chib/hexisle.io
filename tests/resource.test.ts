@@ -13,12 +13,12 @@ describe('Bullet', () => {
 
         let i = 0;
         while(numResourceToGenerate > i) {
-            resourceSystem.generateResource(point);
+            resourceSystem.generateResource(i.toString(), point);
             i++;
         }
 		expect(resourceSystem.resourceCount).toEqual(numResourceToGenerate);
 
-        const newResource = new Resource(point, 2, 'BLACK');
+        const newResource = new Resource(i.toString(), xPos, yPos, 2, 'BLACK');
         resourceSystem.resources.add(newResource);
 
         expect(resourceSystem.resources.has(newResource)).toEqual(true);
