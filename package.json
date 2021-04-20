@@ -11,6 +11,7 @@
     "build": "npm run build-server && npm run build-client",
     "build-server": "webpack --mode development --config webpack.server.js",
     "build-client": "webpack --mode development --config webpack.client.js",
+    "build-prod": "webpack --mode production --config webpack.server.js && webpack --mode production --config webpack.client.js",
     "lint": "eslint src/ && eslint tests/",
     "lint-fix": "eslint src/ --fix && eslint tests/ --fix",
     "test": "karma start karma.conf.js --single-run"
@@ -43,6 +44,7 @@
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^4.0.1",
     "karma-typescript": "^5.5.1",
+    "phaser3-rex-plugins": "^1.1.44",
     "prettier": "^2.2.1",
     "ts-loader": "8.1.0",
     "ts-node": "^9.1.1",

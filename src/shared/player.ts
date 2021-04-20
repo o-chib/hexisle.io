@@ -83,8 +83,14 @@ export default class Player {
 
 	buyWall(): boolean {
 		if (this.resources < Constant.WALL_COST) return false;
-		this.resources -= Constant.WALL_COST;
+		this.updateResource(-Constant.WALL_COST);
 		return true;
+	}
+
+	refundWall(): void {
+		this.updateResource(
+			Math.ceil(Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER)
+		);
 	}
 
 	serializeForUpdate() {

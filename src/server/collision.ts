@@ -50,6 +50,10 @@ export default class CollisionDetection {
 	}
 
 	playerBulletCollision(player: Player, bullets: Set<Bullet>): void {
+		if (player.health <= 0) {
+			return;
+		}
+
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
 			new Rect(

@@ -20,28 +20,34 @@ const server = http.createServer(app).listen(port, () => {
 	console.log('Server started:  http://' + ip + ':' + port);
 });
 
+const restartGame = () => {
+	game = new Game(restartGame);
+	for (const aSocket of socketsConnected) {
+		game.addPlayer(aSocket);
+	}
+};
+
 // Start the game
-const game = new Game();
+let game = new Game(restartGame);
+
+// Store all the socket connections to this server so we can
+// add people back to a restarted game
+const socketsConnected: Set<SocketIOClient.Socket> = new Set();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
-	console.log('Player connected!', socket.id);
 	updateSocket(socket);
 });
 
 function updateSocket(socket: any) {
-	//TODO fix typing issue
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
+		socketsConnected.add(socket);
 	});
 
 	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
 		game.movePlayer(socket, direction);
-	});
-
-	socket.on(Constant.MESSAGE.TILE_CHANGE, (coord: OffsetPoint) => {
-		game.buildWall(socket, coord);
 	});
 
 	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
@@ -52,7 +58,16 @@ function updateSocket(socket: any) {
 		game.rotatePlayer(socket, direction);
 	});
 
+	socket.on(Constant.MESSAGE.BUILD_WALL, (coord: OffsetPoint) => {
+		game.buildWall(socket, coord);
+	});
+
+	socket.on(Constant.MESSAGE.DEMOLISH_WALL, (coord: OffsetPoint) => {
+		game.demolishWall(socket, coord);
+	});
+
 	socket.on('disconnect', () => {
 		game.removePlayer(socket);
+		socketsConnected.delete(socket);
 	});
 }

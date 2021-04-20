@@ -1,7 +1,7 @@
 export const Constant = Object.freeze({
 	// Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
-	DEFAULT_WIDTH: 10000,
-	DEFAULT_HEIGHT: 10000,
+	MAP_WIDTH: 10000,
+	MAP_HEIGHT: 10000,
 	PLAYER_RADIUS: 50,
 	BULLET_RADIUS: 15,
 	RESOURCE_RADIUS: 15,
@@ -13,6 +13,7 @@ export const Constant = Object.freeze({
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
 	WALL_COST: 5,
+	BUILDING_REFUND_MULTIPLIER: 0.5,
 
 	RESOURCE: {
 		RESOURCE_ID: [0, 1, 2],
@@ -34,11 +35,12 @@ export const Constant = Object.freeze({
 	},
 
 	INCOME: {
-		UPDATE_RATE: 1,
+		UPDATE_RATE: 1 * 1000,
 		INCOME_PER_CAMP: 1,
 	},
 
 	TEAM: {
+		NONE: -1,
 		RED: 0,
 		BLUE: 1,
 	},
@@ -67,11 +69,20 @@ export const Constant = Object.freeze({
 	MESSAGE: {
 		JOIN: 'join',
 		GAME_UPDATE: 'update_state',
+		GAME_END: 'game_end',
 		MOVEMENT: 'move',
-		TILE_CHANGE: 'tile_change',
+		BUILD_WALL: 'build_wall',
+		DEMOLISH_WALL: 'demolish_wall',
 		SHOOT: 'shoot',
 		ROTATE: 'rotate',
 		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
+	},
+
+	TIMING: {
+		SERVER_GAME_UPDATE: 1000 / 60,
+		CHECK_GAME_END: 1000 / 60,
+		GAME_END_SCREEN: 5 * 1000,
+		GAME_TIME_LIMIT: 5 * (60 * 1000),
 	},
 });
