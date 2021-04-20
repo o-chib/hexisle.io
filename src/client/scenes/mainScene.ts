@@ -15,6 +15,7 @@ export default class MainScene extends Phaser.Scene {
 	private alive: boolean;
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
+	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private hexTiles: HexTiles;
 	private initialized: boolean;
 
@@ -88,6 +89,9 @@ export default class MainScene extends Phaser.Scene {
 			'texture',
 			'../assets/Texture - Mossy Floor - Green 2.jpg'
 		);
+		this.load.image('blueRes', '../assets/blueResource.png');
+		this.load.image('greenRes', '../assets/greenResource.png');
+		this.load.image('whiteRes', '../assets/whiteResource.png');
 	}
 
 	init(): void {
@@ -101,6 +105,7 @@ export default class MainScene extends Phaser.Scene {
 		this.campfireSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
+		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
 
 		this.socket = io();
@@ -522,6 +527,7 @@ export default class MainScene extends Phaser.Scene {
 			campfires,
 			bases,
 			territories,
+			resources,
 		} = update;
 		if (currentPlayer == null) return;
 
@@ -538,6 +544,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateBases(bases);
 
 		this.updateTerritories(territories);
+
+		this.updateResources(resources);
 
 		this.events.emit('updateHUD', currentPlayer, time);
 	}
@@ -708,6 +716,25 @@ export default class MainScene extends Phaser.Scene {
 		);
 	}
 
+	private updateResources(resources: any) {
+		this.updateMapOfObjects(
+			resources,
+			this.resourceSprites,
+			'',
+			(newResource, newResourceLiteral) => {
+				if (newResourceLiteral.type == Constant.RESOURCE.RESOURCE_NAME[0]) {
+					newResource.setTexture('blueRes');
+				} else if (newResourceLiteral.type == Constant.RESOURCE.RESOURCE_NAME[1]) {
+					newResource.setTexture('greenRes');
+				} else if (newResourceLiteral.type == Constant.RESOURCE.RESOURCE_NAME[2]) {
+					newResource.setTexture('whiteRes');
+				}
+				newResource.setVisible(true);
+				return newResource;
+			}
+		);
+	}
+
 	private updateMapOfObjects(
 		currentObjects: any,
 		oldObjects: Map<string, Phaser.GameObjects.Sprite>,
@@ -759,6 +786,7 @@ export default class MainScene extends Phaser.Scene {
 		this.clearMapOfObjects(this.campfireSprites);
 		this.clearMapOfObjects(this.baseSprites);
 		this.clearMapOfObjects(this.territorySprites);
+		this.clearMapOfObjects(this.resourceSprites);
 		this.deadObjects.clear();
 	}
 }

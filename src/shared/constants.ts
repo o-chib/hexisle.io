@@ -26,9 +26,9 @@ export const Constant = Object.freeze({
 		},
 
 		DROP_AMOUNT: {
-			WHITE: 1,
+			BLUE: 1,
 			GREEN: 1,
-			YELLOW: 5,
+			WHITE: 5,
 		},
 
 		UPDATE_RATE: 2,

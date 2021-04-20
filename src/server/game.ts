@@ -490,6 +490,7 @@ export default class Game {
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
 			bases: nearbyBases.map((p) => p.serializeForUpdate()),
 			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
+			resources: nearbyResources.map((p) => p.serializeForUpdate()),
 		};
 	}
 
