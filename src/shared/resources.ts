@@ -18,11 +18,13 @@ export class ResourceSystem {
         return Math.floor(Math.random() * (this.maxResource - this.minResource + 1));
     }
 
-    generateResource(randomPoint: Point): Resource {
+    generateResource(resourceID: string, randomPoint: Point): Resource {
         const type = this.getRandomResourceType();
         const dropAmount = this.calculateDropAmount(type);
         const newResource: Resource = new Resource(
-            randomPoint,
+            resourceID,
+            randomPoint.xPos,
+            randomPoint.yPos,
             dropAmount,
             type
         )
@@ -61,17 +63,33 @@ export class ResourceSystem {
 } 
 
 export class Resource {
-    public location: Point;
+    public id: string;
+    public xPos: number;
+    public yPos: number;
     public dropAmount: number;
     public type: string;
 
     constructor(
-        location: Point,
+        id: string,
+        xPos: number,
+        yPos: number,
         dropAmount: number,
         type: string,
     ) {
-        this.location = location;
+        this.id = id;
+        this.xPos = xPos;
+        this.yPos = yPos;
         this.dropAmount = dropAmount;
         this.type = type;
     }
+
+    serializeForUpdate(): any {
+		return {
+			id: this.id,
+			xPos: this.xPos,
+			yPos: this.yPos,
+			dropAmount: this.dropAmount,
+			type: this.type,
+		};
+	}
 }

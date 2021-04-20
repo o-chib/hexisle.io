@@ -62,7 +62,7 @@ export default class Game {
 		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount()
 										+ this.resourceSystem.minResource;
 		this.addResources(numResourceToGenerate);
-		console.log(this.resourceSystem.resources);
+		//console.log(this.resourceSystem.resourceCount);
 
 		this.previousUpdateTimestamp = Date.now();
 		this.gameInterval = setInterval(
@@ -110,10 +110,10 @@ export default class Game {
 	updateResources() {
 		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount();
 
-		console.log(numResourceToGenerate);
+		//console.log(numResourceToGenerate);
 
-		if(this.resourceSystem.resourceCount - this.resourceSystem.minResource
-			> numResourceToGenerate) return;
+		if(this.resourceSystem.resourceCount + numResourceToGenerate
+			> this.resourceSystem.maxResource ) return;
 
 		//this.addResources(numResourceToGenerate);
 		//this.resourceSystem.generateResource(numResourceToGenerate);
@@ -125,8 +125,9 @@ export default class Game {
 			if(this.resourceSystem.resourceCount > this.resourceSystem.maxResource) return;
 			randomPoint = this.getRandomPointOnMap();
 
-			const newResource = this.resourceSystem.generateResource(randomPoint);
+			const newResource = this.resourceSystem.generateResource(this.idGenerator.newID(), randomPoint);
 			this.collision.insertCollider(newResource, Constant.RESOURCE_RADIUS);
+			//console.log(newResource);
 
             numResource -= 1;
         }
@@ -453,15 +454,32 @@ export default class Game {
 		return nearbyTerritories;
 	}
 
+	createResourceUpdate(player: Player): Resource[] {
+		const nearbyResources: Resource[] = [];
+
+		for (const aResource of this.resourceSystem.resources) {
+			if (
+				this.collision.doCirclesCollide(
+					aResource,
+					Constant.RESOURCE_RADIUS,
+					player,
+					Constant.VIEW_RADIUS
+				)
+			)
+				nearbyResources.push(aResource);
+		}
+
+		return nearbyResources;
+	}
+
 	createUpdate(player: Player) {
 		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
 		const nearbyBullets: Bullet[] = this.createBulletUpdate(player);
 		const nearbyWalls: Wall[] = this.createWallUpdate(player);
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
 		const nearbyBases: Base[] = this.createBaseUpdate(player);
-		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
-			player
-		);
+		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(player);
+		const nearbyResources: Resource[] = this.createResourceUpdate(player);
 
 		return {
 			time: this.gameTimeRemaining,
