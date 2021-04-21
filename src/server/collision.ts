@@ -6,12 +6,52 @@ import Base from '../shared/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';
+import { ResourceSystem, Resource } from './../shared/resources'
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
 
 	constructor() {
 		this.quadtree = new Quadtree();
+	}
+
+	playerResourceCollision(player: Player, resourceSystem: ResourceSystem): void {
+		const results: CollisionObject[] = [];
+		this.quadtree.searchQuadtree(
+			new Rect(
+				player.xPos - Constant.PLAYER_RADIUS,
+				player.xPos + Constant.PLAYER_RADIUS,
+				player.yPos + Constant.PLAYER_RADIUS,
+				player.yPos - Constant.PLAYER_RADIUS
+			),
+			results
+		);
+
+		results.forEach((result) => {
+			if (
+				result.payload instanceof Resource &&
+				result.payload.dropAmount > 0 &&
+				this.doCirclesCollide(
+					player,
+					Constant.PLAYER_RADIUS,
+					result.payload,
+					Constant.RESOURCE_RADIUS
+				)
+			) {
+				player.updateResource(result.payload.dropAmount);
+				resourceSystem.deleteResource(result.payload);
+				
+				this.quadtree.deleteFromQuadtree(
+					new CollisionObject(
+						result.payload.xPos - Constant.RESOURCE_RADIUS,
+						result.payload.xPos + Constant.RESOURCE_RADIUS,
+						result.payload.yPos + Constant.RESOURCE_RADIUS,
+						result.payload.yPos - Constant.RESOURCE_RADIUS,
+						result.payload
+					)
+				);
+			}
+		});
 	}
 
 	campfirePlayerCollision(campfire: Campfire): void {
