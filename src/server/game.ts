@@ -4,6 +4,7 @@ import Player from './../shared/player';
 import Teams from '../shared/teams';
 import Bullet from './../shared/bullet';
 import Wall from './../shared/wall';
+import Turret from '../shared/turret';
 import Campfire from './../shared/campfire';
 import Base from './../shared/base';
 import CollisionDetection from './collision';
@@ -17,13 +18,14 @@ export default class Game {
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	walls: Map<string, Wall>;
+	turrets: Map<string, Turret>;
 	campfires: Set<Campfire>;
 	bases: Set<Base>;
+	territories: Set<Territory>;
 	hexTileMap: HexTiles;
 	idGenerator: IDgenerator;
 	changedTiles: Tile[];
 	collision: CollisionDetection;
-	territories: Set<Territory>;
 	gameInterval: NodeJS.Timeout;
 	resourceInterval: NodeJS.Timeout;
 	gameOverCallback: () => void;
@@ -38,6 +40,7 @@ export default class Game {
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Map();
+		this.turrets = new Map();
 		this.campfires = new Set();
 		this.bases = new Set();
 		this.territories = new Set();
@@ -76,6 +79,8 @@ export default class Game {
 		this.updateTerritories();
 
 		this.updateWalls();
+
+		this.updateTurrets();
 
 		this.updateBases();
 
@@ -186,6 +191,10 @@ export default class Game {
 				this.walls.delete(aWall.id);
 			}
 		}
+	}
+
+	updateTurrets() {
+		
 	}
 
 	updateBases() {
