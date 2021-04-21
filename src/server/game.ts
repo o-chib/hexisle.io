@@ -59,10 +59,8 @@ export default class Game {
 		this.initBases();
 
 		this.resourceSystem = new ResourceSystem();
-		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount()
-										+ this.resourceSystem.minResource;
-		this.addResources(numResourceToGenerate);
-		//console.log(this.resourceSystem.resourceCount);
+		this.addResources(this.resourceSystem.getRandomResourceGenerationCount()
+							+ this.resourceSystem.minResource);
 
 		this.previousUpdateTimestamp = Date.now();
 		this.gameInterval = setInterval(
@@ -74,7 +72,7 @@ export default class Game {
 			Constant.INCOME.UPDATE_RATE
 		);
 		setInterval(
-			this.updateResources.bind(this),
+			this.updateResourceOnMap.bind(this),
 			Constant.RESOURCE.UPDATE_RATE * 1000
 		);
 	}
@@ -107,16 +105,15 @@ export default class Game {
 		return [currentTimestamp, timePassed];
 	}
 
-	updateResources() {
-		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount();
+	updateResourceOnMap() {
+		if(this.resourceSystem.resourceCount == this.resourceSystem.maxResource) return;
 
-		//console.log(numResourceToGenerate);
+		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount();
 
 		if(this.resourceSystem.resourceCount + numResourceToGenerate
 			> this.resourceSystem.maxResource ) return;
 
-		//this.addResources(numResourceToGenerate);
-		//this.resourceSystem.generateResource(numResourceToGenerate);
+		this.addResources(numResourceToGenerate);
 	}
 
 	addResources(numResource: number) {
@@ -125,9 +122,8 @@ export default class Game {
 			if(this.resourceSystem.resourceCount > this.resourceSystem.maxResource) return;
 			randomPoint = this.getRandomPointOnMap();
 
-			const newResource = this.resourceSystem.generateResource(this.idGenerator.newID(), randomPoint);
+			const newResource: Resource = this.resourceSystem.generateResource(this.idGenerator.newID(), randomPoint);
 			this.collision.insertCollider(newResource, Constant.RESOURCE_RADIUS);
-			//console.log(newResource);
 
             numResource -= 1;
         }
@@ -333,6 +329,7 @@ export default class Game {
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
 			this.collision.playerBulletCollision(aPlayer, this.bullets);
+			this.collision.playerResourceCollision(aPlayer, this.resourceSystem);
 			if (aPlayer.health == 0) {
 				// Give time for player to play death animation
 				// Only call timeout once
