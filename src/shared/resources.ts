@@ -8,14 +8,14 @@ export class ResourceSystem {
     public resources: Set<Resource>;
 
     constructor() {
-        this.minResource = 20;
+        this.minResource = 30;
         this.maxResource = 50;
         this.resourceCount = 0;
         this.resources = new Set();
     }
 
     getRandomResourceGenerationCount(): number{
-        return Math.floor(Math.random() * (this.maxResource - this.minResource + 1));
+        return Math.floor(Math.random() * (this.maxResource - this.minResource)) + 1;
     }
 
     generateResource(resourceID: string, randomPoint: Point): Resource {
@@ -57,7 +57,8 @@ export class ResourceSystem {
         return Constant.RESOURCE.DROP_AMOUNT[type];
     }
 
-    deleteResource() {
+    deleteResource(resource: Resource) {
+        this.resources.delete(resource);
         this.resourceCount--;
     }
 } 
