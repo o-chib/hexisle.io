@@ -35,7 +35,7 @@ export default class Player {
 		this.direction = 0;
 		this.teamNumber = teamNumber;
 		this.score = 0;
-		this.health = 100;
+		this.health = Constant.HP.PLAYER;
 		//this.healthRegen = 1;
 		this.speed = 600;
 		this.socket = socket;
