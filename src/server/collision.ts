@@ -1,6 +1,7 @@
 import Player from './../shared/player';
 import Bullet from './../shared/bullet';
 import Wall from '../shared/wall';
+import Turret from '../shared/turret';
 import Campfire from '../shared/campfire';
 import Base from '../shared/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
@@ -94,9 +95,12 @@ export default class CollisionDetection {
 
 	buildingBulletCollision(building: any, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
+
 		let col_radius = 0;
 		if (building instanceof Wall) {
 			col_radius = Constant.WALL_COL_RADIUS;
+		} else if (building instanceof Turret) {
+			col_radius = Constant.TURRET_COL_RADIUS;
 		} else if (building instanceof Base) {
 			col_radius = Constant.BASE_COL_RADIUS;
 		}
