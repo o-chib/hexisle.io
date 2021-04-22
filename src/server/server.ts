@@ -62,7 +62,11 @@ function updateSocket(socket: any) {
 		game.buildWall(socket, coord);
 	});
 
-	socket.on(Constant.MESSAGE.DEMOLISH_WALL, (coord: OffsetPoint) => {
+	socket.on(Constant.MESSAGE.BUILD_TURRET, (coord: OffsetPoint) => {
+		game.buildTurret(socket, coord);
+	});
+
+	socket.on(Constant.MESSAGE.DEMOLISH_STRUCTURE, (coord: OffsetPoint) => {
 		game.demolishWall(socket, coord);
 	});
 
