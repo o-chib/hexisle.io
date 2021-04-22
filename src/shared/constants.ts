@@ -64,7 +64,7 @@ export const Constant = Object.freeze({
 		GAME_END: 'game_end',
 		MOVEMENT: 'move',
 		BUILD_WALL: 'build_wall',
-		BUILD_TURRET: 'build_wall',
+		BUILD_TURRET: 'build_turret',
 		DEMOLISH_STRUCTURE: 'demolish_structure',
 		SHOOT: 'shoot',
 		ROTATE: 'rotate',
