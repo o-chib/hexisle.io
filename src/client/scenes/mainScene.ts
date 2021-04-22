@@ -8,7 +8,8 @@ export default class MainScene extends Phaser.Scene {
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private turretSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private turretBaseSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
@@ -99,7 +100,8 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
-		this.turretSprites = new Map();
+		this.turretBaseSprites = new Map();
+		this.turretGunSprites = new Map();
 		this.campfireSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
@@ -643,9 +645,10 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateTurrets(turrets: any) {
+		// update the turret's base
 		this.updateMapOfObjects(
 			turrets,
-			this.turretSprites,
+			this.turretBaseSprites,
 			'',
 			(newTurret, newTurretLiteral) => {
 				let turretTexture = '';
@@ -653,6 +656,29 @@ export default class MainScene extends Phaser.Scene {
 					turretTexture = 'turret_base_red';
 				else if (newTurretLiteral.teamNumber == Constant.TEAM.BLUE)
 					turretTexture = 'turret_base_blue';
+
+				if (newTurret.texture.key != turretTexture) {
+					newTurret.setTexture(turretTexture);
+				}
+
+				const healthPercent = newTurretLiteral.hp / Constant.HP.TURRET;
+				newTurret = this.handleDamageAnimation(
+					newTurret,
+					turretTexture,
+					healthPercent
+				);
+
+				return newTurret;
+			}
+		);
+
+		// update the turret's gun
+		this.updateMapOfObjects(
+			turrets,
+			this.turretGunSprites,
+			'',
+			(newTurret, newTurretLiteral) => {
+				let turretTexture = 'turret_shooter';
 
 				if (newTurret.texture.key != turretTexture) {
 					newTurret.setTexture(turretTexture);
@@ -781,6 +807,8 @@ export default class MainScene extends Phaser.Scene {
 		this.clearMapOfObjects(this.otherPlayerSprites);
 		this.clearMapOfObjects(this.bulletSprites);
 		this.clearMapOfObjects(this.wallSprites);
+		this.clearMapOfObjects(this.turretBaseSprites);
+		this.clearMapOfObjects(this.turretGunSprites);
 		this.clearMapOfObjects(this.campfireSprites);
 		this.clearMapOfObjects(this.baseSprites);
 		this.clearMapOfObjects(this.territorySprites);
