@@ -67,7 +67,7 @@ function updateSocket(socket: any) {
 	});
 
 	socket.on(Constant.MESSAGE.DEMOLISH_STRUCTURE, (coord: OffsetPoint) => {
-		game.demolishWall(socket, coord);
+		game.demolishStructure(socket, coord);
 	});
 
 	socket.on('disconnect', () => {

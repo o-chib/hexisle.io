@@ -643,19 +643,6 @@ export default class Game {
 		return true;
 	}
 
-	demolishWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
-		if (!this.canDemolishWall(socket, coord)) return;
-
-		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-
-		this.collision.deleteCollider(
-			this.walls.get(tile.buildingId),
-			Constant.WALL_RADIUS
-		);
-		this.walls.delete(tile.buildingId);
-		tile.removeBuilding();
-	}
-
 	canBuildTurret(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
 		if (!this.players.has(socket.id)) return false;
 		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
@@ -719,17 +706,30 @@ export default class Game {
 		return true;
 	}
 
-	demolishTurret(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
-		if (!this.canDemolishTurret(socket, coord)) return;
-
+	demolishStructure(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
+		const structure: string = tile.building;
 
-		this.collision.deleteCollider(
-			this.turrets.get(tile.buildingId),
-			Constant.TURRET_RADIUS
-		);
-		this.turrets.delete(tile.buildingId);
-		tile.removeBuilding();
+		if (structure == Constant.BUILDING.WALL) {
+			if (!this.canDemolishWall(socket, coord)) return;
+
+			this.collision.deleteCollider(
+				this.walls.get(tile.buildingId),
+				Constant.WALL_RADIUS
+			);
+			this.walls.delete(tile.buildingId);
+			tile.removeBuilding();
+
+		} else if (structure == Constant.BUILDING.TURRET) {
+			if (!this.canDemolishTurret(socket, coord)) return;
+
+			this.collision.deleteCollider(
+				this.turrets.get(tile.buildingId),
+				Constant.TURRET_RADIUS
+			);
+			this.turrets.delete(tile.buildingId);
+			tile.removeBuilding();
+		}
 	}
 
 	buildCampfire(coord: OffsetPoint): void {
