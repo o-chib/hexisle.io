@@ -15,6 +15,7 @@ export const Constant = Object.freeze({
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
 	WALL_COST: 5,
+	TURRET_COST: 10,
 	BUILDING_REFUND_MULTIPLIER: 0.5,
 
 	HP: {
@@ -49,7 +50,8 @@ export const Constant = Object.freeze({
 	BUILDING: {
 		OUT_OF_BOUNDS: 'out of bounds',
 		NONE: 'none',
-		STRUCTURE: 'structure',
+		WALL: 'wall',
+		TURRET: 'turret',
 		CAMP: 'camp',
 		BASE: 'base',
 		CANT_BUILD: 'cant build',
