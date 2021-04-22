@@ -93,6 +93,18 @@ export default class Player {
 		);
 	}
 
+	buyTurret(): boolean {
+		if (this.resources < Constant.TURRET_COST) return false;
+		this.updateResource(-Constant.TURRET_COST);
+		return true;
+	}
+
+	refundTurret(): void {
+		this.updateResource(
+			Math.ceil(Constant.TURRET_COST * Constant.BUILDING_REFUND_MULTIPLIER)
+		);
+	}
+
 	serializeForUpdate() {
 		return {
 			id: this.id,
