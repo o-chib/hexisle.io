@@ -566,11 +566,9 @@ export default class Game {
 			Constant.TURRET_RANGE_RADIUS
 		);
 
-		if (direction == 10) {
-			return;
+		if (direction != Constant.NO_ENEMIES) {
+			turret.direction = direction;
 		}
-
-		turret.direction = direction;
 	}
 
 	turretShootBullet(turret: Turret) {

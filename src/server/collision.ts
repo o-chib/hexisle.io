@@ -267,8 +267,7 @@ export default class CollisionDetection {
 		}
 		
 		// Find the direction from the turret to the enemy if there is an enemy
-		// Default to 10 (invalid direction) if no enemies in range
-		let closestEnemyDirection = 10;
+		let closestEnemyDirection = Constant.NO_ENEMIES;
 		if (closestEnemy != null) {
 			closestEnemyDirection = Math.atan2(
 				closestEnemy.yPos - object.yPos,

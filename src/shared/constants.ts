@@ -17,6 +17,7 @@ export const Constant = Object.freeze({
 	WALL_COST: 5,
 	TURRET_COST: 10,
 	BUILDING_REFUND_MULTIPLIER: 0.5,
+	NO_ENEMIES: 10,
 
 	HP: {
 		PLAYER: 100,
