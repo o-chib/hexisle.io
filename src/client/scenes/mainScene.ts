@@ -691,6 +691,8 @@ export default class MainScene extends Phaser.Scene {
 					healthPercent
 				);
 
+				newTurretGun.setRotation(newTurretLiteralGun.direction);
+
 				return newTurretGun;
 			}
 		);

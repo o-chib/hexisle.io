@@ -203,6 +203,7 @@ export default class Game {
 				continue;
 			}
 
+			this.turretAim(aTurret);
 			if (aTurret.canShoot()) {
 				this.turretShootBullet(aTurret);
 				aTurret.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
@@ -559,7 +560,7 @@ export default class Game {
 		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
 	}
 
-	turretShootBullet(turret: Turret) {
+	turretAim(turret: Turret) {
 		const direction: number = this.collision.findTurretClosestEnemyDirection(
 			turret,
 			Constant.TURRET_RANGE_RADIUS
@@ -569,11 +570,15 @@ export default class Game {
 			return;
 		}
 
+		turret.direction = direction;
+	}
+
+	turretShootBullet(turret: Turret) {
 		const bullet: Bullet = new Bullet(
 			this.idGenerator.newID(),
 			turret.xPos,
 			turret.yPos,
-			direction,
+			turret.direction,
 			turret.teamNumber
 		);
 
