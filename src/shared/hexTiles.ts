@@ -27,8 +27,6 @@ export class HexTiles {
 
 	generateTileMap(): void {
 		// generates the hex integer coordinates from the game-size
-		console.log('time to generate tilemap');
-		console.time();
 
 		this.tileMap = [];
 
@@ -66,13 +64,10 @@ export class HexTiles {
 				}
 			}
 		}
-		console.timeEnd();
 	}
 
 	generateBoundary(): void {
 		// sets the outer ring of tiles to a boundary tile
-		console.log('time to generate boundary');
-		console.time();
 
 		const boundaryHexes: OffsetPoint[] = this.getHexRingPoints(
 			this.tileMap[this.hexRadius][this.hexRadius],
@@ -83,14 +78,10 @@ export class HexTiles {
 			this.tileMap[boundaryHex.q][boundaryHex.r].building =
 				Constant.BUILDING.BOUNDARY;
 		}
-
-		console.timeEnd();
 	}
 
 	generateCamps(): void {
 		// Takes the tilemap and sets tiles to camps dependent on the class config (private variables)
-		console.log('time to generate camps');
-		console.time();
 
 		// start at the center of the map, and make it a camp
 		let hex: OffsetPoint = new OffsetPoint(this.hexRadius, this.hexRadius);
@@ -137,16 +128,12 @@ export class HexTiles {
 				}
 			}
 		}
-		console.timeEnd();
 	}
 
 	generateBases(teamCount, campDistanceFromCenter): void {
 		// Takes the tilemap and sets camps to bases dependent on the parameters
 		// teamCount is the number of teams, with a maximum of 6
 		// campDistanceFromCenter is how many camps away radially the bases should spawn
-		console.log('time to generate bases');
-		console.time();
-
 		if (teamCount == 1) {
 			this.tileMap[this.hexRadius][this.hexRadius].building =
 				Constant.BUILDING.BASE;
@@ -196,7 +183,6 @@ export class HexTiles {
 				this.baseCoords.push(travHex);
 			}
 		}
-		console.timeEnd();
 	}
 
 	checkIfValidHex(OffsetPoint: OffsetPoint): boolean {
@@ -319,7 +305,6 @@ export class HexTiles {
 			5
 		);
 		for (const coord of screenCoords) {
-			console.log('coord around', coord.q, coord.r);
 			if (this.checkIfValidHex(coord)) {
 				results.push(this.tileMap[coord.q][coord.r]);
 			}
