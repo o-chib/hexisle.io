@@ -66,7 +66,7 @@ export default class Player {
 		const newX = this.xPos + timePassed * this.xVel;
 		const newY = this.yPos - timePassed * this.yVel;
 		if (
-			!collision.doesObjCollideWithWall(
+			!collision.doesObjCollideWithStructure(
 				newX,
 				newY,
 				Constant.PLAYER_RADIUS

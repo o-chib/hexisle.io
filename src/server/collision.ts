@@ -146,7 +146,7 @@ export default class CollisionDetection {
 		// future implementation
 	}
 
-	doesObjCollideWithWall(
+	doesObjCollideWithStructure(
 		xPos: number,
 		yPos: number,
 		objectRadius: number
@@ -166,12 +166,20 @@ export default class CollisionDetection {
 			if (
 				// TODO replace Point with some better invisible collider when refactoring
 				((result.payload instanceof Wall ||
-					result.payload instanceof Point) &&
+					result.payload instanceof Point
+				) &&
 					this.doCirclesCollide(
 						{ xPos: xPos, yPos: yPos },
 						Constant.PLAYER_RADIUS,
 						result.payload,
 						Constant.WALL_COL_RADIUS
+					)) ||
+				(result.payload instanceof Turret &&
+					this.doCirclesCollide(
+						{ xPos: xPos, yPos: yPos },
+						Constant.PLAYER_RADIUS,
+						result.payload,
+						Constant.TURRET_COL_RADIUS
 					)) ||
 				(result.payload instanceof Base &&
 					this.doCirclesCollide(
