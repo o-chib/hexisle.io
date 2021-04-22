@@ -199,7 +199,7 @@ export default class Game {
 			if (!aTurret.isAlive()) {
 				this.collision.deleteCollider(aTurret, Constant.TURRET_RADIUS);
 				aTurret.tile.removeBuilding();
-				this.walls.delete(aTurret.id);
+				this.turrets.delete(aTurret.id);
 				continue;
 			}
 
