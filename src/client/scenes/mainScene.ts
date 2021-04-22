@@ -8,6 +8,7 @@ export default class MainScene extends Phaser.Scene {
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private turretSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
@@ -98,6 +99,7 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
+		this.turretSprites = new Map();
 		this.campfireSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
@@ -511,6 +513,7 @@ export default class MainScene extends Phaser.Scene {
 			otherPlayers,
 			bullets,
 			walls,
+			turrets,
 			campfires,
 			bases,
 			territories,
@@ -524,6 +527,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateOpponents(otherPlayers);
 
 		this.updateWalls(walls);
+
+		this.updateTurrets(turrets);
 
 		this.updateCampfires(campfires);
 
@@ -633,6 +638,34 @@ export default class MainScene extends Phaser.Scene {
 				);
 
 				return newWall;
+			}
+		);
+	}
+
+	private updateTurrets(turrets: any) {
+		this.updateMapOfObjects(
+			turrets,
+			this.turretSprites,
+			'',
+			(newTurret, newTurretLiteral) => {
+				let turretTexture = '';
+				if (newTurretLiteral.teamNumber == Constant.TEAM.RED)
+					turretTexture = 'turret_base_red';
+				else if (newTurretLiteral.teamNumber == Constant.TEAM.BLUE)
+					turretTexture = 'turret_base_blue';
+
+				if (newTurret.texture.key != turretTexture) {
+					newTurret.setTexture(turretTexture);
+				}
+
+				const healthPercent = newTurretLiteral.hp / 50; // 50 = Total health determined from turret.ts
+				newTurret = this.handleDamageAnimation(
+					newTurret,
+					turretTexture,
+					healthPercent
+				);
+
+				return newTurret;
 			}
 		);
 	}
