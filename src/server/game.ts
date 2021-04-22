@@ -136,14 +136,15 @@ export default class Game {
 
 				if (isCaptured) {
 					// If captured, updated numCapturedCamps
-					this.teams.getTeam(aCampfire.capturingTeam).numCapturedCamps++;
+					this.teams.getTeam(aCampfire.capturingTeam)
+						.numCapturedCamps++;
 				} else {
 					// If uncaptured, updated numCapturedCamps
-					this.teams.getTeam(aCampfire.capturingTeam).numCapturedCamps--;
+					this.teams.getTeam(aCampfire.capturingTeam)
+						.numCapturedCamps--;
 				}
 
 				aCampfire.resetProgress();
-
 
 				// Update the TileMap structure
 				for (const pt of points) {
@@ -162,7 +163,8 @@ export default class Game {
 				// Update team num of territory
 				const xPosition = aCampfire.xPos;
 				const yPosition = aCampfire.yPos;
-				const stringID = xPosition.toString() + ', ' + yPosition.toString();
+				const stringID =
+					xPosition.toString() + ', ' + yPosition.toString();
 
 				for (const aTerritory of this.territories) {
 					if (aTerritory.id == stringID) {
@@ -177,9 +179,7 @@ export default class Game {
 					aCampfire.teamNumber
 				);
 				this.territories.add(tempTerritory);
-
 			}
-
 		}
 	}
 
@@ -674,8 +674,7 @@ export default class Game {
 
 	initBases(): void {
 		for (let teamNum = 0; teamNum < Constant.TEAM_COUNT; teamNum++) {
-			let offset_coords = this.teams.getTeamBaseCoord(teamNum);
-			this.buildBase(teamNum, offset_coords);
+			this.buildBase(teamNum, this.teams.getTeamBaseCoord(teamNum));
 		}
 	}
 
@@ -701,8 +700,12 @@ export default class Game {
 			// Update the tileMap with territory tiles
 			this.setBaseTerritory(i, points);
 			// Add chunk center to terriitories list
-			const xPosition = this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r].cartesian_coord.xPos;
-			const yPosition = this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r].cartesian_coord.yPos;
+			const xPosition = this.hexTileMap.tileMap[teamBaseCoord.q][
+				teamBaseCoord.r
+			].cartesian_coord.xPos;
+			const yPosition = this.hexTileMap.tileMap[teamBaseCoord.q][
+				teamBaseCoord.r
+			].cartesian_coord.yPos;
 			const tempTerritory = new Territory(
 				xPosition.toString() + ', ' + yPosition.toString(),
 				xPosition,

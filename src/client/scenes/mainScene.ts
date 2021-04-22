@@ -84,16 +84,10 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
-		this.load.image(
-			'texture',
-			'../assets/Texture - Mossy Floor - Green 2.jpg'
-		);
 		this.load.image('grass_chunk', '../assets/chunk.png');
 		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
 		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
-
 		this.load.image('wall', '../assets/wall.png');
-
 	}
 
 	init(): void {
@@ -242,7 +236,7 @@ export default class MainScene extends Phaser.Scene {
 
 	private createTileMap(tileMap: any) {
 		this.hexTiles.tileMap = tileMap;
-		
+
 		// TODO remove this grass
 		this.add
 			.image(0, 0, 'texture')
@@ -251,12 +245,19 @@ export default class MainScene extends Phaser.Scene {
 			.setScale(3);
 
 		// DEBUG : DRAW BOUNDARY FOR NOW
-		for(let i = 0 ; i < this.hexTiles.tileMap.length; ++i) {
-			for(let j = 0 ; j < this.hexTiles.tileMap[i].length; ++j){
-
-				if(this.hexTiles.tileMap[i][j].building == Constant.BUILDING.BOUNDARY){
-					this.add.image(this.hexTiles.tileMap[i][j].cartesian_coord.xPos,this.hexTiles.tileMap[i][j].cartesian_coord.yPos,'wall').setDepth(100);
-
+		for (let i = 0; i < this.hexTiles.tileMap.length; ++i) {
+			for (let j = 0; j < this.hexTiles.tileMap[i].length; ++j) {
+				if (
+					this.hexTiles.tileMap[i][j].building ==
+					Constant.BUILDING.BOUNDARY
+				) {
+					this.add
+						.image(
+							this.hexTiles.tileMap[i][j].cartesian_coord.xPos,
+							this.hexTiles.tileMap[i][j].cartesian_coord.yPos,
+							'wall'
+						)
+						.setDepth(100);
 				}
 			}
 		}
@@ -612,12 +613,13 @@ export default class MainScene extends Phaser.Scene {
 					changedTilesCurrentTile.teamNumber == Constant.TEAM.BLUE
 				) {
 					changedTilesNewTile.setTexture('grass_chunk_blue');
-				}else if(changedTilesCurrentTile.teamNumber == Constant.TEAM.NONE){
+				} else if (
+					changedTilesCurrentTile.teamNumber == Constant.TEAM.NONE
+				) {
 					changedTilesNewTile.setTexture('grass_chunk');
 				}
 
 				changedTilesNewTile.setDepth(-1000);
-
 
 				return changedTilesNewTile;
 			}

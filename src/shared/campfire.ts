@@ -110,7 +110,7 @@ export default class Campfire {
 			// );
 		}
 	}
-	resetProgress(){
+	resetProgress() {
 		this.captureProgress = 0;
 		this.capturingTeam = -1;
 	}
