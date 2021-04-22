@@ -9,6 +9,7 @@ export default class Turret {
 	teamNumber: number;
 	tile: Tile;
 	hp: number;
+	reloadTimer: number;
 
 	constructor(
 		id: string,
@@ -24,6 +25,11 @@ export default class Turret {
 		this.teamNumber = teamNumber;
 		this.tile = tile;
 		this.hp = Constant.HP.TURRET;
+		this.reloadTimer = 0;
+	}
+
+	canShoot() {
+		return this.reloadTimer > 0;
 	}
 
 	serializeForUpdate(): any {
