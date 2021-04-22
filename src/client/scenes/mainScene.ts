@@ -135,7 +135,8 @@ export default class MainScene extends Phaser.Scene {
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
 			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
-			demolishWall: Phaser.Input.Keyboard.KeyCodes.R,
+			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
+			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
 		});
 	}
 
