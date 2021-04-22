@@ -40,7 +40,7 @@ export default class HUDScene extends Phaser.Scene {
 		//  Listen for events from it
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
 	}
-		
+
 	private updateText(currentPlayer: any, time: number): void {
 		let playerHealth: number;
 		if (currentPlayer.health < 0) {
@@ -50,7 +50,7 @@ export default class HUDScene extends Phaser.Scene {
 		}
 
 		const playerText = Phaser.Utils.String.Format(info_format, [
-			currentPlayer.health,
+			playerHealth,
 			currentPlayer.score,
 			currentPlayer.resources,
 		]);
