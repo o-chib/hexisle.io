@@ -726,7 +726,6 @@ export default class Game {
 			);
 			this.walls.delete(tile.buildingId);
 			tile.removeBuilding();
-
 		} else if (structure == Constant.BUILDING.TURRET) {
 			if (!this.canDemolishTurret(socket, coord)) return;
 

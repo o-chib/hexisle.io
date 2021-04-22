@@ -106,7 +106,9 @@ export default class Player {
 
 	refundTurret(): void {
 		this.updateResource(
-			Math.ceil(Constant.TURRET_COST * Constant.BUILDING_REFUND_MULTIPLIER)
+			Math.ceil(
+				Constant.TURRET_COST * Constant.BUILDING_REFUND_MULTIPLIER
+			)
 		);
 	}
 

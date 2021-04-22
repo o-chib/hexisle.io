@@ -4,8 +4,14 @@ import { Tile } from '../src/shared/hexTiles';
 
 describe('turret methods', () => {
 	let turret: Turret;
-	beforeEach( () => {
-		turret = new Turret('0', 0, 0, 0, new Tile(Constant.BUILDING.TURRET, 0));
+	beforeEach(() => {
+		turret = new Turret(
+			'0',
+			0,
+			0,
+			0,
+			new Tile(Constant.BUILDING.TURRET, 0)
+		);
 	});
 
 	it('init: shouldnt be able to shoot', () => {

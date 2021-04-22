@@ -661,7 +661,8 @@ export default class MainScene extends Phaser.Scene {
 					newTurretBase.setTexture(turretGunTexture).setDepth(5);
 				}
 
-				const healthPercent = newTurretBaseLiteral.hp / Constant.HP.TURRET;
+				const healthPercent =
+					newTurretBaseLiteral.hp / Constant.HP.TURRET;
 				newTurretBase = this.handleDamageAnimation(
 					newTurretBase,
 					turretGunTexture,
@@ -678,13 +679,14 @@ export default class MainScene extends Phaser.Scene {
 			this.turretGunSprites,
 			'',
 			(newTurretGun, newTurretLiteralGun) => {
-				let turretGunTexture = 'turret_shooter';
+				const turretGunTexture = 'turret_shooter';
 
 				if (newTurretGun.texture.key != turretGunTexture) {
 					newTurretGun.setTexture(turretGunTexture).setDepth(7);
 				}
 
-				const healthPercent = newTurretLiteralGun.hp / Constant.HP.TURRET;
+				const healthPercent =
+					newTurretLiteralGun.hp / Constant.HP.TURRET;
 				newTurretGun = this.handleDamageAnimation(
 					newTurretGun,
 					turretGunTexture,

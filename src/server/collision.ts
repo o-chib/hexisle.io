@@ -166,8 +166,7 @@ export default class CollisionDetection {
 			if (
 				// TODO replace Point with some better invisible collider when refactoring
 				((result.payload instanceof Wall ||
-					result.payload instanceof Point
-				) &&
+					result.payload instanceof Point) &&
 					this.doCirclesCollide(
 						{ xPos: xPos, yPos: yPos },
 						Constant.PLAYER_RADIUS,
@@ -224,11 +223,7 @@ export default class CollisionDetection {
 		return false;
 	}
 
-	findTurretClosestEnemyDirection(
-		object: any,
-		objectRange: number
-	): number {
-
+	findTurretClosestEnemyDirection(object: any, objectRange: number): number {
 		// Get everything in range
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
@@ -257,7 +252,9 @@ export default class CollisionDetection {
 			) {
 				const xDiff: number = result.payload.xPos - object.xPos;
 				const yDiff: number = result.payload.yPos - object.yPos;
-				const distance: number = Math.sqrt( xDiff * xDiff + yDiff * yDiff );
+				const distance: number = Math.sqrt(
+					xDiff * xDiff + yDiff * yDiff
+				);
 
 				if (distance < closestEnemyDistance) {
 					closestEnemy = result.payload;
@@ -265,7 +262,7 @@ export default class CollisionDetection {
 				}
 			}
 		}
-		
+
 		// Find the direction from the turret to the enemy if there is an enemy
 		let closestEnemyDirection = Constant.NO_ENEMIES;
 		if (closestEnemy != null) {
