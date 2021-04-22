@@ -194,7 +194,22 @@ export default class Game {
 	}
 
 	updateTurrets() {
-		
+		for (const aTurret of this.turrets.values()) {
+			this.collision.buildingBulletCollision(aTurret, this.bullets);
+			if (!aTurret.isAlive()) {
+				this.collision.deleteCollider(aTurret, Constant.TURRET_RADIUS);
+				aTurret.tile.removeBuilding();
+				this.walls.delete(aTurret.id);
+				continue;
+			}
+
+			if (aTurret.canShoot()) {
+				this.turretShootBullet(aTurret);
+				aTurret.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
+			} else {
+				aTurret.reloadTimer -= 1;
+			}
+		}
 	}
 
 	updateBases() {
@@ -507,7 +522,7 @@ export default class Game {
 		player?.updateDirection(direction);
 	}
 
-	shootBullet(socket: SocketIOClient.Socket, direction: number) {
+	playerShootBullet(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 
@@ -521,6 +536,25 @@ export default class Game {
 
 		this.bullets.add(bullet);
 		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
+	}
+
+	turretShootBullet(turret: Turret) {
+		const direction: number = this.findClosestEnemyDirection(turret);
+
+		const bullet: Bullet = new Bullet(
+			this.idGenerator.newID(),
+			turret.xPos,
+			turret.yPos,
+			direction,
+			turret.teamNumber
+		);
+
+		this.bullets.add(bullet);
+		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
+	}
+
+	findClosestEnemyDirection(object: any): number {
+		return 0;
 	}
 
 	canBuildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
