@@ -8,7 +8,7 @@ export const Constant = Object.freeze({
 	WALL_COL_RADIUS: 75 * 0.75,
 	BASE_RADIUS: 200,
 	BASE_COL_RADIUS: 200 * 0.75,
-	VIEW_RADIUS: 1600,
+	VIEW_RADIUS: 2000,
 	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
 	WALL_COST: 5,

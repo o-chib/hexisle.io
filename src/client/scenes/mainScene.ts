@@ -237,13 +237,6 @@ export default class MainScene extends Phaser.Scene {
 	private createTileMap(tileMap: any) {
 		this.hexTiles.tileMap = tileMap;
 
-		// TODO remove this grass
-		this.add
-			.image(0, 0, 'texture')
-			.setOrigin(0, 0)
-			.setDepth(-2000)
-			.setScale(3);
-
 		// DEBUG : DRAW BOUNDARY FOR NOW
 		for (let i = 0; i < this.hexTiles.tileMap.length; ++i) {
 			for (let j = 0; j < this.hexTiles.tileMap[i].length; ++j) {
