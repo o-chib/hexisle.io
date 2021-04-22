@@ -258,7 +258,7 @@ export default class CollisionDetection {
 				const distance: number = Math.sqrt( xDiff * xDiff + yDiff * yDiff );
 
 				if (distance < closestEnemyDistance) {
-					closestEnemy = object;
+					closestEnemy = result.payload;
 					closestEnemyDistance = distance;
 				}
 			}
