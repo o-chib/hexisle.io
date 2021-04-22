@@ -51,7 +51,7 @@ function updateSocket(socket: any) {
 	});
 
 	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
-		game.shootBullet(socket, direction);
+		game.playerShootBullet(socket, direction);
 	});
 
 	socket.on(Constant.MESSAGE.ROTATE, (direction: number) => {
