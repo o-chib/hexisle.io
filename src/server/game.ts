@@ -539,7 +539,14 @@ export default class Game {
 	}
 
 	turretShootBullet(turret: Turret) {
-		const direction: number = this.findClosestEnemyDirection(turret);
+		const direction: number = this.collision.findTurretClosestEnemyDirection(
+			turret,
+			Constant.TURRET_RANGE_RADIUS
+		);
+
+		if (direction == -1) {
+			return;
+		}
 
 		const bullet: Bullet = new Bullet(
 			this.idGenerator.newID(),
@@ -551,10 +558,6 @@ export default class Game {
 
 		this.bullets.add(bullet);
 		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
-	}
-
-	findClosestEnemyDirection(object: any): number {
-		return 0;
 	}
 
 	canBuildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
