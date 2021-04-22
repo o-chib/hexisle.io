@@ -125,15 +125,9 @@ export default class Game {
 			this.collision.campfirePlayerCollision(aCampfire);
 
 			if (aCampfire.captureProgress == 100) {
-				console.log('captured : ' + aCampfire.id);
 				aCampfire.checkForCapture();
-
 				const isCaptured = aCampfire.isCaptured;
 				const points = aCampfire.territoryPoints;
-
-				console.log('isCaptured : ' + aCampfire.isCaptured);
-				console.log('teamNum : ' + aCampfire.teamNumber);
-
 				if (isCaptured) {
 					// If captured, updated numCapturedCamps
 					this.teams.getTeam(aCampfire.capturingTeam)
