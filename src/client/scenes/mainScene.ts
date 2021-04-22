@@ -572,7 +572,7 @@ export default class MainScene extends Phaser.Scene {
 			'bullet',
 			(newBullet, newBulletLiteral) => {
 				if (newBulletLiteral.teamNumber == 1)
-					newBullet.setTexture('bulletblue').setDepth(6);
+					newBullet.setTexture('bulletblue');
 				return newBullet;
 			}
 		);
@@ -629,7 +629,7 @@ export default class MainScene extends Phaser.Scene {
 					wallTexture = 'wall_blue';
 
 				if (newWall.texture.key != wallTexture) {
-					newWall.setTexture(wallTexture).setDepth(5);
+					newWall.setTexture(wallTexture);
 				}
 
 				const healthPercent = newWallLiteral.hp / Constant.HP.WALL;
@@ -658,7 +658,7 @@ export default class MainScene extends Phaser.Scene {
 					turretGunTexture = 'turret_base_blue';
 
 				if (newTurretBase.texture.key != turretGunTexture) {
-					newTurretBase.setTexture(turretGunTexture).setDepth(5);
+					newTurretBase.setTexture(turretGunTexture);
 				}
 
 				const healthPercent =
@@ -682,7 +682,7 @@ export default class MainScene extends Phaser.Scene {
 				const turretGunTexture = 'turret_shooter';
 
 				if (newTurretGun.texture.key != turretGunTexture) {
-					newTurretGun.setTexture(turretGunTexture).setDepth(7);
+					newTurretGun.setTexture(turretGunTexture);
 				}
 
 				const healthPercent =
