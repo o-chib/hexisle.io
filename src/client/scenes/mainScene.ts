@@ -650,25 +650,25 @@ export default class MainScene extends Phaser.Scene {
 			turrets,
 			this.turretBaseSprites,
 			'',
-			(newTurret, newTurretLiteral) => {
-				let turretTexture = '';
-				if (newTurretLiteral.teamNumber == Constant.TEAM.RED)
-					turretTexture = 'turret_base_red';
-				else if (newTurretLiteral.teamNumber == Constant.TEAM.BLUE)
-					turretTexture = 'turret_base_blue';
+			(newTurretBase, newTurretBaseLiteral) => {
+				let turretGunTexture = '';
+				if (newTurretBaseLiteral.teamNumber == Constant.TEAM.RED)
+					turretGunTexture = 'turret_base_red';
+				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.BLUE)
+					turretGunTexture = 'turret_base_blue';
 
-				if (newTurret.texture.key != turretTexture) {
-					newTurret.setTexture(turretTexture);
+				if (newTurretBase.texture.key != turretGunTexture) {
+					newTurretBase.setTexture(turretGunTexture);
 				}
 
-				const healthPercent = newTurretLiteral.hp / Constant.HP.TURRET;
-				newTurret = this.handleDamageAnimation(
-					newTurret,
-					turretTexture,
+				const healthPercent = newTurretBaseLiteral.hp / Constant.HP.TURRET;
+				newTurretBase = this.handleDamageAnimation(
+					newTurretBase,
+					turretGunTexture,
 					healthPercent
 				);
 
-				return newTurret;
+				return newTurretBase;
 			}
 		);
 
@@ -677,21 +677,21 @@ export default class MainScene extends Phaser.Scene {
 			turrets,
 			this.turretGunSprites,
 			'',
-			(newTurret, newTurretLiteral) => {
-				let turretTexture = 'turret_shooter';
+			(newTurretGun, newTurretLiteralGun) => {
+				let turretGunTexture = 'turret_shooter';
 
-				if (newTurret.texture.key != turretTexture) {
-					newTurret.setTexture(turretTexture);
+				if (newTurretGun.texture.key != turretGunTexture) {
+					newTurretGun.setTexture(turretGunTexture);
 				}
 
-				const healthPercent = newTurretLiteral.hp / Constant.HP.TURRET;
-				newTurret = this.handleDamageAnimation(
-					newTurret,
-					turretTexture,
+				const healthPercent = newTurretLiteralGun.hp / Constant.HP.TURRET;
+				newTurretGun = this.handleDamageAnimation(
+					newTurretGun,
+					turretGunTexture,
 					healthPercent
 				);
 
-				return newTurret;
+				return newTurretGun;
 			}
 		);
 	}
