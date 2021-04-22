@@ -630,7 +630,7 @@ export default class MainScene extends Phaser.Scene {
 					newWall.setTexture(wallTexture);
 				}
 
-				const healthPercent = newWallLiteral.hp / 50; // 50 = Total health determined from wall.ts
+				const healthPercent = newWallLiteral.hp / Constant.HP.WALL;
 				newWall = this.handleDamageAnimation(
 					newWall,
 					wallTexture,
@@ -658,7 +658,7 @@ export default class MainScene extends Phaser.Scene {
 					newTurret.setTexture(turretTexture);
 				}
 
-				const healthPercent = newTurretLiteral.hp / 50; // 50 = Total health determined from turret.ts
+				const healthPercent = newTurretLiteral.hp / Constant.HP.TURRET;
 				newTurret = this.handleDamageAnimation(
 					newTurret,
 					turretTexture,
@@ -701,7 +701,7 @@ export default class MainScene extends Phaser.Scene {
 					newBase.setTexture(baseTexture);
 				}
 
-				const healthPercent = newBaseLiteral.hp / 100; // 100 = Total health determined from base.ts
+				const healthPercent = newBaseLiteral.hp / Constant.HP.BASE;
 				newBase = this.handleDamageAnimation(
 					newBase,
 					baseTexture,
