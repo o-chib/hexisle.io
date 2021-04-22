@@ -10,6 +10,7 @@ export default class Turret {
 	tile: Tile;
 	hp: number;
 	reloadTimer: number;
+	hasTarget: boolean;
 
 	constructor(
 		id: string,
@@ -26,6 +27,7 @@ export default class Turret {
 		this.tile = tile;
 		this.hp = Constant.HP.TURRET;
 		this.reloadTimer = 0;
+		this.hasTarget = false;
 	}
 
 	canShoot() {
