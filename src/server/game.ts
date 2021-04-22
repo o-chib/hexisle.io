@@ -312,6 +312,7 @@ export default class Game {
 				// Only call timeout once
 				this.collision.deleteCollider(aPlayer, Constant.PLAYER_RADIUS);
 				aPlayer.health = -1;
+				aPlayer.setNoVelocity();
 				setTimeout(() => {
 					this.respawnPlayer(aPlayer);
 				}, 3000);
@@ -564,7 +565,7 @@ export default class Game {
 			Constant.TURRET_RANGE_RADIUS
 		);
 
-		if (direction == -1) {
+		if (direction == 10) {
 			return;
 		}
 

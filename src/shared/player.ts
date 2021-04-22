@@ -61,6 +61,11 @@ export default class Player {
 		}
 	}
 
+	setNoVelocity(): void {
+		this.xVel = 0;
+		this.yVel = 0;
+	}
+
 	updatePosition(presentTime: number, collision: Collision): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		const newX = this.xPos + timePassed * this.xVel;
