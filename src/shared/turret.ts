@@ -31,7 +31,7 @@ export default class Turret {
 	}
 
 	canShoot() {
-		return this.reloadTimer <= 0;
+		return (this.hasTarget == true && this.reloadTimer <= 0);
 	}
 
 	serializeForUpdate(): any {
