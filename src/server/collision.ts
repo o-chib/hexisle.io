@@ -216,6 +216,58 @@ export default class CollisionDetection {
 		return false;
 	}
 
+	findTurretClosestEnemyDirection(
+		object: any,
+		objectRange: number
+	): number {
+		const results: CollisionObject[] = [];
+		this.quadtree.searchQuadtree(
+			new Rect(
+				object.xPos - objectRange,
+				object.xPos + objectRange,
+				object.yPos + objectRange,
+				object.yPos - objectRange
+			),
+			results
+		);
+
+		// Go through the results and find the closest enemy
+		let closestEnemy: any = null;
+		let closestEnemyDistance: number = objectRange + 1;
+		for (const result of results) {
+			if (
+				result.payload instanceof Player &&
+				result.payload.teamNumber != object.teamNumber &&
+				this.doCirclesCollide(
+					{ xPos: object.xPos, yPos: object.yPos },
+					objectRange,
+					result.payload,
+					Constant.PLAYER_RADIUS
+				)
+			) {
+				const xDiff: number = result.payload.xPos - object.xPos;
+				const yDiff: number = result.payload.yPos - object.yPos;
+				const distance: number = Math.sqrt( xDiff * xDiff + yDiff * yDiff );
+
+				if (distance < closestEnemyDistance) {
+					closestEnemy = object;
+					closestEnemyDistance = distance;
+				}
+			}
+		}
+		
+		// Find the direction from the turret to the enemy if there is an enemy
+		// Default to -1 if no enemies in range
+		let closestEnemyDirection = -1;
+		if (closestEnemy != null) {
+			closestEnemyDirection = Math.atan2(
+				closestEnemy.yPos - object.yPos,
+				closestEnemy.xPos - object.xPos
+			);
+		}
+		return closestEnemyDirection;
+	}
+
 	doCirclesCollide(
 		object1: any,
 		radius1: number,
