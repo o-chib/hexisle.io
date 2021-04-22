@@ -77,6 +77,6 @@ export const Constant = Object.freeze({
 		CHECK_GAME_END: 1000 / 60,
 		GAME_END_SCREEN: 5 * 1000,
 		GAME_TIME_LIMIT: 5 * (60 * 1000),
-		TURRET_RELOAD_TIME: 1 * 1000,
+		TURRET_RELOAD_TIME: 1 * 60,
 	},
 });

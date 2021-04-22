@@ -206,7 +206,7 @@ export default class Game {
 			if (aTurret.canShoot()) {
 				this.turretShootBullet(aTurret);
 				aTurret.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
-			} else {
+			} else if (aTurret.reloadTimer > 0) {
 				aTurret.reloadTimer -= 1;
 			}
 		}
