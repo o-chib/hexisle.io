@@ -485,30 +485,21 @@ export default class MainScene extends Phaser.Scene {
 
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 
+		const gamePos = this.cameras.main.getWorldPoint(
+			this.input.mousePointer.x,
+			this.input.mousePointer.y
+		);
+
+		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+			new Point(gamePos.x, gamePos.y)
+		);
+
 		if (this.cursors.buildWall.isDown) {
-			if (!this.alive) return;
-
-			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x,
-				this.input.mousePointer.y
-			);
-			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-				new Point(gamePos.x, gamePos.y)
-			);
-
 			this.socket.emit(Constant.MESSAGE.BUILD_WALL, coord);
-		} else if (this.cursors.demolishWall.isDown) {
-			if (!this.alive) return;
-
-			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x,
-				this.input.mousePointer.y
-			);
-			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-				new Point(gamePos.x, gamePos.y)
-			);
-
-			this.socket.emit(Constant.MESSAGE.DEMOLISH_WALL, coord);
+		} else if (this.cursors.buildTurret.isDown) {
+			this.socket.emit(Constant.MESSAGE.BUILD_TURRET, coord);
+		} else if (this.cursors.demolishStructure.isDown) {
+			this.socket.emit(Constant.MESSAGE.DEMOLISH_STRUCTURE, coord);
 		}
 	}
 
