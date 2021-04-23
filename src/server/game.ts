@@ -114,12 +114,12 @@ export default class Game {
 			aBullet.updatePosition(timePassed);
 
 			if (aBullet.isExpired(currentTimestamp)) {
-				this.collision.deleteCollider(aBullet, Constant.BULLET_RADIUS);
+				this.collision.deleteCollider(aBullet, Constant.RADIUS.COLLISION.BULLET);
 				this.bullets.delete(aBullet);
 				continue;
 			}
 
-			this.collision.updateCollider(aBullet, Constant.BULLET_RADIUS);
+			this.collision.updateCollider(aBullet, Constant.RADIUS.COLLISION.BULLET);
 		}
 	}
 
@@ -186,7 +186,7 @@ export default class Game {
 		for (const aWall of this.walls.values()) {
 			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
-				this.collision.deleteCollider(aWall, Constant.WALL_RADIUS);
+				this.collision.deleteCollider(aWall, Constant.RADIUS.COLLISION.WALL);
 				aWall.tile.removeBuilding();
 				this.walls.delete(aWall.id);
 			}
@@ -197,7 +197,7 @@ export default class Game {
 		for (const aTurret of this.turrets.values()) {
 			this.collision.buildingBulletCollision(aTurret, this.bullets);
 			if (!aTurret.isAlive()) {
-				this.collision.deleteCollider(aTurret, Constant.TURRET_RADIUS);
+				this.collision.deleteCollider(aTurret, Constant.RADIUS.COLLISION.TURRET);
 				aTurret.tile.removeBuilding();
 				this.turrets.delete(aTurret.id);
 				continue;
@@ -217,7 +217,7 @@ export default class Game {
 		for (const aBase of this.bases) {
 			this.collision.buildingBulletCollision(aBase, this.bullets);
 			if (!aBase.isAlive()) {
-				this.collision.deleteCollider(aBase, Constant.BASE_COL_RADIUS);
+				this.collision.deleteCollider(aBase, Constant.RADIUS.COLLISION.BASE);
 
 				// empty all the nearby tiles (respawn points to center base tile)
 				this.hexTileMap
@@ -311,7 +311,7 @@ export default class Game {
 			if (aPlayer.health == 0) {
 				// Give time for player to play death animation
 				// Only call timeout once
-				this.collision.deleteCollider(aPlayer, Constant.PLAYER_RADIUS);
+				this.collision.deleteCollider(aPlayer, Constant.RADIUS.COLLISION.PLAYER);
 				aPlayer.health = -1;
 				aPlayer.setNoVelocity();
 				setTimeout(() => {
@@ -329,9 +329,9 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aPlayer,
-					Constant.PLAYER_RADIUS,
+					Constant.RADIUS.PLAYER,
 					player,
-					Constant.VIEW_RADIUS
+					Constant.RADIUS.VIEW
 				)
 			)
 				nearbyPlayers.push(aPlayer);
@@ -347,9 +347,9 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aBullet,
-					Constant.BULLET_RADIUS,
+					Constant.RADIUS.BULLET,
 					player,
-					Constant.VIEW_RADIUS
+					Constant.RADIUS.VIEW
 				)
 			)
 				nearbyBullets.push(aBullet);
@@ -365,9 +365,9 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aWall,
-					Constant.WALL_RADIUS,
+					Constant.RADIUS.WALL,
 					player,
-					Constant.VIEW_RADIUS
+					Constant.RADIUS.VIEW
 				)
 			)
 				nearbyWalls.push(aWall);
@@ -383,9 +383,9 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aTurret,
-					Constant.TURRET_RADIUS,
+					Constant.RADIUS.TURRET,
 					player,
-					Constant.VIEW_RADIUS
+					Constant.RADIUS.VIEW
 				)
 			)
 				nearbyTurrets.push(aTurret);
@@ -401,9 +401,9 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aCampfire,
-					Constant.WALL_RADIUS,
+					Constant.RADIUS.CAMP,
 					player,
-					Constant.VIEW_RADIUS
+					Constant.RADIUS.VIEW
 				)
 			)
 				nearbyCampfires.push(aCampfire);
@@ -419,9 +419,9 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aBase,
-					Constant.BASE_RADIUS,
+					Constant.RADIUS.BASE,
 					player,
-					Constant.VIEW_RADIUS
+					Constant.RADIUS.VIEW
 				)
 			)
 				nearbyBases.push(aBase);
@@ -437,9 +437,9 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aTerritory,
-					Constant.WALL_RADIUS,
+					Constant.RADIUS.TERRITORY,
 					player,
-					Constant.VIEW_RADIUS
+					Constant.RADIUS.VIEW
 				)
 			)
 				nearbyTerritories.push(aTerritory);
@@ -495,7 +495,7 @@ export default class Game {
 		newPlayer.xPos = respawnPoint.xPos;
 		newPlayer.yPos = respawnPoint.yPos;
 
-		this.collision.insertCollider(newPlayer, Constant.PLAYER_RADIUS);
+		this.collision.insertCollider(newPlayer, Constant.RADIUS.COLLISION.PLAYER);
 
 		this.initiateGame(newPlayer, socket);
 	}
@@ -505,7 +505,7 @@ export default class Game {
 
 		const player: Player = this.getPlayer(socket.id);
 
-		this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
+		this.collision.deleteCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 
 		this.teams.removePlayer(socket.id, player.teamNumber);
 
@@ -519,7 +519,7 @@ export default class Game {
 		player.xPos = respawnPoint.xPos;
 		player.yPos = respawnPoint.yPos;
 
-		this.collision.insertCollider(player, Constant.PLAYER_RADIUS);
+		this.collision.insertCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 	}
 
 	getRespawnPoint(teamNum: number): Point {
@@ -534,7 +534,7 @@ export default class Game {
 
 		player.updateVelocity(direction);
 		player.updatePosition(Date.now(), this.collision);
-		this.collision.updateCollider(player, Constant.PLAYER_RADIUS);
+		this.collision.updateCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 	}
 
 	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
@@ -557,13 +557,13 @@ export default class Game {
 		);
 
 		this.bullets.add(bullet);
-		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
+		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
 	}
 
 	turretAim(turret: Turret) {
 		const direction: number = this.collision.findDirectionOfClosestEnemy(
 			turret,
-			Constant.TURRET_RANGE_RADIUS
+			Constant.RADIUS.RANGE.TURRET
 		);
 
 		if (direction != Constant.NO_ENEMIES) {
@@ -584,7 +584,7 @@ export default class Game {
 		);
 
 		this.bullets.add(bullet);
-		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
+		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
 	}
 
 	canBuildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
@@ -599,7 +599,7 @@ export default class Game {
 			this.collision.doesObjCollideWithPlayers(
 				tile.cartesian_coord.xPos,
 				tile.cartesian_coord.yPos,
-				Constant.WALL_RADIUS
+				Constant.RADIUS.WALL
 			) ||
 			tile.team != player.teamNumber ||
 			!player.buyWall()
@@ -626,7 +626,7 @@ export default class Game {
 		this.walls.set(wall.id, wall);
 		tile.building = Constant.BUILDING.WALL;
 		tile.buildingId = wall.id;
-		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
+		this.collision.insertCollider(wall, Constant.RADIUS.COLLISION.WALL);
 	}
 
 	canDemolishWall(
@@ -662,7 +662,7 @@ export default class Game {
 			this.collision.doesObjCollideWithPlayers(
 				tile.cartesian_coord.xPos,
 				tile.cartesian_coord.yPos,
-				Constant.TURRET_RADIUS
+				Constant.RADIUS.TURRET
 			) ||
 			tile.team != player.teamNumber ||
 			!player.buyTurret()
@@ -689,7 +689,7 @@ export default class Game {
 		this.turrets.set(turret.id, turret);
 		tile.building = Constant.BUILDING.TURRET;
 		tile.buildingId = turret.id;
-		this.collision.insertCollider(turret, Constant.TURRET_RADIUS);
+		this.collision.insertCollider(turret, Constant.RADIUS.COLLISION.TURRET);
 	}
 
 	canDemolishTurret(
@@ -722,7 +722,7 @@ export default class Game {
 
 			this.collision.deleteCollider(
 				this.walls.get(tile.buildingId),
-				Constant.WALL_RADIUS
+				Constant.RADIUS.COLLISION.WALL
 			);
 			this.walls.delete(tile.buildingId);
 			tile.removeBuilding();
@@ -731,7 +731,7 @@ export default class Game {
 
 			this.collision.deleteCollider(
 				this.turrets.get(tile.buildingId),
-				Constant.TURRET_RADIUS
+				Constant.RADIUS.COLLISION.TURRET
 			);
 			this.turrets.delete(tile.buildingId);
 			tile.removeBuilding();
@@ -752,7 +752,7 @@ export default class Game {
 		);
 
 		campfire.setTerritoryPoints(
-			this.hexTileMap.getHexRadiusPoints(tile, Constant.CAMP_RADIUS)
+			this.hexTileMap.getHexRadiusPoints(tile, Constant.RADIUS.CAMP_HEXES)
 		);
 
 		this.campfires.add(campfire);
@@ -766,7 +766,7 @@ export default class Game {
 		this.territories.add(territory);
 		tile.building = Constant.BUILDING.CAMP;
 
-		this.collision.insertCollider(campfire, Constant.WALL_RADIUS);
+		this.collision.insertCollider(campfire, Constant.RADIUS.COLLISION.WALL);
 	}
 
 	initCampfires(): void {
@@ -798,7 +798,7 @@ export default class Game {
 		);
 
 		this.bases.add(base);
-		this.collision.insertCollider(base, Constant.BASE_COL_RADIUS);
+		this.collision.insertCollider(base, Constant.RADIUS.COLLISION.BASE);
 
 		this.teams.getTeam(
 			teamNum
@@ -836,7 +836,7 @@ export default class Game {
 			const teamBaseCoord = this.teams.getTeamBaseCoord(i);
 			const points = this.hexTileMap.getHexRadiusPoints(
 				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r],
-				Constant.CAMP_RADIUS
+				Constant.RADIUS.CAMP_HEXES
 			);
 			// Update the tileMap with territory tiles
 			this.setBaseTerritory(i, points);
@@ -863,7 +863,7 @@ export default class Game {
 			this.collision.insertCollider(
 				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
 					.cartesian_coord,
-				Constant.WALL_COL_RADIUS
+				Constant.RADIUS.COLLISION.WALL
 			);
 		}
 	}

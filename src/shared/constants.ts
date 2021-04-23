@@ -2,22 +2,36 @@ export const Constant = Object.freeze({
 	// Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
 	MAP_WIDTH: 10000,
 	MAP_HEIGHT: 5000,
-	PLAYER_RADIUS: 50,
-	BULLET_RADIUS: 15,
-	WALL_RADIUS: 75,
-	WALL_COL_RADIUS: 75 * 0.75,
-	TURRET_RADIUS: 75,
-	TURRET_COL_RADIUS: 75 * 0.75,
-	TURRET_RANGE_RADIUS: 750,
-	BASE_RADIUS: 200,
-	BASE_COL_RADIUS: 200 * 0.75,
-	VIEW_RADIUS: 2000,
-	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
 	WALL_COST: 5,
 	TURRET_COST: 10,
 	BUILDING_REFUND_MULTIPLIER: 0.5,
 	NO_ENEMIES: 10,
+
+	RADIUS: {
+		PLAYER: 50,
+		BULLET: 15,
+		WALL: 75,
+		TURRET: 75,
+		BASE: 200,
+		CAMP: 75,
+		TERRITORY: 500,
+		VIEW: 2000,
+		CAMP_HEXES: 4,
+
+		COLLISION: {
+			PLAYER: 50,
+			BULLET: 15,
+			WALL: 75 * 0.75,
+			TURRET: 75 * 0.75,
+			BASE: 200 * 0.75,
+			CAMP: 75,
+		},
+
+		RANGE: {
+			TURRET: 750,
+		},
+	},
 
 	HP: {
 		PLAYER: 100,

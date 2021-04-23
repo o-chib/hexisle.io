@@ -20,10 +20,10 @@ export default class CollisionDetection {
 		// Get everything touching the campfires collider
 		this.quadtree.searchQuadtree(
 			new Rect(
-				campfire.xPos - Constant.WALL_COL_RADIUS,
-				campfire.xPos + Constant.WALL_COL_RADIUS,
-				campfire.yPos + Constant.WALL_COL_RADIUS,
-				campfire.yPos - Constant.WALL_COL_RADIUS
+				campfire.xPos - Constant.RADIUS.COLLISION.WALL,
+				campfire.xPos + Constant.RADIUS.COLLISION.WALL,
+				campfire.yPos + Constant.RADIUS.COLLISION.WALL,
+				campfire.yPos - Constant.RADIUS.COLLISION.WALL
 			),
 			results
 		);
@@ -37,9 +37,9 @@ export default class CollisionDetection {
 				result.payload instanceof Player &&
 				this.doCirclesCollide(
 					campfire,
-					Constant.WALL_RADIUS,
+					Constant.RADIUS.COLLISION.CAMP,
 					result.payload,
-					Constant.PLAYER_RADIUS
+					Constant.RADIUS.COLLISION.PLAYER
 				)
 			) {
 				// Get number of players in each team
@@ -58,10 +58,10 @@ export default class CollisionDetection {
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(
 			new Rect(
-				player.xPos - Constant.PLAYER_RADIUS,
-				player.xPos + Constant.PLAYER_RADIUS,
-				player.yPos + Constant.PLAYER_RADIUS,
-				player.yPos - Constant.PLAYER_RADIUS
+				player.xPos - Constant.RADIUS.COLLISION.PLAYER,
+				player.xPos + Constant.RADIUS.COLLISION.PLAYER,
+				player.yPos + Constant.RADIUS.COLLISION.PLAYER,
+				player.yPos - Constant.RADIUS.COLLISION.PLAYER
 			),
 			results
 		);
@@ -73,19 +73,19 @@ export default class CollisionDetection {
 				result.payload.teamNumber != player.teamNumber &&
 				this.doCirclesCollide(
 					player,
-					Constant.PLAYER_RADIUS,
+					Constant.RADIUS.COLLISION.PLAYER,
 					result.payload,
-					Constant.BULLET_RADIUS
+					Constant.RADIUS.COLLISION.BULLET
 				)
 			) {
 				player.health -= 10;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
-						result.payload.xPos - Constant.BULLET_RADIUS,
-						result.payload.xPos + Constant.BULLET_RADIUS,
-						result.payload.yPos + Constant.BULLET_RADIUS,
-						result.payload.yPos - Constant.BULLET_RADIUS,
+						result.payload.xPos - Constant.RADIUS.COLLISION.BULLET,
+						result.payload.xPos + Constant.RADIUS.COLLISION.BULLET,
+						result.payload.yPos + Constant.RADIUS.COLLISION.BULLET,
+						result.payload.yPos - Constant.RADIUS.COLLISION.BULLET,
 						result.payload
 					)
 				);
@@ -116,17 +116,17 @@ export default class CollisionDetection {
 					building,
 					col_radius,
 					result.payload,
-					Constant.BULLET_RADIUS
+					Constant.RADIUS.COLLISION.BULLET
 				)
 			) {
 				building.hp -= 10;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
-						result.payload.xPos - Constant.BULLET_RADIUS,
-						result.payload.xPos + Constant.BULLET_RADIUS,
-						result.payload.yPos + Constant.BULLET_RADIUS,
-						result.payload.yPos - Constant.BULLET_RADIUS,
+						result.payload.xPos - Constant.RADIUS.COLLISION.BULLET,
+						result.payload.xPos + Constant.RADIUS.COLLISION.BULLET,
+						result.payload.yPos + Constant.RADIUS.COLLISION.BULLET,
+						result.payload.yPos - Constant.RADIUS.COLLISION.BULLET,
 						result.payload
 					)
 				);
@@ -161,23 +161,23 @@ export default class CollisionDetection {
 					result.payload instanceof Point) &&
 					this.doCirclesCollide(
 						{ xPos: xPos, yPos: yPos },
-						Constant.PLAYER_RADIUS,
+						Constant.RADIUS.COLLISION.PLAYER,
 						result.payload,
-						Constant.WALL_COL_RADIUS
+						Constant.RADIUS.COLLISION.WALL
 					)) ||
 				(result.payload instanceof Turret &&
 					this.doCirclesCollide(
 						{ xPos: xPos, yPos: yPos },
-						Constant.PLAYER_RADIUS,
+						Constant.RADIUS.COLLISION.PLAYER,
 						result.payload,
-						Constant.TURRET_COL_RADIUS
+						Constant.RADIUS.COLLISION.TURRET
 					)) ||
 				(result.payload instanceof Base &&
 					this.doCirclesCollide(
 						{ xPos: xPos, yPos: yPos },
-						Constant.PLAYER_RADIUS,
+						Constant.RADIUS.COLLISION.PLAYER,
 						result.payload,
-						Constant.BASE_COL_RADIUS
+						Constant.RADIUS.COLLISION.BASE
 					))
 			)
 				return true;
@@ -207,7 +207,7 @@ export default class CollisionDetection {
 					{ xPos: xPos, yPos: yPos },
 					objectRadius,
 					result.payload,
-					Constant.PLAYER_RADIUS
+					Constant.RADIUS.COLLISION.PLAYER
 				)
 			)
 				return true;
@@ -239,7 +239,7 @@ export default class CollisionDetection {
 					{ xPos: object.xPos, yPos: object.yPos },
 					objectRange,
 					result.payload,
-					Constant.PLAYER_RADIUS
+					Constant.RADIUS.COLLISION.PLAYER
 				)
 			) {
 				const xDiff: number = result.payload.xPos - object.xPos;
@@ -283,6 +283,21 @@ export default class CollisionDetection {
 		}
 	}
 
+	getCollisionRadius(object: any): number {
+		if (object instanceof Wall) {
+			return Constant.RADIUS.COLLISION.WALL;
+		} else if (object instanceof Turret) {
+			return Constant.RADIUS.COLLISION.TURRET;
+		} else if (object instanceof Base) {
+			return Constant.RADIUS.COLLISION.BASE;
+		} else if (object instanceof Player) {
+			return Constant.RADIUS.COLLISION.PLAYER;
+		} else if (object instanceof Bullet) {
+			return Constant.RADIUS.COLLISION.BULLET;
+		}
+		return 0;
+	}
+
 	insertCollider(object: any, radius: number): void {
 		this.quadtree.insertIntoQuadtree(
 			new CollisionObject(
@@ -317,20 +332,5 @@ export default class CollisionDetection {
 				object
 			)
 		);
-	}
-
-	getCollisionRadius(object: any): number {
-		if (object instanceof Wall) {
-			return Constant.WALL_COL_RADIUS;
-		} else if (object instanceof Turret) {
-			return Constant.TURRET_COL_RADIUS;
-		} else if (object instanceof Base) {
-			return Constant.BASE_COL_RADIUS;
-		} else if (object instanceof Player) {
-			return Constant.PLAYER_RADIUS;
-		} else if (object instanceof Bullet) {
-			return Constant.BULLET_RADIUS;
-		}
-		return 0;
 	}
 }
