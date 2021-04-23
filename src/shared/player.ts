@@ -86,37 +86,24 @@ export default class Player {
 		this.lastUpdateTime = presentTime;
 	}
 
-	canAffordStructure(building: String) {
-		if (building == Constant.BUILDING.WALL) {
-			if (this.resources < Constant.WALL_COST) return false;
-		} else if (building == Constant.BUILDING.TURRET) {
-			if (this.resources < Constant.TURRET_COST) return false;
-		}
+	canAffordStructure(building: string) {
+		const cost: number = Constant.COST[building];
+		if (this.resources < cost) return false;
 		return true;
 	}
 
-	buyStructure(building: String): void {
-		if (building == Constant.BUILDING.WALL) {
-			this.updateResource(-Constant.WALL_COST);
-		} else if (building == Constant.BUILDING.TURRET) {
-			this.updateResource(-Constant.TURRET_COST);
-		}
+	buyStructure(building: string): void {
+		const cost: number = Constant.COST[building];
+		this.updateResource(-cost);
 	}
 
-	refundStructure(building: String): void {
-		if (building == Constant.BUILDING.WALL) {
-			this.updateResource(
-				Math.ceil(
-					Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER
-				)
-			);
-		} else if (building == Constant.BUILDING.TURRET) {
-			this.updateResource(
-				Math.ceil(
-					Constant.TURRET_COST * Constant.BUILDING_REFUND_MULTIPLIER
-				)
-			);
-		}
+	refundStructure(building: string): void {
+		const cost: number = Constant.COST[building];
+		this.updateResource(
+			Math.ceil(
+				cost * Constant.COST.BUILDING_REFUND_MULTIPLIER
+			)
+		);
 	}
 
 	serializeForUpdate() {
