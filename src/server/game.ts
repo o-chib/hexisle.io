@@ -186,9 +186,7 @@ export default class Game {
 		for (const aWall of this.walls.values()) {
 			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
-				this.collision.deleteCollider(aWall, Constant.RADIUS.COLLISION.WALL);
-				aWall.tile.removeBuilding();
-				this.walls.delete(aWall.id);
+				this.removeWall(aWall);
 			}
 		}
 	}
@@ -197,9 +195,7 @@ export default class Game {
 		for (const aTurret of this.turrets.values()) {
 			this.collision.buildingBulletCollision(aTurret, this.bullets);
 			if (!aTurret.isAlive()) {
-				this.collision.deleteCollider(aTurret, Constant.RADIUS.COLLISION.TURRET);
-				aTurret.tile.removeBuilding();
-				this.turrets.delete(aTurret.id);
+				this.removeTurret(aTurret);
 				continue;
 			}
 
@@ -669,28 +665,28 @@ export default class Game {
 
 		player.refundStructure(tile.building);
 		if (tile.building == Constant.BUILDING.WALL) {
-			this.removeWall(tile);
+			this.removeWall(this.walls.get(tile.buildingId)!);
 		} else if (tile.building == Constant.BUILDING.TURRET) {
-			this.removeTurret(tile);
+			this.removeTurret(this.turrets.get(tile.buildingId)!);
 		}
 	}
 
-	removeWall(tile: Tile): void {
+	removeWall(wall: Wall): void {
 		this.collision.deleteCollider(
-			this.walls.get(tile.buildingId),
+			wall,
 			Constant.RADIUS.COLLISION.WALL
 		);
-		this.walls.delete(tile.buildingId);
-		tile.removeBuilding();
+		this.walls.delete(wall.id);
+		wall.tile.removeBuilding();
 	}
 
-	removeTurret(tile: Tile): void {
+	removeTurret(turret: Turret): void {
 		this.collision.deleteCollider(
-			this.turrets.get(tile.buildingId),
+			this.turrets.get(turret.id),
 			Constant.RADIUS.COLLISION.TURRET
 		);
-		this.turrets.delete(tile.buildingId);
-		tile.removeBuilding();
+		this.turrets.delete(turret.id);
+		turret.tile.removeBuilding();
 	}
 
 	buildCampfire(coord: OffsetPoint): void {
