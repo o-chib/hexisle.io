@@ -31,7 +31,7 @@ export default class Turret {
 	}
 
 	aim(direction: number) {
-		if (direction != Constant.NO_ENEMIES) {
+		if (direction != Constant.DIRECTION.INVALID) {
 			this.direction = direction;
 			this.hasTarget = true;
 		} else {

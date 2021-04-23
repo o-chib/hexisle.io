@@ -6,7 +6,6 @@ export const Constant = Object.freeze({
 	WALL_COST: 5,
 	TURRET_COST: 10,
 	BUILDING_REFUND_MULTIPLIER: 0.5,
-	NO_ENEMIES: 10,
 
 	RADIUS: {
 		PLAYER: 50,
@@ -60,6 +59,7 @@ export const Constant = Object.freeze({
 		SW: 1.25 * Math.PI,
 		S: 1.5 * Math.PI,
 		SE: 1.75 * Math.PI,
+		INVALID: 10,
 	},
 
 	BUILDING: {
