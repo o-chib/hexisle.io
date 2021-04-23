@@ -92,24 +92,26 @@ export default class Player {
 		return true;
 	}
 
-	refundWall(): void {
-		this.updateResource(
-			Math.ceil(Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER)
-		);
-	}
-
 	buyTurret(): boolean {
 		if (this.resources < Constant.TURRET_COST) return false;
 		this.updateResource(-Constant.TURRET_COST);
 		return true;
 	}
 
-	refundTurret(): void {
-		this.updateResource(
-			Math.ceil(
-				Constant.TURRET_COST * Constant.BUILDING_REFUND_MULTIPLIER
-			)
-		);
+	refundStructure(building: String): void {
+		if (building == Constant.BUILDING.WALL) {
+			this.updateResource(
+				Math.ceil(
+					Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER
+				)
+			);
+		} else if (building == Constant.BUILDING.TURRET) {
+			this.updateResource(
+				Math.ceil(
+					Constant.TURRET_COST * Constant.BUILDING_REFUND_MULTIPLIER
+				)
+			);
+		}
 	}
 
 	serializeForUpdate() {
