@@ -14,6 +14,17 @@ describe('Turret', () => {
 		);
 	});
 
+	it('aiming with invalid direction: has no target', () => {
+		turret.aim(Constant.DIRECTION.INVALID);
+		expect(turret.hasTarget).toEqual(false);
+	});
+
+	it('aiming with valid direction: has target and given direction', () => {
+		turret.aim(1);
+		expect(turret.hasTarget).toEqual(true);
+		expect(turret.direction).toEqual(1);
+	});
+
 	it('on init: cannot shoot', () => {
 		expect(turret.canShoot()).toEqual(false);
 	});
@@ -39,6 +50,22 @@ describe('Turret', () => {
 		turret.hasTarget = false;
 		turret.reloadTimer = 0;
 		expect(turret.canShoot()).toEqual(false);
+	});
+
+	it('shot: should be reloading', () => {
+		turret.shoot();
+		expect(turret.reloadTimer).toEqual(Constant.TIMING.TURRET_RELOAD_TIME);
+	});
+
+	it('reloading when already reloaded: timer stays at 0', () => {
+		turret.reload();
+		expect(turret.reloadTimer).toEqual(0);
+	});
+
+	it('reloading after a shot: timer decrements', () => {
+		turret.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
+		turret.reload();
+		expect(turret.reloadTimer).toEqual(Constant.TIMING.TURRET_RELOAD_TIME - 1);
 	});
 
 	it('at 0 hp: is not alive', () => {
