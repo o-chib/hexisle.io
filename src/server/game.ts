@@ -206,9 +206,8 @@ export default class Game {
 			this.turretAim(aTurret);
 			if (aTurret.canShoot()) {
 				this.turretShootBullet(aTurret);
-				aTurret.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
-			} else if (aTurret.reloadTimer > 0) {
-				aTurret.reloadTimer -= 1;
+			} else {
+				aTurret.reload();
 			}
 		}
 	}
@@ -565,13 +564,7 @@ export default class Game {
 			turret,
 			Constant.RADIUS.RANGE.TURRET
 		);
-
-		if (direction != Constant.NO_ENEMIES) {
-			turret.direction = direction;
-			turret.hasTarget = true;
-		} else {
-			turret.hasTarget = false;
-		}
+		turret.aim(direction);
 	}
 
 	turretShootBullet(turret: Turret) {
@@ -583,6 +576,7 @@ export default class Game {
 			turret.teamNumber
 		);
 
+		turret.shoot();
 		this.bullets.add(bullet);
 		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
 	}

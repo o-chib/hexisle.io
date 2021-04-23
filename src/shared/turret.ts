@@ -34,6 +34,25 @@ export default class Turret {
 		return this.hasTarget == true && this.reloadTimer <= 0;
 	}
 
+	shoot() {
+		this.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
+	}
+
+	aim(direction: number) {
+		if (direction != Constant.NO_ENEMIES) {
+			this.direction = direction;
+			this.hasTarget = true;
+		} else {
+			this.hasTarget = false;
+		}
+	}
+
+	reload() {
+		if (this.reloadTimer > 0) {
+			this.reloadTimer -= 1;
+		}
+	}
+
 	serializeForUpdate(): any {
 		return {
 			id: this.id,
