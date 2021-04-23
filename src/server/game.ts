@@ -32,7 +32,7 @@ export default class Game {
 	endGameTimestamp: number;
 	gameTimeRemaining: number;
 
-	constructor(gameOverCallback) {
+	constructor(gameOverCallback: () => any) {
 		this.gameOverCallback = gameOverCallback;
 
 		this.endGameTimestamp = Date.now() + Constant.TIMING.GAME_TIME_LIMIT;
