@@ -30,14 +30,6 @@ export default class Turret {
 		this.hasTarget = false;
 	}
 
-	canShoot() {
-		return this.hasTarget == true && this.reloadTimer <= 0;
-	}
-
-	shoot() {
-		this.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
-	}
-
 	aim(direction: number) {
 		if (direction != Constant.NO_ENEMIES) {
 			this.direction = direction;
@@ -45,6 +37,14 @@ export default class Turret {
 		} else {
 			this.hasTarget = false;
 		}
+	}
+
+	canShoot() {
+		return this.hasTarget == true && this.reloadTimer <= 0;
+	}
+
+	shoot() {
+		this.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
 	}
 
 	reload() {
