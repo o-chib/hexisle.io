@@ -223,7 +223,7 @@ export default class CollisionDetection {
 		return false;
 	}
 
-	findTurretClosestEnemyDirection(object: any, objectRange: number): number {
+	findDirectionOfClosestEnemy(object: any, objectRange: number): number {
 		// Get everything in range
 		const results: CollisionObject[] = [];
 		this.quadtree.searchQuadtree(

@@ -561,7 +561,7 @@ export default class Game {
 	}
 
 	turretAim(turret: Turret) {
-		const direction: number = this.collision.findTurretClosestEnemyDirection(
+		const direction: number = this.collision.findDirectionOfClosestEnemy(
 			turret,
 			Constant.TURRET_RANGE_RADIUS
 		);
