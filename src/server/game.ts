@@ -543,20 +543,27 @@ export default class Game {
 		player?.updateDirection(direction);
 	}
 
+	shootBullet(object: any, direction: number): void {
+		const bullet: Bullet = new Bullet(
+			this.idGenerator.newID(),
+			object.xPos,
+			object.yPos,
+			direction,
+			object.teamNumber
+		);
+		this.bullets.add(bullet);
+		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
+	}
+
 	playerShootBullet(socket: SocketIOClient.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
+		this.shootBullet(player, direction);
+	}
 
-		const bullet: Bullet = new Bullet(
-			this.idGenerator.newID(),
-			player.xPos,
-			player.yPos,
-			direction,
-			player.teamNumber
-		);
-
-		this.bullets.add(bullet);
-		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
+	turretShootBullet(turret: Turret) {
+		this.shootBullet(turret, turret.direction);
+		turret.shoot();
 	}
 
 	turretAim(turret: Turret) {
@@ -565,20 +572,6 @@ export default class Game {
 			Constant.RADIUS.RANGE.TURRET
 		);
 		turret.aim(direction);
-	}
-
-	turretShootBullet(turret: Turret) {
-		const bullet: Bullet = new Bullet(
-			this.idGenerator.newID(),
-			turret.xPos,
-			turret.yPos,
-			turret.direction,
-			turret.teamNumber
-		);
-
-		turret.shoot();
-		this.bullets.add(bullet);
-		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
 	}
 
 	canBuildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
