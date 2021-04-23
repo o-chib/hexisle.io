@@ -32,18 +32,18 @@ let game = new Game(restartGame);
 
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
-const playerSocketsToNames: Map<SocketIOClient.Socket, string> = new Map();
+const playerSocketsToNames: Map<SocketIO.Socket, string> = new Map();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
+	playerSocketsToNames.set(socket, '');
 	updateSocket(socket);
 });
 
-function updateSocket(socket: any) {
+function updateSocket(socket: SocketIO.Socket) {
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
-		playerSocketsToNames.set(socket, '');
 	});
 
 	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {

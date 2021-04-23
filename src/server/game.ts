@@ -11,6 +11,7 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
+import * as SocketIO from 'socket.io';
 
 export default class Game {
 	teams: Teams;
@@ -442,7 +443,7 @@ export default class Game {
 		return newPlayer;
 	}
 
-	addPlayer(socket: SocketIOClient.Socket) {
+	addPlayer(socket: SocketIO.Socket) {
 		const newPlayer = this.generateNewPlayer(socket);
 
 		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
@@ -454,7 +455,7 @@ export default class Game {
 		this.initiateGame(newPlayer, socket);
 	}
 
-	removePlayer(socket: SocketIOClient.Socket) {
+	removePlayer(socket: SocketIO.Socket) {
 		if (!this.players.has(socket.id)) return;
 
 		const player: Player = this.getPlayer(socket.id);
@@ -482,7 +483,7 @@ export default class Game {
 		return this.hexTileMap.offsetToCartesian(coords[index]);
 	}
 
-	movePlayer(socket: SocketIOClient.Socket, direction: number) {
+	movePlayer(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 
@@ -491,14 +492,14 @@ export default class Game {
 		this.collision.updateCollider(player, Constant.PLAYER_RADIUS);
 	}
 
-	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
+	rotatePlayer(socket: SocketIO.Socket, direction: number): void {
 		if (!this.players.has(socket.id)) return;
 		const player = this.getPlayer(socket.id);
 
 		player?.updateDirection(direction);
 	}
 
-	shootBullet(socket: SocketIOClient.Socket, direction: number) {
+	shootBullet(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 
@@ -514,7 +515,7 @@ export default class Game {
 		this.collision.insertCollider(bullet, Constant.BULLET_RADIUS);
 	}
 
-	canBuildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
+	canBuildWall(socket: SocketIO.Socket, coord: OffsetPoint): boolean {
 		if (!this.players.has(socket.id)) return false;
 		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
 
@@ -536,7 +537,7 @@ export default class Game {
 		return true;
 	}
 
-	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+	buildWall(socket: SocketIO.Socket, coord: OffsetPoint): void {
 		if (!this.canBuildWall(socket, coord)) return;
 
 		const player: Player = this.getPlayer(socket.id)!;
@@ -556,10 +557,7 @@ export default class Game {
 		this.collision.insertCollider(wall, Constant.WALL_RADIUS);
 	}
 
-	canDemolishWall(
-		socket: SocketIOClient.Socket,
-		coord: OffsetPoint
-	): boolean {
+	canDemolishWall(socket: SocketIO.Socket, coord: OffsetPoint): boolean {
 		if (!this.players.has(socket.id)) return false;
 		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
 
@@ -578,7 +576,7 @@ export default class Game {
 		return true;
 	}
 
-	demolishWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+	demolishWall(socket: SocketIO.Socket, coord: OffsetPoint): void {
 		if (!this.canDemolishWall(socket, coord)) return;
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
