@@ -14,44 +14,44 @@ describe('Turret', () => {
 		);
 	});
 
-	it('init: shouldnt be able to shoot', () => {
+	it('on init: cannot shoot', () => {
 		expect(turret.canShoot()).toEqual(false);
 	});
 
-	it('has target, reloadTimer at 0: should be able to shoot', () => {
+	it('has target, reloadTimer at 0: can shoot', () => {
 		turret.hasTarget = true;
 		expect(turret.canShoot()).toEqual(true);
 	});
 
-	it('has target, reloadTimer negative: should be able to shoot', () => {
+	it('has target, reloadTimer negative: can shoot', () => {
 		turret.hasTarget = true;
 		turret.reloadTimer = -1000;
 		expect(turret.canShoot()).toEqual(true);
 	});
 
-	it('has target, reloading: shouldnt be able to shoot', () => {
+	it('has target, reloading: cannot shoot', () => {
 		turret.hasTarget = true;
 		turret.reloadTimer = 1;
 		expect(turret.canShoot()).toEqual(false);
 	});
 
-	it('has no target, not reloading: shouldnt be able to shoot', () => {
+	it('has no target, not reloading: cannot shoot', () => {
 		turret.hasTarget = false;
 		turret.reloadTimer = 0;
 		expect(turret.canShoot()).toEqual(false);
 	});
 
-	it('at 0 hp: shouldnt be alive', () => {
+	it('at 0 hp: is not alive', () => {
 		turret.hp = 0;
 		expect(turret.isAlive()).toEqual(false);
 	});
 
-	it('at negative hp: shouldnt be alive', () => {
+	it('at negative hp: is not alive', () => {
 		turret.hp = -1000;
 		expect(turret.isAlive()).toEqual(false);
 	});
 
-	it('has hp: should be alive', () => {
+	it('has hp: is alive', () => {
 		turret.hp = 1;
 		expect(turret.isAlive()).toEqual(true);
 	});
