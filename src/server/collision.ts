@@ -95,15 +95,7 @@ export default class CollisionDetection {
 
 	buildingBulletCollision(building: any, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
-
-		let col_radius = 0;
-		if (building instanceof Wall) {
-			col_radius = Constant.WALL_COL_RADIUS;
-		} else if (building instanceof Turret) {
-			col_radius = Constant.TURRET_COL_RADIUS;
-		} else if (building instanceof Base) {
-			col_radius = Constant.BASE_COL_RADIUS;
-		}
+		const col_radius = this.getCollisionRadius(building);
 
 		this.quadtree.searchQuadtree(
 			new Rect(
@@ -325,5 +317,20 @@ export default class CollisionDetection {
 				object
 			)
 		);
+	}
+
+	getCollisionRadius(object: any): number {
+		if (object instanceof Wall) {
+			return Constant.WALL_COL_RADIUS;
+		} else if (object instanceof Turret) {
+			return Constant.TURRET_COL_RADIUS;
+		} else if (object instanceof Base) {
+			return Constant.BASE_COL_RADIUS;
+		} else if (object instanceof Player) {
+			return Constant.PLAYER_RADIUS;
+		} else if (object instanceof Bullet) {
+			return Constant.BULLET_RADIUS;
+		}
+		return 0;
 	}
 }
