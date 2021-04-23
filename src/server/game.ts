@@ -114,12 +114,18 @@ export default class Game {
 			aBullet.updatePosition(timePassed);
 
 			if (aBullet.isExpired(currentTimestamp)) {
-				this.collision.deleteCollider(aBullet, Constant.RADIUS.COLLISION.BULLET);
+				this.collision.deleteCollider(
+					aBullet,
+					Constant.RADIUS.COLLISION.BULLET
+				);
 				this.bullets.delete(aBullet);
 				continue;
 			}
 
-			this.collision.updateCollider(aBullet, Constant.RADIUS.COLLISION.BULLET);
+			this.collision.updateCollider(
+				aBullet,
+				Constant.RADIUS.COLLISION.BULLET
+			);
 		}
 	}
 
@@ -212,7 +218,10 @@ export default class Game {
 		for (const aBase of this.bases) {
 			this.collision.buildingBulletCollision(aBase, this.bullets);
 			if (!aBase.isAlive()) {
-				this.collision.deleteCollider(aBase, Constant.RADIUS.COLLISION.BASE);
+				this.collision.deleteCollider(
+					aBase,
+					Constant.RADIUS.COLLISION.BASE
+				);
 
 				// empty all the nearby tiles (respawn points to center base tile)
 				this.hexTileMap
@@ -306,7 +315,10 @@ export default class Game {
 			if (aPlayer.health == 0) {
 				// Give time for player to play death animation
 				// Only call timeout once
-				this.collision.deleteCollider(aPlayer, Constant.RADIUS.COLLISION.PLAYER);
+				this.collision.deleteCollider(
+					aPlayer,
+					Constant.RADIUS.COLLISION.PLAYER
+				);
 				aPlayer.health = -1;
 				aPlayer.setNoVelocity();
 				setTimeout(() => {
@@ -490,7 +502,10 @@ export default class Game {
 		newPlayer.xPos = respawnPoint.xPos;
 		newPlayer.yPos = respawnPoint.yPos;
 
-		this.collision.insertCollider(newPlayer, Constant.RADIUS.COLLISION.PLAYER);
+		this.collision.insertCollider(
+			newPlayer,
+			Constant.RADIUS.COLLISION.PLAYER
+		);
 
 		this.initiateGame(newPlayer, socket);
 	}
@@ -588,11 +603,16 @@ export default class Game {
 		return true;
 	}
 
-	buildStructure(socket: SocketIOClient.Socket, coord: OffsetPoint, building: string): void {
+	buildStructure(
+		socket: SocketIOClient.Socket,
+		coord: OffsetPoint,
+		building: string
+	): void {
 		if (
 			!this.players.has(socket.id) ||
 			!this.hexTileMap.checkIfValidHex(coord)
-			) return;
+		)
+			return;
 
 		const player: Player = this.getPlayer(socket.id)!;
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
@@ -635,16 +655,11 @@ export default class Game {
 		this.collision.insertCollider(turret, Constant.RADIUS.COLLISION.TURRET);
 	}
 
-	canDemolishStructure(
-		player: Player,
-		tile: Tile
-	): boolean {
+	canDemolishStructure(player: Player, tile: Tile): boolean {
 		if (
 			tile.hasNoBuilding() ||
-			(
-				tile.building != Constant.BUILDING.WALL &&
-				tile.building != Constant.BUILDING.TURRET
-			) ||
+			(tile.building != Constant.BUILDING.WALL &&
+				tile.building != Constant.BUILDING.TURRET) ||
 			tile.team != player.teamNumber
 		)
 			return false;
@@ -656,7 +671,8 @@ export default class Game {
 		if (
 			!this.players.has(socket.id) ||
 			!this.hexTileMap.checkIfValidHex(coord)
-			) return;
+		)
+			return;
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 		const player: Player = this.getPlayer(socket.id);
@@ -672,10 +688,7 @@ export default class Game {
 	}
 
 	removeWall(wall: Wall): void {
-		this.collision.deleteCollider(
-			wall,
-			Constant.RADIUS.COLLISION.WALL
-		);
+		this.collision.deleteCollider(wall, Constant.RADIUS.COLLISION.WALL);
 		this.walls.delete(wall.id);
 		wall.tile.removeBuilding();
 	}

@@ -100,9 +100,7 @@ export default class Player {
 	refundStructure(building: string): void {
 		const cost: number = Constant.COST[building];
 		this.updateResource(
-			Math.ceil(
-				cost * Constant.COST.BUILDING_REFUND_MULTIPLIER
-			)
+			Math.ceil(cost * Constant.COST.BUILDING_REFUND_MULTIPLIER)
 		);
 	}
 

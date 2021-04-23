@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
+import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 
 import { Constant } from './../../shared/constants';
 
