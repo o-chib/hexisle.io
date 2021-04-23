@@ -2,7 +2,7 @@ import { Constant } from '../shared/constants';
 import Collision from './../server/collision';
 
 export default class Player {
-	// extends Phaser.Physics.Matter.Sprite
+	private PLAYER_SPEED = 600;
 	lastUpdateTime: number;
 
 	id: string;
@@ -12,7 +12,6 @@ export default class Player {
 	private yVel: number;
 	private direction: number;
 	teamNumber: number;
-	speed: number;
 
 	// Score tracking & player stats
 	health: number;
@@ -37,7 +36,6 @@ export default class Player {
 		this.score = 0;
 		this.health = 100;
 		//this.healthRegen = 1;
-		this.speed = 600;
 		this.socket = socket;
 		this.resources = 0;
 		this.lastUpdateTime = Date.now();
@@ -56,8 +54,8 @@ export default class Player {
 			this.xVel = 0;
 			this.yVel = 0;
 		} else {
-			this.xVel = this.speed * Math.cos(direction);
-			this.yVel = this.speed * Math.sin(direction);
+			this.xVel = this.PLAYER_SPEED * Math.cos(direction);
+			this.yVel = this.PLAYER_SPEED * Math.sin(direction);
 		}
 	}
 
