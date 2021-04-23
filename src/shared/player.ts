@@ -74,7 +74,7 @@ export default class Player {
 			!collision.doesObjCollideWithStructure(
 				newX,
 				newY,
-				Constant.PLAYER_RADIUS
+				Constant.RADIUS.PLAYER
 			)
 		) {
 			this.xPos = newX;
