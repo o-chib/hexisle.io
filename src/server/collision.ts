@@ -229,7 +229,7 @@ export default class CollisionDetection {
 		);
 
 		// Go through the results and find the closest enemy
-		let closestEnemy: any = null;
+		let closestEnemy: Player | null = null;
 		let closestEnemyDistance: number = objectRange + 1;
 		for (const result of results) {
 			if (
