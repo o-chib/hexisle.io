@@ -59,11 +59,11 @@ function updateSocket(socket: any) {
 	});
 
 	socket.on(Constant.MESSAGE.BUILD_WALL, (coord: OffsetPoint) => {
-		game.buildWall(socket, coord);
+		game.buildStructure(socket, coord, Constant.BUILDING.WALL);
 	});
 
 	socket.on(Constant.MESSAGE.BUILD_TURRET, (coord: OffsetPoint) => {
-		game.buildTurret(socket, coord);
+		game.buildStructure(socket, coord, Constant.BUILDING.TURRET);
 	});
 
 	socket.on(Constant.MESSAGE.DEMOLISH_STRUCTURE, (coord: OffsetPoint) => {

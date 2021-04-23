@@ -574,84 +574,65 @@ export default class Game {
 		turret.aim(direction);
 	}
 
-	canBuildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
-		if (!this.players.has(socket.id)) return false;
-		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
-
-		const player: Player = this.getPlayer(socket.id)!;
-		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-
+	canBuildStructure(player: Player, tile: Tile, building: string): boolean {
+		const collisionRadius = Constant.RADIUS.COLLISION[building];
 		if (
 			!tile.hasNoBuilding() ||
+			tile.team != player.teamNumber ||
 			this.collision.doesObjCollideWithPlayers(
 				tile.cartesian_coord.xPos,
 				tile.cartesian_coord.yPos,
-				Constant.RADIUS.WALL
+				collisionRadius
 			) ||
-			tile.team != player.teamNumber ||
-			!player.buyWall()
-		)
-			return false; //TODO
+			!player.canAffordStructure(building)
+		) {
+			return false;
+		}
 
 		return true;
 	}
 
-	buildWall(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
-		if (!this.canBuildWall(socket, coord)) return;
+	buildStructure(socket: SocketIOClient.Socket, coord: OffsetPoint, building: string): void {
+		if (
+			!this.players.has(socket.id) ||
+			!this.hexTileMap.checkIfValidHex(coord)
+			) return;
 
 		const player: Player = this.getPlayer(socket.id)!;
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 
+		if (!this.canBuildStructure(player, tile, building)) return;
+
+		player.buyStructure(building);
+		if (building == Constant.BUILDING.WALL) {
+			this.addWall(tile);
+		} else if (building == Constant.BUILDING.TURRET) {
+			this.addTurret(tile);
+		}
+	}
+
+	addWall(tile: Tile): void {
 		const wall: Wall = new Wall(
 			this.idGenerator.newID(),
 			tile.cartesian_coord.xPos,
 			tile.cartesian_coord.yPos,
-			player.teamNumber,
+			tile.team,
 			tile
 		);
-
 		this.walls.set(wall.id, wall);
 		tile.building = Constant.BUILDING.WALL;
 		tile.buildingId = wall.id;
 		this.collision.insertCollider(wall, Constant.RADIUS.COLLISION.WALL);
 	}
 
-	canBuildTurret(socket: SocketIOClient.Socket, coord: OffsetPoint): boolean {
-		if (!this.players.has(socket.id)) return false;
-		if (!this.hexTileMap.checkIfValidHex(coord)) return false;
-
-		const player: Player = this.getPlayer(socket.id)!;
-		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-
-		if (
-			!tile.hasNoBuilding() ||
-			this.collision.doesObjCollideWithPlayers(
-				tile.cartesian_coord.xPos,
-				tile.cartesian_coord.yPos,
-				Constant.RADIUS.TURRET
-			) ||
-			tile.team != player.teamNumber ||
-			!player.buyTurret()
-		)
-			return false; //TODO
-
-		return true;
-	}
-
-	buildTurret(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
-		if (!this.canBuildTurret(socket, coord)) return;
-
-		const player: Player = this.getPlayer(socket.id)!;
-		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-
+	addTurret(tile: Tile): void {
 		const turret: Turret = new Turret(
 			this.idGenerator.newID(),
 			tile.cartesian_coord.xPos,
 			tile.cartesian_coord.yPos,
-			player.teamNumber,
+			tile.team,
 			tile
 		);
-
 		this.turrets.set(turret.id, turret);
 		tile.building = Constant.BUILDING.TURRET;
 		tile.buildingId = turret.id;
@@ -694,7 +675,7 @@ export default class Game {
 		}
 	}
 
-	removeWall(tile: Tile) {
+	removeWall(tile: Tile): void {
 		this.collision.deleteCollider(
 			this.walls.get(tile.buildingId),
 			Constant.RADIUS.COLLISION.WALL
@@ -703,7 +684,7 @@ export default class Game {
 		tile.removeBuilding();
 	}
 
-	removeTurret(tile: Tile) {
+	removeTurret(tile: Tile): void {
 		this.collision.deleteCollider(
 			this.turrets.get(tile.buildingId),
 			Constant.RADIUS.COLLISION.TURRET
