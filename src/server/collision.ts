@@ -284,7 +284,7 @@ export default class CollisionDetection {
 	}
 
 	getCollisionRadius(object: any): number {
-		if (object instanceof Wall) {
+		if (object instanceof Wall || object instanceof Point) {
 			return Constant.RADIUS.COLLISION.WALL;
 		} else if (object instanceof Turret) {
 			return Constant.RADIUS.COLLISION.TURRET;
