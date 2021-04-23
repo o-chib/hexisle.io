@@ -2,7 +2,7 @@ import Turret from '../src/shared/turret';
 import { Constant } from '../src/shared/constants';
 import { Tile } from '../src/shared/hexTiles';
 
-describe('turret methods', () => {
+describe('Turret', () => {
 	let turret: Turret;
 	beforeEach(() => {
 		turret = new Turret(
@@ -41,12 +41,12 @@ describe('turret methods', () => {
 		expect(turret.canShoot()).toEqual(false);
 	});
 
-	it('0 hp: shouldnt be alive', () => {
+	it('at 0 hp: shouldnt be alive', () => {
 		turret.hp = 0;
 		expect(turret.isAlive()).toEqual(false);
 	});
 
-	it('negative hp: shouldnt be alive', () => {
+	it('at negative hp: shouldnt be alive', () => {
 		turret.hp = -1000;
 		expect(turret.isAlive()).toEqual(false);
 	});
