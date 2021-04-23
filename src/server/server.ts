@@ -22,7 +22,7 @@ const server = http.createServer(app).listen(port, () => {
 
 const restartGame = () => {
 	game = new Game(restartGame);
-	for (const aSocket of socketsConnected) {
+	for (const aSocket of playerSocketsToNames.keys()) {
 		game.addPlayer(aSocket);
 	}
 };
@@ -32,7 +32,7 @@ let game = new Game(restartGame);
 
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
-const socketsConnected: Set<SocketIOClient.Socket> = new Set();
+const playerSocketsToNames: Map<SocketIOClient.Socket, string> = new Map();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
@@ -43,7 +43,7 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 function updateSocket(socket: any) {
 	socket.on(Constant.MESSAGE.JOIN, () => {
 		game.addPlayer(socket);
-		socketsConnected.add(socket);
+		playerSocketsToNames.set(socket, '');
 	});
 
 	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
@@ -68,6 +68,6 @@ function updateSocket(socket: any) {
 
 	socket.on('disconnect', () => {
 		game.removePlayer(socket);
-		socketsConnected.delete(socket);
+		playerSocketsToNames.delete(socket);
 	});
 }
