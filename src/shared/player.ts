@@ -6,12 +6,13 @@ export default class Player {
 	lastUpdateTime: number;
 
 	id: string;
+	teamNumber: number;
 	xPos: number;
 	yPos: number;
 	private xVel: number;
 	private yVel: number;
 	private direction: number;
-	teamNumber: number;
+	username: string;
 
 	// Score tracking & player stats
 	health: number;
@@ -20,15 +21,10 @@ export default class Player {
 
 	socket: SocketIOClient.Socket;
 
-	constructor(
-		socket: SocketIOClient.Socket,
-		xPos: number,
-		yPos: number,
-		teamNumber: number
-	) {
+	constructor(socket: SocketIOClient.Socket, teamNumber: number, name = '') {
 		this.id = socket.id;
-		this.xPos = xPos;
-		this.yPos = yPos;
+		//this.xPos = 0;
+		//this.yPos = 0;
 		this.xVel = 0;
 		this.yVel = 0;
 		this.direction = 0;
@@ -39,6 +35,7 @@ export default class Player {
 		this.socket = socket;
 		this.resources = 0;
 		this.lastUpdateTime = Date.now();
+		this.username = name;
 	}
 
 	updateResource(resourceValue: number) {

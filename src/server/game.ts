@@ -438,7 +438,7 @@ export default class Game {
 
 	generateNewPlayer(socket) {
 		const team: number = this.teams.addNewPlayer(socket.id);
-		const newPlayer = new Player(socket, 0, 0, team);
+		const newPlayer = new Player(socket, team);
 		this.players.set(socket.id, newPlayer);
 		return newPlayer;
 	}
