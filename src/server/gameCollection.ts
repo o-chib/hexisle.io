@@ -1,4 +1,3 @@
-import Game from './game';
 import GameWrapper from './gameWrapper';
 
 export class GameCollection {
@@ -9,6 +8,6 @@ export class GameCollection {
 	}
 
 	public newGame() {
-		this.allGames.push(new GameWrapper());
+		// this.allGames.push(new GameWrapper());
 	}
 }
