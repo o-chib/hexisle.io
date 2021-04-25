@@ -8,7 +8,8 @@ export const config: Phaser.Types.Core.GameConfig = {
 	height: 1080,
 	type: Phaser.AUTO,
 	scale: {
-		mode: Phaser.Scale.ENVELOP,
+		// TODO : BEFORE PUSHING TO MAIN CHANGE BACK TO ENVELOP
+		mode: Phaser.Scale.RESIZE,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
 	scene: [mainScene, HUDScene],

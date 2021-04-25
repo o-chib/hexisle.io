@@ -20,29 +20,12 @@ export class HexTiles {
 
 	generateMap(): void {
 		this.generateTileMap();
-		this.generateBoundary();
-		this.generateCamps();
+		this.generateChunks();
 		this.generateBases(2, 1);
 	}
 
 	generateTileMap(): void {
-		// generates the hex integer coordinates from the game-size
-		console.log('time to generate tilemap');
-		console.time();
-
 		this.tileMap = [];
-
-		//hexagon based
-		const centerTile = new Tile();
-		centerTile.offset_coord = new OffsetPoint(
-			this.hexRadius,
-			this.hexRadius
-		);
-
-		const offsetCoords = this.getHexRadiusPoints(
-			centerTile,
-			this.hexRadius
-		);
 
 		// for each column
 		for (let col = 0; col < 2 * this.hexRadius + 1; col++) {
@@ -55,52 +38,59 @@ export class HexTiles {
 				this.tileMap[col][row].cartesian_coord = this.offsetToCartesian(
 					this.tileMap[col][row].offset_coord
 				);
-				if (
-					!this.isHexInHexList(
-						this.tileMap[col][row].offset_coord,
-						offsetCoords
-					)
-				) {
-					this.tileMap[col][row].building =
-						Constant.BUILDING.OUT_OF_BOUNDS;
-				}
+
+				this.tileMap[col][row].building =
+					Constant.BUILDING.OUT_OF_BOUNDS;
 			}
 		}
-		console.timeEnd();
 	}
 
-	generateBoundary(): void {
-		// sets the outer ring of tiles to a boundary tile
-		console.log('time to generate boundary');
-		console.time();
-
-		const boundaryHexes: OffsetPoint[] = this.getHexRingPoints(
-			this.tileMap[this.hexRadius][this.hexRadius],
-			this.hexRadius
-		);
-		for (const boundaryHex of boundaryHexes) {
-			this.boundaryCoords.push(boundaryHex);
-			this.tileMap[boundaryHex.q][boundaryHex.r].building =
-				Constant.BUILDING.BOUNDARY;
-		}
-
-		console.timeEnd();
-	}
-
-	generateCamps(): void {
-		// Takes the tilemap and sets tiles to camps dependent on the class config (private variables)
-		console.log('time to generate camps');
-		console.time();
+	generateChunks(): void {
+		// Sets each hexagonal chunk of CAMP_RADIUS as playable,
+		// with CAMP as center, and a boundary ring of (CAMP_RADIUS + 1) surrounding it.
+		// If boundary cannot fit, the entire chunk is left OUT_OF_BOUNDS
 
 		// start at the center of the map, and make it a camp
 		let hex: OffsetPoint = new OffsetPoint(this.hexRadius, this.hexRadius);
 		this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
+
 		const hexesToCheck: OffsetPoint[] = [hex];
 		const campHexes: OffsetPoint[] = [hex];
 
 		// keep repeating until we don't have any hexes left
 		while (hexesToCheck.length > 0) {
 			hex = hexesToCheck.splice(0, 1)[0];
+			let territoryHexes: OffsetPoint[] = this.getHexRadiusPoints(this.tileMap[hex.q][hex.r],Constant.CAMP_RADIUS);
+			let boundaryRingHexes: OffsetPoint[] = this.getHexRingPoints(this.tileMap[hex.q][hex.r], Constant.CAMP_RADIUS + 1);
+
+			// Check if the outermost ring is within the tileMap indices
+			// If all tiles are fully inside, set camp to valid
+			let isValid = true;
+			for(let tile of boundaryRingHexes) {
+				if(!this.checkIfValidHex(tile)) {
+					isValid = false;
+					break;
+				}
+			}
+			if(isValid){
+				//Set this chunk center as camp
+				this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
+				// Set territory hexes as playable
+				for(let tile of territoryHexes){
+					if(this.tileMap[tile.q][tile.r].building != Constant.BUILDING.CAMP){
+						this.tileMap[tile.q][tile.r].building = Constant.BUILDING.NONE;
+					}
+				}
+				// Set boundary ring hexes
+				for(let tile of boundaryRingHexes){
+					if(this.tileMap[tile.q][tile.r].building == Constant.BUILDING.OUT_OF_BOUNDS){
+						this.tileMap[tile.q][tile.r].building = Constant.BUILDING.BOUNDARY;
+					}
+				}
+			}
+			else{
+				this.tileMap[hex.q][hex.r].building = Constant.BUILDING.OUT_OF_BOUNDS;
+			}
 
 			// check all 6 possible surrounding campsite coordinates for this hex
 			for (let i = 0; i < 6; i++) {
@@ -130,9 +120,6 @@ export class HexTiles {
 					if (!this.isHexInHexList(travHex, campHexes)) {
 						hexesToCheck.push(travHex);
 						campHexes.push(travHex);
-						if (this.tileMap[travHex.q][travHex.r].isInBounds())
-							this.tileMap[travHex.q][travHex.r].building =
-								Constant.BUILDING.CAMP;
 					}
 				}
 			}
