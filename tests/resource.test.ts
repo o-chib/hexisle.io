@@ -2,8 +2,8 @@ import { Point } from './../src/shared/hexTiles';
 import { ResourceSystem, Resource } from './../src/shared/resources'
 import { Constant } from './../src/shared/constants';
 
-describe('Bullet', () => {
-	it('should move at right speed', () => {
+describe('Resource', () => {
+	it('should generate correct resourceCount', () => {
         const resourceSystem = new ResourceSystem();
         const xPos = 1;
         const yPos = 1;

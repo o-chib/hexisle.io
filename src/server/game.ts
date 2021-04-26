@@ -106,7 +106,7 @@ export default class Game {
 	}
 
 	updateResourceOnMap() {
-		if(this.resourceSystem.resourceCount == this.resourceSystem.maxResource) return;
+		if(this.resourceSystem.resourceCount >= this.resourceSystem.maxResource) return;
 
 		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount();
 
