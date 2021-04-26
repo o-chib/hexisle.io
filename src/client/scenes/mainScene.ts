@@ -4,6 +4,7 @@ import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 
 export default class MainScene extends Phaser.Scene {
+	public static Name = "MainScene";
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -23,71 +24,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	preload(): void {
-		// Players
-		this.load.spritesheet('player_red', '../assets/player_red.png', {
-			frameWidth: 94,
-			frameHeight: 120,
-		});
-		this.load.spritesheet('player_blue', '../assets/player_blue.png', {
-			frameWidth: 94,
-			frameHeight: 120,
-		});
-
-		// Team Bases
-		this.load.spritesheet('base_red', '../assets/base_red.png', {
-			frameWidth: 385,
-			frameHeight: 400,
-		});
-		this.load.spritesheet('base_blue', '../assets/base_blue.png', {
-			frameWidth: 385,
-			frameHeight: 400,
-		});
-
-		// Walls
-		this.load.spritesheet('wall_red', '../assets/wall_red.png', {
-			frameWidth: 154,
-			frameHeight: 134,
-		});
-		this.load.spritesheet('wall_blue', '../assets/wall_blue.png', {
-			frameWidth: 154,
-			frameHeight: 134,
-		});
-
-		// Turrets
-		this.load.spritesheet(
-			'turret_base_red',
-			'../assets/turret_base_red.png',
-			{
-				frameWidth: 154,
-				frameHeight: 134,
-			}
-		);
-		this.load.spritesheet(
-			'turret_base_blue',
-			'../assets/turret_base_blue.png',
-			{
-				frameWidth: 154,
-				frameHeight: 134,
-			}
-		);
-		this.load.spritesheet(
-			'turret_shooter',
-			'../assets/turret_shooter.png',
-			{
-				frameWidth: 154,
-				frameHeight: 134,
-			}
-		);
-
-		// Static Images
-		this.load.image('bullet', '../assets/bullet.png');
-		this.load.image('bulletblue', '../assets/bulletblue.png');
-		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
-		this.load.image('campfire_lit', '../assets/campfire_lit.png');
-		this.load.image(
-			'texture',
-			'../assets/Texture - Mossy Floor - Green 2.jpg'
-		);
+		// Preload stuff here
 	}
 
 	init(): void {
