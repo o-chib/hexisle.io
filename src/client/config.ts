@@ -3,7 +3,6 @@ import boot from './scenes/boot';
 import preloader from './scenes/preloader';
 import mainMenu from './scenes/mainMenu';
 import mainScene from './scenes/mainScene';
-import HUDScene from './scenes/HUDScene';
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
