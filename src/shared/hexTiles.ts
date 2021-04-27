@@ -52,51 +52,71 @@ export class HexTiles {
 		// If boundary cannot fit, the entire chunk is left OUT_OF_BOUNDS
 
 		// start at the center of the map, and make it a camp
-		let hex: OffsetPoint = new OffsetPoint(this.hexRadius, this.hexRadius);
+		const hex: OffsetPoint = new OffsetPoint(
+			this.hexRadius,
+			this.hexRadius
+		);
 
 		this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
-		const hexesToCheck: OffsetPoint[] = this.getCampfireRadiusPoints(hex, this.getNumCampfiresInMapRadius());
+		const hexesToCheck: OffsetPoint[] = this.getCampfireRadiusPoints(
+			hex,
+			this.getNumCampfiresInMapRadius()
+		);
 
 		// keep repeating until we don't have any hexes left
-		for(let hex of hexesToCheck) {
-			if(!this.checkIfValidHex(hex)){
+		for (const hex of hexesToCheck) {
+			if (!this.checkIfValidHex(hex)) {
 				continue;
 			}
-			let territoryHexes: OffsetPoint[] = this.getHexRadiusPoints(this.tileMap[hex.q][hex.r], this.campRadius);
-			let boundaryRingHexes: OffsetPoint[] = this.getHexRingPoints(this.tileMap[hex.q][hex.r], this.campRadius + 1);
+			const territoryHexes: OffsetPoint[] = this.getHexRadiusPoints(
+				this.tileMap[hex.q][hex.r],
+				this.campRadius
+			);
+			const boundaryRingHexes: OffsetPoint[] = this.getHexRingPoints(
+				this.tileMap[hex.q][hex.r],
+				this.campRadius + 1
+			);
 
 			// Check if the outermost ring is within the tileMap indices
 			// If all tiles are fully inside, set camp to valid
 			let isValid = true;
-			for(let tile of boundaryRingHexes) {
-				if(!this.checkIfValidHex(tile)) {
+			for (const tile of boundaryRingHexes) {
+				if (!this.checkIfValidHex(tile)) {
 					isValid = false;
 					break;
 				}
 			}
-			if(isValid){
+			if (isValid) {
 				//Set this chunk center as camp
 				this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
 				// Set territory hexes as playable
-				for(let tile of territoryHexes){
-					if(this.tileMap[tile.q][tile.r].building != Constant.BUILDING.CAMP){
-						this.tileMap[tile.q][tile.r].building = Constant.BUILDING.NONE;
+				for (const tile of territoryHexes) {
+					if (
+						this.tileMap[tile.q][tile.r].building !=
+						Constant.BUILDING.CAMP
+					) {
+						this.tileMap[tile.q][tile.r].building =
+							Constant.BUILDING.NONE;
 					}
 				}
 				// Set boundary ring hexes
-				for(let tile of boundaryRingHexes){
-					if(this.tileMap[tile.q][tile.r].building == Constant.BUILDING.OUT_OF_BOUNDS){
-						this.tileMap[tile.q][tile.r].building = Constant.BUILDING.BOUNDARY;
+				for (const tile of boundaryRingHexes) {
+					if (
+						this.tileMap[tile.q][tile.r].building ==
+						Constant.BUILDING.OUT_OF_BOUNDS
+					) {
+						this.tileMap[tile.q][tile.r].building =
+							Constant.BUILDING.BOUNDARY;
 					}
 				}
 			}
 		}
 	}
 
-	generateBoundary(): void{
-		for(let q = 0; q < this.tileMap.length; ++q){
-			for(let r = 0; r < this.tileMap[q].length; ++r){
-				if(this.tileMap[q][r].building == Constant.BUILDING.BOUNDARY)
+	generateBoundary(): void {
+		for (let q = 0; q < this.tileMap.length; ++q) {
+			for (let r = 0; r < this.tileMap[q].length; ++r) {
+				if (this.tileMap[q][r].building == Constant.BUILDING.BOUNDARY)
 					this.boundaryCoords.push(this.tileMap[q][r].offset_coord);
 			}
 		}
@@ -175,7 +195,10 @@ export class HexTiles {
 		return true;
 	}
 
-	getCampfireRadiusPoints(centerPoint:OffsetPoint, radius : number) : OffsetPoint[] {
+	getCampfireRadiusPoints(
+		centerPoint: OffsetPoint,
+		radius: number
+	): OffsetPoint[] {
 		// Takes center Campfire and returns list of Campfires points that surround it in flat-top hexagonal shape
 		// radius = number of adjacent campfires in a straight line till vertice
 		let results: OffsetPoint[] = [];
@@ -188,7 +211,10 @@ export class HexTiles {
 		return results;
 	}
 
-	getCampfireRingPoints(centerPoint:OffsetPoint, radius : number) : OffsetPoint[] {
+	getCampfireRingPoints(
+		centerPoint: OffsetPoint,
+		radius: number
+	): OffsetPoint[] {
 		// Takes center Campfire and returns a list of Campfires that form a ring at some radius from the center
 		// radius = number of adjacent campfires in a straight line till vertice
 		const results: OffsetPoint[] = [];
@@ -208,19 +234,22 @@ export class HexTiles {
 		return results;
 	}
 
-	traverseCampfires(from : OffsetPoint, direction : number, distance : number){
+	traverseCampfires(from: OffsetPoint, direction: number, distance: number) {
 		// Move in straight line to campfire that is at some number of campfires away from this campfire
 		// Move in 6 possible directions
 		let point = new OffsetPoint(from.q, from.r);
-		for(let i = 0 ; i < distance ; ++i){
+		for (let i = 0; i < distance; ++i) {
 			point = this.getAdjacentCampfirePoint(point, direction);
 		}
 		return point;
 	}
 
-	getAdjacentCampfirePoint(from : OffsetPoint, direction : number): OffsetPoint{
-		let campfire : OffsetPoint = new OffsetPoint();
-		switch(direction){
+	getAdjacentCampfirePoint(
+		from: OffsetPoint,
+		direction: number
+	): OffsetPoint {
+		let campfire: OffsetPoint = new OffsetPoint();
+		switch (direction) {
 			case 0: // North East
 				// Go north-east
 				campfire = this.hexTraverse(from, 5, this.campRadius + 1);
@@ -404,15 +433,15 @@ export class HexTiles {
 		return Math.floor(freeSpace / this.getHexHeight());
 	}
 
-	getNumCampfiresInMapRadius(){
+	getNumCampfiresInMapRadius() {
 		// Calculate number of campfires to fit in horizontal hexRadius tiles
 		// We need n = number of campfires horizontally
 		// # tiles needed = [n * (# tiles in between camps)]+ leftover tiles from ending campfire + 1 boundary tile
 		// OR # = [n * (2 * campRadius + 1)] + (campRadius + 1) <= hexRadius
-		let spaceBetweenCamps = 2 * this.campRadius + 1;
-		let addedTiles = this.campRadius + 1;
+		const spaceBetweenCamps = 2 * this.campRadius + 1;
+		const addedTiles = this.campRadius + 1;
 
-		let n = Math.floor((this.hexRadius - addedTiles) / spaceBetweenCamps);
+		const n = Math.floor((this.hexRadius - addedTiles) / spaceBetweenCamps);
 
 		return n;
 	}
