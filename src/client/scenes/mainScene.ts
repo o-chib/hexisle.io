@@ -87,7 +87,6 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('grass_chunk', '../assets/chunk.png');
 		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
 		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
-		this.load.image('wall', '../assets/wall.png');
 	}
 
 	init(): void {
@@ -236,37 +235,6 @@ export default class MainScene extends Phaser.Scene {
 
 	private createTileMap(tileMap: any) {
 		this.hexTiles.tileMap = tileMap;
-
-		// TODO : Remove before pushing to main
-		// DEBUG : DRAW ALL BOUNDARY AND OUT_OF_BOUNDS HEXES
-		for (let i = 0; i < this.hexTiles.tileMap.length; ++i) {
-			for (let j = 0; j < this.hexTiles.tileMap[i].length; ++j) {
-				if (
-					this.hexTiles.tileMap[i][j].building ==
-					Constant.BUILDING.BOUNDARY
-				) {
-					this.add
-						.image(
-							this.hexTiles.tileMap[i][j].cartesian_coord.xPos,
-							this.hexTiles.tileMap[i][j].cartesian_coord.yPos,
-							'wall'
-						)
-						.setDepth(100);
-				}
-				if (
-					this.hexTiles.tileMap[i][j].building ==
-					Constant.BUILDING.OUT_OF_BOUNDS
-				) {
-					this.add
-						.image(
-							this.hexTiles.tileMap[i][j].cartesian_coord.xPos,
-							this.hexTiles.tileMap[i][j].cartesian_coord.yPos,
-							'wall_red'
-						)
-						.setDepth(100);
-				}
-			}
-		}
 	}
 
 	// Animation control

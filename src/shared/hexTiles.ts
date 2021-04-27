@@ -11,7 +11,7 @@ export class HexTiles {
 
 	constructor() {
 		this.hexSize = 75;
-		this.campRadius = 4;
+		this.campRadius = Constant.CAMP_RADIUS;
 		this.mapHeight = Constant.MAP_HEIGHT;
 		this.hexRadius = this.getMapHexRadius();
 		this.baseCoords = [];
@@ -21,6 +21,7 @@ export class HexTiles {
 	generateMap(): void {
 		this.generateTileMap();
 		this.generateChunks();
+		this.generateBoundary();
 		this.generateBases(2, 1);
 	}
 
@@ -52,16 +53,17 @@ export class HexTiles {
 
 		// start at the center of the map, and make it a camp
 		let hex: OffsetPoint = new OffsetPoint(this.hexRadius, this.hexRadius);
-		this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
 
-		const hexesToCheck: OffsetPoint[] = [hex];
-		const campHexes: OffsetPoint[] = [hex];
+		this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
+		const hexesToCheck: OffsetPoint[] = this.getCampfireRadiusPoints(hex, this.getNumCampfiresInMapRadius());
 
 		// keep repeating until we don't have any hexes left
-		while (hexesToCheck.length > 0) {
-			hex = hexesToCheck.splice(0, 1)[0];
-			let territoryHexes: OffsetPoint[] = this.getHexRadiusPoints(this.tileMap[hex.q][hex.r],Constant.CAMP_RADIUS);
-			let boundaryRingHexes: OffsetPoint[] = this.getHexRingPoints(this.tileMap[hex.q][hex.r], Constant.CAMP_RADIUS + 1);
+		for(let hex of hexesToCheck) {
+			if(!this.checkIfValidHex(hex)){
+				continue;
+			}
+			let territoryHexes: OffsetPoint[] = this.getHexRadiusPoints(this.tileMap[hex.q][hex.r], this.campRadius);
+			let boundaryRingHexes: OffsetPoint[] = this.getHexRingPoints(this.tileMap[hex.q][hex.r], this.campRadius + 1);
 
 			// Check if the outermost ring is within the tileMap indices
 			// If all tiles are fully inside, set camp to valid
@@ -88,43 +90,16 @@ export class HexTiles {
 					}
 				}
 			}
-			else{
-				this.tileMap[hex.q][hex.r].building = Constant.BUILDING.OUT_OF_BOUNDS;
-			}
+		}
+	}
 
-			// check all 6 possible surrounding campsite coordinates for this hex
-			for (let i = 0; i < 6; i++) {
-				// create a new hex to traverse with
-				let travHex: OffsetPoint = new OffsetPoint(hex.q, hex.r);
-
-				// direction to check
-				let dir: number = i;
-
-				// start and go the length of the hex radius in the desired direction (clockwise starting at north)
-				travHex = this.hexTraverse(travHex, dir, this.campRadius);
-
-				// if i is at the last index, loop back to 0, or else increment it
-				if (i == 5) {
-					dir = 0;
-				} else {
-					dir += 1;
-				}
-
-				// start and go the length of the hex radius + 1 in the original direction + 1
-				travHex = this.hexTraverse(travHex, dir, this.campRadius + 1);
-
-				// check if this site exists, if it does add it to the list of hexes to check
-				// around for more campfires and set the tile as a campfire
-				if (this.checkIfValidHex(travHex)) {
-					// only add it if we haven't been to it before
-					if (!this.isHexInHexList(travHex, campHexes)) {
-						hexesToCheck.push(travHex);
-						campHexes.push(travHex);
-					}
-				}
+	generateBoundary(): void{
+		for(let q = 0; q < this.tileMap.length; ++q){
+			for(let r = 0; r < this.tileMap[q].length; ++r){
+				if(this.tileMap[q][r].building == Constant.BUILDING.BOUNDARY)
+					this.boundaryCoords.push(this.tileMap[q][r].offset_coord);
 			}
 		}
-		console.timeEnd();
 	}
 
 	generateBases(teamCount, campDistanceFromCenter): void {
@@ -198,6 +173,92 @@ export class HexTiles {
 			return false;
 		}
 		return true;
+	}
+
+	getCampfireRadiusPoints(centerPoint:OffsetPoint, radius : number) : OffsetPoint[] {
+		// Takes center Campfire and returns list of Campfires points that surround it in flat-top hexagonal shape
+		// radius = number of adjacent campfires in a straight line till vertice
+		let results: OffsetPoint[] = [];
+		results[0] = new OffsetPoint(centerPoint.q, centerPoint.r);
+
+		for (let k = 1; k <= radius; ++k) {
+			const subResult = this.getCampfireRingPoints(centerPoint, k);
+			results = results.concat(subResult);
+		}
+		return results;
+	}
+
+	getCampfireRingPoints(centerPoint:OffsetPoint, radius : number) : OffsetPoint[] {
+		// Takes center Campfire and returns a list of Campfires that form a ring at some radius from the center
+		// radius = number of adjacent campfires in a straight line till vertice
+		const results: OffsetPoint[] = [];
+
+		// Get starting campfire (West of center)
+		let currPoint = this.traverseCampfires(centerPoint, 4, radius);
+
+		let k = 0;
+		for (let i = 0; i < 6; ++i) {
+			// Iterate in all 6 Campfire Directions
+			for (let j = 0; j < radius; ++j) {
+				results[k] = new OffsetPoint(currPoint.q, currPoint.r);
+				currPoint = this.getAdjacentCampfirePoint(currPoint, i);
+				++k;
+			}
+		}
+		return results;
+	}
+
+	traverseCampfires(from : OffsetPoint, direction : number, distance : number){
+		// Move in straight line to campfire that is at some number of campfires away from this campfire
+		// Move in 6 possible directions
+		let point = new OffsetPoint(from.q, from.r);
+		for(let i = 0 ; i < distance ; ++i){
+			point = this.getAdjacentCampfirePoint(point, direction);
+		}
+		return point;
+	}
+
+	getAdjacentCampfirePoint(from : OffsetPoint, direction : number): OffsetPoint{
+		let campfire : OffsetPoint = new OffsetPoint();
+		switch(direction){
+			case 0: // North East
+				// Go north-east
+				campfire = this.hexTraverse(from, 5, this.campRadius + 1);
+				// Go north
+				campfire = this.hexTraverse(campfire, 4, this.campRadius);
+				break;
+			case 1: // East
+				// Go south-east
+				campfire = this.hexTraverse(from, 0, this.campRadius + 1);
+				// Go north-east
+				campfire = this.hexTraverse(campfire, 5, this.campRadius);
+				break;
+			case 2: // South East
+				// Go south
+				campfire = this.hexTraverse(from, 1, this.campRadius + 1);
+				// Go south-east
+				campfire = this.hexTraverse(campfire, 0, this.campRadius);
+				break;
+			case 3: //South West
+				// Go south-west
+				campfire = this.hexTraverse(from, 2, this.campRadius + 1);
+				// Go south
+				campfire = this.hexTraverse(campfire, 1, this.campRadius);
+				break;
+			case 4: // West
+				// Go north-west
+				campfire = this.hexTraverse(from, 3, this.campRadius + 1);
+				// Go south-west
+				campfire = this.hexTraverse(campfire, 2, this.campRadius);
+				break;
+			case 5: // North West
+				// Go north
+				campfire = this.hexTraverse(from, 4, this.campRadius + 1);
+				// Go north-west
+				campfire = this.hexTraverse(campfire, 3, this.campRadius);
+				break;
+		}
+		return campfire;
 	}
 
 	getHexRingPoints(centreTile: Tile, radius: number): OffsetPoint[] {
@@ -341,6 +402,19 @@ export class HexTiles {
 		const mapRadius: number = this.mapHeight / 2;
 		const freeSpace: number = mapRadius - this.getHexHeight() / 2;
 		return Math.floor(freeSpace / this.getHexHeight());
+	}
+
+	getNumCampfiresInMapRadius(){
+		// Calculate number of campfires to fit in horizontal hexRadius tiles
+		// We need n = number of campfires horizontally
+		// # tiles needed = [n * (# tiles in between camps)]+ leftover tiles from ending campfire + 1 boundary tile
+		// OR # = [n * (2 * campRadius + 1)] + (campRadius + 1) <= hexRadius
+		let spaceBetweenCamps = 2 * this.campRadius + 1;
+		let addedTiles = this.campRadius + 1;
+
+		let n = Math.floor((this.hexRadius - addedTiles) / spaceBetweenCamps);
+
+		return n;
 	}
 
 	private getBaseDirectionsFromTeamCount(teamCount): number[] {
