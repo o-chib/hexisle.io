@@ -39,15 +39,15 @@ export default class Turret {
 		}
 	}
 
-	canShoot() {
+	canShoot(): boolean {
 		return this.hasTarget == true && this.reloadTimer <= 0;
 	}
 
-	shoot() {
+	shoot(): void {
 		this.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
 	}
 
-	reload() {
+	reload(): void {
 		if (this.reloadTimer > 0) {
 			this.reloadTimer -= 1;
 		}
