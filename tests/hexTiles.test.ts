@@ -38,4 +38,11 @@ describe('HexTiles', () => {
 		let tile: Tile = hexTileMap.tileMap[hexCoord.q][hexCoord.r];
 		expect(tile.building).toEqual(Constant.BUILDING.BOUNDARY);
 	});
+
+	it('cartesianToOffset should not modify the point given to it', () => {
+		let point: Point = new Point(1900, 2700);
+		hexTileMap.cartesianToOffset(point);
+		expect(point.xPos).toEqual(1900);
+		expect(point.yPos).toEqual(2700);
+	});
 });
