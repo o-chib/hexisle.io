@@ -327,8 +327,7 @@ export default class Game {
 	updatePlayerPosition(currentTimestamp) {
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
-			this.collision.playerBulletCollision(aPlayer, this.bullets);
-			this.collision.playerResourceCollision(aPlayer, this.resourceSystem);
+			this.collision.playerBulletResourceCollision(aPlayer, this.bullets, this.resourceSystem);
 			if (aPlayer.health == 0) {
 				// Give time for player to play death animation
 				// Only call timeout once
