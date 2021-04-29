@@ -9,10 +9,10 @@ export class HexTiles {
 	public baseCoords: OffsetPoint[];
 	public boundaryCoords: OffsetPoint[];
 
-	constructor() {
+	constructor(mapHeight: number = Constant.MAP_HEIGHT) {
 		this.hexSize = 75;
 		this.campRadius = 4;
-		this.mapHeight = Constant.MAP_HEIGHT;
+		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();
 		this.baseCoords = [];
 		this.boundaryCoords = [];
