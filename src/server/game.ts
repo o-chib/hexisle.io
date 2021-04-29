@@ -130,9 +130,8 @@ export default class Game {
 	}
 
 	getRandomPointOnMap(): Point {
-		let point: Point = this.hexTileMap.getRandomMapPoint();
-		let validPoint: boolean = this.hexTileMap.checkIfValidPointOnGrid(point);
-
+		let point: Point = new Point();
+		let validPoint: boolean = false;
 		while(!validPoint) {
 			point = this.hexTileMap.getRandomMapPoint();
 			validPoint = this.hexTileMap.checkIfValidPointOnGrid(point);

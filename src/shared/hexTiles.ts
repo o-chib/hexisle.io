@@ -214,18 +214,20 @@ export class HexTiles {
 	}
 
 	checkIfValidPointOnGrid(point: Point): boolean {
-		let hexPoint: OffsetPoint = this.cartesianToOffset(point);
+		let hexCoord: OffsetPoint = this.cartesianToOffset(point);
 
-		if(!this.checkIfValidHex(hexPoint)) return false;
+		if(!this.checkIfValidHex(hexCoord)) return false;
 
-		if(this.tileMap[hexPoint.q][hexPoint.r].building != Constant.BUILDING.NONE) return false;
+		if (this.tileMap[hexCoord.q][hexCoord.r].building != Constant.BUILDING.NONE) {
+			return false;
+		}
 
 		return true;
 	}
 
 	getRandomMapPoint(): Point {
-        return new Point(Math.random() * this.mapHeight, Math.random() * this.mapHeight);
-    }
+    return new Point(Math.random() * this.mapHeight, Math.random() * this.mapHeight);
+  }
 
 	getHexRingPoints(centreTile: Tile, radius: number): OffsetPoint[] {
 		// Takes center tile and returns a list of points that form a ring at some radius from the center
@@ -275,12 +277,14 @@ export class HexTiles {
 		// returns the offset odd-q coordinate of the hex it's in
 
 		// account for the half a hex to the bottom right we're pushing the map
-		point.xPos = point.xPos - this.hexSize;
-		point.yPos = point.yPos - this.hexSize;
+		let xPos: number = point.xPos;
+		let yPos: number = point.yPos;
+		xPos = xPos - this.hexSize;
+		yPos = yPos - this.hexSize;
 
 		// make the offset coord into a cube format
 		let cube: number[] = this.pixelToCube(
-			new Point(point.xPos, point.yPos)
+			new Point(xPos, yPos)
 		);
 
 		// round the cube

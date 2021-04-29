@@ -8,8 +8,8 @@ export class ResourceSystem {
     public resources: Set<Resource>;
 
     constructor() {
-        this.minResource = 30;
-        this.maxResource = 50;
+        this.minResource = 50;
+        this.maxResource = 100;
         this.resourceCount = 0;
         this.resources = new Set();
     }
@@ -27,7 +27,7 @@ export class ResourceSystem {
             randomPoint.yPos,
             dropAmount,
             type
-        )
+        );
         this.resources.add(newResource);
         this.resourceCount++;
         return newResource;
