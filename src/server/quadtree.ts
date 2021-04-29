@@ -1,5 +1,4 @@
 // Import Mapsize or something
-import { Constant } from '../shared/constants';
 
 export class Quadtree {
 	// The ratio of child to parent width.  Higher numbers will push payload further down
@@ -14,12 +13,7 @@ export class Quadtree {
 		this.SPLIT = 0.5; // originally(with overlapping) = 0.6;
 		this.MAX_DEPTH = 8;
 		this.topLevelNode = new QuadtreeNode();
-		this.topLevelNodeBox = new Rect(
-			0,
-			Constant.MAP_WIDTH,
-			Constant.MAP_HEIGHT,
-			0
-		);
+		this.topLevelNodeBox = new Rect(0, 4000, 4000, 0);
 	}
 
 	public collides(obj: CollisionObject, box: Rect): boolean {

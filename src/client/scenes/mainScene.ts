@@ -85,13 +85,13 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
+		this.load.image(
+			'texture',
+			'../assets/Texture - Mossy Floor - Green 2.jpg'
+		);
 		this.load.image('blueRes', '../assets/blueResource.png');
 		this.load.image('greenRes', '../assets/greenResource.png');
 		this.load.image('whiteRes', '../assets/whiteResource.png');
-		this.load.image('grass_chunk', '../assets/chunk.png');
-		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
-		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
-		this.load.image('wall', '../assets/wall.png');
 	}
 
 	init(): void {
@@ -241,24 +241,118 @@ export default class MainScene extends Phaser.Scene {
 
 	private createTileMap(tileMap: any) {
 		this.hexTiles.tileMap = tileMap;
+		const graphic_Map = this.add.graphics();
 
-		// DEBUG : DRAW BOUNDARY FOR NOW
-		for (let i = 0; i < this.hexTiles.tileMap.length; ++i) {
-			for (let j = 0; j < this.hexTiles.tileMap[i].length; ++j) {
+		// masking logic
+		this.add
+			.image(0, 0, 'texture')
+			.setOrigin(0, 0)
+			.setDepth(-1)
+			.setScale(3);
+
+		this.drawAllTiles(graphic_Map);
+
+		this.generateTerritoryTexture(this.hexTiles.tileMap[0][0]);
+		graphic_Map.generateTexture(
+			'hexMap',
+			Constant.MAP_WIDTH,
+			Constant.MAP_HEIGHT
+		);
+
+		this.add.sprite(0, 0, 'hexMap').setOrigin(0, 0).setDepth(-1);
+		graphic_Map.destroy();
+	}
+
+	// draws every arena/map hex we have in our tilemap
+	drawAllTiles(graphic_Map): void {
+		if (!this.hexTiles.tileMap) return;
+
+		for (let col = 0; col < this.hexTiles.tileMap.length; col++) {
+			for (let row = 0; row < this.hexTiles.tileMap[col].length; row++) {
 				if (
-					this.hexTiles.tileMap[i][j].building ==
-					Constant.BUILDING.BOUNDARY
+					this.hexTiles.tileMap[col][row].building !=
+						Constant.BUILDING.OUT_OF_BOUNDS &&
+					this.hexTiles.tileMap[col][row].building !=
+						Constant.BUILDING.BOUNDARY
 				) {
-					this.add
-						.image(
-							this.hexTiles.tileMap[i][j].cartesian_coord.xPos,
-							this.hexTiles.tileMap[i][j].cartesian_coord.yPos,
-							'wall'
-						)
-						.setDepth(100);
+					//TODO cannot put isInBounds here?
+					this.drawTile(this.hexTiles.tileMap[col][row], graphic_Map);
 				}
 			}
 		}
+	}
+
+	// takes XY coordinates of center point, generates all required vertices, draws individual tile
+	drawTile(tile: Tile, graphics: Phaser.GameObjects.Graphics): void {
+		if (tile.building == Constant.BUILDING.OUT_OF_BOUNDS) return;
+
+		graphics.fillStyle(0x000000, 0);
+
+		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
+			tile.cartesian_coord
+		);
+
+		graphics.lineStyle(2, 0xffffff, 1);
+		if (tile.building == Constant.BUILDING.CAMP)
+			graphics.lineStyle(5, 0xffffff, 1);
+
+		this.drawGraphics(points, graphics);
+
+		graphics.fillPath();
+		graphics.strokePath();
+	}
+
+	drawGraphics(points: Point[], graphics: Phaser.GameObjects.Graphics) {
+		graphics.beginPath();
+		graphics.moveTo(points[0].xPos, points[0].yPos);
+		for (let i = 0; i < 6; i++) {
+			graphics.lineTo(points[i].xPos, points[i].yPos);
+		}
+		graphics.closePath();
+	}
+
+	// takes XY coordinates of center point, generates all required vertices, draws individual tile
+	generateTerritoryTexture(tile: Tile): void {
+		const points: Point[] = this.hexTiles.getHexPointsFromCenter(
+			tile.cartesian_coord
+		);
+
+		let colorName = '';
+		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
+			const graphics = this.add.graphics();
+
+			this.drawGraphics(points, graphics);
+
+			if (i == 0) {
+				graphics.fillStyle(0xff0000, 0.2);
+				graphics.lineStyle(4, 0xff0000, 0.2);
+				colorName = 'red-territory';
+			} else if (i == 1) {
+				graphics.fillStyle(0x3333ff, 0.2);
+				graphics.lineStyle(4, 0x3333ff, 0.2);
+				colorName = 'blue-territory';
+			}
+
+			graphics.fillPath();
+
+			graphics.generateTexture(
+				colorName,
+				this.hexTiles.getHexWidth(),
+				this.hexTiles.getHexHeight()
+			);
+
+			graphics.destroy();
+		}
+	}
+
+	// Masking, Alpha Mask
+	// Masks the texture image using the total hexagonal tile map
+	setMapMask(
+		reveal: Phaser.GameObjects.Image,
+		graphic_Map: Phaser.GameObjects.Graphics
+	): void {
+		const hexBrush = graphic_Map.createGeometryMask();
+		reveal.setMask(hexBrush);
 	}
 
 	// Animation control
@@ -565,7 +659,7 @@ export default class MainScene extends Phaser.Scene {
 			this.campfireSprites,
 			'campfire_unlit',
 			(newCampfire, newCampfireLiteral) => {
-				if (newCampfireLiteral.teamNumber != Constant.TEAM.NONE)
+				if (newCampfireLiteral.teamNumber != -1)
 					newCampfire.setTexture('campfire_lit').setDepth(0);
 				else newCampfire.setTexture('campfire_unlit').setDepth(0);
 				return newCampfire;
@@ -606,22 +700,17 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			territories,
 			this.territorySprites,
-			'grass_chunk',
+			'red-territory',
 			(changedTilesNewTile, changedTilesCurrentTile) => {
 				if (changedTilesCurrentTile.teamNumber == Constant.TEAM.RED) {
-					changedTilesNewTile.setTexture('grass_chunk_red');
+					changedTilesNewTile.setTexture('red-territory');
+					changedTilesNewTile.setVisible(true).setDepth(-1);
 				} else if (
 					changedTilesCurrentTile.teamNumber == Constant.TEAM.BLUE
 				) {
-					changedTilesNewTile.setTexture('grass_chunk_blue');
-				} else if (
-					changedTilesCurrentTile.teamNumber == Constant.TEAM.NONE
-				) {
-					changedTilesNewTile.setTexture('grass_chunk');
+					changedTilesNewTile.setTexture('blue-territory');
+					changedTilesNewTile.setVisible(true).setDepth(-1);
 				}
-
-				changedTilesNewTile.setDepth(-1000);
-
 				return changedTilesNewTile;
 			}
 		);
