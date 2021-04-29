@@ -5,6 +5,10 @@ const info_format = `Health:	%1
 Score:	%2
 Resource:	%3`;
 const timer_format = `%1:%2`;
+const debug_format = 
+`cursor:
+xPos/yPos:%1/%2
+hexQ/hexR:%3/%4`;
 
 export default class HUDScene extends Phaser.Scene {
 	private mainSceneObj: any;
@@ -13,13 +17,19 @@ export default class HUDScene extends Phaser.Scene {
 	private infoText?: Phaser.GameObjects.Text;
 	// Game timer
 	private gameTimeText?: Phaser.GameObjects.Text;
+	// Debug Hex Info
+	private debugHexText?: Phaser.GameObjects.Text;
 
 	constructor() {
 		super({ key: 'HUDScene', active: true });
 	}
 
 	create(): void {
-		this.infoText = this.add.text(0, 0, '', { font: '48px Arial' });
+		this.infoText = this.add.text(0, 0, '', {
+			font: '48px Arial',
+			stroke: '#000000',
+    	strokeThickness: 5,
+		});
 		new Anchor(this.infoText, {
 			left: 'left+10',
 			top: 'top+10',
@@ -28,20 +38,39 @@ export default class HUDScene extends Phaser.Scene {
 		this.gameTimeText = this.add.text(0, 0, '', {
 			font: '48px Arial',
 			align: 'center',
+			stroke: '#000000',
+    	strokeThickness: 5,
 		});
 		new Anchor(this.gameTimeText, {
 			centerX: 'center',
 			top: 'top+10',
 		});
 
-		//  Grab a reference to the Game Scene
+		this.debugHexText = this.add.text(0, 0, '', {
+			font: '48px Arial',
+			align: 'left',
+			stroke: '#000000',
+    	strokeThickness: 5,
+		});
+		new Anchor(this.debugHexText, {
+			centerX: 'left+10',
+			bottom: 'bottom-118',
+		});
+
+		// Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
 
-		//  Listen for events from it
+		// Listen for events from it
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
+
+		// Listen for debug info update events
+		this.mainSceneObj.events.on('updateDebugInfo', this.updateDebugInfo, this);
+
+		// Listen for clear debug info event
+		this.mainSceneObj.events.on('clearDebugInfo', this.clearDebugInfo, this);
 	}
 		
-	private updateText(currentPlayer: any, time: number): void {
+	private updateText(currentPlayer: any, time: number, debugInfo: any): void {
 		let playerHealth: number;
 		if (currentPlayer.health < 0) {
 			playerHealth = 0;
@@ -60,13 +89,26 @@ export default class HUDScene extends Phaser.Scene {
 		const dateTime = new Date(time);
 		const minutes = dateTime.getMinutes();
 		const seconds = dateTime.getSeconds();
-		//console.log(dateTime.format("mm:ss"));
 
 		const gameTimeText = Phaser.Utils.String.Format(timer_format, [
 			this.addLeadingZeros(minutes),
 			this.addLeadingZeros(seconds),
 		]);
 		this.gameTimeText?.setText(gameTimeText);
+	}
+
+	private updateDebugInfo(xPos, yPos, hexQ, hexR): void {
+		const debugHexText = Phaser.Utils.String.Format(debug_format, [
+			Math.round(xPos * 100) / 100,
+			Math.round(yPos * 100) / 100,
+			hexQ,
+			hexR
+		]);
+		this.debugHexText?.setText(debugHexText);
+	}
+
+	private clearDebugInfo(): void {
+		this.debugHexText?.setText('');
 	}
 
 	private addLeadingZeros(time: number): string {
