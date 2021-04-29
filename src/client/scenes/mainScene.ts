@@ -137,7 +137,13 @@ export default class MainScene extends Phaser.Scene {
 			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
 				new Point(gamePos.x, gamePos.y)
 			);
-			this.events.emit('updateDebugInfo', gamePos.x, gamePos.y, coord.q, coord.r);
+			this.events.emit(
+				'updateDebugInfo',
+				gamePos.x,
+				gamePos.y,
+				coord.q,
+				coord.r
+			);
 		}
 	}
 
@@ -656,11 +662,20 @@ export default class MainScene extends Phaser.Scene {
 			this.resourceSprites,
 			'',
 			(newResource, newResourceLiteral) => {
-				if (newResourceLiteral.type == Constant.RESOURCE.RESOURCE_NAME[0]) {
+				if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[0]
+				) {
 					newResource.setTexture('blueRes');
-				} else if (newResourceLiteral.type == Constant.RESOURCE.RESOURCE_NAME[1]) {
+				} else if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[1]
+				) {
 					newResource.setTexture('greenRes');
-				} else if (newResourceLiteral.type == Constant.RESOURCE.RESOURCE_NAME[2]) {
+				} else if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[2]
+				) {
 					newResource.setTexture('whiteRes');
 				}
 				newResource.setVisible(true);

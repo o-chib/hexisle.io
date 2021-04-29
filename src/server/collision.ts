@@ -6,7 +6,7 @@ import Base from '../shared/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';
-import { ResourceSystem, Resource } from './../shared/resources'
+import { ResourceSystem, Resource } from './../shared/resources';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
@@ -50,7 +50,11 @@ export default class CollisionDetection {
 		campfire.updateCaptureState(playerCount);
 	}
 
-	playerBulletResourceCollision(player: Player, bullets: Set<Bullet>, resourceSystem: ResourceSystem): void {
+	playerBulletResourceCollision(
+		player: Player,
+		bullets: Set<Bullet>,
+		resourceSystem: ResourceSystem
+	): void {
 		if (player.health <= 0) {
 			return;
 		}

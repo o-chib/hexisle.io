@@ -1,7 +1,7 @@
 import { HexTiles } from './../src/shared/hexTiles';
 
 describe('HexTiles', () => {
-	let hexTileMap: HexTiles = new HexTiles();
+	const hexTileMap: HexTiles = new HexTiles();
 	hexTileMap.generateMap();
 
 	it('should generate correct resourceCount', () => {

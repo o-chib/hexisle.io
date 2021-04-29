@@ -59,8 +59,10 @@ export default class Game {
 		this.initBases();
 
 		this.resourceSystem = new ResourceSystem();
-		this.addResources(this.resourceSystem.getRandomResourceGenerationCount()
-							+ this.resourceSystem.minResource);
+		this.addResources(
+			this.resourceSystem.getRandomResourceGenerationCount() +
+				this.resourceSystem.minResource
+		);
 
 		this.previousUpdateTimestamp = Date.now();
 		this.gameInterval = setInterval(
@@ -106,33 +108,49 @@ export default class Game {
 	}
 
 	updateResourceOnMap() {
-		if(this.resourceSystem.resourceCount >= this.resourceSystem.maxResource) return;
+		if (
+			this.resourceSystem.resourceCount >= this.resourceSystem.maxResource
+		)
+			return;
 
 		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount();
 
-		if(this.resourceSystem.resourceCount + numResourceToGenerate
-			> this.resourceSystem.maxResource ) return;
+		if (
+			this.resourceSystem.resourceCount + numResourceToGenerate >
+			this.resourceSystem.maxResource
+		)
+			return;
 
 		this.addResources(numResourceToGenerate);
 	}
 
 	addResources(numResource: number) {
 		let randomPoint;
-		while(numResource > 0) {
-			if(this.resourceSystem.resourceCount > this.resourceSystem.maxResource) return;
+		while (numResource > 0) {
+			if (
+				this.resourceSystem.resourceCount >
+				this.resourceSystem.maxResource
+			)
+				return;
 			randomPoint = this.getRandomEmptyPointOnMap();
 
-			const newResource: Resource = this.resourceSystem.generateResource(this.idGenerator.newID(), randomPoint);
-			this.collision.insertCollider(newResource, Constant.RESOURCE_RADIUS);
+			const newResource: Resource = this.resourceSystem.generateResource(
+				this.idGenerator.newID(),
+				randomPoint
+			);
+			this.collision.insertCollider(
+				newResource,
+				Constant.RESOURCE_RADIUS
+			);
 
-            numResource -= 1;
-        }
+			numResource -= 1;
+		}
 	}
 
 	getRandomEmptyPointOnMap(): Point {
 		let point: Point = new Point();
-		let validPoint: boolean = false;
-		while(!validPoint) {
+		let validPoint = false;
+		while (!validPoint) {
 			point = this.getRandomMapPoint();
 			validPoint = this.hexTileMap.checkIfValidEmptyPointOnGrid(point);
 		}
@@ -141,8 +159,11 @@ export default class Game {
 	}
 
 	getRandomMapPoint(): Point {
-    return new Point(Math.random() * Constant.MAP_WIDTH, Math.random() * Constant.MAP_HEIGHT);
-  }
+		return new Point(
+			Math.random() * Constant.MAP_WIDTH,
+			Math.random() * Constant.MAP_HEIGHT
+		);
+	}
 
 	updatePlayerResource() {
 		for (const aPlayer of this.players.values()) {
@@ -331,7 +352,11 @@ export default class Game {
 	updatePlayerPosition(currentTimestamp) {
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
-			this.collision.playerBulletResourceCollision(aPlayer, this.bullets, this.resourceSystem);
+			this.collision.playerBulletResourceCollision(
+				aPlayer,
+				this.bullets,
+				this.resourceSystem
+			);
 			if (aPlayer.health == 0) {
 				// Give time for player to play death animation
 				// Only call timeout once
@@ -477,7 +502,9 @@ export default class Game {
 		const nearbyWalls: Wall[] = this.createWallUpdate(player);
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
 		const nearbyBases: Base[] = this.createBaseUpdate(player);
-		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(player);
+		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
+			player
+		);
 		const nearbyResources: Resource[] = this.createResourceUpdate(player);
 
 		return {

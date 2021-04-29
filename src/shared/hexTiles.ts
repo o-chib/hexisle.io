@@ -214,11 +214,14 @@ export class HexTiles {
 	}
 
 	checkIfValidEmptyPointOnGrid(point: Point): boolean {
-		let hexCoord: OffsetPoint = this.cartesianToOffset(point);
+		const hexCoord: OffsetPoint = this.cartesianToOffset(point);
 
-		if(!this.checkIfValidHex(hexCoord)) return false;
+		if (!this.checkIfValidHex(hexCoord)) return false;
 
-		if (this.tileMap[hexCoord.q][hexCoord.r].building != Constant.BUILDING.NONE) {
+		if (
+			this.tileMap[hexCoord.q][hexCoord.r].building !=
+			Constant.BUILDING.NONE
+		) {
 			return false;
 		}
 
@@ -279,9 +282,7 @@ export class HexTiles {
 		yPos = yPos - this.hexSize;
 
 		// make the offset coord into a cube format
-		let cube: number[] = this.pixelToCube(
-			new Point(xPos, yPos)
-		);
+		let cube: number[] = this.pixelToCube(new Point(xPos, yPos));
 
 		// round the cube
 		cube = this.roundCube(cube);

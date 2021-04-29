@@ -5,8 +5,7 @@ const info_format = `Health:	%1
 Score:	%2
 Resource:	%3`;
 const timer_format = `%1:%2`;
-const debug_format = 
-`cursor:
+const debug_format = `cursor:
 xPos/yPos:%1/%2
 hexQ/hexR:%3/%4`;
 
@@ -28,7 +27,7 @@ export default class HUDScene extends Phaser.Scene {
 		this.infoText = this.add.text(0, 0, '', {
 			font: '48px Arial',
 			stroke: '#000000',
-    	strokeThickness: 5,
+			strokeThickness: 5,
 		});
 		new Anchor(this.infoText, {
 			left: 'left+10',
@@ -39,7 +38,7 @@ export default class HUDScene extends Phaser.Scene {
 			font: '48px Arial',
 			align: 'center',
 			stroke: '#000000',
-    	strokeThickness: 5,
+			strokeThickness: 5,
 		});
 		new Anchor(this.gameTimeText, {
 			centerX: 'center',
@@ -50,7 +49,7 @@ export default class HUDScene extends Phaser.Scene {
 			font: '48px Arial',
 			align: 'left',
 			stroke: '#000000',
-    	strokeThickness: 5,
+			strokeThickness: 5,
 		});
 		new Anchor(this.debugInfoText, {
 			centerX: 'left+10',
@@ -64,10 +63,18 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
 
 		// Listen for debug info update events
-		this.mainSceneObj.events.on('updateDebugInfo', this.updateDebugInfo, this);
+		this.mainSceneObj.events.on(
+			'updateDebugInfo',
+			this.updateDebugInfo,
+			this
+		);
 
 		// Listen for clear debug info event
-		this.mainSceneObj.events.on('clearDebugInfo', this.clearDebugInfo, this);
+		this.mainSceneObj.events.on(
+			'clearDebugInfo',
+			this.clearDebugInfo,
+			this
+		);
 	}
 
 	private updateText(currentPlayer: any, time: number): void {
@@ -102,7 +109,7 @@ export default class HUDScene extends Phaser.Scene {
 			Math.round(xPos * 100) / 100,
 			Math.round(yPos * 100) / 100,
 			hexQ,
-			hexR
+			hexR,
 		]);
 		this.debugInfoText?.setText(debugInfoText);
 	}
