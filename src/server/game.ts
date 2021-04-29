@@ -11,7 +11,7 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
-import { ResourceSystem, Resource } from './../shared/resources'
+import { ResourceSystem, Resource } from './../shared/resources';
 
 export default class Game {
 	teams: Teams;
