@@ -120,7 +120,7 @@ export default class Game {
 		let randomPoint;
 		while(numResource > 0) {
 			if(this.resourceSystem.resourceCount > this.resourceSystem.maxResource) return;
-			randomPoint = this.getRandomPointOnMap();
+			randomPoint = this.getRandomEmptyPointOnMap();
 
 			const newResource: Resource = this.resourceSystem.generateResource(this.idGenerator.newID(), randomPoint);
 			this.collision.insertCollider(newResource, Constant.RESOURCE_RADIUS);
@@ -129,16 +129,20 @@ export default class Game {
         }
 	}
 
-	getRandomPointOnMap(): Point {
+	getRandomEmptyPointOnMap(): Point {
 		let point: Point = new Point();
 		let validPoint: boolean = false;
 		while(!validPoint) {
-			point = this.hexTileMap.getRandomMapPoint();
-			validPoint = this.hexTileMap.checkIfValidPointOnGrid(point);
+			point = this.getRandomMapPoint();
+			validPoint = this.hexTileMap.checkIfValidEmptyPointOnGrid(point);
 		}
 
 		return point;
 	}
+
+	getRandomMapPoint(): Point {
+    return new Point(Math.random() * Constant.MAP_WIDTH, Math.random() * Constant.MAP_HEIGHT);
+  }
 
 	updatePlayerResource() {
 		for (const aPlayer of this.players.values()) {

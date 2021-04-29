@@ -225,10 +225,6 @@ export class HexTiles {
 		return true;
 	}
 
-	getRandomMapPoint(): Point {
-    return new Point(Math.random() * this.mapHeight, Math.random() * this.mapHeight);
-  }
-
 	getHexRingPoints(centreTile: Tile, radius: number): OffsetPoint[] {
 		// Takes center tile and returns a list of points that form a ring at some radius from the center
 		// radius = number of tiles from top to center - excluding the center.
