@@ -160,10 +160,6 @@ export default class CollisionDetection {
 		});
 	}
 
-	zombieBulletPlayerCollision(): void {
-		// future implementation
-	}
-
 	doesObjCollideWithWall(
 		xPos: number,
 		yPos: number,
