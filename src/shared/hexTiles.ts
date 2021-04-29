@@ -213,7 +213,7 @@ export class HexTiles {
 		return true;
 	}
 
-	checkIfValidPointOnGrid(point: Point): boolean {
+	checkIfValidEmptyPointOnGrid(point: Point): boolean {
 		let hexCoord: OffsetPoint = this.cartesianToOffset(point);
 
 		if(!this.checkIfValidHex(hexCoord)) return false;
