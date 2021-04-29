@@ -8,8 +8,8 @@ export class ResourceSystem {
     public resources: Set<Resource>;
 
     constructor() {
-        this.minResource = 50;
-        this.maxResource = 100;
+        this.minResource = 100;
+        this.maxResource = 200;
         this.resourceCount = 0;
         this.resources = new Set();
     }
