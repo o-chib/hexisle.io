@@ -574,7 +574,7 @@ export default class Game {
 
 	turretShootBullet(turret: Turret) {
 		this.shootBullet(turret, turret.direction);
-		turret.shoot();
+		turret.resetReloadTimer();
 	}
 
 	turretAim(turret: Turret) {

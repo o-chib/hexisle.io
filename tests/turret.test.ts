@@ -53,7 +53,7 @@ describe('Turret', () => {
 	});
 
 	it('shot: should be reloading', () => {
-		turret.shoot();
+		turret.resetReloadTimer();
 		expect(turret.reloadTimer).toEqual(Constant.TIMING.TURRET_RELOAD_TIME);
 	});
 
