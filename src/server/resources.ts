@@ -2,7 +2,8 @@ import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
 
 export class ResourceSystem {
-	public previousUpdateTimestamp: number;
+	public previousPassiveUpdateTimestamp: number;
+	public previousMapUpdateTimestamp: number;
 	public minResource: number;
 	public maxResource: number;
 	public resourceCount: number;

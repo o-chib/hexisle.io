@@ -204,7 +204,10 @@ export default class Game {
 	}
 
 	updatePlayers(currentTimestamp: number, timePassed: number) {
-		const givePassiveIncome: boolean = timePassed >= Constant.INCOME.UPDATE_RATE;
+		const givePassiveIncome: boolean = (this.resourceSystem.previousPassiveUpdateTimestamp >= Constant.INCOME.UPDATE_RATE);
+		if (givePassiveIncome) {
+			console.log("giving passive income");
+		}
 		for (const aPlayer of this.players.values()) {
 			this.updatePlayerPosition(currentTimestamp, aPlayer);
 			if (aPlayer.health > 0 && givePassiveIncome) {
