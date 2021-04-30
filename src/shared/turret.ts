@@ -2,7 +2,7 @@ import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
 export default class Turret {
-	TURRET_RELOAD_TIME = 1000;
+	static readonly TURRET_RELOAD_TIME = 1000;
 
 	id: string;
 	xPos: number;
@@ -57,7 +57,7 @@ export default class Turret {
 	}
 
 	resetReloadTimer(): void {
-		this.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
+		this.reloadTimer = Turret.TURRET_RELOAD_TIME;
 	}
 
 	reload(timePassed: number): void {
