@@ -15,17 +15,14 @@ export default class Turret {
 
 	constructor(
 		id: string,
-		xPos: number,
-		yPos: number,
-		teamNumber: number,
 		tile: Tile,
 		gameShootBulletMethod: (turret: Turret) => void
 	) {
 		this.id = id;
-		this.xPos = xPos;
-		this.yPos = yPos;
+		this.xPos = tile.cartesian_coord.xPos;
+		this.yPos = tile.cartesian_coord.yPos;
 		this.direction = 0;
-		this.teamNumber = teamNumber;
+		this.teamNumber = tile.team;
 		this.tile = tile;
 		this.hp = Constant.HP.TURRET;
 		this.reloadTimer = 0;

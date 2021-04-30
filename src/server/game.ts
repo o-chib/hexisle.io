@@ -644,9 +644,6 @@ export default class Game {
 	addTurret(tile: Tile): void {
 		const turret: Turret = new Turret(
 			this.idGenerator.newID(),
-			tile.cartesian_coord.xPos,
-			tile.cartesian_coord.yPos,
-			tile.team,
 			tile,
 			this.turretShootBullet.bind(this)
 		);
