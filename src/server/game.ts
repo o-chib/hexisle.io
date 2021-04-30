@@ -124,47 +124,6 @@ export default class Game {
 		this.addResources(numResourceToGenerate);
 	}
 
-	addResources(numResource: number) {
-		let randomPoint;
-		while (numResource > 0) {
-			if (
-				this.resourceSystem.resourceCount >
-				this.resourceSystem.maxResource
-			)
-				return;
-			randomPoint = this.getRandomEmptyPointOnMap();
-
-			const newResource: Resource = this.resourceSystem.generateResource(
-				this.idGenerator.newID(),
-				randomPoint
-			);
-			this.collision.insertCollider(
-				newResource,
-				Constant.RESOURCE_RADIUS
-			);
-
-			numResource -= 1;
-		}
-	}
-
-	getRandomEmptyPointOnMap(): Point {
-		let point: Point = new Point();
-		let validPoint = false;
-		while (!validPoint) {
-			point = this.getRandomMapPoint();
-			validPoint = this.hexTileMap.checkIfValidEmptyPointOnGrid(point);
-		}
-
-		return point;
-	}
-
-	getRandomMapPoint(): Point {
-		return new Point(
-			Math.random() * Constant.MAP_WIDTH,
-			Math.random() * Constant.MAP_HEIGHT
-		);
-	}
-
 	updatePlayerResource() {
 		for (const aPlayer of this.players.values()) {
 			const newResourceValue: number =
@@ -590,6 +549,47 @@ export default class Game {
 		const player = this.getPlayer(socket.id);
 
 		player?.updateDirection(direction);
+	}
+
+	addResources(numResource: number) {
+		let randomPoint;
+		while (numResource > 0) {
+			if (
+				this.resourceSystem.resourceCount >
+				this.resourceSystem.maxResource
+			)
+				return;
+			randomPoint = this.getRandomEmptyPointOnMap();
+
+			const newResource: Resource = this.resourceSystem.generateResource(
+				this.idGenerator.newID(),
+				randomPoint
+			);
+			this.collision.insertCollider(
+				newResource,
+				Constant.RESOURCE_RADIUS
+			);
+
+			numResource -= 1;
+		}
+	}
+
+	getRandomEmptyPointOnMap(): Point {
+		let point: Point = new Point();
+		let validPoint = false;
+		while (!validPoint) {
+			point = this.getRandomMapPoint();
+			validPoint = this.hexTileMap.checkIfValidEmptyPointOnGrid(point);
+		}
+
+		return point;
+	}
+
+	getRandomMapPoint(): Point {
+		return new Point(
+			Math.random() * Constant.MAP_WIDTH,
+			Math.random() * Constant.MAP_HEIGHT
+		);
 	}
 
 	shootBullet(socket: SocketIOClient.Socket, direction: number) {
