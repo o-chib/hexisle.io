@@ -124,14 +124,6 @@ export default class Game {
 		this.addResources(numResourceToGenerate);
 	}
 
-	updatePlayerResource() {
-		for (const aPlayer of this.players.values()) {
-			const newResourceValue: number =
-				this.teams.getTeam(aPlayer.teamNumber).numCapturedCamps *
-				Constant.INCOME.INCOME_PER_CAMP;
-			aPlayer.updateResource(newResourceValue);
-		}
-	}
 
 	updateBullets(currentTimestamp, timePassed) {
 		for (const aBullet of this.bullets) {
@@ -325,7 +317,15 @@ export default class Game {
 					this.respawnPlayer(aPlayer);
 				}, 3000);
 			}
+			this.updatePlayerResource(aPlayer);
 		}
+	}
+	
+	updatePlayerResource(player: Player) {
+		const newResourceValue: number =
+			this.teams.getTeam(player.teamNumber).numCapturedCamps *
+			Constant.INCOME.INCOME_PER_CAMP;
+		player.updateResource(newResourceValue);
 	}
 
 	createPlayerUpdate(player: Player) {
