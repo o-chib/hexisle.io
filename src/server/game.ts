@@ -573,11 +573,6 @@ export default class Game {
 		this.shootBullet(player, direction);
 	}
 
-	turretShootBullet(turret: Turret) {
-		this.shootBullet(turret, turret.direction);
-		turret.resetReloadTimer();
-	}
-
 	canBuildStructure(player: Player, tile: Tile, building: string): boolean {
 		const collisionRadius = Constant.RADIUS.COLLISION[building];
 		if (
@@ -638,7 +633,7 @@ export default class Game {
 		const turret: Turret = new Turret(
 			this.idGenerator.newID(),
 			tile,
-			this.turretShootBullet.bind(this)
+			this.shootBullet.bind(this)
 		);
 		this.turrets.set(turret.id, turret);
 		tile.building = Constant.BUILDING.TURRET;
