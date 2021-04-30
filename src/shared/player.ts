@@ -12,7 +12,7 @@ export default class Player {
 	private xVel: number;
 	private yVel: number;
 	private direction: number;
-	username: string;
+	name: string;
 
 	// Score tracking & player stats
 	health: number;
@@ -35,7 +35,7 @@ export default class Player {
 		this.socket = socket;
 		this.resources = 0;
 		this.lastUpdateTime = Date.now();
-		this.username = name;
+		this.name = name;
 	}
 
 	updateResource(resourceValue: number) {
@@ -93,6 +93,7 @@ export default class Player {
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos,
+			name: this.name,
 			direction: this.direction,
 			health: this.health,
 			resources: this.resources,

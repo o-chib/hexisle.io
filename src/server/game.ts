@@ -436,15 +436,15 @@ export default class Game {
 		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
 	}
 
-	generateNewPlayer(socket) {
+	generateNewPlayer(socket, name: string) {
 		const team: number = this.teams.addNewPlayer(socket.id);
-		const newPlayer = new Player(socket, team);
+		const newPlayer = new Player(socket, team, name);
 		this.players.set(socket.id, newPlayer);
 		return newPlayer;
 	}
 
-	addPlayer(socket: SocketIO.Socket) {
-		const newPlayer = this.generateNewPlayer(socket);
+	addPlayer(socket: SocketIO.Socket, name = '') {
+		const newPlayer = this.generateNewPlayer(socket, name);
 
 		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
 		newPlayer.xPos = respawnPoint.xPos;
