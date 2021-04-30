@@ -207,7 +207,7 @@ export default class Game {
 
 			this.turretAim(aTurret);
 			if (aTurret.canShoot()) {
-				this.turretShootBullet(aTurret);
+				aTurret.turretShootBullet();
 			} else {
 				aTurret.reload();
 			}
@@ -647,7 +647,8 @@ export default class Game {
 			tile.cartesian_coord.xPos,
 			tile.cartesian_coord.yPos,
 			tile.team,
-			tile
+			tile,
+			this.turretShootBullet.bind(this)
 		);
 		this.turrets.set(turret.id, turret);
 		tile.building = Constant.BUILDING.TURRET;
