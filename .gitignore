@@ -4,3 +4,4 @@ server-bundle.js
 package-lock.json
 .vscode/
 coverage/
+public/game.js.LICENSE.txt

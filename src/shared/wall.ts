@@ -1,3 +1,4 @@
+import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
 export default class Wall {
@@ -6,8 +7,7 @@ export default class Wall {
 	yPos: number;
 	teamNumber: number;
 	tile: Tile;
-
-	hp = 50;
+	hp: number;
 
 	constructor(
 		id: string,
@@ -21,6 +21,7 @@ export default class Wall {
 		this.yPos = yPos;
 		this.teamNumber = teamNumber;
 		this.tile = tile;
+		this.hp = Constant.HP.WALL;
 	}
 
 	serializeForUpdate(): any {

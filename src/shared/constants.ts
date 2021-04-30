@@ -2,17 +2,45 @@ export const Constant = Object.freeze({
 	// Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
 	MAP_WIDTH: 10000,
 	MAP_HEIGHT: 5000,
-	PLAYER_RADIUS: 50,
-	BULLET_RADIUS: 15,
-	WALL_RADIUS: 75,
-	WALL_COL_RADIUS: 75 * 0.75,
-	BASE_RADIUS: 200,
-	BASE_COL_RADIUS: 200 * 0.75,
-	VIEW_RADIUS: 2000,
-	CAMP_RADIUS: 4,
 	TEAM_COUNT: 2,
-	WALL_COST: 5,
-	BUILDING_REFUND_MULTIPLIER: 0.5,
+
+	COST: {
+		WALL: 5,
+		TURRET: 10,
+		BUILDING_REFUND_MULTIPLIER: 0.5,
+	},
+
+	RADIUS: {
+		PLAYER: 50,
+		BULLET: 15,
+		WALL: 75,
+		TURRET: 75,
+		BASE: 200,
+		CAMP: 75,
+		TERRITORY: 500,
+		VIEW: 2000,
+		CAMP_HEXES: 4,
+
+		COLLISION: {
+			PLAYER: 50,
+			BULLET: 15,
+			WALL: 75 * 0.75,
+			TURRET: 75 * 0.75,
+			BASE: 200 * 0.75,
+			CAMP: 75,
+		},
+
+		RANGE: {
+			TURRET: 750,
+		},
+	},
+
+	HP: {
+		PLAYER: 100,
+		BASE: 1000,
+		WALL: 100,
+		TURRET: 150,
+	},
 
 	INCOME: {
 		UPDATE_RATE: 1 * 1000,
@@ -34,29 +62,32 @@ export const Constant = Object.freeze({
 		SW: 1.25 * Math.PI,
 		S: 1.5 * Math.PI,
 		SE: 1.75 * Math.PI,
+		INVALID: 10,
 	},
 
 	BUILDING: {
-		OUT_OF_BOUNDS: 'out of bounds',
-		NONE: 'none',
-		STRUCTURE: 'structure',
-		CAMP: 'camp',
-		BASE: 'base',
-		CANT_BUILD: 'cant build',
-		BOUNDARY: 'boundary',
+		OUT_OF_BOUNDS: 'OUT_OF_BOUNDS',
+		NONE: 'NONE',
+		WALL: 'WALL',
+		TURRET: 'TURRET',
+		CAMP: 'CAMP',
+		BASE: 'BASE',
+		CANT_BUILD: 'CANT_BUILD',
+		BOUNDARY: 'BOUNDARY',
 	},
 
 	MESSAGE: {
-		JOIN: 'join',
-		GAME_UPDATE: 'update_state',
-		GAME_END: 'game_end',
-		MOVEMENT: 'move',
-		BUILD_WALL: 'build_wall',
-		DEMOLISH_WALL: 'demolish_wall',
-		SHOOT: 'shoot',
-		ROTATE: 'rotate',
-		RESPAWN: 'respawn',
-		INITIALIZE: 'initialize_game',
+		JOIN: 'JOIN',
+		GAME_UPDATE: 'GAME_UPDATE',
+		GAME_END: 'GAME_END',
+		MOVEMENT: 'MOVEMENT',
+		BUILD_WALL: 'BUILD_WALL',
+		BUILD_TURRET: 'BUILD_TURRET',
+		DEMOLISH_STRUCTURE: 'DEMOLISH_STRUCTURE',
+		SHOOT: 'SHOOT',
+		ROTATE: 'ROTATE',
+		RESPAWN: 'RESPAWN',
+		INITIALIZE: 'INITIALIZE',
 	},
 
 	TIMING: {
