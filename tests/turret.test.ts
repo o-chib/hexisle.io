@@ -1,17 +1,13 @@
 import Turret from '../src/shared/turret';
 import { Constant } from '../src/shared/constants';
-import { Tile } from '../src/shared/hexTiles';
+import { Tile, Point } from '../src/shared/hexTiles';
 
 describe('Turret', () => {
 	let turret: Turret;
 	beforeEach(() => {
-		turret = new Turret(
-			'0',
-			0,
-			0,
-			0,
-			new Tile(Constant.BUILDING.TURRET, 0)
-		);
+		const tile = new Tile(Constant.BUILDING.TURRET, 0);
+		tile.cartesian_coord = new Point(0, 0);
+		turret = new Turret('0', tile);
 	});
 
 	it('aiming with invalid direction: has no target', () => {

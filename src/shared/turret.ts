@@ -16,7 +16,7 @@ export default class Turret {
 	constructor(
 		id: string,
 		tile: Tile,
-		gameShootBulletMethod: (turret: Turret) => void
+		gameShootBulletMethod?: (turret: Turret) => void
 	) {
 		this.id = id;
 		this.xPos = tile.cartesian_coord.xPos;
@@ -27,7 +27,7 @@ export default class Turret {
 		this.hp = Constant.HP.TURRET;
 		this.reloadTimer = 0;
 		this.hasTarget = false;
-		this.gameShootBullet = gameShootBulletMethod;
+		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
 	}
 
 	aim(direction: number) {
