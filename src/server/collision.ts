@@ -157,6 +157,7 @@ export default class CollisionDetection {
 		for (const result of results) {
 			// TODO replace Point with some better invisible collider when refactoring
 			if (
+				this.isStructure(result.payload) &&
 				this.doCirclesCollide(
 					{ xPos: xPos, yPos: yPos },
 					Constant.RADIUS.COLLISION.PLAYER,
@@ -280,7 +281,17 @@ export default class CollisionDetection {
 		} else if (object instanceof Bullet) {
 			return Constant.RADIUS.COLLISION.BULLET;
 		}
-		return 0;
+		throw new Error('Invalid Object.');
+	}
+
+	isStructure(object: any) {
+		//TODO should be handled internally
+		return (
+			object instanceof Wall ||
+			object instanceof Point ||
+			object instanceof Turret ||
+			object instanceof Base
+		);
 	}
 
 	insertCollider(object: any, radius: number): void {
