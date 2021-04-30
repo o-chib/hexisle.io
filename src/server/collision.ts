@@ -155,30 +155,14 @@ export default class CollisionDetection {
 		);
 
 		for (const result of results) {
+			// TODO replace Point with some better invisible collider when refactoring
 			if (
-				// TODO replace Point with some better invisible collider when refactoring
-				((result.payload instanceof Wall ||
-					result.payload instanceof Point) &&
-					this.doCirclesCollide(
-						{ xPos: xPos, yPos: yPos },
-						Constant.RADIUS.COLLISION.PLAYER,
-						result.payload,
-						Constant.RADIUS.COLLISION.WALL
-					)) ||
-				(result.payload instanceof Turret &&
-					this.doCirclesCollide(
-						{ xPos: xPos, yPos: yPos },
-						Constant.RADIUS.COLLISION.PLAYER,
-						result.payload,
-						Constant.RADIUS.COLLISION.TURRET
-					)) ||
-				(result.payload instanceof Base &&
-					this.doCirclesCollide(
-						{ xPos: xPos, yPos: yPos },
-						Constant.RADIUS.COLLISION.PLAYER,
-						result.payload,
-						Constant.RADIUS.COLLISION.BASE
-					))
+				this.doCirclesCollide(
+					{ xPos: xPos, yPos: yPos },
+					Constant.RADIUS.COLLISION.PLAYER,
+					result.payload,
+					this.getCollisionRadius(result.payload)
+				)
 			)
 				return true;
 		}
@@ -284,6 +268,7 @@ export default class CollisionDetection {
 	}
 
 	getCollisionRadius(object: any): number {
+		//TODO should be handled internally
 		if (object instanceof Wall || object instanceof Point) {
 			return Constant.RADIUS.COLLISION.WALL;
 		} else if (object instanceof Turret) {
