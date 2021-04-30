@@ -93,8 +93,7 @@ export default class Game {
 
 	calculateTimePassed(): [number, number] {
 		const currentTimestamp = Date.now();
-		const timePassed =
-			(currentTimestamp - this.previousUpdateTimestamp) / 1000;
+		const timePassed = currentTimestamp - this.previousUpdateTimestamp;
 		this.previousUpdateTimestamp = currentTimestamp;
 
 		return [currentTimestamp, timePassed];

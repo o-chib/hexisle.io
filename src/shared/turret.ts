@@ -2,6 +2,8 @@ import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
 export default class Turret {
+	TURRET_RELOAD_TIME = 1000;
+
 	id: string;
 	xPos: number;
 	yPos: number;
@@ -59,7 +61,7 @@ export default class Turret {
 	}
 
 	reload(timePassed: number): void {
-		this.reloadTimer -= timePassed;
+		if (this.reloadTimer > 0) this.reloadTimer -= timePassed;
 	}
 
 	serializeForUpdate(): any {
