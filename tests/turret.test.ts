@@ -53,16 +53,11 @@ describe('Turret', () => {
 		expect(turret.reloadTimer).toEqual(Constant.TIMING.TURRET_RELOAD_TIME);
 	});
 
-	it('reloading when already reloaded: timer stays at 0', () => {
-		turret.reload();
-		expect(turret.reloadTimer).toEqual(0);
-	});
-
 	it('reloading after a shot: timer decrements', () => {
 		turret.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
-		turret.reload();
+		turret.reload(10);
 		expect(turret.reloadTimer).toEqual(
-			Constant.TIMING.TURRET_RELOAD_TIME - 1
+			Constant.TIMING.TURRET_RELOAD_TIME - 10
 		);
 	});
 
