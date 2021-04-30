@@ -30,6 +30,12 @@ export default class Turret {
 		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
 	}
 
+	aimAndFireIfPossible(direction: number, timePassed: number) {
+		this.aim(direction);
+		if (this.canShoot()) this.turretShootBullet();
+		else this.reload(timePassed);
+	}
+
 	aim(direction: number) {
 		if (direction != Constant.DIRECTION.INVALID) {
 			this.direction = direction;
@@ -40,7 +46,7 @@ export default class Turret {
 	}
 
 	canShoot(): boolean {
-		return this.hasTarget == true && this.reloadTimer <= 0;
+		return this.hasTarget && this.reloadTimer <= 0;
 	}
 
 	turretShootBullet() {
@@ -51,10 +57,8 @@ export default class Turret {
 		this.reloadTimer = Constant.TIMING.TURRET_RELOAD_TIME;
 	}
 
-	reload(): void {
-		if (this.reloadTimer > 0) {
-			this.reloadTimer -= 1;
-		}
+	reload(timePassed: number): void {
+		this.reloadTimer -= timePassed;
 	}
 
 	serializeForUpdate(): any {

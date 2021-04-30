@@ -80,7 +80,7 @@ export default class Game {
 
 		this.updateWalls();
 
-		this.updateTurrets();
+		this.updateTurrets(timePassed);
 
 		this.updateBases();
 
@@ -197,7 +197,7 @@ export default class Game {
 		}
 	}
 
-	updateTurrets() {
+	updateTurrets(timePassed: number) {
 		for (const aTurret of this.turrets.values()) {
 			this.collision.buildingBulletCollision(aTurret, this.bullets);
 			if (!aTurret.isAlive()) {
@@ -205,12 +205,13 @@ export default class Game {
 				continue;
 			}
 
-			this.turretAim(aTurret);
-			if (aTurret.canShoot()) {
-				aTurret.turretShootBullet();
-			} else {
-				aTurret.reload();
-			}
+			aTurret.aimAndFireIfPossible(
+				this.collision.findDirectionOfClosestEnemy(
+					aTurret,
+					Constant.RADIUS.RANGE.TURRET
+				),
+				timePassed
+			);
 		}
 	}
 
@@ -575,14 +576,6 @@ export default class Game {
 	turretShootBullet(turret: Turret) {
 		this.shootBullet(turret, turret.direction);
 		turret.resetReloadTimer();
-	}
-
-	turretAim(turret: Turret) {
-		const direction: number = this.collision.findDirectionOfClosestEnemy(
-			turret,
-			Constant.RADIUS.RANGE.TURRET
-		);
-		turret.aim(direction);
 	}
 
 	canBuildStructure(player: Player, tile: Tile, building: string): boolean {
