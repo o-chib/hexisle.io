@@ -1,10 +1,8 @@
 import path from 'path';
 import express from 'express';
 import http from 'http';
-import Game from './game';
-import { OffsetPoint } from '../shared/hexTiles';
 import * as SocketIO from 'socket.io';
-import { Constant } from '../shared/constants';
+import { GameCollection } from './gameCollection';
 
 // Serve up the static files from public
 const app = express();
@@ -21,14 +19,12 @@ const server = http.createServer(app).listen(port, () => {
 });
 
 const restartGame = () => {
-	game = new Game(restartGame);
-	for (const aSocket of playerSocketsToNames.keys()) {
-		game.addPlayer(aSocket);
-	}
+	allGames.newGame();
 };
 
 // Start the game
-let game = new Game(restartGame);
+const allGames = new GameCollection(restartGame);
+allGames.newGame();
 
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
@@ -38,36 +34,4 @@ const playerSocketsToNames: Map<SocketIO.Socket, string> = new Map();
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
 	playerSocketsToNames.set(socket, '');
-	updateSocket(socket);
 });
-
-function updateSocket(socket: SocketIO.Socket) {
-	socket.on(Constant.MESSAGE.JOIN, () => {
-		game.addPlayer(socket);
-	});
-
-	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
-		game.movePlayer(socket, direction);
-	});
-
-	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
-		game.shootBullet(socket, direction);
-	});
-
-	socket.on(Constant.MESSAGE.ROTATE, (direction: number) => {
-		game.rotatePlayer(socket, direction);
-	});
-
-	socket.on(Constant.MESSAGE.BUILD_WALL, (coord: OffsetPoint) => {
-		game.buildWall(socket, coord);
-	});
-
-	socket.on(Constant.MESSAGE.DEMOLISH_WALL, (coord: OffsetPoint) => {
-		game.demolishWall(socket, coord);
-	});
-
-	socket.on('disconnect', () => {
-		game.removePlayer(socket);
-		playerSocketsToNames.delete(socket);
-	});
-}
