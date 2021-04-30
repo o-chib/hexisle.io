@@ -51,9 +51,13 @@ export default class GameWrapper {
 		});
 
 		socket.on('disconnect', () => {
-			this.game.removePlayer(socket);
-			this.playerCount--;
+			this.leaveGame(socket);
 			this.playerDisconnectCallback(socket);
 		});
+	}
+
+	private leaveGame(socket: SocketIO.Socket) {
+		this.game.removePlayer(socket);
+		this.playerCount--;
 	}
 }
