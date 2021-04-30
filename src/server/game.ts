@@ -11,7 +11,7 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
-import { ResourceSystem, Resource } from './../shared/resources';
+import { ResourceSystem, Resource } from './resources';
 
 export default class Game {
 	teams: Teams;
@@ -27,7 +27,6 @@ export default class Game {
 	territories: Set<Territory>;
 	resourceSystem: ResourceSystem;
 	gameInterval: NodeJS.Timeout;
-	resourceInterval: NodeJS.Timeout;
 	gameOverCallback: () => void;
 	previousUpdateTimestamp: any;
 	endGameTimestamp: number;
@@ -69,10 +68,10 @@ export default class Game {
 			this.update.bind(this),
 			Constant.TIMING.SERVER_GAME_UPDATE
 		);
-		this.resourceInterval = setInterval(
-			this.updatePlayerResource.bind(this),
-			Constant.INCOME.UPDATE_RATE
-		);
+		// this.resourceInterval = setInterval(
+		// 	this.updatePlayerResource.bind(this),
+		// 	Constant.INCOME.UPDATE_RATE
+		// );
 		setInterval(
 			this.updateResourceOnMap.bind(this),
 			Constant.RESOURCE.UPDATE_RATE * 1000
@@ -123,7 +122,6 @@ export default class Game {
 
 		this.addResources(numResourceToGenerate);
 	}
-
 
 	updateBullets(currentTimestamp, timePassed) {
 		for (const aBullet of this.bullets) {
@@ -297,7 +295,6 @@ export default class Game {
 
 	stopAllIntervals(): void {
 		clearInterval(this.gameInterval);
-		clearInterval(this.resourceInterval);
 	}
 
 	updatePlayerPosition(currentTimestamp) {

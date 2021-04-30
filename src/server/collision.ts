@@ -6,7 +6,7 @@ import Base from '../shared/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';
-import { ResourceSystem, Resource } from './../shared/resources';
+import { ResourceSystem, Resource } from './resources';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;

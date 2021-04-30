@@ -1,4 +1,4 @@
-import { Point } from './hexTiles';
+import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
 
 export class ResourceSystem {
