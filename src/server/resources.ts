@@ -2,16 +2,29 @@ import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
 
 export class ResourceSystem {
+	public previousUpdateTimestamp: number;
 	public minResource: number;
 	public maxResource: number;
 	public resourceCount: number;
 	public resources: Set<Resource>;
 
 	constructor() {
-		this.minResource = 100;
-		this.maxResource = 200;
+		this.previousUpdateTimestamp = Date.now();
+		this.minResource = Constant.RESOURCE.MIN_RESOURCES;
+		this.maxResource = Constant.RESOURCE.MAX_RESOURCES;
 		this.resourceCount = 0;
 		this.resources = new Set();
+	}
+
+	updateMapResources(currentTimestamp: number, timePassed: number): boolean {
+		if (
+			this.resourceCount < this.maxResource &&
+			timePassed >= Constant.RESOURCE.UPDATE_RATE
+		) {
+			this.previousUpdateTimestamp = currentTimestamp;
+			return true;
+		}
+		return false;
 	}
 
 	getRandomResourceGenerationCount(): number {

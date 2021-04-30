@@ -14,21 +14,20 @@ import Territory from './../shared/territory';
 import { ResourceSystem, Resource } from './resources';
 
 export default class Game {
+	hexTileMap: HexTiles;
+	collision: CollisionDetection;
 	teams: Teams;
+	resourceSystem: ResourceSystem;
+	idGenerator: IDgenerator;
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	walls: Map<string, Wall>;
 	campfires: Set<Campfire>;
 	bases: Set<Base>;
-	hexTileMap: HexTiles;
-	idGenerator: IDgenerator;
-	changedTiles: Tile[];
-	collision: CollisionDetection;
 	territories: Set<Territory>;
-	resourceSystem: ResourceSystem;
 	gameInterval: NodeJS.Timeout;
 	gameOverCallback: () => void;
-	previousUpdateTimestamp: any;
+	previousUpdateTimestamp: number;
 	endGameTimestamp: number;
 	gameTimeRemaining: number;
 
@@ -68,14 +67,6 @@ export default class Game {
 			this.update.bind(this),
 			Constant.TIMING.SERVER_GAME_UPDATE
 		);
-		// this.resourceInterval = setInterval(
-		// 	this.updatePlayerResource.bind(this),
-		// 	Constant.INCOME.UPDATE_RATE
-		// );
-		setInterval(
-			this.updateResourceOnMap.bind(this),
-			Constant.RESOURCE.UPDATE_RATE * 1000
-		);
 	}
 
 	update() {
@@ -90,7 +81,9 @@ export default class Game {
 
 		this.updateBases();
 
-		this.updatePlayers(currentTimestamp);
+		this.updatePlayers(currentTimestamp, timePassed);
+
+		this.updateResources(currentTimestamp, timePassed);
 
 		if (this.isGameOver()) this.endGame();
 
@@ -104,23 +97,6 @@ export default class Game {
 		this.previousUpdateTimestamp = currentTimestamp;
 
 		return [currentTimestamp, timePassed];
-	}
-
-	updateResourceOnMap() {
-		if (
-			this.resourceSystem.resourceCount >= this.resourceSystem.maxResource
-		)
-			return;
-
-		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount();
-
-		if (
-			this.resourceSystem.resourceCount + numResourceToGenerate >
-			this.resourceSystem.maxResource
-		)
-			return;
-
-		this.addResources(numResourceToGenerate);
 	}
 
 	updateBullets(currentTimestamp, timePassed) {
@@ -227,11 +203,35 @@ export default class Game {
 		}
 	}
 
-	updatePlayers(currentTimestamp) {
-		this.updatePlayerPosition(currentTimestamp);
+	updatePlayers(currentTimestamp: number, timePassed: number) {
+		const givePassiveIncome: boolean = timePassed >= Constant.INCOME.UPDATE_RATE;
+		for (const aPlayer of this.players.values()) {
+			this.updatePlayerPosition(currentTimestamp, aPlayer);
+			if (aPlayer.health > 0 && givePassiveIncome) {
+				this.updatePlayerResources(aPlayer);
+			}
+		}
 	}
 
-	sendStateToPlayers() {
+	updateResources(currentTimestamp: number, timePassed: number): void {
+		if (this.resourceSystem.updateMapResources(currentTimestamp, timePassed)) {
+			this.updateMapResources();
+		}
+	}
+
+	updateMapResources() {
+		const numResourceToGenerate = this.resourceSystem.getRandomResourceGenerationCount();
+
+		if (
+			this.resourceSystem.resourceCount + numResourceToGenerate >
+			this.resourceSystem.maxResource
+		)
+			return;
+
+		this.addResources(numResourceToGenerate);
+	}
+
+	sendStateToPlayers(): void {
 		// Send updates to player
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
@@ -297,28 +297,25 @@ export default class Game {
 		clearInterval(this.gameInterval);
 	}
 
-	updatePlayerPosition(currentTimestamp) {
-		for (const aPlayer of this.players.values()) {
-			aPlayer.updatePosition(currentTimestamp, this.collision);
-			this.collision.playerBulletResourceCollision(
-				aPlayer,
-				this.bullets,
-				this.resourceSystem
-			);
-			if (aPlayer.health == 0) {
-				// Give time for player to play death animation
-				// Only call timeout once
-				this.collision.deleteCollider(aPlayer, Constant.PLAYER_RADIUS);
-				aPlayer.health = -1;
-				setTimeout(() => {
-					this.respawnPlayer(aPlayer);
-				}, 3000);
-			}
-			this.updatePlayerResource(aPlayer);
+	updatePlayerPosition(currentTimestamp: number, player: Player): void {
+		player.updatePosition(currentTimestamp, this.collision);
+		this.collision.playerBulletResourceCollision(
+			player,
+			this.bullets,
+			this.resourceSystem
+		);
+		if (player.health == 0) {
+			// Give time for player to play death animation
+			// Only call timeout once
+			this.collision.deleteCollider(player, Constant.PLAYER_RADIUS);
+			player.health = -1;
+			setTimeout(() => {
+				this.respawnPlayer(player);
+			}, 3000);
 		}
 	}
 	
-	updatePlayerResource(player: Player) {
+	updatePlayerResources(player: Player) {
 		const newResourceValue: number =
 			this.teams.getTeam(player.teamNumber).numCapturedCamps *
 			Constant.INCOME.INCOME_PER_CAMP;

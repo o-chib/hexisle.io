@@ -16,6 +16,9 @@ export const Constant = Object.freeze({
 	BUILDING_REFUND_MULTIPLIER: 0.5,
 
 	RESOURCE: {
+		MIN_RESOURCES: 100,
+		MAX_RESOURCES: 200,
+
 		RESOURCE_ID: [0, 1, 2],
 		RESOURCE_RARITY: [0.4, 0.4, 0.2],
 
@@ -31,7 +34,7 @@ export const Constant = Object.freeze({
 			WHITE: 5,
 		},
 
-		UPDATE_RATE: 2,
+		UPDATE_RATE: 2 * 1000,
 	},
 
 	INCOME: {
