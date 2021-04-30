@@ -5,9 +5,11 @@ import { OffsetPoint } from '../shared/hexTiles';
 
 export default class GameWrapper {
 	private game: Game;
+	public id: string;
 	public playerCount: number;
 
-	constructor(gameOverCallback: () => any) {
+	constructor(id: string, gameOverCallback: () => any) {
+		this.id = id;
 		this.game = new Game(gameOverCallback);
 	}
 
