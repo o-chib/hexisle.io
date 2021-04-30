@@ -22,8 +22,12 @@ const restartGame = () => {
 	allGames.newGame();
 };
 
+const removePlayer = (socket: SocketIO.Socket) => {
+	playerSocketsToNames.delete(socket);
+};
+
 // Start the game
-const allGames = new GameCollection(restartGame);
+const allGames = new GameCollection(restartGame, removePlayer);
 allGames.newGame();
 
 // Store all the socket connections to this server so we can
