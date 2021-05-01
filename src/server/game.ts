@@ -59,10 +59,7 @@ export default class Game {
 		this.initBases();
 
 		this.mapResources = new MapResources(this.addResources.bind(this));
-		this.addResources(
-			this.mapResources.getRandomResourceGenerationCount() +
-				this.mapResources.minResource
-		);
+		this.addResources(this.mapResources.getRandomResourceGenerationCount());
 
 		this.passiveIncome = new PassiveIncome(this.teams);
 

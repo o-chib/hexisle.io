@@ -28,22 +28,9 @@ export class MapResources {
 		}
 	}
 
-	private canUpdateMapResources(): boolean {
-		if (
-			this.resourceCount < this.maxResource &&
-			this.updateTimer <= 0
-		) {
-			return true;
-		}
-		return false;
-	}
-
-	private resetUpdateTimer(): void {
-		this.updateTimer = Constant.RESOURCE.UPDATE_RATE;
-	}
-
-	private decrementUpdateTimer(timePassed: number): void {
-		this.updateTimer -= timePassed;
+	deleteResource(resource: Resource) {
+		this.resources.delete(resource);
+		this.resourceCount--;
 	}
 
 	getRandomResourceGenerationCount(): number {
@@ -65,12 +52,12 @@ export class MapResources {
 		return newResource;
 	}
 
-	getRandomResourceType(): string {
+	private getRandomResourceType(): string {
 		const resourceID = this.getRandomResourceID();
 		return Constant.RESOURCE.RESOURCE_NAME[resourceID];
 	}
 
-	getRandomResourceID(): number {
+	private getRandomResourceID(): number {
 		const num = Math.random();
 		let rarity = 0;
 		const lastIndex = Constant.RESOURCE.RESOURCE_ID.length - 1;
@@ -85,13 +72,26 @@ export class MapResources {
 		return Constant.RESOURCE.RESOURCE_ID[lastIndex];
 	}
 
-	calculateDropAmount(type: string): number {
+	private calculateDropAmount(type: string): number {
 		return Constant.RESOURCE.DROP_AMOUNT[type];
 	}
 
-	deleteResource(resource: Resource) {
-		this.resources.delete(resource);
-		this.resourceCount--;
+	private canUpdateMapResources(): boolean {
+		if (
+			this.resourceCount < this.maxResource &&
+			this.updateTimer <= 0
+		) {
+			return true;
+		}
+		return false;
+	}
+
+	private resetUpdateTimer(): void {
+		this.updateTimer = Constant.RESOURCE.UPDATE_RATE;
+	}
+
+	private decrementUpdateTimer(timePassed: number): void {
+		this.updateTimer -= timePassed;
 	}
 }
 
