@@ -34,7 +34,9 @@ export class MapResources {
 	}
 
 	getRandomResourceGenerationCount(): number {
-		return (Math.floor(Math.random() * (this.maxResource - this.resourceCount)));
+		return Math.floor(
+			Math.random() * (this.maxResource - this.resourceCount)
+		);
 	}
 
 	generateResource(resourceID: string, randomPoint: Point): Resource {
@@ -77,10 +79,7 @@ export class MapResources {
 	}
 
 	private canUpdateMapResources(): boolean {
-		if (
-			this.resourceCount < this.maxResource &&
-			this.updateTimer <= 0
-		) {
+		if (this.resourceCount < this.maxResource && this.updateTimer <= 0) {
 			return true;
 		}
 		return false;

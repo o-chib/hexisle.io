@@ -234,7 +234,9 @@ export default class Game {
 	}
 
 	updatePlayers(currentTimestamp: number, timePassed: number) {
-		const givePassiveIncome: boolean = this.passiveIncome.givePassiveIncomeIfPossible(timePassed);
+		const givePassiveIncome: boolean = this.passiveIncome.givePassiveIncomeIfPossible(
+			timePassed
+		);
 		for (const aPlayer of this.players.values()) {
 			this.updatePlayerPosition(currentTimestamp, aPlayer);
 			if (aPlayer.health > 0 && givePassiveIncome) {
@@ -325,6 +327,7 @@ export default class Game {
 			// Only call timeout once
 			this.collision.deleteCollider(player, Constant.RADIUS.PLAYER);
 			player.health = -1;
+			player.setNoVelocity();
 			setTimeout(() => {
 				this.respawnPlayer(player);
 			}, 3000);
@@ -580,10 +583,7 @@ export default class Game {
 	addResources(numResource: number): void {
 		let randomPoint;
 		while (numResource > 0) {
-			if (
-				this.mapResources.resourceCount >
-				this.mapResources.maxResource
-			)
+			if (this.mapResources.resourceCount > this.mapResources.maxResource)
 				return;
 			randomPoint = this.getRandomEmptyPointOnMap();
 

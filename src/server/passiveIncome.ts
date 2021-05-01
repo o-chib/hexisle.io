@@ -4,7 +4,7 @@ import Teams from '../shared/teams';
 
 export class PassiveIncome {
 	private updateTimer: number;
-	private teams: Teams
+	private teams: Teams;
 
 	constructor(teams: Teams) {
 		this.updateTimer = Constant.INCOME.UPDATE_RATE;
