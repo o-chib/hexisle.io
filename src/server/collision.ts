@@ -7,7 +7,7 @@ import Base from '../shared/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';
-import { Resources, Resource } from './resources';
+import { MapResources, Resource } from './resources';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
@@ -54,7 +54,7 @@ export default class CollisionDetection {
 	playerBulletResourceCollision(
 		player: Player,
 		bullets: Set<Bullet>,
-		resources: Resources
+		mapResources: MapResources
 	): void {
 		if (player.health <= 0) {
 			return;
@@ -105,7 +105,7 @@ export default class CollisionDetection {
 				)
 			) {
 				player.updateResource(result.payload.dropAmount);
-				resources.deleteResource(result.payload);
+				mapResources.deleteResource(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
 						result.payload.xPos - Constant.RADIUS.RESOURCE,
