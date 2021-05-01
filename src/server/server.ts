@@ -1,9 +1,8 @@
 import path from 'path';
 import express from 'express';
 import http from 'http';
-import Game from './game';
-import { OffsetPoint } from '../shared/hexTiles';
 import * as SocketIO from 'socket.io';
+import { GameCollection } from './gameCollection';
 import { Constant } from '../shared/constants';
 
 // Serve up the static files from public
@@ -21,57 +20,26 @@ const server = http.createServer(app).listen(port, () => {
 });
 
 const restartGame = () => {
-	game = new Game(restartGame);
-	for (const aSocket of socketsConnected) {
-		game.addPlayer(aSocket);
-	}
+	allGames.newGame();
+};
+
+const removePlayer = (socket: SocketIO.Socket) => {
+	playerSocketsToNames.delete(socket);
 };
 
 // Start the game
-let game = new Game(restartGame);
+const allGames = new GameCollection(restartGame, removePlayer);
+allGames.newGame();
 
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
-const socketsConnected: Set<SocketIOClient.Socket> = new Set();
+const playerSocketsToNames: Map<SocketIO.Socket, string> = new Map();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
-	updateSocket(socket);
+	playerSocketsToNames.set(socket, '');
+	socket.on(Constant.MESSAGE.UPDATE_NAME, (newName: string) => {
+		playerSocketsToNames.set(socket, newName);
+	});
 });
-
-function updateSocket(socket: any) {
-	socket.on(Constant.MESSAGE.JOIN, () => {
-		game.addPlayer(socket);
-		socketsConnected.add(socket);
-	});
-
-	socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
-		game.movePlayer(socket, direction);
-	});
-
-	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
-		game.playerShootBullet(socket, direction);
-	});
-
-	socket.on(Constant.MESSAGE.ROTATE, (direction: number) => {
-		game.rotatePlayer(socket, direction);
-	});
-
-	socket.on(Constant.MESSAGE.BUILD_WALL, (coord: OffsetPoint) => {
-		game.buildStructure(socket, coord, Constant.BUILDING.WALL);
-	});
-
-	socket.on(Constant.MESSAGE.BUILD_TURRET, (coord: OffsetPoint) => {
-		game.buildStructure(socket, coord, Constant.BUILDING.TURRET);
-	});
-
-	socket.on(Constant.MESSAGE.DEMOLISH_STRUCTURE, (coord: OffsetPoint) => {
-		game.demolishStructure(socket, coord);
-	});
-
-	socket.on('disconnect', () => {
-		game.removePlayer(socket);
-		socketsConnected.delete(socket);
-	});
-}

@@ -88,6 +88,7 @@ export const Constant = Object.freeze({
 		ROTATE: 'ROTATE',
 		RESPAWN: 'RESPAWN',
 		INITIALIZE: 'INITIALIZE',
+		UPDATE_NAME: 'NEW NAME',
 	},
 
 	TIMING: {
