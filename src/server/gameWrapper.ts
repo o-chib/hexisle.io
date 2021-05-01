@@ -26,7 +26,7 @@ export default class GameWrapper {
 	}
 
 	private updateSocket(socket: SocketIO.Socket) {
-		socket.on(Constant.MESSAGE.JOIN, () => {
+		socket.on(Constant.MESSAGE.START_GAME, () => {
 			this.game.addPlayer(socket);
 		});
 
