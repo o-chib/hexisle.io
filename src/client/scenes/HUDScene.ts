@@ -3,7 +3,7 @@ import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 // Text Structure
 const info_format = `Health:	%1
 Score:	%2
-Resource:	%3`;
+Resources:	%3`;
 const timer_format = `%1:%2`;
 const debug_format = `cursor:
 xPos/yPos:%1/%2
