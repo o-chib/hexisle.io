@@ -1,10 +1,12 @@
 import mainScene from './mainScene';
 import Utilities from './Utilities';
 import { Constant } from './../../shared/constants';
+import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 
 export default class MainMenu extends Phaser.Scene {
 	public static Name = 'MainMenu';
 	private socket: SocketIOClient.Socket;
+	private playerName = '';
 
 	constructor() {
 		super('MainMenu');
@@ -15,30 +17,49 @@ export default class MainMenu extends Phaser.Scene {
 	}
 
 	public preload(): void {
-		// Preload as needed.
+		//preload things here
 	}
 
 	// On create
 	public create(): void {
 		Utilities.LogSceneMethodEntry('MainMenu', 'create');
-		const titleText = this.add.text(300, 10, 'Please enter your name', {
+		const titleText = this.add.text(0, 0, 'Please enter your name', {
 			color: 'white',
 			fontSize: '20px ',
 		});
 
-		const newGameText = this.add.text(
-			this.cameras.main.centerX,
-			this.cameras.main.centerY,
-			'Start'
-		);
-		newGameText
+		new Anchor(titleText, {
+			centerX: 'center',
+			top: 'top+10',
+		});
+
+		const newGameText = this.add.text(0, 0, 'HexIsle', {
+			font: 'bold 32px Open-Sans',
+		});
+
+		new Anchor(newGameText, {
+			centerX: 'center',
+			top: '10%',
+		});
+
+		const playButton = this.add.text(0, 0, 'Play', {
+			font: 'bold 32px Open-Sans',
+		});
+
+		new Anchor(playButton, {
+			centerX: 'center',
+			top: '50%',
+		});
+
+		playButton
 			.setFontFamily('monospace')
 			.setFontSize(40)
 			.setFill('#fff')
 			.setAlign('center')
 			.setOrigin(0.5);
-		newGameText.setInteractive();
-		newGameText.on(
+		playButton.setInteractive();
+
+		playButton.on(
 			'pointerdown',
 			() => {
 				this.loadMainScene();
@@ -46,17 +67,18 @@ export default class MainMenu extends Phaser.Scene {
 			this
 		);
 
-		this.time.addEvent({
-			// Run after ten seconds.
-			delay: 10000,
-			callback: this.loadMainScene,
-			callbackScope: this,
-			loop: false,
-		});
+		// Todo maybe remove?
+		// this.time.addEvent({
+		// 	// Run after ten seconds.
+		// 	delay: 10000,
+		// 	callback: this.loadMainScene,
+		// 	callbackScope: this,
+		// 	loop: false,
+		// });
 	}
 
 	private loadMainScene(): void {
-		this.socket.emit(Constant.MESSAGE.JOIN_GAME);
+		this.socket.emit(Constant.MESSAGE.JOIN_GAME, this.playerName);
 
 		this.scene.start(mainScene.Name, {
 			socket: this.socket,
