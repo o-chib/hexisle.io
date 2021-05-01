@@ -1,5 +1,6 @@
 import mainMenu from './mainMenu';
 import Utilities from "./Utilities";
+import io from 'socket.io-client';
 
 export default class Preloader extends Phaser.Scene {
 	/**
