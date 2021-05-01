@@ -44,13 +44,13 @@ export const Constant = Object.freeze({
 	},
 
 	RESOURCE: {
-		UPDATE_RATE: 10 * 1000,
+		UPDATE_RATE: 30 * 1000,
 
 		MIN_RESOURCES: 100,
-		MAX_RESOURCES: 2000,
+		MAX_RESOURCES: 150,
 
 		RESOURCE_ID: [0, 1, 2],
-		RESOURCE_RARITY: [0.5, 0.3, 0.2],
+		RESOURCE_RARITY: [0.6, 0.3, 0.1],
 
 		RESOURCE_NAME: {
 			0: 'BLUE',
