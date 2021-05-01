@@ -13,7 +13,7 @@ export const Constant = Object.freeze({
 	RADIUS: {
 		PLAYER: 50,
 		BULLET: 15,
-		RESOURCE: ,
+		RESOURCE: 15,
 		WALL: 75,
 		TURRET: 75,
 		BASE: 200,
