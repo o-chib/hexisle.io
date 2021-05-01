@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import path from 'path';
 import express from 'express';
 import http from 'http';
@@ -34,12 +35,22 @@ allGames.newGame();
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
 const playerSocketsToNames: Map<SocketIO.Socket, string> = new Map();
+const playerSocketsToGameIDs: Map<SocketIO.Socket, string | null> = new Map();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
 	playerSocketsToNames.set(socket, '');
+	playerSocketsToGameIDs.set(socket, null);
+
 	socket.on(Constant.MESSAGE.UPDATE_NAME, (newName: string) => {
 		playerSocketsToNames.set(socket, newName);
+	});
+
+	socket.on(Constant.MESSAGE.JOIN_GAME, (gameID?: string) => {
+		const name = playerSocketsToNames.get(socket)!;
+
+		if (gameID) allGames.addPlayerToGame(socket, name, gameID);
+		else allGames.addPlayerToGame(socket, name);
 	});
 });

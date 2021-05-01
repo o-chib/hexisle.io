@@ -77,7 +77,8 @@ export const Constant = Object.freeze({
 	},
 
 	MESSAGE: {
-		JOIN: 'JOIN',
+		JOIN_GAME: 'JOIN_GAME',
+		START_GAME: 'START_GAME',
 		GAME_UPDATE: 'GAME_UPDATE',
 		GAME_END: 'GAME_END',
 		MOVEMENT: 'MOVEMENT',

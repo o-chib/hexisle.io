@@ -54,7 +54,7 @@ export default class MainScene extends Phaser.Scene {
 		this.registerListeners();
 		this.registerIntervals();
 
-		this.socket.emit(Constant.MESSAGE.JOIN);
+		this.socket.emit(Constant.MESSAGE.START_GAME);
 	}
 
 	update(): void {
