@@ -4,7 +4,7 @@ import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 
 export default class MainScene extends Phaser.Scene {
-	public static Name = "MainScene";
+	public static Name = 'MainScene';
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;

@@ -40,7 +40,9 @@ export class GameCollection {
 			return;
 		}
 
-		for (let game in this.allGames.values()) {
+		for (const game of this.allGames.values()) {
+			game.addPlayer(socket, name);
+			return;
 			//TODO pick a game somehow
 		}
 	}
