@@ -20,14 +20,13 @@ export default class GameWrapper {
 	}
 
 	public addPlayer(socket: SocketIO.Socket, name = '') {
-		this.game.addPlayer(socket, name);
-		this.updateSocket(socket);
+		this.updateSocket(socket, name);
 		this.playerCount++;
 	}
 
-	private updateSocket(socket: SocketIO.Socket) {
+	private updateSocket(socket: SocketIO.Socket, name: string) {
 		socket.on(Constant.MESSAGE.START_GAME, () => {
-			this.game.addPlayer(socket);
+			this.game.addPlayer(socket, name);
 		});
 
 		socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
