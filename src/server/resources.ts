@@ -2,8 +2,7 @@ import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
 
 export class Resources {
-	public passiveUpdateTimer: number;
-	public mapUpdateTimer: number;
+	public updateTimer: number;
 	public minResource: number;
 	public maxResource: number;
 	public resourceCount: number;
@@ -11,8 +10,7 @@ export class Resources {
 	private gameAddResources: (numResource: number) => void;
 
 	constructor(gameAddResources?: (numResource: number) => void) {
-		this.passiveUpdateTimer = Constant.INCOME.UPDATE_RATE;
-		this.mapUpdateTimer = Constant.RESOURCE.UPDATE_RATE;
+		this.updateTimer = Constant.RESOURCE.UPDATE_RATE;
 		this.minResource = Constant.RESOURCE.MIN_RESOURCES;
 		this.maxResource = Constant.RESOURCE.MAX_RESOURCES;
 		this.resourceCount = 0;
@@ -22,7 +20,7 @@ export class Resources {
 
 	updateMapResourcesIfPossible(timePassed: number): void {
 		if (this.canUpdateMapResources()) {
-			this.resetMapUpdateTimer();
+			this.resetupdateTimer();
 			const numResourcesToGenerate = this.getRandomResourceGenerationCount();
 			this.gameAddResources(numResourcesToGenerate);
 		} else {
@@ -33,19 +31,19 @@ export class Resources {
 	private canUpdateMapResources(): boolean {
 		if (
 			this.resourceCount < this.maxResource &&
-			this.mapUpdateTimer <= 0
+			this.updateTimer <= 0
 		) {
 			return true;
 		}
 		return false;
 	}
 
-	private resetMapUpdateTimer(): void {
-		this.mapUpdateTimer = Constant.RESOURCE.UPDATE_RATE;
+	private resetupdateTimer(): void {
+		this.updateTimer = Constant.RESOURCE.UPDATE_RATE;
 	}
 
 	private updateMapTimer(timePassed: number): void {
-		this.mapUpdateTimer -= timePassed;
+		this.updateTimer -= timePassed;
 	}
 
 	getRandomResourceGenerationCount(): number {

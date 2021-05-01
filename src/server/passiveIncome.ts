@@ -3,18 +3,18 @@ import Player from '../shared/player';
 import Teams from '../shared/teams';
 
 export class PassiveIncome {
-	private passiveUpdateTimer: number;
+	private updateTimer: number;
 	private teams: Teams
 
 	constructor(teams: Teams) {
-		this.passiveUpdateTimer = Constant.INCOME.UPDATE_RATE;
+		this.updateTimer = Constant.INCOME.UPDATE_RATE;
 		this.teams = teams;
 	}
 
 	givePassiveIncomeIfPossible(timePassed: number): boolean {
 		const givePassiveIncome = this.canGivePassiveIncome();
 		if (givePassiveIncome) {
-			this.resetPassiveUpdateTimer();
+			this.resetupdateTimer();
 		} else {
 			this.updatePassiveTimer(timePassed);
 		}
@@ -29,17 +29,17 @@ export class PassiveIncome {
 	}
 
 	private canGivePassiveIncome(): boolean {
-		if (this.passiveUpdateTimer <= 0) {
+		if (this.updateTimer <= 0) {
 			return true;
 		}
 		return false;
 	}
 
-	private resetPassiveUpdateTimer(): void {
-		this.passiveUpdateTimer = Constant.INCOME.UPDATE_RATE;
+	private resetupdateTimer(): void {
+		this.updateTimer = Constant.INCOME.UPDATE_RATE;
 	}
 
 	private updatePassiveTimer(timePassed: number): void {
-		this.passiveUpdateTimer -= timePassed;
+		this.updateTimer -= timePassed;
 	}
 }
