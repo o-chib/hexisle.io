@@ -20,11 +20,11 @@ export class Resources {
 
 	updateMapResourcesIfPossible(timePassed: number): void {
 		if (this.canUpdateMapResources()) {
-			this.resetupdateTimer();
+			this.resetUpdateTimer();
 			const numResourcesToGenerate = this.getRandomResourceGenerationCount();
 			this.gameAddResources(numResourcesToGenerate);
 		} else {
-			this.updateMapTimer(timePassed);
+			this.decrementUpdateTimer(timePassed);
 		}
 	}
 
@@ -38,11 +38,11 @@ export class Resources {
 		return false;
 	}
 
-	private resetupdateTimer(): void {
+	private resetUpdateTimer(): void {
 		this.updateTimer = Constant.RESOURCE.UPDATE_RATE;
 	}
 
-	private updateMapTimer(timePassed: number): void {
+	private decrementUpdateTimer(timePassed: number): void {
 		this.updateTimer -= timePassed;
 	}
 

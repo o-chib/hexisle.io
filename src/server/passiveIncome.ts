@@ -14,9 +14,9 @@ export class PassiveIncome {
 	givePassiveIncomeIfPossible(timePassed: number): boolean {
 		const givePassiveIncome = this.canGivePassiveIncome();
 		if (givePassiveIncome) {
-			this.resetupdateTimer();
+			this.resetUpdateTimer();
 		} else {
-			this.updatePassiveTimer(timePassed);
+			this.decrementUpdateTimer(timePassed);
 		}
 		return givePassiveIncome;
 	}
@@ -35,11 +35,11 @@ export class PassiveIncome {
 		return false;
 	}
 
-	private resetupdateTimer(): void {
+	private resetUpdateTimer(): void {
 		this.updateTimer = Constant.INCOME.UPDATE_RATE;
 	}
 
-	private updatePassiveTimer(timePassed: number): void {
+	private decrementUpdateTimer(timePassed: number): void {
 		this.updateTimer -= timePassed;
 	}
 }
