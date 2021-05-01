@@ -3,6 +3,7 @@ import boot from './scenes/boot';
 import preloader from './scenes/preloader';
 import mainMenu from './scenes/mainMenu';
 import mainScene from './scenes/mainScene';
+import HUDScene from './scenes/HUDScene';
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
@@ -13,7 +14,7 @@ export const config: Phaser.Types.Core.GameConfig = {
 		mode: Phaser.Scale.ENVELOP,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
-	scene: [boot, preloader, mainMenu, mainScene],
+	scene: [boot, preloader, mainMenu, mainScene, HUDScene],
 	physics: {
 		default: 'arcade',
 		arcade: {
