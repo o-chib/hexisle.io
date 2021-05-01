@@ -325,7 +325,10 @@ export default class Game {
 		if (player.health == 0) {
 			// Give time for player to play death animation
 			// Only call timeout once
-			this.collision.deleteCollider(player, Constant.RADIUS.PLAYER);
+			this.collision.deleteCollider(
+				player,
+				Constant.RADIUS.COLLISION.PLAYER
+			);
 			player.health = -1;
 			player.setNoVelocity();
 			setTimeout(() => {
