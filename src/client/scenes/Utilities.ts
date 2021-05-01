@@ -4,7 +4,7 @@ export default class Utilities {
 	 * @param message Message to log.
 	 */
 	public static Log(message: string): void {
-		console.log((new Date()).toISOString() + " : " + message);
+		console.log(new Date().toISOString() + ' : ' + message);
 	}
 
 	/**
@@ -13,6 +13,6 @@ export default class Utilities {
 	 * @param method Method called within the scene.
 	 */
 	public static LogSceneMethodEntry(sceneName: string, method: string): void {
-		this.Log("Entered " + sceneName + " " + method + "()");
+		this.Log('Entered ' + sceneName + ' ' + method + '()');
 	}
 }

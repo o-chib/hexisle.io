@@ -1,12 +1,12 @@
 import mainMenu from './mainMenu';
-import Utilities from "./Utilities";
+import Utilities from './Utilities';
 import io from 'socket.io-client';
 
 export default class Preloader extends Phaser.Scene {
 	/**
 	 * Unique name of the scene.
 	 */
-	public static Name = "Preloader";
+	public static Name = 'Preloader';
 	private socket: SocketIOClient.Socket;
 
 	constructor() {
@@ -86,7 +86,7 @@ export default class Preloader extends Phaser.Scene {
 	}
 
 	public create(): void {
-		Utilities.LogSceneMethodEntry("Preloader", "create");
+		Utilities.LogSceneMethodEntry('Preloader', 'create');
 
 		this.scene.start(mainMenu.Name, {
 			socket: this.socket,
@@ -114,49 +114,54 @@ export default class Preloader extends Phaser.Scene {
 		const loadingText = this.make.text({
 			x: width / 2,
 			y: height / 2 - 50,
-			text: "Loading...",
+			text: 'Loading...',
 			style: {
-				font: "20px monospace",
-				color: outerTextColor
-			}
+				font: '20px monospace',
+				color: outerTextColor,
+			},
 		});
 		loadingText.setOrigin(0.5, 0.5);
 
 		const percentText = this.make.text({
 			x: width / 2,
 			y: height / 2 - 5,
-			text: "0%",
+			text: '0%',
 			style: {
-				font: "18px monospace",
-				color: "#ffffff"
-			}
+				font: '18px monospace',
+				color: '#ffffff',
+			},
 		});
 		percentText.setOrigin(0.5, 0.5);
 
 		const assetText = this.make.text({
 			x: width / 2,
 			y: height / 2 + 50,
-			text: "",
+			text: '',
 			style: {
-				font: "18px monospace",
-				color: outerTextColor
-			}
+				font: '18px monospace',
+				color: outerTextColor,
+			},
 		});
 
 		assetText.setOrigin(0.5, 0.5);
 
-		this.load.on("progress", (value: number) => {
-			percentText.setText(parseInt(value * 100 + "", 10) + "%");
+		this.load.on('progress', (value: number) => {
+			percentText.setText(parseInt(value * 100 + '', 10) + '%');
 			progressBar.clear();
 			progressBar.fillStyle(0xffffff, 1);
-			progressBar.fillRect((width / 4) + 10, (height / 2) - 30 + 10, (width / 2 - 10 - 10) * value, 30);
+			progressBar.fillRect(
+				width / 4 + 10,
+				height / 2 - 30 + 10,
+				(width / 2 - 10 - 10) * value,
+				30
+			);
 		});
 
-		this.load.on("fileprogress", (file: Phaser.Loader.File) => {
-			assetText.setText("Loading asset: " + file.key);
+		this.load.on('fileprogress', (file: Phaser.Loader.File) => {
+			assetText.setText('Loading asset: ' + file.key);
 		});
 
-		this.load.on("complete", () => {
+		this.load.on('complete', () => {
 			progressBar.destroy();
 			progressBox.destroy();
 			loadingText.destroy();
