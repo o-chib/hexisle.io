@@ -613,7 +613,7 @@ export default class MainScene extends Phaser.Scene {
 
 	private updateMapOfObjects(
 		currentObjects: any,
-		oldObjects: Map<string, Phaser.GameObjects.Sprite>,
+		oldObjects: Map<string, any>,
 		sprite: string,
 		callback: (arg0: any, arg1: any) => any
 	) {
