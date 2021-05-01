@@ -12,7 +12,7 @@ export class HexTiles {
 	constructor(mapHeight: number = Constant.MAP_HEIGHT) {
 		this.hexSize = 75;
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
-		this.mapHeight = Constant.MAP_HEIGHT;
+		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();
 		this.baseCoords = [];
 		this.boundaryCoords = [];
@@ -206,7 +206,8 @@ export class HexTiles {
 
 		if (
 			this.tileMap[hexCoord.q][hexCoord.r].building !=
-			Constant.BUILDING.NONE
+				Constant.BUILDING.NONE ||
+			this.tileMap[hexCoord.q][hexCoord.r].team != -1
 		) {
 			return false;
 		}
