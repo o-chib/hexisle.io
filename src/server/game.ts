@@ -567,7 +567,7 @@ export default class Game {
 		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
 	}
 
-	playerShootBullet(socket: SocketIOClient.Socket, direction: number) {
+	playerShootBullet(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 		this.shootBullet(player, direction);

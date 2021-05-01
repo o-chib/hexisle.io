@@ -34,7 +34,7 @@ export default class GameWrapper {
 		});
 
 		socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
-			this.game.shootBullet(socket, direction);
+			this.game.playerShootBullet(socket, direction);
 		});
 
 		socket.on(Constant.MESSAGE.ROTATE, (direction: number) => {
