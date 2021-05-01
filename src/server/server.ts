@@ -51,7 +51,7 @@ function updateSocket(socket: any) {
 	});
 
 	socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
-		game.shootBullet(socket, direction);
+		game.playerShootBullet(socket, direction);
 	});
 
 	socket.on(Constant.MESSAGE.ROTATE, (direction: number) => {
@@ -59,11 +59,15 @@ function updateSocket(socket: any) {
 	});
 
 	socket.on(Constant.MESSAGE.BUILD_WALL, (coord: OffsetPoint) => {
-		game.buildWall(socket, coord);
+		game.buildStructure(socket, coord, Constant.BUILDING.WALL);
 	});
 
-	socket.on(Constant.MESSAGE.DEMOLISH_WALL, (coord: OffsetPoint) => {
-		game.demolishWall(socket, coord);
+	socket.on(Constant.MESSAGE.BUILD_TURRET, (coord: OffsetPoint) => {
+		game.buildStructure(socket, coord, Constant.BUILDING.TURRET);
+	});
+
+	socket.on(Constant.MESSAGE.DEMOLISH_STRUCTURE, (coord: OffsetPoint) => {
+		game.demolishStructure(socket, coord);
 	});
 
 	socket.on('disconnect', () => {

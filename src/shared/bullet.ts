@@ -7,7 +7,7 @@ export default class Bullet {
 	expirationDate: number;
 	teamNumber: number;
 
-	speed = 1000;
+	speed = 1;
 	lifeLength = 1000;
 
 	constructor(

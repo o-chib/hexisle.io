@@ -35,7 +35,7 @@ export default class Player {
 		this.direction = 0;
 		this.teamNumber = teamNumber;
 		this.score = 0;
-		this.health = 100;
+		this.health = Constant.HP.PLAYER;
 		//this.healthRegen = 1;
 		this.speed = 600;
 		this.socket = socket;
@@ -61,15 +61,20 @@ export default class Player {
 		}
 	}
 
+	setNoVelocity(): void {
+		this.xVel = 0;
+		this.yVel = 0;
+	}
+
 	updatePosition(presentTime: number, collision: Collision): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		const newX = this.xPos + timePassed * this.xVel;
 		const newY = this.yPos - timePassed * this.yVel;
 		if (
-			!collision.doesObjCollideWithWall(
+			!collision.doesObjCollideWithStructure(
 				newX,
 				newY,
-				Constant.PLAYER_RADIUS
+				Constant.RADIUS.PLAYER
 			)
 		) {
 			this.xPos = newX;
@@ -81,15 +86,21 @@ export default class Player {
 		this.lastUpdateTime = presentTime;
 	}
 
-	buyWall(): boolean {
-		if (this.resources < Constant.WALL_COST) return false;
-		this.updateResource(-Constant.WALL_COST);
+	canAffordStructure(building: string) {
+		const cost: number = Constant.COST[building];
+		if (this.resources < cost) return false;
 		return true;
 	}
 
-	refundWall(): void {
+	buyStructure(building: string): void {
+		const cost: number = Constant.COST[building];
+		this.updateResource(-cost);
+	}
+
+	refundStructure(building: string): void {
+		const cost: number = Constant.COST[building];
 		this.updateResource(
-			Math.ceil(Constant.WALL_COST * Constant.BUILDING_REFUND_MULTIPLIER)
+			Math.ceil(cost * Constant.COST.BUILDING_REFUND_MULTIPLIER)
 		);
 	}
 

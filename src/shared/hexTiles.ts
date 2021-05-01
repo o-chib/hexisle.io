@@ -11,7 +11,7 @@ export class HexTiles {
 
 	constructor() {
 		this.hexSize = 75;
-		this.campRadius = Constant.CAMP_RADIUS;
+		this.campRadius = Constant.RADIUS.CAMP_HEXES;
 		this.mapHeight = Constant.MAP_HEIGHT;
 		this.hexRadius = this.getMapHexRadius();
 		this.baseCoords = [];
@@ -26,6 +26,7 @@ export class HexTiles {
 	}
 
 	generateTileMap(): void {
+		// Initisalizes the tile[][] with blank tiles
 		this.tileMap = [];
 
 		// for each column
@@ -126,9 +127,6 @@ export class HexTiles {
 		// Takes the tilemap and sets camps to bases dependent on the parameters
 		// teamCount is the number of teams, with a maximum of 6
 		// campDistanceFromCenter is how many camps away radially the bases should spawn
-		console.log('time to generate bases');
-		console.time();
-
 		if (teamCount == 1) {
 			this.tileMap[this.hexRadius][this.hexRadius].building =
 				Constant.BUILDING.BASE;
@@ -178,7 +176,6 @@ export class HexTiles {
 				this.baseCoords.push(travHex);
 			}
 		}
-		console.timeEnd();
 	}
 
 	checkIfValidHex(OffsetPoint: OffsetPoint): boolean {
@@ -396,7 +393,6 @@ export class HexTiles {
 			5
 		);
 		for (const coord of screenCoords) {
-			console.log('coord around', coord.q, coord.r);
 			if (this.checkIfValidHex(coord)) {
 				results.push(this.tileMap[coord.q][coord.r]);
 			}
