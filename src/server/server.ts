@@ -25,7 +25,7 @@ const restartGame = () => {
 };
 
 const removePlayer = (socket: SocketIO.Socket) => {
-	playerSocketsToNames.delete(socket);
+	playerSockets.delete(socket);
 };
 
 // Start the game
@@ -34,22 +34,16 @@ allGames.newGame();
 
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
-const playerSocketsToNames: Map<SocketIO.Socket, string> = new Map();
+const playerSockets: Set<SocketIO.Socket> = new Set();
 const playerSocketsToGameIDs: Map<SocketIO.Socket, string | null> = new Map();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
-	playerSocketsToNames.set(socket, '');
+	playerSockets.add(socket);
 	playerSocketsToGameIDs.set(socket, null);
 
-	socket.on(Constant.MESSAGE.UPDATE_NAME, (newName: string) => {
-		playerSocketsToNames.set(socket, newName);
-	});
-
-	socket.on(Constant.MESSAGE.JOIN_GAME, (gameID?: string) => {
-		const name = playerSocketsToNames.get(socket)!;
-
+	socket.on(Constant.MESSAGE.JOIN_GAME, (gameID?: string, name = 'Aliem') => {
 		if (gameID) allGames.addPlayerToGame(socket, name, gameID);
 		else allGames.addPlayerToGame(socket, name);
 	});
