@@ -51,7 +51,7 @@ export default class MainMenu extends Phaser.Scene {
     private loadMainScene(): void {
         this.socket.emit(Constant.MESSAGE.JOIN_GAME);
 
-        this.scene.start(mainScene.Name {
+        this.scene.start(mainScene.Name, {
 			socket: this.socket,
 		});
     }
