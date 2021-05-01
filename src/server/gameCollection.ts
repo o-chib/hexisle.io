@@ -19,7 +19,7 @@ export class GameCollection {
 	}
 
 	public newGame() {
-		const newGameID = this.idGenerator.newID();
+		const newGameID = 'Game ' + this.idGenerator.newID();
 		this.allGames.set(
 			newGameID,
 			new GameWrapper(
@@ -45,5 +45,15 @@ export class GameCollection {
 			return;
 			//TODO pick a game somehow
 		}
+	}
+
+	public getGameList(): { gameid: string; info: any }[] {
+		const gameList: { gameid: string; info: any }[] = [];
+
+		for (const game of this.allGames.values()) {
+			gameList.push({ gameid: game.id, info: game.getInfo() });
+		}
+
+		return gameList;
 	}
 }

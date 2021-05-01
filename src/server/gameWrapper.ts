@@ -15,6 +15,7 @@ export default class GameWrapper {
 		playerDisconnectCallback: (socket: SocketIO.Socket) => void
 	) {
 		this.id = id;
+		this.playerCount = 0;
 		this.game = new Game(gameOverCallback);
 		this.playerDisconnectCallback = playerDisconnectCallback;
 	}
@@ -62,5 +63,11 @@ export default class GameWrapper {
 	private leaveGame(socket: SocketIO.Socket) {
 		this.game.removePlayer(socket);
 		this.playerCount--;
+	}
+
+	public getInfo() {
+		return {
+			playerCount: this.playerCount,
+		};
 	}
 }

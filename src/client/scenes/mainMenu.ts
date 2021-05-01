@@ -7,14 +7,20 @@ export default class MainMenu extends Phaser.Scene {
 	public static Name = 'MainMenu';
 	private socket: SocketIOClient.Socket;
 	private playerName = '';
-	private gameLobby = Map
+	private gameLobby: [];
 
 	constructor() {
 		super('MainMenu');
+		this.gameLobby = [];
 	}
 
 	init(data) {
 		this.socket = data.socket;
+
+		this.socket.on(
+			Constant.MESSAGE.GIVE_GAME_LIST,
+			this.initializeLobbyList.bind(this)
+		);
 	}
 
 	public preload(): void {
@@ -23,6 +29,8 @@ export default class MainMenu extends Phaser.Scene {
 
 	// On create
 	public create(): void {
+		this.socket.emit(Constant.MESSAGE.ASK_GAME_LIST);
+
 		Utilities.LogSceneMethodEntry('MainMenu', 'create');
 		const titleText = this.add.text(0, 0, 'Please enter your name', {
 			color: 'white',
@@ -71,6 +79,13 @@ export default class MainMenu extends Phaser.Scene {
 		// 	callbackScope: this,
 		// 	loop: false,
 		// });
+	}
+
+	private initializeLobbyList(lobbyList): void {
+		this.gameLobby = lobbyList;
+
+		console.log('GameLobby: ', this.gameLobby);
+		console.log('LobbyList: ', lobbyList);
 	}
 
 	private loadMainScene(): void {

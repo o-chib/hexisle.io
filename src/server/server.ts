@@ -31,6 +31,7 @@ const removePlayer = (socket: SocketIO.Socket) => {
 // Start the game
 const allGames = new GameCollection(restartGame, removePlayer);
 allGames.newGame();
+allGames.newGame();
 
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
@@ -46,5 +47,9 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 	socket.on(Constant.MESSAGE.JOIN_GAME, (gameID?: string, name = 'Aliem') => {
 		if (gameID) allGames.addPlayerToGame(socket, name, gameID);
 		else allGames.addPlayerToGame(socket, name);
+	});
+
+	socket.on(Constant.MESSAGE.ASK_GAME_LIST, () => {
+		socket.emit(Constant.MESSAGE.GIVE_GAME_LIST, allGames.getGameList());
 	});
 });
