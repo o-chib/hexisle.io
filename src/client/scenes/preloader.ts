@@ -6,13 +6,16 @@ export default class Preloader extends Phaser.Scene {
 	 * Unique name of the scene.
 	 */
 	public static Name = "Preloader";
+	private socket: SocketIOClient.Socket;
 
-    constructor() {
-        super('Preloader');
-    }
+	constructor() {
+		super('Preloader');
+	}
 
 	public preload(): void {
 		this.addProgressBar();
+
+		this.socket = io();
 
 		// Players
 		this.load.spritesheet('player_red', '../assets/player_red.png', {
@@ -84,7 +87,9 @@ export default class Preloader extends Phaser.Scene {
 	public create(): void {
 		Utilities.LogSceneMethodEntry("Preloader", "create");
 
-		this.scene.start(mainMenu.Name);
+		this.scene.start(mainMenu.Name, {
+			socket: this.socket,
+		});
 	}
 
 	public update(): void {

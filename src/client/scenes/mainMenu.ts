@@ -3,9 +3,14 @@ import Utilities from "./Utilities";
 
 export default class MainMenu extends Phaser.Scene {
     public static Name = "MainMenu";
+    private socket: SocketIOClient.Socket;
 
     constructor() {
         super('MainMenu');
+    }
+
+    init(data) {
+        this.socket = data.socket;
     }
 
     public preload(): void {
@@ -43,6 +48,8 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     private loadMainScene(): void {
-        this.scene.start(mainScene.Name);
+        this.scene.start(mainScene.Name {
+			socket: this.socket,
+		});
     }
 }

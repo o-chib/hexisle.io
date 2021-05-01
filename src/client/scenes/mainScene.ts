@@ -29,7 +29,7 @@ export default class MainScene extends Phaser.Scene {
 		// Preload stuff here
 	}
 
-	init(): void {
+	init(data): void {
 		this.initializeKeys();
 		this.generatePlayerSprite();
 
@@ -44,7 +44,7 @@ export default class MainScene extends Phaser.Scene {
 		this.territorySprites = new Map();
 		this.deadObjects = new Set();
 
-		this.socket = io();
+		this.socket = data.socket;
 	}
 
 	create(): void {
