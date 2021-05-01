@@ -16,6 +16,10 @@ export default class Teams {
 		return this.teams.get(teamNum)!;
 	}
 
+	getTeamCampNum(teamNum: number): number {
+		return this.teams.get(teamNum)!.numCapturedCamps;
+	}
+
 	getNumTeams(): number {
 		return this.numTeams;
 	}
@@ -93,5 +97,9 @@ class Team {
 	removePlayer(playerID: string): void {
 		this.playerIDs = this.playerIDs.filter((id) => id !== playerID);
 		this.playerCount -= 1;
+	}
+
+	getCampNum(): number {
+		return this.numCapturedCamps;
 	}
 }

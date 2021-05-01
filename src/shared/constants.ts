@@ -44,6 +44,8 @@ export const Constant = Object.freeze({
 	},
 
 	RESOURCE: {
+		UPDATE_RATE: 10 * 1000,
+
 		MIN_RESOURCES: 100,
 		MAX_RESOURCES: 2000,
 
@@ -58,15 +60,13 @@ export const Constant = Object.freeze({
 
 		DROP_AMOUNT: {
 			BLUE: 1,
-			GREEN: 1,
+			GREEN: 2,
 			WHITE: 5,
 		},
-
-		UPDATE_RATE: 2 * 1000,
 	},
 
 	INCOME: {
-		UPDATE_RATE: 1 * 1000,
+		UPDATE_RATE: 5 * 1000,
 		INCOME_PER_CAMP: 1,
 	},
 

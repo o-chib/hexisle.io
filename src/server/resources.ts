@@ -1,38 +1,55 @@
 import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
 
-export class ResourceSystem {
-	public previousPassiveUpdateTimestamp: number;
-	public previousMapUpdateTimestamp: number;
+export class Resources {
+	public passiveUpdateTimer: number;
+	public mapUpdateTimer: number;
 	public minResource: number;
 	public maxResource: number;
 	public resourceCount: number;
 	public resources: Set<Resource>;
+	private gameAddResources: (numResource: number) => void;
 
-	constructor() {
-		this.previousMapUpdateTimestamp = Date.now();
+	constructor(gameAddResources?: (numResource: number) => void) {
+		this.passiveUpdateTimer = Constant.INCOME.UPDATE_RATE;
+		this.mapUpdateTimer = Constant.RESOURCE.UPDATE_RATE;
 		this.minResource = Constant.RESOURCE.MIN_RESOURCES;
 		this.maxResource = Constant.RESOURCE.MAX_RESOURCES;
 		this.resourceCount = 0;
 		this.resources = new Set();
+		if (gameAddResources) this.gameAddResources = gameAddResources;
 	}
 
-	updateMapResources(currentTimestamp: number, timePassed: number): boolean {
+	updateMapResourcesIfPossible(timePassed: number): void {
+		if (this.canUpdateMapResources()) {
+			this.resetMapUpdateTimer();
+			const numResourcesToGenerate = this.getRandomResourceGenerationCount();
+			this.gameAddResources(numResourcesToGenerate);
+		} else {
+			this.updateMapTimer(timePassed);
+		}
+	}
+
+	private canUpdateMapResources(): boolean {
 		if (
 			this.resourceCount < this.maxResource &&
-			timePassed >= Constant.RESOURCE.UPDATE_RATE
+			this.mapUpdateTimer <= 0
 		) {
-			this.previousMapUpdateTimestamp = currentTimestamp;
 			return true;
 		}
 		return false;
 	}
 
+	private resetMapUpdateTimer(): void {
+		this.mapUpdateTimer = Constant.RESOURCE.UPDATE_RATE;
+	}
+
+	private updateMapTimer(timePassed: number): void {
+		this.mapUpdateTimer -= timePassed;
+	}
+
 	getRandomResourceGenerationCount(): number {
-		return (
-			Math.floor(Math.random() * (this.maxResource - this.minResource)) +
-			1
-		);
+		return (Math.floor(Math.random() * (this.maxResource - this.resourceCount)));
 	}
 
 	generateResource(resourceID: string, randomPoint: Point): Resource {
