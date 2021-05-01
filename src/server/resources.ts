@@ -1,7 +1,7 @@
 import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
 
-export class Resources {
+export class MapResources {
 	public updateTimer: number;
 	public minResource: number;
 	public maxResource: number;

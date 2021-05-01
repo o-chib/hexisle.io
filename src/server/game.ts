@@ -12,14 +12,14 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
-import { Resources, Resource } from './resources';
+import { MapResources, Resource } from './resources';
 import { PassiveIncome } from './passiveIncome';
 
 export default class Game {
 	hexTileMap: HexTiles;
 	collision: CollisionDetection;
 	teams: Teams;
-	Resources: Resources;
+	mapResources: MapResources;
 	passiveIncome: PassiveIncome;
 	idGenerator: IDgenerator;
 	players: Map<string, Player>;
@@ -58,10 +58,10 @@ export default class Game {
 		this.addBaseTerritories();
 		this.initBases();
 
-		this.Resources = new Resources(this.addResources.bind(this));
+		this.mapResources = new MapResources(this.addResources.bind(this));
 		this.addResources(
-			this.Resources.getRandomResourceGenerationCount() +
-				this.Resources.minResource
+			this.mapResources.getRandomResourceGenerationCount() +
+				this.mapResources.minResource
 		);
 
 		this.passiveIncome = new PassiveIncome(this.teams);
@@ -247,7 +247,7 @@ export default class Game {
 	}
 
 	updateMapResources(timePassed: number): void {
-		this.Resources.updateMapResourcesIfPossible(timePassed);
+		this.mapResources.updateMapResourcesIfPossible(timePassed);
 	}
 
 	sendStateToPlayers(): void {
@@ -321,7 +321,7 @@ export default class Game {
 		this.collision.playerBulletResourceCollision(
 			player,
 			this.bullets,
-			this.Resources
+			this.mapResources
 		);
 		if (player.health == 0) {
 			// Give time for player to play death animation
@@ -464,7 +464,7 @@ export default class Game {
 	createResourceUpdate(player: Player): Resource[] {
 		const nearbyResources: Resource[] = [];
 
-		for (const aResource of this.Resources.resources) {
+		for (const aResource of this.mapResources.resources) {
 			if (
 				this.collision.doCirclesCollide(
 					aResource,
@@ -584,13 +584,13 @@ export default class Game {
 		let randomPoint;
 		while (numResource > 0) {
 			if (
-				this.Resources.resourceCount >
-				this.Resources.maxResource
+				this.mapResources.resourceCount >
+				this.mapResources.maxResource
 			)
 				return;
 			randomPoint = this.getRandomEmptyPointOnMap();
 
-			const newResource: Resource = this.Resources.generateResource(
+			const newResource: Resource = this.mapResources.generateResource(
 				this.idGenerator.newID(),
 				randomPoint
 			);
