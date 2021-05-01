@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { HexTiles, OffsetPoint, Tile, Point } from './../../shared/hexTiles';
+import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 
 import { Constant } from './../../shared/constants';
 
@@ -8,6 +8,8 @@ export default class MainScene extends Phaser.Scene {
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private turretBaseSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
@@ -103,6 +105,8 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new Map();
+		this.turretBaseSprites = new Map();
+		this.turretGunSprites = new Map();
 		this.campfireSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
@@ -161,7 +165,8 @@ export default class MainScene extends Phaser.Scene {
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
 			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
-			demolishWall: Phaser.Input.Keyboard.KeyCodes.R,
+			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
+			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
 			debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
 		});
 	}
@@ -417,30 +422,21 @@ export default class MainScene extends Phaser.Scene {
 
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
 
+		const gamePos = this.cameras.main.getWorldPoint(
+			this.input.mousePointer.x,
+			this.input.mousePointer.y
+		);
+
+		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+			new Point(gamePos.x, gamePos.y)
+		);
+
 		if (this.cursors.buildWall.isDown) {
-			if (!this.alive) return;
-
-			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x,
-				this.input.mousePointer.y
-			);
-			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-				new Point(gamePos.x, gamePos.y)
-			);
-
 			this.socket.emit(Constant.MESSAGE.BUILD_WALL, coord);
-		} else if (this.cursors.demolishWall.isDown) {
-			if (!this.alive) return;
-
-			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x,
-				this.input.mousePointer.y
-			);
-			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-				new Point(gamePos.x, gamePos.y)
-			);
-
-			this.socket.emit(Constant.MESSAGE.DEMOLISH_WALL, coord);
+		} else if (this.cursors.buildTurret.isDown) {
+			this.socket.emit(Constant.MESSAGE.BUILD_TURRET, coord);
+		} else if (this.cursors.demolishStructure.isDown) {
+			this.socket.emit(Constant.MESSAGE.DEMOLISH_STRUCTURE, coord);
 		} else if (this.cursors.debugInfo.isDown) {
 			if (this.debugMode) {
 				this.events.emit('clearDebugInfo');
@@ -459,6 +455,7 @@ export default class MainScene extends Phaser.Scene {
 			otherPlayers,
 			bullets,
 			walls,
+			turrets,
 			campfires,
 			bases,
 			territories,
@@ -473,6 +470,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateOpponents(otherPlayers);
 
 		this.updateWalls(walls);
+
+		this.updateTurrets(turrets);
 
 		this.updateCampfires(campfires);
 
@@ -576,7 +575,7 @@ export default class MainScene extends Phaser.Scene {
 					newWall.setTexture(wallTexture);
 				}
 
-				const healthPercent = newWallLiteral.hp / 50; // 50 = Total health determined from wall.ts
+				const healthPercent = newWallLiteral.hp / Constant.HP.WALL;
 				newWall = this.handleDamageAnimation(
 					newWall,
 					wallTexture,
@@ -584,6 +583,62 @@ export default class MainScene extends Phaser.Scene {
 				);
 
 				return newWall;
+			}
+		);
+	}
+
+	private updateTurrets(turrets: any) {
+		// update the turret's base
+		this.updateMapOfObjects(
+			turrets,
+			this.turretBaseSprites,
+			'',
+			(newTurretBase, newTurretBaseLiteral) => {
+				let turretGunTexture = '';
+				if (newTurretBaseLiteral.teamNumber == Constant.TEAM.RED)
+					turretGunTexture = 'turret_base_red';
+				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.BLUE)
+					turretGunTexture = 'turret_base_blue';
+
+				if (newTurretBase.texture.key != turretGunTexture) {
+					newTurretBase.setTexture(turretGunTexture);
+				}
+
+				const healthPercent =
+					newTurretBaseLiteral.hp / Constant.HP.TURRET;
+				newTurretBase = this.handleDamageAnimation(
+					newTurretBase,
+					turretGunTexture,
+					healthPercent
+				);
+
+				return newTurretBase;
+			}
+		);
+
+		// update the turret's gun
+		this.updateMapOfObjects(
+			turrets,
+			this.turretGunSprites,
+			'',
+			(newTurretGun, newTurretLiteralGun) => {
+				const turretGunTexture = 'turret_shooter';
+
+				if (newTurretGun.texture.key != turretGunTexture) {
+					newTurretGun.setTexture(turretGunTexture);
+				}
+
+				const healthPercent =
+					newTurretLiteralGun.hp / Constant.HP.TURRET;
+				newTurretGun = this.handleDamageAnimation(
+					newTurretGun,
+					turretGunTexture,
+					healthPercent
+				);
+
+				newTurretGun.setRotation(newTurretLiteralGun.direction);
+
+				return newTurretGun;
 			}
 		);
 	}
@@ -619,7 +674,7 @@ export default class MainScene extends Phaser.Scene {
 					newBase.setTexture(baseTexture);
 				}
 
-				const healthPercent = newBaseLiteral.hp / 100; // 100 = Total health determined from base.ts
+				const healthPercent = newBaseLiteral.hp / Constant.HP.BASE;
 				newBase = this.handleDamageAnimation(
 					newBase,
 					baseTexture,
@@ -732,6 +787,8 @@ export default class MainScene extends Phaser.Scene {
 		this.clearMapOfObjects(this.otherPlayerSprites);
 		this.clearMapOfObjects(this.bulletSprites);
 		this.clearMapOfObjects(this.wallSprites);
+		this.clearMapOfObjects(this.turretBaseSprites);
+		this.clearMapOfObjects(this.turretGunSprites);
 		this.clearMapOfObjects(this.campfireSprites);
 		this.clearMapOfObjects(this.baseSprites);
 		this.clearMapOfObjects(this.territorySprites);

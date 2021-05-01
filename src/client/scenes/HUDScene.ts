@@ -86,7 +86,7 @@ export default class HUDScene extends Phaser.Scene {
 		}
 
 		const playerText = Phaser.Utils.String.Format(info_format, [
-			currentPlayer.health,
+			playerHealth,
 			currentPlayer.score,
 			currentPlayer.resources,
 		]);
