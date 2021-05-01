@@ -12,7 +12,7 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
-import { MapResources, Resource } from './resources';
+import { MapResources, Resource } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
 
 export default class Game {
