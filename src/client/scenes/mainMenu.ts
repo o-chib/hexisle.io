@@ -7,6 +7,7 @@ export default class MainMenu extends Phaser.Scene {
 	public static Name = 'MainMenu';
 	private socket: SocketIOClient.Socket;
 	private playerName = '';
+	private gameLobby = Map
 
 	constructor() {
 		super('MainMenu');
@@ -51,12 +52,7 @@ export default class MainMenu extends Phaser.Scene {
 			top: '50%',
 		});
 
-		playButton
-			.setFontFamily('monospace')
-			.setFontSize(40)
-			.setFill('#fff')
-			.setAlign('center')
-			.setOrigin(0.5);
+		playButton.setFontFamily('monospace').setFontSize(40).setFill('#fff');
 		playButton.setInteractive();
 
 		playButton.on(
