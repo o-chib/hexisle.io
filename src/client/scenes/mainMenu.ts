@@ -1,5 +1,6 @@
 import mainScene from './mainScene';
 import Utilities from "./Utilities";
+import { Constant } from './../../shared/constants';
 
 export default class MainMenu extends Phaser.Scene {
     public static Name = "MainMenu";
@@ -48,6 +49,8 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     private loadMainScene(): void {
+        this.socket.emit(Constant.MESSAGE.JOIN_GAME);
+
         this.scene.start(mainScene.Name {
 			socket: this.socket,
 		});
