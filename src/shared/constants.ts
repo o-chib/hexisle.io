@@ -50,7 +50,7 @@ export const Constant = Object.freeze({
 		MAX_RESOURCES: 2000,
 
 		RESOURCE_ID: [0, 1, 2],
-		RESOURCE_RARITY: [0.4, 0.4, 0.2],
+		RESOURCE_RARITY: [0.5, 0.3, 0.2],
 
 		RESOURCE_NAME: {
 			0: 'BLUE',
