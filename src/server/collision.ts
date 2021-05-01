@@ -99,19 +99,19 @@ export default class CollisionDetection {
 				result.payload.dropAmount > 0 &&
 				this.doCirclesCollide(
 					player,
-					Constant.PLAYER_RADIUS,
+					Constant.RADIUS.PLAYER,
 					result.payload,
-					Constant.RESOURCE_RADIUS
+					Constant.RADIUS.RESOURCE
 				)
 			) {
 				player.updateResource(result.payload.dropAmount);
 				resourceSystem.deleteResource(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
-						result.payload.xPos - Constant.RESOURCE_RADIUS,
-						result.payload.xPos + Constant.RESOURCE_RADIUS,
-						result.payload.yPos + Constant.RESOURCE_RADIUS,
-						result.payload.yPos - Constant.RESOURCE_RADIUS,
+						result.payload.xPos - Constant.RADIUS.RESOURCE,
+						result.payload.xPos + Constant.RADIUS.RESOURCE,
+						result.payload.yPos + Constant.RADIUS.RESOURCE,
+						result.payload.yPos - Constant.RADIUS.RESOURCE,
 						result.payload
 					)
 				);
@@ -160,7 +160,7 @@ export default class CollisionDetection {
 		});
 	}
 
-	doesObjCollideWithWall(
+	doesObjCollideWithStructure(
 		xPos: number,
 		yPos: number,
 		objectRadius: number

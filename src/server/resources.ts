@@ -10,7 +10,7 @@ export class ResourceSystem {
 	public resources: Set<Resource>;
 
 	constructor() {
-		this.previousUpdateTimestamp = Date.now();
+		this.previousMapUpdateTimestamp = Date.now();
 		this.minResource = Constant.RESOURCE.MIN_RESOURCES;
 		this.maxResource = Constant.RESOURCE.MAX_RESOURCES;
 		this.resourceCount = 0;
@@ -22,7 +22,7 @@ export class ResourceSystem {
 			this.resourceCount < this.maxResource &&
 			timePassed >= Constant.RESOURCE.UPDATE_RATE
 		) {
-			this.previousUpdateTimestamp = currentTimestamp;
+			this.previousMapUpdateTimestamp = currentTimestamp;
 			return true;
 		}
 		return false;
