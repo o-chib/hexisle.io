@@ -57,6 +57,7 @@ export const Constant = Object.freeze({
 		ROTATE: 'rotate',
 		RESPAWN: 'respawn',
 		INITIALIZE: 'initialize_game',
+		UPDATE_NAME: 'NEW NAME',
 	},
 
 	TIMING: {

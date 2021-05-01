@@ -30,7 +30,18 @@ export class GameCollection {
 		);
 	}
 
-	public addPlayerToGame(socket: SocketIO.Socket, name = '', gameID: string) {
-		this.allGames.get(gameID)?.addPlayer(socket, name);
+	public addPlayerToGame(
+		socket: SocketIO.Socket,
+		name: string,
+		gameID?: string
+	) {
+		if (gameID) {
+			this.allGames.get(gameID)?.addPlayer(socket, name);
+			return;
+		}
+
+		for (let game in this.allGames.values()) {
+			//TODO pick a game somehow
+		}
 	}
 }

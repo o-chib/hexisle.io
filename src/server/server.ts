@@ -3,6 +3,7 @@ import express from 'express';
 import http from 'http';
 import * as SocketIO from 'socket.io';
 import { GameCollection } from './gameCollection';
+import { Constant } from '../shared/constants';
 
 // Serve up the static files from public
 const app = express();
@@ -38,4 +39,7 @@ const playerSocketsToNames: Map<SocketIO.Socket, string> = new Map();
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
 	playerSocketsToNames.set(socket, '');
+	socket.on(Constant.MESSAGE.UPDATE_NAME, (newName: string) => {
+		playerSocketsToNames.set(socket, newName);
+	});
 });
