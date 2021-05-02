@@ -11,7 +11,9 @@
     "build": "npm run build-server && npm run build-client",
     "build-server": "webpack --mode development --config webpack.server.js",
     "build-client": "webpack --mode development --config webpack.client.js",
-    "build-prod": "webpack --mode production --config webpack.server.js && webpack --mode production --config webpack.client.js",
+    "build-prod": "npm run build-prod-server && npm run build-prod-client",
+    "build-prod-server": "webpack --mode production --config webpack.server.js",
+    "build-prod-client": "webpack --mode production --config webpack.client.js",
     "lint": "eslint src/ && eslint tests/",
     "lint-fix": "eslint src/ --fix && eslint tests/ --fix",
     "test": "karma start karma.conf.js --single-run"
@@ -32,6 +34,7 @@
     "@types/socket.io-client": "1.4.36",
     "@typescript-eslint/eslint-plugin": "^4.21.0",
     "@typescript-eslint/parser": "^4.21.0",
+    "concurrently": "^6.0.2",
     "eslint": "^7.24.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
