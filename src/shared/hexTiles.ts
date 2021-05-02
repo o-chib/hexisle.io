@@ -26,7 +26,7 @@ export class HexTiles {
 		this.generateBoundary();
 		const campDistanceFromCenter = Math.max(
 			1,
-			Math.floor(this.campfiresInHalfWidth * 0.6)
+			Math.floor(this.campfiresInHalfWidth * 0.75)
 		);
 		this.generateBases(Constant.TEAM_COUNT, campDistanceFromCenter);
 	}
