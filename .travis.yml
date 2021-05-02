@@ -12,8 +12,8 @@ before_install:
 before_script:
     - npm install
 script: 
+    prettier --check "src/**/*.ts" &&
     node_modules/karma/bin/karma start karma.conf.js --single-run
-    prettier --check "src/**/*.ts"
 notifications:
     email:
         on_success: change
