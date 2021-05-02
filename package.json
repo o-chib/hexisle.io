@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "author": "teamIO",
   "description": "A top down gun-action and builder webgame.",
-  "license": "",
+  "license": "GPL-3.0-only",
   "main": "",
   "scripts": {
     "website": "npm run build && npm run start",
