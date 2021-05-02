@@ -80,6 +80,14 @@ export default class MainScene extends Phaser.Scene {
 				frameHeight: 134,
 			}
 		);
+		this.load.spritesheet(
+			'campfire',
+			'../assets/campfire.png',
+			{
+				frameWidth: 246,
+				frameHeight: 255,
+			}
+		);
 
 		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
@@ -606,15 +614,47 @@ export default class MainScene extends Phaser.Scene {
 		);
 	}
 
+	private handleCampfireAnimation(
+		campfireSprite: Phaser.GameObjects.Sprite,
+		teamNumber : number
+	){
+
+		campfireSprite.setTexture('campfire').setDepth(0);
+
+		if (!campfireSprite.anims.get('campfire_lit')) {
+			campfireSprite.anims.create({
+				key: 'campfire_lit',
+				frames: this.anims.generateFrameNames('campfire', {
+					start: 1,
+					end: 3,
+				}),
+				frameRate: 3,
+				repeat: -1,
+			});
+		}
+		console.log("team = " + teamNumber);
+
+		if (teamNumber != Constant.TEAM.NONE) {
+			console.log("anims.getName() = " + campfireSprite.anims.getName());
+			console.log('starting fire');
+			
+			if(campfireSprite.anims.getName() != 'campfire_lit')
+				campfireSprite.anims.play('campfire_lit', true);
+		}
+		else {
+			if(campfireSprite.anims.getName() == 'campfire_lit' || campfireSprite.anims.getName() == ''){
+				campfireSprite.anims.stop();
+			}
+		}
+	}
+
 	private updateCampfires(campfires: any) {
 		this.updateMapOfObjects(
 			campfires,
 			this.campfireSprites,
-			'campfire_unlit',
+			'campfire',
 			(newCampfire, newCampfireLiteral) => {
-				if (newCampfireLiteral.teamNumber != Constant.TEAM.NONE)
-					newCampfire.setTexture('campfire_lit').setDepth(0);
-				else newCampfire.setTexture('campfire_unlit').setDepth(0);
+				this.handleCampfireAnimation(newCampfire, newCampfireLiteral.teamNumber);
 				return newCampfire;
 			}
 		);
