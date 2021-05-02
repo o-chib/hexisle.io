@@ -6,6 +6,7 @@ export class HexTiles {
 	public hexSize: number;
 	public campRadius: number;
 	public mapHeight: number;
+	public campfiresInHalfWidth: number;
 	public baseCoords: OffsetPoint[];
 	public boundaryCoords: OffsetPoint[];
 
@@ -14,6 +15,7 @@ export class HexTiles {
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
 		this.mapHeight = Constant.MAP_HEIGHT;
 		this.hexRadius = this.getMapHexRadius();
+		this.campfiresInHalfWidth = this.getNumCampfiresInMapRadius();
 		this.baseCoords = [];
 		this.boundaryCoords = [];
 	}
@@ -22,7 +24,11 @@ export class HexTiles {
 		this.generateTileMap();
 		this.generateChunks();
 		this.generateBoundary();
-		this.generateBases(2, 1);
+		const campDistanceFromCenter = Math.max(
+			1,
+			Math.floor(this.campfiresInHalfWidth * 0.6)
+		);
+		this.generateBases(Constant.TEAM_COUNT, campDistanceFromCenter);
 	}
 
 	generateTileMap(): void {
@@ -61,7 +67,7 @@ export class HexTiles {
 		this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
 		const hexesToCheck: OffsetPoint[] = this.getCampfireRadiusPoints(
 			hex,
-			this.getNumCampfiresInMapRadius()
+			this.campfiresInHalfWidth
 		);
 
 		// keep repeating until we don't have any hexes left
@@ -123,8 +129,8 @@ export class HexTiles {
 		}
 	}
 
-	generateBases(teamCount, campDistanceFromCenter): void {
-		// Takes the tilemap and sets camps to bases dependent on the parameters
+	generateBases(teamCount: number, campDistanceFromCenter: number): void {
+		// Takes the tilemap and sets camps to bases dependent on the parameterss
 		// teamCount is the number of teams, with a maximum of 6
 		// campDistanceFromCenter is how many camps away radially the bases should spawn
 		if (teamCount == 1) {
@@ -140,32 +146,23 @@ export class HexTiles {
 			teamCount
 		);
 
+		// add a random offset for direction
+		// so bases can have any orientation around the centerTile
+		const dirOffset = Math.floor(Math.random() * 6);
 		// For every direction we go in
 		for (let dir of baseDirs) {
 			let travHex: OffsetPoint = new OffsetPoint(
 				this.hexRadius,
 				this.hexRadius
 			);
+			// Add random offset to direction (dir loops from 0 to 5)
+			dir = (dir + dirOffset) % 6;
 
-			// Traverse campDistanceFromCenter from the center hex
-			travHex = this.hexTraverse(
+			// Traverse campDistanceFromCenter from the center hex to the next campfire
+			travHex = this.traverseCampfires(
 				travHex,
 				dir,
-				this.campRadius * campDistanceFromCenter
-			);
-
-			// if i is at the last index, loop back to 0, or else increment it
-			if (dir == 5) {
-				dir = 0;
-			} else {
-				dir += 1;
-			}
-
-			// start and go the length of the hex radius + 1 in the original direction + 1
-			travHex = this.hexTraverse(
-				travHex,
-				dir,
-				this.campRadius * campDistanceFromCenter + 1
+				campDistanceFromCenter
 			);
 
 			// Assign it to a base
@@ -442,7 +439,7 @@ export class HexTiles {
 		return n;
 	}
 
-	private getBaseDirectionsFromTeamCount(teamCount): number[] {
+	private getBaseDirectionsFromTeamCount(teamCount: number): number[] {
 		// takes in the number of teams and returns a list of the directions a base will be in
 		const baseDirs: number[] = [];
 		const possibleBaseDirs: number[] = [0, 1, 2, 3, 4, 5];
