@@ -79,10 +79,7 @@ export class MapResources {
 	}
 
 	private canUpdateMapResources(): boolean {
-		if (this.resourceCount < this.maxResource && this.updateTimer <= 0) {
-			return true;
-		}
-		return false;
+		return this.resourceCount < this.maxResource && this.updateTimer <= 0;
 	}
 
 	private resetUpdateTimer(): void {
