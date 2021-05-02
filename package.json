@@ -7,13 +7,13 @@
   "main": "",
   "scripts": {
     "website": "npm run build && npm run server",
-    "server": "node server-bundle.js",
+    "server": "node build/server/server.js",
     "build": "concurrently npm:build-server npm:build-client",
-    "build-server": "webpack --mode development --config webpack.server.js",
+    "build-prod": "concurrently npm:build-server npm:build-prod-client",
+    "build-server": "tsc --build tsconfig.build-server.json",
     "build-client": "webpack --mode development --config webpack.client.js",
-    "build-prod": "concurrently npm:build-prod-server npm:build-prod-client",
-    "build-prod-server": "webpack --mode production --config webpack.server.js",
     "build-prod-client": "webpack --mode production --config webpack.client.js",
+    "build-server-webpack": "webpack --mode development --config webpack.server.js",
     "lint": "concurrently \"eslint src/\" \"eslint tests/\"",
     "lint-fix": "concurrently \"eslint src/ --fix\" \"eslint tests/ --fix\"",
     "test": "karma start karma.conf.js --single-run"

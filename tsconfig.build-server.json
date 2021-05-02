@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  
+  "compilerOptions": {
+    "outDir": "build"
+  },
+  "exclude": ["node_modules","src/client","build"]
+}
