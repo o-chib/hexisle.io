@@ -1,6 +1,5 @@
 import { Point } from '../src/shared/hexTiles';
 import { MapResources, Resource } from '../src/server/mapResources';
-import { Constant } from '../src/shared/constants';
 
 describe('Resource', () => {
 	it('should generate correct resourceCount', () => {
