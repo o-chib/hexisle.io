@@ -14,8 +14,8 @@
     "build-prod": "concurrently npm:build-prod-server npm:build-prod-client",
     "build-prod-server": "webpack --mode production --config webpack.server.js",
     "build-prod-client": "webpack --mode production --config webpack.client.js",
-    "lint": "eslint src/ && eslint tests/",
-    "lint-fix": "eslint src/ --fix && eslint tests/ --fix",
+    "lint": "concurrently \"eslint src/\" \"eslint tests/\"",
+    "lint-fix": "concurrently \"eslint src/ --fix\" \"eslint tests/ --fix\"",
     "test": "karma start karma.conf.js --single-run"
   },
   "dependencies": {
