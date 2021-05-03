@@ -586,7 +586,9 @@ export default class Game {
 	addResources(numResources: number): void {
 		let randomPoint;
 		while (numResources > 0) {
-			if (this.mapResources.resourceCount > this.mapResources.maxResources)
+			if (
+				this.mapResources.resourceCount > this.mapResources.maxResources
+			)
 				return;
 			randomPoint = this.getRandomEmptyPointOnMap();
 
