@@ -2,7 +2,7 @@ import { Constant } from '../src/shared/constants';
 import { HexTiles, Tile, OffsetPoint, Point } from './../src/shared/hexTiles';
 
 describe('HexTiles', () => {
-	const hexTileMap: HexTiles = new HexTiles(5000);
+	const hexTileMap: HexTiles = new HexTiles(10000);
 	hexTileMap.generateMap();
 
 	it('checkIfValidHex should return false', () => {
@@ -19,22 +19,22 @@ describe('HexTiles', () => {
 
 	it('checkIfValidEmptyPointOnGrid should return false', () => {
 		expect(
-			hexTileMap.checkIfValidEmptyPointOnGrid(new Point(2500, 3300))
+			hexTileMap.checkIfValidEmptyPointOnGrid(new Point(2700, 5700))
 		).toEqual(false);
 	});
 
 	it('checkIfValidEmptyPointOnGrid should return true', () => {
 		expect(
-			hexTileMap.checkIfValidEmptyPointOnGrid(new Point(2300, 3100))
+			hexTileMap.checkIfValidEmptyPointOnGrid(new Point(3300, 5600))
 		).toEqual(true);
 	});
 
 	it('cartesianToOffset should give an empty tile at the right offset coord', () => {
 		const hexCoord: OffsetPoint = hexTileMap.cartesianToOffset(
-			new Point(1900, 2700)
+			new Point(2900, 1700)
 		);
-		expect(hexCoord.q).toEqual(16);
-		expect(hexCoord.r).toEqual(20);
+		expect(hexCoord.q).toEqual(25);
+		expect(hexCoord.r).toEqual(12);
 
 		const tile: Tile = hexTileMap.tileMap[hexCoord.q][hexCoord.r];
 		expect(tile.building).toEqual(Constant.BUILDING.NONE);
@@ -42,10 +42,10 @@ describe('HexTiles', () => {
 
 	it('cartesianToOffset should give a boundary tile at the right offset coord', () => {
 		const hexCoord: OffsetPoint = hexTileMap.cartesianToOffset(
-			new Point(4100, 3600)
+			new Point(7400, 4600)
 		);
-		expect(hexCoord.q).toEqual(36);
-		expect(hexCoord.r).toEqual(27);
+		expect(hexCoord.q).toEqual(65);
+		expect(hexCoord.r).toEqual(34);
 
 		const tile: Tile = hexTileMap.tileMap[hexCoord.q][hexCoord.r];
 		expect(tile.building).toEqual(Constant.BUILDING.BOUNDARY);

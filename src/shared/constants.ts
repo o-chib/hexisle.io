@@ -11,6 +11,7 @@ export const Constant = Object.freeze({
 	},
 
 	RADIUS: {
+		HEX: 75,
 		PLAYER: 50,
 		BULLET: 15,
 		RESOURCE: 15,
@@ -44,7 +45,7 @@ export const Constant = Object.freeze({
 	},
 
 	RESOURCE: {
-		UPDATE_RATE: 30 * 1000,
+		UPDATE_RATE: 1 * 1000,
 
 		MIN_RESOURCES: 100,
 		MAX_RESOURCES: 150,

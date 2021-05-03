@@ -9,7 +9,7 @@ describe('Resource', () => {
 		const point = new Point(xPos, yPos);
 		const numResourceToGenerate =
 			mapResources.getRandomResourceGenerationCount() +
-			mapResources.minResource;
+			mapResources.minResources;
 
 		let i = 0;
 		while (numResourceToGenerate > i) {

@@ -3,16 +3,16 @@ import { Constant } from '../shared/constants';
 
 export class MapResources {
 	public updateTimer: number;
-	public minResource: number;
-	public maxResource: number;
+	public minResources: number;
+	public maxResources: number;
 	public resourceCount: number;
 	public resources: Set<Resource>;
 	private gameAddResources: (numResource: number) => void;
 
 	constructor(gameAddResources?: (numResource: number) => void) {
 		this.updateTimer = Constant.RESOURCE.UPDATE_RATE;
-		this.minResource = Constant.RESOURCE.MIN_RESOURCES;
-		this.maxResource = Constant.RESOURCE.MAX_RESOURCES;
+		this.minResources = Constant.RESOURCE.MIN_RESOURCES;
+		this.maxResources = Constant.RESOURCE.MAX_RESOURCES;
 		this.resourceCount = 0;
 		this.resources = new Set();
 		if (gameAddResources) this.gameAddResources = gameAddResources;
@@ -34,9 +34,11 @@ export class MapResources {
 	}
 
 	getRandomResourceGenerationCount(): number {
-		return Math.floor(
-			Math.random() * (this.maxResource - this.resourceCount)
-		);
+		let resourceNum: number = Math.floor(Math.random() * (this.maxResources - this.resourceCount));
+		if ((this.resourceCount + resourceNum) < this.minResources) {
+			resourceNum += this.minResources - (this.resourceCount + resourceNum);
+		}
+		return resourceNum;
 	}
 
 	generateResource(resourceID: string, randomPoint: Point): Resource {
@@ -79,7 +81,7 @@ export class MapResources {
 	}
 
 	private canUpdateMapResources(): boolean {
-		return this.resourceCount < this.maxResource && this.updateTimer <= 0;
+		return this.resourceCount < this.maxResources && this.updateTimer <= 0;
 	}
 
 	private resetUpdateTimer(): void {
