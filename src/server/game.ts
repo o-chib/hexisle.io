@@ -583,10 +583,10 @@ export default class Game {
 		player?.updateDirection(direction);
 	}
 
-	addResources(numResource: number): void {
+	addResources(numResources: number): void {
 		let randomPoint;
-		while (numResource > 0) {
-			if (this.mapResources.resourceCount > this.mapResources.maxResource)
+		while (numResources > 0) {
+			if (this.mapResources.resourceCount > this.mapResources.maxResources)
 				return;
 			randomPoint = this.getRandomEmptyPointOnMap();
 
@@ -599,7 +599,7 @@ export default class Game {
 				Constant.RADIUS.RESOURCE
 			);
 
-			numResource -= 1;
+			numResources -= 1;
 		}
 	}
 
