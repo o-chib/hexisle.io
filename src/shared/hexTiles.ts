@@ -11,7 +11,7 @@ export class HexTiles {
 	public boundaryCoords: OffsetPoint[];
 
 	constructor(mapHeight: number = Constant.MAP_HEIGHT) {
-		this.hexSize = 75;
+		this.hexSize = Constant.RADIUS.HEX;
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
 		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();
