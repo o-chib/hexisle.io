@@ -35,7 +35,7 @@ export class MapResources {
 
 	getRandomResourceGenerationCount(): number {
 		let resourceNum: number = Math.floor(
-			Math.random() * (this.maxResources - this.resourceCount)
+			Math.random() * (Constant.RESOURCE.MAX_RESOURCES_PER_UPDATE + 1)
 		);
 		if (this.resourceCount + resourceNum < this.minResources) {
 			resourceNum +=

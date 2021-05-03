@@ -59,7 +59,7 @@ export default class Game {
 		this.initBases();
 
 		this.mapResources = new MapResources(this.addResources.bind(this));
-		this.addResources(this.mapResources.getRandomResourceGenerationCount());
+		this.addResources(this.mapResources.minResources);
 
 		this.passiveIncome = new PassiveIncome(this.teams);
 
@@ -584,12 +584,17 @@ export default class Game {
 	}
 
 	addResources(numResources: number): void {
-		let randomPoint;
-		while (numResources > 0) {
+		let addResourceLoopLimit: number = numResources * Constant.RESOURCE.SPAWN_ATTMEPTS_PER_RESOURCE;
+		let randomPoint: Point;
+		console.log("trying to add", numResources, "resources");
+		while (numResources > 0 && addResourceLoopLimit > 0) {
 			if (
 				this.mapResources.resourceCount > this.mapResources.maxResources
-			)
+			) {
+				console.log(" - resourceCount too high, not adding the resources");
 				return;
+			}
+
 			randomPoint = this.getRandomEmptyPointOnMap();
 
 			const newResource: Resource = this.mapResources.generateResource(
@@ -602,6 +607,7 @@ export default class Game {
 			);
 
 			numResources -= 1;
+			addResourceLoopLimit--;
 		}
 	}
 
