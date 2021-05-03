@@ -25,7 +25,7 @@ const restartGame = () => {
 };
 
 const removePlayer = (socket: SocketIO.Socket) => {
-	playerSockets.delete(socket);
+	playerSocketsToGameIDs.delete(socket);
 };
 
 // Start the game
@@ -35,18 +35,22 @@ allGames.newGame();
 
 // Store all the socket connections to this server so we can
 // add people back to a restarted game
-const playerSockets: Set<SocketIO.Socket> = new Set();
 const playerSocketsToGameIDs: Map<SocketIO.Socket, string | null> = new Map();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
-	playerSockets.add(socket);
 	playerSocketsToGameIDs.set(socket, null);
 
 	socket.on(Constant.MESSAGE.JOIN_GAME, (gameID?: string, name = 'Aliem') => {
-		if (gameID) allGames.addPlayerToGame(socket, name, gameID);
-		else allGames.addPlayerToGame(socket, name);
+		if (allGames.addPlayerToGame(socket, name, gameID))
+			socket.emit(Constant.MESSAGE.JOIN_GAME_SUCCESS);
+		else
+			socket.emit(
+				Constant.MESSAGE.JOIN_GAME_FAIL,
+				'Failed to join game.'
+			);
+		//TODO improve error message
 	});
 
 	socket.on(Constant.MESSAGE.ASK_GAME_LIST, () => {

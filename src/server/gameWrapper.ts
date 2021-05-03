@@ -20,9 +20,13 @@ export default class GameWrapper {
 		this.playerDisconnectCallback = playerDisconnectCallback;
 	}
 
-	public addPlayer(socket: SocketIO.Socket, name = '') {
+	// Returns true if successfully added player
+	public addPlayer(socket: SocketIO.Socket, name = ''): boolean {
+		//TODO check max player count
 		this.updateSocket(socket, name);
 		this.playerCount++;
+
+		return true;
 	}
 
 	private updateSocket(socket: SocketIO.Socket, name: string) {

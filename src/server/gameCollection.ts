@@ -34,17 +34,24 @@ export class GameCollection {
 		socket: SocketIO.Socket,
 		name: string,
 		gameID?: string
-	) {
+	): boolean {
 		if (gameID) {
-			this.allGames.get(gameID)?.addPlayer(socket, name);
-			return;
+			return (
+				this.allGames.has(gameID) &&
+				this.allGames.get(gameID)!.addPlayer(socket, name)
+			);
+		} else {
+			const game = this.findBestGameToJoin();
+			return game?.addPlayer(socket, name) ?? false;
 		}
+	}
 
+	findBestGameToJoin(): GameWrapper | null {
 		for (const game of this.allGames.values()) {
-			game.addPlayer(socket, name);
-			return;
-			//TODO pick a game somehow
+			//TODO imporve selection
+			return game;
 		}
+		return null;
 	}
 
 	public getGameList(): { gameid: string; info: any }[] {
