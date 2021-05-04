@@ -355,6 +355,51 @@ export default class MainScene extends Phaser.Scene {
 		return structureSprite;
 	}
 
+	private handleCampfireAnimation(
+		campfireSprite: Phaser.GameObjects.Sprite,
+		teamNumber : number,
+	){
+
+		campfireSprite.setDepth(0);
+
+		if (!campfireSprite.anims.get('campfire_lit')) {
+			campfireSprite.anims.create({
+				key: 'campfire_lit',
+				frames: this.anims.generateFrameNames('campfire', {
+					start: 1,
+					end: 3,
+				}),
+				frameRate: 5,
+				repeat: -1,
+			});
+		}
+		if (!campfireSprite.anims.get('campfire_unlit')) {
+			campfireSprite.anims.create({
+				key: 'campfire_unlit',
+				frames: this.anims.generateFrameNames('campfire', {
+					start: 0,
+					end: 0,
+				}),
+				frameRate: 1,
+				repeat: -1,
+			});
+		}
+
+		if (teamNumber != Constant.TEAM.NONE) {
+			if(campfireSprite.anims.getName() == 'campfire_unlit' || campfireSprite.anims.getName() == ''){
+				campfireSprite.anims.stop();
+				campfireSprite.anims.play('campfire_lit', true);
+			}
+		}
+		else {
+			if(campfireSprite.anims.getName() == 'campfire_lit' || campfireSprite.anims.getName() == ''){
+				campfireSprite.anims.stop();
+				campfireSprite.anims.play('campfire_unlit', true);
+
+			}
+		}
+	}
+
 	calculateDirection() {
 		let direction = NaN;
 		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
@@ -593,40 +638,6 @@ export default class MainScene extends Phaser.Scene {
 				return newTurretGun;
 			}
 		);
-	}
-
-	private handleCampfireAnimation(
-		campfireSprite: Phaser.GameObjects.Sprite,
-		teamNumber : number
-	){
-
-		campfireSprite.setTexture('campfire').setDepth(0);
-
-		if (!campfireSprite.anims.get('campfire_lit')) {
-			campfireSprite.anims.create({
-				key: 'campfire_lit',
-				frames: this.anims.generateFrameNames('campfire', {
-					start: 1,
-					end: 3,
-				}),
-				frameRate: 3,
-				repeat: -1,
-			});
-		}
-		console.log("team = " + teamNumber);
-
-		if (teamNumber != Constant.TEAM.NONE) {
-			console.log("anims.getName() = " + campfireSprite.anims.getName());
-			console.log('starting fire');
-			
-			if(campfireSprite.anims.getName() != 'campfire_lit')
-				campfireSprite.anims.play('campfire_lit', true);
-		}
-		else {
-			if(campfireSprite.anims.getName() == 'campfire_lit' || campfireSprite.anims.getName() == ''){
-				campfireSprite.anims.stop();
-			}
-		}
 	}
 
 	private updateCampfires(campfires: any) {
