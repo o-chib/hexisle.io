@@ -80,20 +80,14 @@ export default class MainScene extends Phaser.Scene {
 				frameHeight: 134,
 			}
 		);
-		this.load.spritesheet(
-			'campfire',
-			'../assets/campfire.png',
-			{
-				frameWidth: 246,
-				frameHeight: 255,
-			}
-		);
+		this.load.spritesheet('campfire', '../assets/campfire.png', {
+			frameWidth: 246,
+			frameHeight: 255,
+		});
 
 		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
-		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
-		this.load.image('campfire_lit', '../assets/campfire_lit.png');
 		this.load.image('grass_chunk', '../assets/chunk.png');
 		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
 		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
@@ -357,9 +351,8 @@ export default class MainScene extends Phaser.Scene {
 
 	private handleCampfireAnimation(
 		campfireSprite: Phaser.GameObjects.Sprite,
-		teamNumber : number,
-	){
-
+		teamNumber: number
+	) {
 		campfireSprite.setDepth(0);
 
 		if (!campfireSprite.anims.get('campfire_lit')) {
@@ -386,16 +379,20 @@ export default class MainScene extends Phaser.Scene {
 		}
 
 		if (teamNumber != Constant.TEAM.NONE) {
-			if(campfireSprite.anims.getName() == 'campfire_unlit' || campfireSprite.anims.getName() == ''){
+			if (
+				campfireSprite.anims.getName() == 'campfire_unlit' ||
+				campfireSprite.anims.getName() == ''
+			) {
 				campfireSprite.anims.stop();
 				campfireSprite.anims.play('campfire_lit', true);
 			}
-		}
-		else {
-			if(campfireSprite.anims.getName() == 'campfire_lit' || campfireSprite.anims.getName() == ''){
+		} else {
+			if (
+				campfireSprite.anims.getName() == 'campfire_lit' ||
+				campfireSprite.anims.getName() == ''
+			) {
 				campfireSprite.anims.stop();
 				campfireSprite.anims.play('campfire_unlit', true);
-
 			}
 		}
 	}
@@ -646,7 +643,10 @@ export default class MainScene extends Phaser.Scene {
 			this.campfireSprites,
 			'campfire',
 			(newCampfire, newCampfireLiteral) => {
-				this.handleCampfireAnimation(newCampfire, newCampfireLiteral.teamNumber);
+				this.handleCampfireAnimation(
+					newCampfire,
+					newCampfireLiteral.teamNumber
+				);
 				return newCampfire;
 			}
 		);
