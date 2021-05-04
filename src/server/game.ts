@@ -584,18 +584,13 @@ export default class Game {
 	}
 
 	addResources(numResources: number): void {
-		let addResourceLoopLimit: number = numResources * Constant.RESOURCE.SPAWN_ATTMEPTS_PER_RESOURCE;
-		let randomPoint: Point;
-		console.log("trying to add", numResources, "resources");
-		while (numResources > 0 && addResourceLoopLimit > 0) {
+		while (numResources > 0) {
 			if (
 				this.mapResources.resourceCount > this.mapResources.maxResources
-			) {
-				console.log(" - resourceCount too high, not adding the resources");
-				return;
-			}
+			) return;
 
-			randomPoint = this.getRandomEmptyPointOnMap();
+			let [validRandomPoint, randomPoint]: [boolean, Point] = this.getRandomEmptyPointOnMap();
+			if (!validRandomPoint) break;
 
 			const newResource: Resource = this.mapResources.generateResource(
 				this.idGenerator.newID(),
@@ -605,21 +600,24 @@ export default class Game {
 				newResource,
 				Constant.RADIUS.RESOURCE
 			);
-
 			numResources -= 1;
-			addResourceLoopLimit--;
 		}
 	}
 
-	getRandomEmptyPointOnMap(): Point {
+	getRandomEmptyPointOnMap(): [boolean, Point] {
+		let loopLimit: number = Constant.RANDOM_LOOP_LIMIT;
 		let point: Point = new Point();
 		let validPoint = false;
-		while (!validPoint) {
+		while (!validPoint && loopLimit > 0) {
 			point = this.getRandomMapPoint();
 			validPoint = this.hexTileMap.checkIfValidEmptyPointOnGrid(point);
+			loopLimit--;
 		}
-
-		return point;
+		if (loopLimit > 0) {
+			return [true, point];
+		} else {
+			return [false, point];
+		}
 	}
 
 	getRandomMapPoint(): Point {

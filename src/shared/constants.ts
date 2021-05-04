@@ -3,6 +3,7 @@ export const Constant = Object.freeze({
 	MAP_WIDTH: 10000,
 	MAP_HEIGHT: 10000,
 	TEAM_COUNT: 2,
+	RANDOM_LOOP_LIMIT: 10,
 
 	COST: {
 		WALL: 5,
