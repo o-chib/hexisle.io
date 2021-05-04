@@ -58,8 +58,8 @@ export default class Game {
 		this.addBaseTerritories();
 		this.initBases();
 
-		this.mapResources = new MapResources(this.addResources.bind(this));
-		this.addResources(this.mapResources.MIN_RESOURCES);
+		this.mapResources = new MapResources(this.addResource.bind(this));
+		this.mapResources.addInitialResources();
 
 		this.passiveIncome = new PassiveIncome(this.teams);
 
@@ -583,26 +583,16 @@ export default class Game {
 		player?.updateDirection(direction);
 	}
 
-	addResources(numResources: number): void {
-		while (numResources > 0) {
-			if (
-				this.mapResources.resourceCount > this.mapResources.MAX_RESOURCES
-			)
-				return;
+	addResource(): void {
+		const randomPoint = this.getRandomEmptyPointOnMap();
+		if (!randomPoint) return;
 
-			const randomPoint = this.getRandomEmptyPointOnMap();
-			if (!randomPoint) break;
+		const newResource: Resource = this.mapResources.generateResource(
+			this.idGenerator.newID(),
+			randomPoint
+		);
 
-			const newResource: Resource = this.mapResources.generateResource(
-				this.idGenerator.newID(),
-				randomPoint
-			);
-			this.collision.insertCollider(
-				newResource,
-				Constant.RADIUS.RESOURCE
-			);
-			numResources -= 1;
-		}
+		this.collision.insertCollider(newResource, Constant.RADIUS.RESOURCE);
 	}
 
 	getRandomEmptyPointOnMap(): Point | null {

@@ -48,7 +48,7 @@ export const Constant = Object.freeze({
 	RESOURCE: {
 		UPDATE_RATE: 1 * 1000,
 
-		MIN_RESOURCES: 50,
+		INITIAL_RESOURCES: 50,
 		MAX_RESOURCES: 150,
 		MAX_RESOURCES_PER_UPDATE: 5,
 

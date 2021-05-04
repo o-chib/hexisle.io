@@ -2,30 +2,41 @@ import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
 
 export class MapResources {
-	public updateTimer: number;
-	public minResources: number;
-	public maxResources: number;
-	public resourceCount: number;
+	private readonly INITIAL_RESOURCES: number;
+	private readonly MAX_RESOURCES: number;
+	private updateTimer: number;
+	private resourceCount: number;
 	public resources: Set<Resource>;
-	private gameAddResources: (numResource: number) => void;
+	private gameAddResource: () => void;
 
-	constructor(gameAddResources?: (numResource: number) => void) {
-		this.updateTimer = Constant.RESOURCE.UPDATE_RATE;
-		this.minResources = Constant.RESOURCE.MIN_RESOURCES;
-		this.maxResources = Constant.RESOURCE.MAX_RESOURCES;
+	constructor(gameAddResource?: () => void) {
+		this.INITIAL_RESOURCES = Constant.RESOURCE.INITIAL_RESOURCES;
+		this.MAX_RESOURCES = Constant.RESOURCE.MAX_RESOURCES;
 		this.resourceCount = 0;
 		this.resources = new Set();
-		if (gameAddResources) this.gameAddResources = gameAddResources;
+		if (gameAddResource) this.gameAddResource = gameAddResource;
+		this.resetUpdateTimer();
+	}
+
+	public addInitialResources(): void {
+		for (let i = 0; i < this.INITIAL_RESOURCES; i++) {
+			this.gameAddResource();
+		}
 	}
 
 	public updateMapResourcesIfPossible(timePassed: number): void {
-		if (this.canUpdateMapResources()) {
-			this.resetUpdateTimer();
-			const numResourcesToGenerate = this.getRandomResourceGenerationCount();
-			this.gameAddResources(numResourcesToGenerate);
-		} else {
+		if (!this.canUpdateMapResources()) {
 			this.decrementUpdateTimer(timePassed);
+			return;
 		}
+
+		const numResourcesToGenerate = this.getRandomResourceGenerationCount();
+
+		for (let i = 0; i < numResourcesToGenerate; i++) {
+			this.gameAddResource();
+		}
+
+		this.resetUpdateTimer();
 	}
 
 	public deleteResource(resource: Resource) {
@@ -37,10 +48,10 @@ export class MapResources {
 		let resourceNum: number = Math.floor(
 			Math.random() * (Constant.RESOURCE.MAX_RESOURCES_PER_UPDATE + 1)
 		);
-		if (this.resourceCount + resourceNum < this.minResources) {
-			resourceNum +=
-				this.minResources - (this.resourceCount + resourceNum);
-		}
+
+		if (this.resourceCount + resourceNum > this.MAX_RESOURCES)
+			resourceNum = this.MAX_RESOURCES - this.resourceCount;
+
 		return resourceNum;
 	}
 
@@ -84,7 +95,7 @@ export class MapResources {
 	}
 
 	private canUpdateMapResources(): boolean {
-		return this.resourceCount < this.maxResources && this.updateTimer <= 0;
+		return this.resourceCount < this.MAX_RESOURCES && this.updateTimer <= 0;
 	}
 
 	private resetUpdateTimer(): void {
