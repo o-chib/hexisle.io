@@ -7,18 +7,20 @@ describe('Resource', () => {
 		const xPos = 1;
 		const yPos = 1;
 		const point = new Point(xPos, yPos);
-		const numResourceToGenerate =
-			mapResources.getRandomResourceGenerationCount() +
-			mapResources.minResources;
+		const numResourceToGenerate = 10;
 
-		let i = 0;
-		while (numResourceToGenerate > i) {
+		for (let i = 0; numResourceToGenerate > i; i++) {
 			mapResources.generateResource(i.toString(), point);
-			i++;
 		}
-		expect(mapResources.resourceCount).toEqual(numResourceToGenerate);
 
-		const newResource = new Resource(i.toString(), xPos, yPos, 2, 'BLACK');
+		expect(mapResources.resources.size).toEqual(numResourceToGenerate);
+
+		const newResource = new Resource(
+			numResourceToGenerate.toString(),
+			xPos,
+			yPos,
+			'BLUE'
+		);
 		mapResources.resources.add(newResource);
 
 		expect(mapResources.resources.has(newResource)).toEqual(true);

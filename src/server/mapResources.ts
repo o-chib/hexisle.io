@@ -57,12 +57,10 @@ export class MapResources {
 
 	public generateResource(resourceID: string, randomPoint: Point): Resource {
 		const type = this.getRandomResourceType();
-		const dropAmount = this.calculateDropAmount(type);
 		const newResource: Resource = new Resource(
 			resourceID,
 			randomPoint.xPos,
 			randomPoint.yPos,
-			dropAmount,
 			type
 		);
 		this.resources.add(newResource);
@@ -90,10 +88,6 @@ export class MapResources {
 		return Constant.RESOURCE.RESOURCE_ID[lastIndex];
 	}
 
-	private calculateDropAmount(type: string): number {
-		return Constant.RESOURCE.DROP_AMOUNT[type];
-	}
-
 	private canUpdateMapResources(): boolean {
 		return this.resourceCount < this.MAX_RESOURCES && this.updateTimer <= 0;
 	}
@@ -114,18 +108,12 @@ export class Resource {
 	public dropAmount: number;
 	public type: string;
 
-	constructor(
-		id: string,
-		xPos: number,
-		yPos: number,
-		dropAmount: number,
-		type: string
-	) {
+	constructor(id: string, xPos: number, yPos: number, type: string) {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
-		this.dropAmount = dropAmount;
 		this.type = type;
+		this.dropAmount = Constant.RESOURCE.DROP_AMOUNT[type];
 	}
 
 	serializeForUpdate(): any {
