@@ -58,6 +58,10 @@ export default class GameWrapper {
 			this.game.demolishStructure(socket, coord);
 		});
 
+		socket.on(Constant.MESSAGE.LEAVE_GAME, () => {
+			this.leaveGame(socket);
+		});
+
 		socket.on('disconnect', () => {
 			this.leaveGame(socket);
 			this.playerDisconnectCallback(socket);
