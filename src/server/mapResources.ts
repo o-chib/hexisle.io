@@ -44,17 +44,6 @@ export class MapResources {
 		this.resourceCount--;
 	}
 
-	private getRandomResourceGenerationCount(): number {
-		let resourceNum: number = Math.floor(
-			Math.random() * (Constant.RESOURCE.MAX_RESOURCES_PER_UPDATE + 1)
-		);
-
-		if (this.resourceCount + resourceNum > this.MAX_RESOURCES)
-			resourceNum = this.MAX_RESOURCES - this.resourceCount;
-
-		return resourceNum;
-	}
-
 	public generateResource(resourceID: string, randomPoint: Point): Resource {
 		const type = this.getRandomResourceType();
 		const newResource: Resource = new Resource(
@@ -66,6 +55,17 @@ export class MapResources {
 		this.resources.add(newResource);
 		this.resourceCount++;
 		return newResource;
+	}
+
+	private getRandomResourceGenerationCount(): number {
+		let resourceNum: number = Math.floor(
+			Math.random() * (Constant.RESOURCE.MAX_RESOURCES_PER_UPDATE + 1)
+		);
+
+		if (this.resourceCount + resourceNum > this.MAX_RESOURCES)
+			resourceNum = this.MAX_RESOURCES - this.resourceCount;
+
+		return resourceNum;
 	}
 
 	private getRandomResourceType(): string {
