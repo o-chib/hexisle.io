@@ -587,9 +587,13 @@ export default class Game {
 		while (numResources > 0) {
 			if (
 				this.mapResources.resourceCount > this.mapResources.maxResources
-			) return;
+			)
+				return;
 
-			let [validRandomPoint, randomPoint]: [boolean, Point] = this.getRandomEmptyPointOnMap();
+			const [validRandomPoint, randomPoint]: [
+				boolean,
+				Point
+			] = this.getRandomEmptyPointOnMap();
 			if (!validRandomPoint) break;
 
 			const newResource: Resource = this.mapResources.generateResource(
