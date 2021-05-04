@@ -6,18 +6,24 @@ import { OffsetPoint } from '../shared/hexTiles';
 export default class GameWrapper {
 	private game: Game;
 	private playerDisconnectCallback: (socket: SocketIO.Socket) => void;
+	private collectionGameOverCallback: (id: string) => void;
 	public id: string;
 	public playerCount: number;
 
 	constructor(
 		id: string,
-		gameOverCallback: () => any,
+		collectionGameOverCallback: (id: string) => any,
 		playerDisconnectCallback: (socket: SocketIO.Socket) => void
 	) {
 		this.id = id;
 		this.playerCount = 0;
-		this.game = new Game(gameOverCallback);
+		this.collectionGameOverCallback = collectionGameOverCallback;
 		this.playerDisconnectCallback = playerDisconnectCallback;
+		this.game = new Game(this.gameOverCallback.bind(this));
+	}
+
+	private gameOverCallback() {
+		this.collectionGameOverCallback(this.id);
 	}
 
 	// Returns true if successfully added player
