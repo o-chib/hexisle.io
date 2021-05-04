@@ -59,7 +59,7 @@ export default class Game {
 		this.initBases();
 
 		this.mapResources = new MapResources(this.addResources.bind(this));
-		this.addResources(this.mapResources.minResources);
+		this.addResources(this.mapResources.MIN_RESOURCES);
 
 		this.passiveIncome = new PassiveIncome(this.teams);
 
@@ -586,15 +586,12 @@ export default class Game {
 	addResources(numResources: number): void {
 		while (numResources > 0) {
 			if (
-				this.mapResources.resourceCount > this.mapResources.maxResources
+				this.mapResources.resourceCount > this.mapResources.MAX_RESOURCES
 			)
 				return;
 
-			const [validRandomPoint, randomPoint]: [
-				boolean,
-				Point
-			] = this.getRandomEmptyPointOnMap();
-			if (!validRandomPoint) break;
+			const randomPoint = this.getRandomEmptyPointOnMap();
+			if (!randomPoint) break;
 
 			const newResource: Resource = this.mapResources.generateResource(
 				this.idGenerator.newID(),
@@ -608,20 +605,17 @@ export default class Game {
 		}
 	}
 
-	getRandomEmptyPointOnMap(): [boolean, Point] {
-		let loopLimit: number = Constant.RANDOM_LOOP_LIMIT;
-		let point: Point = new Point();
-		let validPoint = false;
-		while (!validPoint && loopLimit > 0) {
+	getRandomEmptyPointOnMap(): Point | null {
+		let loopLimit = Constant.RANDOM_LOOP_LIMIT;
+		let point: Point;
+
+		do {
+			if (loopLimit <= 0) return null;
 			point = this.getRandomMapPoint();
-			validPoint = this.hexTileMap.checkIfValidEmptyPointOnGrid(point);
 			loopLimit--;
-		}
-		if (loopLimit > 0) {
-			return [true, point];
-		} else {
-			return [false, point];
-		}
+		} while (!this.hexTileMap.checkIfValidEmptyPointOnGrid(point));
+
+		return point;
 	}
 
 	getRandomMapPoint(): Point {
