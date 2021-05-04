@@ -18,7 +18,7 @@ export class MapResources {
 		if (gameAddResources) this.gameAddResources = gameAddResources;
 	}
 
-	updateMapResourcesIfPossible(timePassed: number): void {
+	public updateMapResourcesIfPossible(timePassed: number): void {
 		if (this.canUpdateMapResources()) {
 			this.resetUpdateTimer();
 			const numResourcesToGenerate = this.getRandomResourceGenerationCount();
@@ -28,12 +28,12 @@ export class MapResources {
 		}
 	}
 
-	deleteResource(resource: Resource) {
+	public deleteResource(resource: Resource) {
 		this.resources.delete(resource);
 		this.resourceCount--;
 	}
 
-	getRandomResourceGenerationCount(): number {
+	private getRandomResourceGenerationCount(): number {
 		let resourceNum: number = Math.floor(
 			Math.random() * (Constant.RESOURCE.MAX_RESOURCES_PER_UPDATE + 1)
 		);
@@ -44,7 +44,7 @@ export class MapResources {
 		return resourceNum;
 	}
 
-	generateResource(resourceID: string, randomPoint: Point): Resource {
+	public generateResource(resourceID: string, randomPoint: Point): Resource {
 		const type = this.getRandomResourceType();
 		const dropAmount = this.calculateDropAmount(type);
 		const newResource: Resource = new Resource(
