@@ -1,13 +1,9 @@
+import DestructibleObj from './destructibleObj';
 import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
-export default class Wall {
-	id: string;
-	xPos: number;
-	yPos: number;
-	teamNumber: number;
-	tile: Tile;
-	hp: number;
+export default class Wall extends DestructibleObj {
+	public tile: Tile;
 
 	constructor(
 		id: string,
@@ -16,25 +12,18 @@ export default class Wall {
 		teamNumber: number,
 		tile: Tile
 	) {
-		this.id = id;
-		this.xPos = xPos;
-		this.yPos = yPos;
-		this.teamNumber = teamNumber;
+		super(id, xPos, yPos, teamNumber, Constant.HP.WALL);
 		this.tile = tile;
-		this.hp = Constant.HP.WALL;
 	}
 
-	serializeForUpdate(): any {
+	public serializeForUpdate(): any {
 		return {
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos,
-			hp: this.hp,
 			teamNumber: this.teamNumber,
+			hp: this.hp,
+			tile: this.tile,
 		};
-	}
-
-	isAlive(): boolean {
-		return this.hp > 0;
 	}
 }
