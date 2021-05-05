@@ -1,5 +1,5 @@
-import { Constant } from './constants';
 import DestructibleObj from './destructibleObj';
+import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
 export default class Base extends DestructibleObj {
