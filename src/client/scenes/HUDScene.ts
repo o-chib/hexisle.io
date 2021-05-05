@@ -7,6 +7,7 @@ Resource:	%3`;
 const timer_format = `%1:%2`;
 
 export default class HUDScene extends Phaser.Scene {
+	public static Name = 'HuDScene';
 	private mainSceneObj: any;
 
 	// Text/Scoring
@@ -38,7 +39,10 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj = this.scene.get('MainScene');
 
 		//  Listen for events from it
+		this.mainSceneObj.events.on('startHUD', this.startHUD, this);
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
+		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);
+		
 	}
 
 	private updateText(currentPlayer: any, time: number): void {
@@ -73,5 +77,15 @@ export default class HUDScene extends Phaser.Scene {
 		const timeStr = time.toString();
 		if (time > 9) return timeStr;
 		return '0' + timeStr;
+	}
+
+	private startHUD(): void {
+		this.infoText?.setText('');
+		this.gameTimeText?.setText('');
+		this.scene.setVisible(true);
+	}
+
+	private stopHUD(): void {
+		this.scene.setVisible(false);
 	}
 }

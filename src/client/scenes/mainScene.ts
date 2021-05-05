@@ -1,10 +1,13 @@
 import io from 'socket.io-client';
+import gameOver from './gameOver';
+import HUDScene from './HUDScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 
 import { Constant } from './../../shared/constants';
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
+	private myPlayerName: string = 'aliem';
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -55,6 +58,7 @@ export default class MainScene extends Phaser.Scene {
 		this.registerIntervals();
 
 		this.socket.emit(Constant.MESSAGE.START_GAME);
+		this.events.emit('startHUD');
 	}
 
 	update(): void {
@@ -650,8 +654,13 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private endGame(endState: any): void {
-		//TODO
 		this.emptyAllObjects();
+		this.events.emit('stopHUD');
+		this.scene.start(gameOver.Name, {
+			socket: this.socket,
+			endState: endState,
+			name: this.myPlayerName,
+		});
 	}
 
 	private emptyAllObjects(): void {
