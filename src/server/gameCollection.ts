@@ -5,16 +5,11 @@ import * as SocketIO from 'socket.io';
 export class GameCollection {
 	private allGames: Map<string, GameWrapper>;
 	private serverGameOverCallback: () => any;
-	private playerDisconnectCallback: (socket: SocketIO.Socket) => any;
 	private idGenerator: IDgenerator;
 
-	constructor(
-		gameOverCallback: () => any,
-		playerDisconnectCallback: (socket: SocketIO.Socket) => any
-	) {
+	constructor(gameOverCallback: () => any) {
 		this.allGames = new Map<string, GameWrapper>();
 		this.serverGameOverCallback = gameOverCallback;
-		this.playerDisconnectCallback = playerDisconnectCallback;
 		this.idGenerator = new IDgenerator();
 	}
 
@@ -22,11 +17,7 @@ export class GameCollection {
 		const newGameID = 'Game ' + this.idGenerator.newID();
 		this.allGames.set(
 			newGameID,
-			new GameWrapper(
-				newGameID,
-				this.gameOverCallback.bind(this),
-				this.playerDisconnectCallback
-			)
+			new GameWrapper(newGameID, this.gameOverCallback.bind(this))
 		);
 	}
 

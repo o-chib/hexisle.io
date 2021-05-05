@@ -5,20 +5,14 @@ import { OffsetPoint } from '../shared/hexTiles';
 
 export default class GameWrapper {
 	private game: Game;
-	private playerDisconnectCallback: (socket: SocketIO.Socket) => void;
 	private collectionGameOverCallback: (id: string) => void;
 	public id: string;
 	public playerCount: number;
 
-	constructor(
-		id: string,
-		collectionGameOverCallback: (id: string) => any,
-		playerDisconnectCallback: (socket: SocketIO.Socket) => void
-	) {
+	constructor(id: string, collectionGameOverCallback: (id: string) => any) {
 		this.id = id;
 		this.playerCount = 0;
 		this.collectionGameOverCallback = collectionGameOverCallback;
-		this.playerDisconnectCallback = playerDisconnectCallback;
 		this.game = new Game(this.gameOverCallback.bind(this));
 	}
 
@@ -70,7 +64,6 @@ export default class GameWrapper {
 
 		socket.on('disconnect', () => {
 			this.leaveGame(socket);
-			this.playerDisconnectCallback(socket);
 		});
 	}
 
