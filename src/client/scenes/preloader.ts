@@ -74,6 +74,18 @@ export default class Preloader extends Phaser.Scene {
 			}
 		);
 
+		// Lobby
+		this.load.image('lobby_bg', '../assets/lobby_bg.png');
+		this.load.image('lobby_logo', '../assets/lobby_logo.png');
+		this.load.image('lobby_play', '../assets/lobby_play.png');
+		this.load.image('lobby_options', '../assets/lobby_options.png');
+		this.load.image('lobby_help', '../assets/lobby_help.png');
+		this.load.image('help_menu', '../assets/help.png');
+		this.load.html('form', '../supportfiles/form.html');
+
+		// GameOver
+		this.load.image('playAgain', '../assets/gameover_playagain.png');
+
 		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
