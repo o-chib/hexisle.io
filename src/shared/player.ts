@@ -1,4 +1,5 @@
 import { Constant } from '../shared/constants';
+import { Point } from './hexTiles';
 import Collision from './../server/collision';
 import DestructibleObj from './destructibleObj';
 
@@ -95,6 +96,13 @@ export default class Player extends DestructibleObj {
 		this.updateResource(
 			Math.ceil(cost * Constant.COST.BUILDING_REFUND_MULTIPLIER)
 		);
+	}
+
+	public respawn(respawnPoint: Point) {
+		this.xPos = respawnPoint.xPos;
+		this.yPos = respawnPoint.yPos;
+		this.hp = 100;
+		this.resources = 0;
 	}
 
 	public serializeForUpdate() {

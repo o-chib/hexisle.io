@@ -524,11 +524,7 @@ export default class Game {
 
 	respawnPlayer(player: Player) {
 		const respawnPoint: Point = this.getRespawnPoint(player.teamNumber);
-
-		player.hp = 100;
-		player.xPos = respawnPoint.xPos;
-		player.yPos = respawnPoint.yPos;
-
+		player.respawn(respawnPoint);
 		this.collision.insertCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 	}
 
