@@ -47,7 +47,7 @@ export default class Game {
 
 		this.idGenerator = new IDgenerator();
 
-		this.hexTileMap = new HexTiles();
+		this.hexTileMap = new HexTiles(this.getStructure.bind(this));
 		this.hexTileMap.generateMap();
 
 		this.teams = new Teams(2, this.hexTileMap.baseCoords);
@@ -160,7 +160,7 @@ export default class Game {
 						continue;
 					}
 
-					tempTile.teamNumber= aCampfire.teamNumber;
+					tempTile.changeTeamNumber(aCampfire.teamNumber);
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 				}
 
@@ -566,6 +566,17 @@ export default class Game {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 		this.shootBullet(player, direction);
+	}
+
+	getStructure(building: string, id: string): any {
+		switch(building) {
+			case Constant.BUILDING.WALL:
+				return this.walls.get(id);
+			case Constant.BUILDING.TURRET:
+				return this.turrets.get(id);
+			default:
+				return null;
+		}
 	}
 
 	canBuildStructure(player: Player, tile: Tile, building: string): boolean {

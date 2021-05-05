@@ -9,8 +9,9 @@ export class HexTiles {
 	public campfiresInHalfWidth: number;
 	public baseCoords: OffsetPoint[];
 	public boundaryCoords: OffsetPoint[];
+	private gameGetBuilding: (building: string, id: string) => any;
 
-	constructor() {
+	constructor(gameGetBuildingMethod?: (building: string, id: string) => any) {
 		this.hexSize = 75;
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
 		this.mapHeight = Constant.MAP_HEIGHT;
@@ -18,6 +19,7 @@ export class HexTiles {
 		this.campfiresInHalfWidth = this.getNumCampfiresInMapRadius();
 		this.baseCoords = [];
 		this.boundaryCoords = [];
+		if (gameGetBuildingMethod) this.gameGetBuilding = gameGetBuildingMethod;
 	}
 
 	generateMap(): void {
@@ -41,7 +43,7 @@ export class HexTiles {
 
 			// for each row
 			for (let row = 0; row < 2 * this.hexRadius + 1; row++) {
-				this.tileMap[col][row] = new Tile();
+				this.tileMap[col][row] = new Tile(Constant.BUILDING.NONE, -1, this.gameGetBuilding);
 				this.tileMap[col][row].offset_coord = new OffsetPoint(col, row);
 				this.tileMap[col][row].cartesian_coord = this.offsetToCartesian(
 					this.tileMap[col][row].offset_coord
@@ -597,29 +599,43 @@ export class Tile {
 	public teamNumber: number;
 	public building: string;
 	public buildingId: string;
+	private gameGetBuilding: (building: string, id: string) => any;
 
-	constructor(building = Constant.BUILDING.NONE, teamNumber = -1) {
+	constructor(
+		building: string = Constant.BUILDING.NONE,
+		teamNumber: number = -1,
+		gameGetBuildingMethod?: (building: string, id: string) => any
+	) {
 		this.building = building;
 		this.teamNumber = teamNumber;
+		if (gameGetBuildingMethod) this.gameGetBuilding = gameGetBuildingMethod;
 	}
 
-	hasNoBuilding(): boolean {
+	public hasNoBuilding(): boolean {
 		return this.building == Constant.BUILDING.NONE;
 	}
 
-	removeBuilding(): void {
+	public removeBuilding(): void {
 		this.building = Constant.BUILDING.NONE;
 		this.buildingId = '';
 	}
 
-	isInBounds(): boolean {
+	public changeTeamNumber(teamNumber: number) {
+		this.teamNumber = teamNumber;
+		let building: any = this.gameGetBuilding(this.building, this.buildingId);
+		if (building) {
+			building.teamNumber = teamNumber;
+		}
+	}
+
+	public isInBounds(): boolean {
 		return (
 			this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
 			this.building != Constant.BUILDING.BOUNDARY
 		);
 	}
 
-	serializeForUpdate(): any {
+	public serializeForUpdate(): any {
 		return {
 			id: this.building,
 			xPos: this.cartesian_coord.xPos,
