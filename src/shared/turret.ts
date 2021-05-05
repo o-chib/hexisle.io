@@ -1,44 +1,34 @@
+import DestructibleObj from './destructibleObj';
 import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
-export default class Turret {
-	static readonly TURRET_RELOAD_TIME = 1000;
-
-	id: string;
-	xPos: number;
-	yPos: number;
-	direction: number;
-	teamNumber: number;
-	tile: Tile;
-	hp: number;
-	reloadTimer: number;
-	hasTarget: boolean;
-	gameShootBullet: (turret: any, direction: number) => void;
+export default class Turret extends DestructibleObj {
+	public direction: number;
+	public tile: Tile;
+	public reloadTimer: number;
+	public hasTarget: boolean;
+	private gameShootBullet: (turret: any, direction: number) => void;
 
 	constructor(
 		id: string,
 		tile: Tile,
 		gameShootBulletMethod?: (turret: any, direction: number) => void
 	) {
-		this.id = id;
-		this.xPos = tile.cartesian_coord.xPos;
-		this.yPos = tile.cartesian_coord.yPos;
-		this.direction = 0;
-		this.teamNumber = tile.team;
+		super(id, tile.cartesian_coord.xPos, tile.cartesian_coord.yPos, tile.teamNumber, Constant.HP.TURRET);
 		this.tile = tile;
-		this.hp = Constant.HP.TURRET;
+		this.direction = 0;
 		this.reloadTimer = 0;
 		this.hasTarget = false;
 		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
 	}
 
-	aimAndFireIfPossible(direction: number, timePassed: number) {
+	public aimAndFireIfPossible(direction: number, timePassed: number) {
 		this.aim(direction);
 		if (this.canShoot()) this.turretShootBullet();
 		else this.reload(timePassed);
 	}
 
-	aim(direction: number) {
+	public aim(direction: number) {
 		if (direction != Constant.DIRECTION.INVALID) {
 			this.direction = direction;
 			this.hasTarget = true;
@@ -47,35 +37,31 @@ export default class Turret {
 		}
 	}
 
-	canShoot(): boolean {
+	private canShoot(): boolean {
 		return this.hasTarget && this.reloadTimer <= 0;
 	}
 
-	turretShootBullet() {
+	private turretShootBullet() {
 		this.gameShootBullet(this, this.direction);
 		this.resetReloadTimer();
 	}
 
-	resetReloadTimer(): void {
-		this.reloadTimer = Turret.TURRET_RELOAD_TIME;
+	private resetReloadTimer(): void {
+		this.reloadTimer = Constant.RELOAD_TIMING.TURRET;
 	}
 
-	reload(timePassed: number): void {
+	private reload(timePassed: number): void {
 		if (this.reloadTimer > 0) this.reloadTimer -= timePassed;
 	}
 
-	serializeForUpdate(): any {
+	public serializeForUpdate(): any {
 		return {
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos,
-			direction: this.direction,
-			hp: this.hp,
 			teamNumber: this.teamNumber,
+			hp: this.hp,
+			direction: this.direction,
 		};
-	}
-
-	isAlive(): boolean {
-		return this.hp > 0;
 	}
 }
