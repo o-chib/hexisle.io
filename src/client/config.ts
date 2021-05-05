@@ -4,6 +4,7 @@ import preloader from './scenes/preloader';
 import mainMenu from './scenes/mainMenu';
 import mainScene from './scenes/mainScene';
 import HUDScene from './scenes/HUDScene';
+import gameOver from './scenes/gameOver';
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
@@ -14,7 +15,7 @@ export const config: Phaser.Types.Core.GameConfig = {
 		mode: Phaser.Scale.ENVELOP,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
-	scene: [boot, preloader, mainMenu, mainScene, HUDScene],
+	scene: [boot, preloader, mainMenu, mainScene, HUDScene, gameOver],
 	physics: {
 		default: 'arcade',
 		arcade: {
@@ -22,4 +23,7 @@ export const config: Phaser.Types.Core.GameConfig = {
 			gravity: { y: 100 },
 		},
 	},
+	dom: {
+        createContainer: true
+    },
 };
