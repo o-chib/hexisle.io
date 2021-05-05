@@ -24,6 +24,6 @@ export const config: Phaser.Types.Core.GameConfig = {
 		},
 	},
 	dom: {
-        createContainer: true
-    },
+		createContainer: true,
+	},
 };

@@ -7,7 +7,7 @@ import { Constant } from './../../shared/constants';
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayerName: string = 'aliem';
+	private myPlayerName = 'aliem';
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;

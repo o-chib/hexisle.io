@@ -26,7 +26,6 @@ export class GameCollection {
 		this.serverGameOverCallback();
 	}
 
-
 	public addPlayerToGame(
 		socket: SocketIO.Socket,
 		name: string,
