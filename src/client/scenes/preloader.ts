@@ -83,6 +83,9 @@ export default class Preloader extends Phaser.Scene {
 		this.load.image('help_menu', '../assets/help.png');
 		this.load.html('form', '../supportfiles/form.html');
 
+		// Main Game
+		this.load.image('quitButton', '../assets/quitButton.png');
+
 		// GameOver
 		this.load.image('playAgain', '../assets/gameover_playagain.png');
 
