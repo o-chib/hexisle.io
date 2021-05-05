@@ -617,9 +617,6 @@ export default class Game {
 	addWall(tile: Tile): void {
 		const wall: Wall = new Wall(
 			this.idGenerator.newID(),
-			tile.cartesian_coord.xPos,
-			tile.cartesian_coord.yPos,
-			tile.teamNumber,
 			tile
 		);
 		this.walls.set(wall.id, wall);
