@@ -51,7 +51,7 @@ export default class CollisionDetection {
 	}
 
 	playerBulletCollision(player: Player, bullets: Set<Bullet>): void {
-		if (player.health <= 0) {
+		if (!player.isAlive()) {
 			return;
 		}
 
@@ -78,7 +78,7 @@ export default class CollisionDetection {
 					Constant.RADIUS.COLLISION.BULLET
 				)
 			) {
-				player.health -= 10;
+				player.hp -= 10;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(

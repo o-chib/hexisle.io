@@ -432,7 +432,7 @@ export default class MainScene extends Phaser.Scene {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
 
 		//  Local Animation control
-		if (currentPlayer.health > 0) {
+		if (currentPlayer.hp > 0) {
 			this.alive = true;
 			this.myPlayerSprite.setVisible(true);
 
@@ -442,7 +442,7 @@ export default class MainScene extends Phaser.Scene {
 				currentPlayer.xVel,
 				currentPlayer.yVel
 			);
-		} else if (currentPlayer.health <= 0) {
+		} else if (currentPlayer.hp <= 0) {
 			this.alive = false;
 			this.handleDeathAnimation(
 				this.myPlayerSprite,
@@ -485,7 +485,7 @@ export default class MainScene extends Phaser.Scene {
 					newPlayer.setTexture(playerTexture).setDepth(1000);
 
 				// Opponent Animation Control
-				if (playerLiteral.health > 0) {
+				if (playerLiteral.hp > 0) {
 					newPlayer.setVisible(true);
 					newPlayer = this.handleWalkAnimation(
 						newPlayer,
@@ -494,7 +494,7 @@ export default class MainScene extends Phaser.Scene {
 						playerLiteral.yVel
 					);
 				}
-				if (playerLiteral.health <= 0) {
+				if (playerLiteral.hp <= 0) {
 					this.handleDeathAnimation(newPlayer, playerTexture);
 				}
 

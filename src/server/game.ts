@@ -312,14 +312,14 @@ export default class Game {
 		for (const aPlayer of this.players.values()) {
 			aPlayer.updatePosition(currentTimestamp, this.collision);
 			this.collision.playerBulletCollision(aPlayer, this.bullets);
-			if (aPlayer.health == 0) {
+			if (aPlayer.hp == 0) {
 				// Give time for player to play death animation
 				// Only call timeout once
 				this.collision.deleteCollider(
 					aPlayer,
 					Constant.RADIUS.COLLISION.PLAYER
 				);
-				aPlayer.health = -1;
+				aPlayer.hp = -1;
 				aPlayer.setNoVelocity();
 				setTimeout(() => {
 					this.respawnPlayer(aPlayer);
@@ -525,7 +525,7 @@ export default class Game {
 	respawnPlayer(player: Player) {
 		const respawnPoint: Point = this.getRespawnPoint(player.teamNumber);
 
-		player.health = 100;
+		player.hp = 100;
 		player.xPos = respawnPoint.xPos;
 		player.yPos = respawnPoint.yPos;
 
