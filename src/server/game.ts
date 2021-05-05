@@ -160,7 +160,7 @@ export default class Game {
 						continue;
 					}
 
-					tempTile.team = aCampfire.teamNumber;
+					tempTile.teamNumber= aCampfire.teamNumber;
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 				}
 
@@ -576,7 +576,7 @@ export default class Game {
 		const collisionRadius = Constant.RADIUS.COLLISION[building];
 		if (
 			!tile.hasNoBuilding() ||
-			tile.team != player.teamNumber ||
+			tile.teamNumber!= player.teamNumber ||
 			this.collision.doesObjCollideWithPlayers(
 				tile.cartesian_coord.xPos,
 				tile.cartesian_coord.yPos,
@@ -619,7 +619,7 @@ export default class Game {
 			this.idGenerator.newID(),
 			tile.cartesian_coord.xPos,
 			tile.cartesian_coord.yPos,
-			tile.team,
+			tile.teamNumber,
 			tile
 		);
 		this.walls.set(wall.id, wall);
@@ -645,7 +645,7 @@ export default class Game {
 			tile.hasNoBuilding() ||
 			(tile.building != Constant.BUILDING.WALL &&
 				tile.building != Constant.BUILDING.TURRET) ||
-			tile.team != player.teamNumber
+			tile.teamNumber!= player.teamNumber
 		)
 			return false;
 
@@ -735,7 +735,7 @@ export default class Game {
 		}
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-		tile.team = teamNum;
+		tile.teamNumber= teamNum;
 		tile.building = Constant.BUILDING.BASE;
 
 		const base: Base = new Base(
@@ -774,7 +774,7 @@ export default class Game {
 			if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
 				continue;
 			}
-			tempTile.team = teamNumber;
+			tempTile.teamNumber= teamNumber;
 			this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 		}
 	}

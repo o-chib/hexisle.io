@@ -594,13 +594,13 @@ export class HexTiles {
 export class Tile {
 	public offset_coord: OffsetPoint;
 	public cartesian_coord: Point;
-	public team: number;
+	public teamNumber: number;
 	public building: string;
 	public buildingId: string;
 
-	constructor(building = Constant.BUILDING.NONE, team = -1) {
+	constructor(building = Constant.BUILDING.NONE, teamNumber = -1) {
 		this.building = building;
-		this.team = team;
+		this.teamNumber = teamNumber;
 	}
 
 	hasNoBuilding(): boolean {
