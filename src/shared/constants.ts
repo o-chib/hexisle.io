@@ -10,6 +10,30 @@ export const Constant = Object.freeze({
 		BUILDING_REFUND_MULTIPLIER: 0.5,
 	},
 
+	HP: {
+		PLAYER: 100,
+		BASE: 1000,
+		WALL: 100,
+		TURRET: 150,
+	},
+
+	INCOME: {
+		UPDATE_RATE: 1 * 1000,
+		INCOME_PER_CAMP: 1,
+	},
+
+	GAME_TIMING: {
+		UPDATE_RATE: 1000 / 60,
+		CHECK_END: 1000 / 60,
+		END_SCREEN: 5 * 1000,
+		TIME_LIMIT: 5 * (60 * 1000),
+	},
+
+	RELOAD_TIMING: {
+		PLAYER: 0.5 * 1000,
+		TURRET: 1 * 1000,
+	},
+
 	RADIUS: {
 		PLAYER: 50,
 		BULLET: 15,
@@ -33,30 +57,6 @@ export const Constant = Object.freeze({
 		RANGE: {
 			TURRET: 750,
 		},
-	},
-
-	HP: {
-		PLAYER: 100,
-		BASE: 1000,
-		WALL: 100,
-		TURRET: 150,
-	},
-
-	INCOME: {
-		UPDATE_RATE: 1 * 1000,
-		INCOME_PER_CAMP: 1,
-	},
-
-	GAME_TIMING: {
-		UPDATE_RATE: 1000 / 60,
-		CHECK_END: 1000 / 60,
-		END_SCREEN: 5 * 1000,
-		TIME_LIMIT: 5 * (60 * 1000),
-	},
-
-	RELOAD_TIMING: {
-		PLAYER: 0.5 * 1000,
-		TURRET: 1 * 1000,
 	},
 
 	BUILDING: {
