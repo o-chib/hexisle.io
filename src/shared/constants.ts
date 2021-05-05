@@ -47,22 +47,11 @@ export const Constant = Object.freeze({
 		INCOME_PER_CAMP: 1,
 	},
 
-	TEAM: {
-		NONE: -1,
-		RED: 0,
-		BLUE: 1,
-	},
-
-	DIRECTION: {
-		E: 0,
-		NE: 0.25 * Math.PI,
-		N: 0.5 * Math.PI,
-		NW: 0.75 * Math.PI,
-		W: Math.PI,
-		SW: 1.25 * Math.PI,
-		S: 1.5 * Math.PI,
-		SE: 1.75 * Math.PI,
-		INVALID: 10,
+	TIMING: {
+		SERVER_GAME_UPDATE: 1000 / 60,
+		CHECK_GAME_END: 1000 / 60,
+		GAME_END_SCREEN: 5 * 1000,
+		GAME_TIME_LIMIT: 5 * (60 * 1000),
 	},
 
 	BUILDING: {
@@ -90,10 +79,21 @@ export const Constant = Object.freeze({
 		INITIALIZE: 'INITIALIZE',
 	},
 
-	TIMING: {
-		SERVER_GAME_UPDATE: 1000 / 60,
-		CHECK_GAME_END: 1000 / 60,
-		GAME_END_SCREEN: 5 * 1000,
-		GAME_TIME_LIMIT: 5 * (60 * 1000),
+	TEAM: {
+		NONE: -1,
+		RED: 0,
+		BLUE: 1,
+	},
+
+	DIRECTION: {
+		E: 0,
+		NE: 0.25 * Math.PI,
+		N: 0.5 * Math.PI,
+		NW: 0.75 * Math.PI,
+		W: Math.PI,
+		SW: 1.25 * Math.PI,
+		S: 1.5 * Math.PI,
+		SE: 1.75 * Math.PI,
+		INVALID: 10,
 	},
 });
