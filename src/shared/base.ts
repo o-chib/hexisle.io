@@ -3,7 +3,7 @@ import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
 export default class Base extends DestructibleObj {
-	tile: Tile;
+	public tile: Tile;
 
 	constructor(
 		id: string,
@@ -16,7 +16,7 @@ export default class Base extends DestructibleObj {
 		this.tile = tile;
 	}
 
-	serializeForUpdate(): any {
+	public serializeForUpdate(): any {
 		return {
 			id: this.id,
 			xPos: this.xPos,
