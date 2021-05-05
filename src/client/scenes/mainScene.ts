@@ -46,6 +46,10 @@ export default class MainScene extends Phaser.Scene {
 		});
 
 		// Walls
+		this.load.spritesheet('wall_neutral', '../assets/wall_neutral.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
 		this.load.spritesheet('wall_red', '../assets/wall_red.png', {
 			frameWidth: 154,
 			frameHeight: 134,
@@ -56,6 +60,14 @@ export default class MainScene extends Phaser.Scene {
 		});
 
 		// Turrets
+		this.load.spritesheet(
+			'turret_base_neutral',
+			'../assets/turret_base_neutral.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
 		this.load.spritesheet(
 			'turret_base_red',
 			'../assets/turret_base_red.png',
@@ -514,6 +526,8 @@ export default class MainScene extends Phaser.Scene {
 					wallTexture = 'wall_red';
 				else if (newWallLiteral.teamNumber == Constant.TEAM.BLUE)
 					wallTexture = 'wall_blue';
+				else if (newWallLiteral.teamNumber == Constant.TEAM.NONE)
+					wallTexture = 'wall_neutral';
 
 				if (newWall.texture.key != wallTexture) {
 					newWall.setTexture(wallTexture);
@@ -543,6 +557,8 @@ export default class MainScene extends Phaser.Scene {
 					turretGunTexture = 'turret_base_red';
 				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.BLUE)
 					turretGunTexture = 'turret_base_blue';
+				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.NONE)
+					turretGunTexture = 'turret_base_neutral';
 
 				if (newTurretBase.texture.key != turretGunTexture) {
 					newTurretBase.setTexture(turretGunTexture);
