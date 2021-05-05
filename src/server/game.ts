@@ -204,13 +204,15 @@ export default class Game {
 				continue;
 			}
 
-			aTurret.aimAndFireIfPossible(
-				this.collision.findDirectionOfClosestEnemy(
-					aTurret,
-					Constant.RADIUS.RANGE.TURRET
-				),
-				timePassed
-			);
+			if (aTurret.teamNumber != Constant.TEAM.NONE) {
+				aTurret.aimAndFireIfPossible(
+					this.collision.findDirectionOfClosestEnemy(
+						aTurret,
+						Constant.RADIUS.RANGE.TURRET
+					),
+					timePassed
+				);
+			}
 		}
 	}
 
