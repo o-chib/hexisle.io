@@ -8,7 +8,7 @@ export default class IndestructibleObj {
 		id: string,
 		xPos: number = 0,
 		yPos: number = 0,
-		teamNumber: number = 0
+		teamNumber: number = -1
 	) {
 		this.id = id;
 		this.xPos = xPos;

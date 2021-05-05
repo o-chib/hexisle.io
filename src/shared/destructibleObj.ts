@@ -11,7 +11,7 @@ export default class DestructibleObj extends IndestructibleObj {
 		id: string,
 		xPos: number = 0,
 		yPos: number = 0,
-		teamNumber: number = 0,
+		teamNumber: number = -1,
 		hp: number = 0
 	) {
 		super(id, xPos, yPos, teamNumber);
