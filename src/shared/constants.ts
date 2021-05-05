@@ -37,7 +37,7 @@ export const Constant = Object.freeze({
 	OBJS: {
 		BULLET: {
 			SPEED: 1,
-			LIFELENGTH: 1* 1000,
+			LIFELENGTH: 1 * 1000,
 		},
 
 		PLAYER: {
