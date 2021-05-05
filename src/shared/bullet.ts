@@ -1,14 +1,17 @@
-export default class Bullet {
-	id: string;
-	xPos: number;
-	yPos: number;
-	xVel: number;
-	yVel: number;
-	expirationDate: number;
-	teamNumber: number;
+import { GameObjects } from "phaser";
+import { Constant } from "./constants";
+import IndestructibleObj from "./indestructibleObj";
 
-	speed = 1;
-	lifeLength = 1000;
+export default class Bullet extends IndestructibleObj {
+	public id: string;
+	public xPos: number;
+	public yPos: number;
+	public teamNumber: number;
+	public xVel: number;
+	public yVel: number;
+	public expirationDate: number;
+	private speed: number;
+	private lifeLength: number;
 
 	constructor(
 		id: string,
@@ -17,30 +20,20 @@ export default class Bullet {
 		direction: number,
 		teamNumber: number
 	) {
-		this.id = id;
-		this.xPos = xPos;
-		this.yPos = yPos;
+		super(id, xPos, yPos, teamNumber);
 		this.xVel = this.speed * Math.cos(direction);
 		this.yVel = this.speed * Math.sin(direction);
 		this.expirationDate = Date.now() + this.lifeLength;
-		this.teamNumber = teamNumber;
+		this.speed = Constant.OBJS.BULLET.SPEED;
+		this.lifeLength = Constant.OBJS.BULLET.LIFELENGTH;
 	}
 
-	updatePosition(timePassed: number) {
+	public updatePosition(timePassed: number) {
 		this.xPos += timePassed * this.xVel;
 		this.yPos += timePassed * this.yVel;
 	}
 
-	serializeForUpdate() {
-		return {
-			id: this.id,
-			xPos: this.xPos,
-			yPos: this.yPos,
-			teamNumber: this.teamNumber,
-		};
-	}
-
-	isExpired(currentDate: number): boolean {
+	public isExpired(currentDate: number): boolean {
 		return this.expirationDate <= currentDate;
 	}
 }

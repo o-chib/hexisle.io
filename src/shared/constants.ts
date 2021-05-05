@@ -34,6 +34,17 @@ export const Constant = Object.freeze({
 		TURRET: 1 * 1000,
 	},
 
+	OBJS: {
+		BULLET: {
+			SPEED: 1,
+			LIFELENGTH: 1* 1000,
+		},
+
+		PLAYER: {
+			SPEED: 600,
+		},
+	},
+
 	RADIUS: {
 		PLAYER: 50,
 		BULLET: 15,

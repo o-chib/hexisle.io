@@ -30,7 +30,7 @@ export default class Player extends DestructibleObj {
 		this.xVel = 0;
 		this.yVel = 0;
 		this.direction = 0;
-		this.speed = 600;
+		this.speed = Constant.OBJS.PLAYER.SPEED;
 		this.lastUpdateTime = Date.now();
 		this.score = 0;
 		this.resources = 0;
