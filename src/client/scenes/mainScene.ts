@@ -1,6 +1,4 @@
-import io from 'socket.io-client';
 import gameOver from './gameOver';
-import HUDScene from './HUDScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 
 import { Constant } from './../../shared/constants';
@@ -91,7 +89,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private registerSocketListeners(): void {
-		this.socket.on(
+		this.socket.once(
 			Constant.MESSAGE.INITIALIZE,
 			this.initializeGame.bind(this)
 		);
@@ -101,7 +99,7 @@ export default class MainScene extends Phaser.Scene {
 			this.updateState.bind(this)
 		);
 
-		this.socket.on(Constant.MESSAGE.GAME_END, this.endGame.bind(this));
+		this.socket.once(Constant.MESSAGE.GAME_END, this.endGame.bind(this));
 	}
 
 	private registerInputListeners(): void {
