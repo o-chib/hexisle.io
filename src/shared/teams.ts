@@ -12,22 +12,12 @@ export default class Teams {
 		this.initBases(baseCoords);
 	}
 
-	initTeams(teamCount: number): void {
-		this.teams = new Map();
-		for (let i = 0; i < teamCount; i++) {
-			this.teams.set(i, new Team());
-		}
-	}
-
-	initBases(baseCoords: OffsetPoint[]): void {
-		for (const [teamNumber, team] of this.teams) {
-			team.baseCoord = baseCoords[teamNumber];
-			team.numCapturedCamps = 1;
-		}
-	}
-
 	getTeam(teamNum: number): Team {
 		return this.teams.get(teamNum)!;
+	}
+
+	getTeamCampNum(teamNum: number): number {
+		return this.teams.get(teamNum)!.numCapturedCamps;
 	}
 
 	getNumTeams(): number {
@@ -42,6 +32,30 @@ export default class Teams {
 		return this.teams.get(teamNum)!.respawnCoords;
 	}
 
+	addNewPlayer(playerID: string): number {
+		const teamNumber: number = this.getNewPlayerTeamNumber();
+		this.addPlayerToTeam(teamNumber, playerID);
+		return teamNumber;
+	}
+
+	removePlayer(playerID: string, teamNumber: number): void {
+		this.removePlayerFromTeam(teamNumber, playerID);
+	}
+
+	private initTeams(teamCount: number): void {
+		this.teams = new Map();
+		for (let i = 0; i < teamCount; i++) {
+			this.teams.set(i, new Team());
+		}
+	}
+
+	private initBases(baseCoords: OffsetPoint[]): void {
+		for (const [teamNumber, team] of this.teams) {
+			team.baseCoord = baseCoords[teamNumber];
+			team.numCapturedCamps = 1;
+		}
+	}
+
 	private getNewPlayerTeamNumber(): number {
 		let smallestTeam = -1;
 		let smallestPlayerCount = 999;
@@ -52,16 +66,6 @@ export default class Teams {
 			}
 		}
 		return smallestTeam;
-	}
-
-	addNewPlayer(playerID: string): number {
-		const teamNumber: number = this.getNewPlayerTeamNumber();
-		this.addPlayerToTeam(teamNumber, playerID);
-		return teamNumber;
-	}
-
-	removePlayer(playerID: string, teamNumber: number): void {
-		this.removePlayerFromTeam(teamNumber, playerID);
 	}
 
 	private addPlayerToTeam(teamNum: number, playerID: string): void {
@@ -93,5 +97,9 @@ class Team {
 	removePlayer(playerID: string): void {
 		this.playerIDs = this.playerIDs.filter((id) => id !== playerID);
 		this.playerCount -= 1;
+	}
+
+	getCampNum(): number {
+		return this.numCapturedCamps;
 	}
 }

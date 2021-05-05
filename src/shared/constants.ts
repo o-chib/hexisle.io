@@ -3,6 +3,7 @@ export const Constant = Object.freeze({
 	MAP_WIDTH: 10000,
 	MAP_HEIGHT: 10000,
 	TEAM_COUNT: 2,
+	RANDOM_LOOP_LIMIT: 10,
 
 	COST: {
 		WALL: 5,
@@ -11,8 +12,10 @@ export const Constant = Object.freeze({
 	},
 
 	RADIUS: {
+		HEX: 75,
 		PLAYER: 50,
 		BULLET: 15,
+		RESOURCE: 15,
 		WALL: 75,
 		TURRET: 75,
 		BASE: 200,
@@ -42,8 +45,33 @@ export const Constant = Object.freeze({
 		TURRET: 150,
 	},
 
-	INCOME: {
+	RESOURCE: {
 		UPDATE_RATE: 1 * 1000,
+
+		INITIAL_RESOURCES: 50,
+		MAX_RESOURCES: 150,
+		MAX_RESOURCES_PER_UPDATE: 5,
+
+		SPAWN_ATTMEPTS_PER_RESOURCE: 5,
+
+		RESOURCE_ID: [0, 1, 2],
+		RESOURCE_RARITY: [0.6, 0.3, 0.1],
+
+		RESOURCE_NAME: {
+			0: 'BLUE',
+			1: 'GREEN',
+			2: 'WHITE',
+		},
+
+		DROP_AMOUNT: {
+			BLUE: 1,
+			GREEN: 2,
+			WHITE: 5,
+		},
+	},
+
+	INCOME: {
+		UPDATE_RATE: 5 * 1000,
 		INCOME_PER_CAMP: 1,
 	},
 
@@ -92,8 +120,7 @@ export const Constant = Object.freeze({
 
 	TIMING: {
 		SERVER_GAME_UPDATE: 1000 / 60,
-		CHECK_GAME_END: 1000 / 60,
 		GAME_END_SCREEN: 5 * 1000,
-		GAME_TIME_LIMIT: 5 * (60 * 1000),
+		GAME_TIME_LIMIT: 15 * (60 * 1000),
 	},
 });

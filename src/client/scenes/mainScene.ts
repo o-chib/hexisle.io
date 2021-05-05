@@ -17,8 +17,10 @@ export default class MainScene extends Phaser.Scene {
 	private alive: boolean;
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
+	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private hexTiles: HexTiles;
 	private initialized: boolean;
+	private debugMode: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -86,6 +88,9 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('bulletblue', '../assets/bulletblue.png');
 		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
+		this.load.image('blueRes', '../assets/blueResource.png');
+		this.load.image('greenRes', '../assets/greenResource.png');
+		this.load.image('whiteRes', '../assets/whiteResource.png');
 		this.load.image('grass_chunk', '../assets/chunk.png');
 		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
 		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
@@ -104,6 +109,7 @@ export default class MainScene extends Phaser.Scene {
 		this.campfireSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
+		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
 
 		this.socket = io();
@@ -121,7 +127,27 @@ export default class MainScene extends Phaser.Scene {
 
 	update(): void {
 		this.updateDirection();
+		this.updateDebugInfo();
 		//this.updateMovementDirection();
+	}
+
+	private updateDebugInfo(): void {
+		if (this.debugMode) {
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
+			);
+			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+				new Point(gamePos.x, gamePos.y)
+			);
+			this.events.emit(
+				'updateDebugInfo',
+				gamePos.x,
+				gamePos.y,
+				coord.q,
+				coord.r
+			);
+		}
 	}
 
 	private generatePlayerSprite(): void {
@@ -140,6 +166,7 @@ export default class MainScene extends Phaser.Scene {
 			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
 			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
+			debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
 		});
 	}
 
@@ -391,6 +418,13 @@ export default class MainScene extends Phaser.Scene {
 			this.socket.emit(Constant.MESSAGE.BUILD_TURRET, coord);
 		} else if (this.cursors.demolishStructure.isDown) {
 			this.socket.emit(Constant.MESSAGE.DEMOLISH_STRUCTURE, coord);
+		} else if (this.cursors.debugInfo.isDown) {
+			if (this.debugMode) {
+				this.events.emit('clearDebugInfo');
+				this.debugMode = false;
+			} else {
+				this.debugMode = true;
+			}
 		}
 	}
 
@@ -406,6 +440,7 @@ export default class MainScene extends Phaser.Scene {
 			campfires,
 			bases,
 			territories,
+			resources,
 		} = update;
 		if (currentPlayer == null) return;
 
@@ -424,6 +459,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateBases(bases);
 
 		this.updateTerritories(territories);
+
+		this.updateResources(resources);
 
 		this.events.emit('updateHUD', currentPlayer, time);
 	}
@@ -655,6 +692,34 @@ export default class MainScene extends Phaser.Scene {
 		);
 	}
 
+	private updateResources(resources: any) {
+		this.updateMapOfObjects(
+			resources,
+			this.resourceSprites,
+			'',
+			(newResource, newResourceLiteral) => {
+				if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[0]
+				) {
+					newResource.setTexture('blueRes');
+				} else if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[1]
+				) {
+					newResource.setTexture('greenRes');
+				} else if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[2]
+				) {
+					newResource.setTexture('whiteRes');
+				}
+				newResource.setVisible(true);
+				return newResource;
+			}
+		);
+	}
+
 	private updateMapOfObjects(
 		currentObjects: any,
 		oldObjects: Map<string, Phaser.GameObjects.Sprite>,
@@ -708,6 +773,7 @@ export default class MainScene extends Phaser.Scene {
 		this.clearMapOfObjects(this.campfireSprites);
 		this.clearMapOfObjects(this.baseSprites);
 		this.clearMapOfObjects(this.territorySprites);
+		this.clearMapOfObjects(this.resourceSprites);
 		this.deadObjects.clear();
 	}
 }
