@@ -47,11 +47,11 @@ export const Constant = Object.freeze({
 		INCOME_PER_CAMP: 1,
 	},
 
-	TIMING: {
-		SERVER_GAME_UPDATE: 1000 / 60,
-		CHECK_GAME_END: 1000 / 60,
-		GAME_END_SCREEN: 5 * 1000,
-		GAME_TIME_LIMIT: 5 * (60 * 1000),
+	GAME_TIMING: {
+		UPDATE_RATE: 1000 / 60,
+		CHECK_END: 1000 / 60,
+		END_SCREEN: 5 * 1000,
+		TIME_LIMIT: 5 * (60 * 1000),
 	},
 
 	BUILDING: {

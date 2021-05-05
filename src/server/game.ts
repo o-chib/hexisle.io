@@ -36,7 +36,7 @@ export default class Game {
 	constructor(gameOverCallback) {
 		this.gameOverCallback = gameOverCallback;
 
-		this.endGameTimestamp = Date.now() + Constant.TIMING.GAME_TIME_LIMIT;
+		this.endGameTimestamp = Date.now() + Constant.GAME_TIMING.TIME_LIMIT;
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Map();
@@ -62,7 +62,7 @@ export default class Game {
 		this.previousUpdateTimestamp = Date.now();
 		this.gameInterval = setInterval(
 			this.update.bind(this),
-			Constant.TIMING.SERVER_GAME_UPDATE
+			Constant.GAME_TIMING.UPDATE_RATE
 		);
 		this.resourceInterval = setInterval(
 			this.updatePlayerResource.bind(this),
@@ -266,7 +266,7 @@ export default class Game {
 			);
 		}
 		this.stopAllIntervals();
-		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
+		setTimeout(this.gameOverCallback, Constant.GAME_TIMING.END_SCREEN); //TODO remove timeout later?
 	}
 
 	createGameEndRecap() {
