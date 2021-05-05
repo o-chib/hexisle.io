@@ -1,3 +1,5 @@
+import mainMenu from './mainMenu';
+import mainScene from './mainScene';
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 
 // Text Structure
@@ -9,23 +11,28 @@ const timer_format = `%1:%2`;
 export default class HUDScene extends Phaser.Scene {
 	public static Name = 'HuDScene';
 	private mainSceneObj: any;
+	private socket: SocketIOClient.Socket;
 
 	// Text/Scoring
 	private infoText?: Phaser.GameObjects.Text;
 	// Game timer
 	private gameTimeText?: Phaser.GameObjects.Text;
+	// Quit Button
+	private quitButton?: Phaser.GameObjects.Image;
 
 	constructor() {
 		super({ key: 'HUDScene', active: true });
 	}
 
 	create(): void {
+		// HUD: Left
 		this.infoText = this.add.text(0, 0, '', { font: '48px Arial' });
 		new Anchor(this.infoText, {
 			left: 'left+10',
 			top: 'top+10',
 		});
 
+		// HUD: Center
 		this.gameTimeText = this.add.text(0, 0, '', {
 			font: '48px Arial',
 			align: 'center',
@@ -34,6 +41,23 @@ export default class HUDScene extends Phaser.Scene {
 			centerX: 'center',
 			top: 'top+10',
 		});
+
+		// HUD: Right
+		this.quitButton = this.add.image(0, 0, 'quitButton').setDepth(99);
+		new Anchor(this.quitButton, {
+			centerX: 'right-100',
+			top: 'top+10',
+		});
+		
+		// Set quitButton Interaction
+		this.quitButton.setInteractive();
+		this.quitButton.on(
+			'pointerdown',
+			() => {
+				this.quitCurrentGame();
+			},
+			this
+		);
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
@@ -79,7 +103,8 @@ export default class HUDScene extends Phaser.Scene {
 		return '0' + timeStr;
 	}
 
-	private startHUD(): void {
+	private startHUD(socket): void {
+		this.socket = socket;
 		this.infoText?.setText('');
 		this.gameTimeText?.setText('');
 		this.scene.setVisible(true);
@@ -87,5 +112,13 @@ export default class HUDScene extends Phaser.Scene {
 
 	private stopHUD(): void {
 		this.scene.setVisible(false);
+	}
+
+	private quitCurrentGame(): void {
+		this.scene.stop(mainScene.Name);
+		this.scene.stop(HUDScene.Name);
+		this.scene.start(mainMenu.Name, {
+			socket: this.socket,
+		});
 	}
 }

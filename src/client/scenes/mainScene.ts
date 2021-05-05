@@ -58,7 +58,7 @@ export default class MainScene extends Phaser.Scene {
 		this.registerIntervals();
 
 		this.socket.emit(Constant.MESSAGE.START_GAME);
-		this.events.emit('startHUD');
+		this.events.emit('startHUD', this.socket);
 	}
 
 	update(): void {
