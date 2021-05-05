@@ -7,12 +7,9 @@ export default class Wall extends DestructibleObj {
 
 	constructor(
 		id: string,
-		xPos: number,
-		yPos: number,
-		teamNumber: number,
 		tile: Tile
 	) {
-		super(id, xPos, yPos, teamNumber, Constant.HP.WALL);
+		super(id, tile.cartesian_coord.xPos, tile.cartesian_coord.yPos, tile.teamNumber, Constant.HP.WALL);
 		this.tile = tile;
 	}
 
