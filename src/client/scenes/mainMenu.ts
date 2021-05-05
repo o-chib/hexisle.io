@@ -1,17 +1,16 @@
 import mainScene from './mainScene';
 import Utilities from './Utilities';
 import { Constant } from './../../shared/constants';
-import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 
 export default class MainMenu extends Phaser.Scene {
 	public static Name = 'MainMenu';
 	private socket: SocketIOClient.Socket;
 	private playerName = '';
-	private gameLobby: [];
+	private gameid = '';
+	private inputBox;
 
 	constructor() {
 		super('MainMenu');
-		this.gameLobby = [];
 	}
 
 	init(data) {
@@ -27,42 +26,45 @@ export default class MainMenu extends Phaser.Scene {
 		//preload things here
 	}
 
-	// On create
 	public create(): void {
+		Utilities.LogSceneMethodEntry('MainMenu', 'create');
 		this.socket.emit(Constant.MESSAGE.ASK_GAME_LIST);
 
-		Utilities.LogSceneMethodEntry('MainMenu', 'create');
-		const titleText = this.add.text(0, 0, 'Please enter your name', {
-			color: 'white',
-			fontSize: '20px ',
+		const renderWidth = this.game.renderer.width;
+		const renderHeight = this.game.renderer.height;
+
+		// Background image
+		this.add.image(0,0, "lobby_bg").setOrigin(0).setDepth(0);
+
+		// Container
+		const menuContainer = this.add.container(renderWidth/2, 0);
+
+		// Logo and Title
+		const logoImg = this.add.image(0, renderHeight*0.20, "campfire_lit").setDepth(1);
+		menuContainer.add(logoImg);
+		const newGameText = this.add.image(0, logoImg.y+50, 'lobby_logo').setDepth(2).setScale(0.5);
+		menuContainer.add(newGameText);
+
+		// Form Box
+		this.inputBox = this.add.dom(0, renderHeight*0.45).createFromCache("form").setDepth(1);
+		menuContainer.add(this.inputBox);
+		const submitKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+		// Buttons in a Container
+		const playButton = this.add.image(0, renderHeight*0.55, "lobby_play").setDepth(1).setScale(0.75);
+		menuContainer.add(playButton);
+		const optionButton = this.add.image(0, renderHeight*0.65, "lobby_options").setDepth(1).setScale(0.75);
+		menuContainer.add(optionButton);
+		const helpButton = this.add.image(0, renderHeight*0.75, "lobby_help").setDepth(1).setScale(0.75);
+		menuContainer.add(helpButton);
+		const helpMenu = this.add.image(renderWidth/2, renderHeight/2, 'help_menu').setDepth(2).setVisible(false);
+
+		// Interactions
+		submitKey.on("down", event => {
+			this.loadMainScene();
 		});
 
-		new Anchor(titleText, {
-			centerX: 'center',
-			top: 'top+10',
-		});
-
-		const newGameText = this.add.text(0, 0, 'HexIsle', {
-			font: 'bold 32px Open-Sans',
-		});
-
-		new Anchor(newGameText, {
-			centerX: 'center',
-			top: '10%',
-		});
-
-		const playButton = this.add.text(0, 0, 'Play', {
-			font: 'bold 32px Open-Sans',
-		});
-
-		new Anchor(playButton, {
-			centerX: 'center',
-			top: '50%',
-		});
-
-		playButton.setFontFamily('monospace').setFontSize(40).setFill('#fff');
 		playButton.setInteractive();
-
 		playButton.on(
 			'pointerdown',
 			() => {
@@ -71,28 +73,61 @@ export default class MainMenu extends Phaser.Scene {
 			this
 		);
 
-		// Todo maybe remove?
-		// this.time.addEvent({
-		// 	// Run after ten seconds.
-		// 	delay: 10000,
-		// 	callback: this.loadMainScene,
-		// 	callbackScope: this,
-		// 	loop: false,
-		// });
+		optionButton.setInteractive();
+		optionButton.on(
+			'pointerdown',
+			() => {
+				this.loadOptions();
+			},
+			this
+		);
+
+		helpButton.setInteractive();
+		helpButton.on(
+			'pointerdown',
+			() => {
+				menuContainer.setVisible(false);
+				helpMenu.setVisible(true);
+			},
+			this
+		);
+
+		helpMenu.setInteractive();
+		helpMenu.on(
+			'pointerdown',
+			() => {
+				helpMenu.setVisible(false);
+				menuContainer.setVisible(true);
+			},
+			this
+		);
 	}
 
 	private initializeLobbyList(lobbyList): void {
-		this.gameLobby = lobbyList;
+		let dropdownList = document.getElementById("dropdownList");
 
-		console.log('GameLobby: ', this.gameLobby);
-		console.log('LobbyList: ', lobbyList);
+		for(let i=0; i<lobbyList.length; i++) {
+			let option = document.createElement('option');
+			option.value = lobbyList[i].gameid;
+    		option.text = lobbyList[i].gameid + ' | ' + lobbyList[i].info.playerCount;
+			dropdownList!.appendChild(option);
+		}
+
+		console.log(lobbyList);
 	}
 
 	private loadMainScene(): void {
-		this.socket.emit(Constant.MESSAGE.JOIN_GAME, this.playerName);
+		this.playerName = this.inputBox.getChildByName("name").value;
+		this.gameid = this.inputBox.getChildByName("dropdownList").value;
+
+		this.socket.emit(Constant.MESSAGE.JOIN_GAME, this.gameid, this.playerName);
 
 		this.scene.start(mainScene.Name, {
 			socket: this.socket,
 		});
+	}
+
+	private loadOptions(): void {
+
 	}
 }
