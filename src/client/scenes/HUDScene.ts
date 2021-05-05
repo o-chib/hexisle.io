@@ -1,6 +1,7 @@
 import mainMenu from './mainMenu';
 import mainScene from './mainScene';
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
+import { Constant } from './../../shared/constants';
 
 // Text Structure
 const info_format = `Health:	%1
@@ -48,7 +49,7 @@ export default class HUDScene extends Phaser.Scene {
 			centerX: 'right-100',
 			top: 'top+10',
 		});
-		
+
 		// Set quitButton Interaction
 		this.quitButton.setInteractive();
 		this.quitButton.on(
@@ -115,6 +116,7 @@ export default class HUDScene extends Phaser.Scene {
 	}
 
 	private quitCurrentGame(): void {
+		this.socket.emit(Constant.MESSAGE.LEAVE_GAME);
 		this.scene.stop(mainScene.Name);
 		this.scene.stop(HUDScene.Name);
 		this.scene.start(mainMenu.Name, {
