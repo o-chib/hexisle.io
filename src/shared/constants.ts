@@ -54,6 +54,11 @@ export const Constant = Object.freeze({
 		TIME_LIMIT: 5 * (60 * 1000),
 	},
 
+	RELOAD_TIMING: {
+		PLAYER: 0.5 * 1000,
+		TURRET: 1 * 1000,
+	},
+
 	BUILDING: {
 		OUT_OF_BOUNDS: 'OUT_OF_BOUNDS',
 		NONE: 'NONE',
