@@ -30,8 +30,16 @@ export default class GameWrapper {
 	}
 
 	private updateSocket(socket: SocketIO.Socket, name: string) {
-		socket.on(Constant.MESSAGE.START_GAME, () => {
+		socket.once(Constant.MESSAGE.START_GAME, () => {
 			this.game.addPlayer(socket, name);
+		});
+
+		socket.once(Constant.MESSAGE.LEAVE_GAME, () => {
+			this.leaveGame(socket);
+		});
+
+		socket.once('disconnect', () => {
+			this.leaveGame(socket);
 		});
 
 		socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
@@ -46,28 +54,24 @@ export default class GameWrapper {
 			this.game.rotatePlayer(socket, direction);
 		});
 
-		socket.on(Constant.MESSAGE.BUILD_WALL, (coord: OffsetPoint) => {
-			this.game.buildStructure(socket, coord, Constant.BUILDING.WALL);
-		});
-
-		socket.on(Constant.MESSAGE.BUILD_TURRET, (coord: OffsetPoint) => {
-			this.game.buildStructure(socket, coord, Constant.BUILDING.TURRET);
-		});
+		socket.on(
+			Constant.MESSAGE.BUILD_STRUCTURE,
+			(coord: OffsetPoint, building: string) => {
+				this.game.buildStructure(socket, coord, building);
+			}
+		);
 
 		socket.on(Constant.MESSAGE.DEMOLISH_STRUCTURE, (coord: OffsetPoint) => {
 			this.game.demolishStructure(socket, coord);
 		});
-
-		socket.on(Constant.MESSAGE.LEAVE_GAME, () => {
-			this.leaveGame(socket);
-		});
-
-		socket.on('disconnect', () => {
-			this.leaveGame(socket);
-		});
 	}
 
 	private leaveGame(socket: SocketIO.Socket) {
+		socket.removeAllListeners(Constant.MESSAGE.MOVEMENT);
+		socket.removeAllListeners(Constant.MESSAGE.SHOOT);
+		socket.removeAllListeners(Constant.MESSAGE.ROTATE);
+		socket.removeAllListeners(Constant.MESSAGE.DEMOLISH_STRUCTURE);
+		socket.removeAllListeners(Constant.MESSAGE.BUILD_STRUCTURE);
 		this.game.removePlayer(socket);
 		this.playerCount--;
 	}

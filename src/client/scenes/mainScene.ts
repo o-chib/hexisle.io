@@ -346,9 +346,17 @@ export default class MainScene extends Phaser.Scene {
 		);
 
 		if (this.cursors.buildWall.isDown) {
-			this.socket.emit(Constant.MESSAGE.BUILD_WALL, coord);
+			this.socket.emit(
+				Constant.MESSAGE.BUILD_STRUCTURE,
+				coord,
+				Constant.BUILDING.WALL
+			);
 		} else if (this.cursors.buildTurret.isDown) {
-			this.socket.emit(Constant.MESSAGE.BUILD_TURRET, coord);
+			this.socket.emit(
+				Constant.MESSAGE.BUILD_STRUCTURE,
+				coord,
+				Constant.BUILDING.TURRET
+			);
 		} else if (this.cursors.demolishStructure.isDown) {
 			this.socket.emit(Constant.MESSAGE.DEMOLISH_STRUCTURE, coord);
 		}
