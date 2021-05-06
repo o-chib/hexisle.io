@@ -2,7 +2,7 @@ import { Constant } from '../src/shared/constants';
 import { HexTiles, Tile, OffsetPoint, Point } from './../src/shared/hexTiles';
 
 describe('HexTiles', () => {
-	const hexTileMap: HexTiles = new HexTiles(10000);
+	const hexTileMap: HexTiles = new HexTiles(undefined, 10000);
 	hexTileMap.generateMap();
 
 	it('checkIfValidHex should return false', () => {

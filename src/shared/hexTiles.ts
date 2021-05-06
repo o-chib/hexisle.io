@@ -15,6 +15,7 @@ export class HexTiles {
 		gameGetBuildingMethod?: (building: string, id: string) => any,
 		mapHeight: number = Constant.MAP_HEIGHT
 	) {
+		this.hexSize = Constant.RADIUS.HEX;
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
 		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();

@@ -77,8 +77,8 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (timePassed > 18)
-			console.log('WARNING: Update took ', timePassed, 'ms');
+		// if (timePassed > 18)
+		// 	console.log('WARNING: Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -244,7 +244,7 @@ export default class Game {
 		);
 		for (const aPlayer of this.players.values()) {
 			this.updatePlayerPosition(currentTimestamp, aPlayer);
-			if (aPlayer.hp > 0 && givePassiveIncome) {
+			if (aPlayer.isAlive() && givePassiveIncome) {
 				this.passiveIncome.updatePlayerResources(aPlayer);
 			}
 		}
@@ -302,7 +302,6 @@ export default class Game {
 		} else {
 			if (redCamps > blueCamps) winner = Constant.TEAM.RED;
 			else if (redCamps < blueCamps) winner = Constant.TEAM.BLUE;
-
 			message = 'Time Up!';
 		}
 
@@ -327,7 +326,7 @@ export default class Game {
 			this.bullets,
 			this.mapResources
 		);
-		if (!player.isAlive()) {
+		if (player.hp == 0) {
 			// Give time for player to play death animation
 			// Only call timeout once
 			this.collision.deleteCollider(
