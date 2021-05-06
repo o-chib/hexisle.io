@@ -43,20 +43,20 @@ export default class Turret extends DestructibleObj {
 		}
 	}
 
-	private canShoot(): boolean {
+	public canShoot(): boolean {
 		return this.hasTarget && this.reloadTimer <= 0;
 	}
 
-	private turretShootBullet() {
+	public turretShootBullet() {
 		this.gameShootBullet(this, this.direction);
 		this.resetReloadTimer();
 	}
 
-	private resetReloadTimer(): void {
+	public resetReloadTimer(): void {
 		this.reloadTimer = Constant.RELOAD_TIMING.TURRET;
 	}
 
-	private reload(timePassed: number): void {
+	public reload(timePassed: number): void {
 		if (this.reloadTimer > 0) this.reloadTimer -= timePassed;
 	}
 
