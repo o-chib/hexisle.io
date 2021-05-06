@@ -83,14 +83,14 @@ export default class MainMenu extends Phaser.Scene {
 
 		// Interactions
 		submitKey.on('down', (event) => {
-			this.loadMainScene();
+			this.joinGame();
 		});
 
 		playButton.setInteractive();
 		playButton.on(
 			'pointerdown',
 			() => {
-				this.loadMainScene();
+				this.joinGame();
 			},
 			this
 		);
@@ -127,6 +127,9 @@ export default class MainMenu extends Phaser.Scene {
 
 	private initializeLobbyList(lobbyList): void {
 		const dropdownList = document.getElementById('dropdownList');
+		while (dropdownList!.firstChild) {
+			dropdownList!.removeChild(dropdownList!.firstChild);
+		}
 
 		for (let i = 0; i < lobbyList.length; i++) {
 			const option = document.createElement('option');
@@ -139,19 +142,39 @@ export default class MainMenu extends Phaser.Scene {
 		console.log(lobbyList);
 	}
 
-	private loadMainScene(): void {
+	private joinGame(): void {
 		this.playerName = this.inputBox.getChildByName('name').value;
 		this.gameid = this.inputBox.getChildByName('dropdownList').value;
 
-		this.socket.emit(
-			Constant.MESSAGE.JOIN_GAME,
-			this.gameid,
-			this.playerName
-		);
+		if (this.gameid != '')
+			this.socket.emit(
+				Constant.MESSAGE.JOIN_GAME,
+				this.gameid,
+				this.playerName
+			);
+		else this.socket.emit(Constant.MESSAGE.JOIN_GAME, this.playerName);
 
+		this.socket.once(
+			Constant.MESSAGE.JOIN_GAME_SUCCESS,
+			this.loadMainScene.bind(this)
+		);
+		this.socket.once(
+			Constant.MESSAGE.JOIN_GAME_FAIL,
+			this.failedToJoinGame.bind(this)
+		);
+	}
+
+	private loadMainScene() {
+		this.socket.off(Constant.MESSAGE.JOIN_GAME_FAIL);
 		this.scene.start(mainScene.Name, {
 			socket: this.socket,
 		});
+	}
+
+	private failedToJoinGame(message: string) {
+		this.socket.off(Constant.MESSAGE.JOIN_GAME_SUCCESS);
+		console.log(message);
+		//TODO make error message fancier
 	}
 
 	private loadOptions(): void {}
