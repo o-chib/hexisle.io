@@ -7,7 +7,6 @@ import { Constant } from './../../shared/constants';
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayerName = 'aliem';
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -666,7 +665,6 @@ export default class MainScene extends Phaser.Scene {
 		this.scene.start(gameOver.Name, {
 			socket: this.socket,
 			endState: endState,
-			name: this.myPlayerName,
 		});
 	}
 

@@ -1,12 +1,10 @@
 import mainMenu from './mainMenu';
 import Utilities from './Utilities';
-import { Constant } from './../../shared/constants';
 
 export default class gameOver extends Phaser.Scene {
 	public static Name = 'gameOver';
 	private socket: SocketIOClient.Socket;
 	private endState;
-	private playerName;
 
 	constructor() {
 		super('gameOver');
@@ -15,7 +13,6 @@ export default class gameOver extends Phaser.Scene {
 	init(data): void {
 		this.socket = data.socket;
 		this.endState = data.endState;
-		this.playerName = data.name;
 	}
 
 	preload(): void {
@@ -44,7 +41,7 @@ export default class gameOver extends Phaser.Scene {
 		this.add.text(
 			renderWidth / 2 - 200,
 			renderHeight * 0.5,
-			'Game Over, ' + this.playerName,
+			'Game Over, ' + this.endState.message,
 			{
 				fontSize: '36px',
 			}
