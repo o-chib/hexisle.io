@@ -41,7 +41,7 @@ export default class gameOver extends Phaser.Scene {
 		this.add.text(
 			renderWidth / 2 - 200,
 			renderHeight * 0.5,
-			'Game Over, ' + this.endState.message,
+			'Game Over,\n' + this.endState.message,
 			{
 				fontSize: '36px',
 			}
