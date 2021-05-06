@@ -152,14 +152,9 @@ export default class Game {
 
 				// Update the TileMap structure
 				for (const pt of points) {
-					if (!this.hexTileMap.checkIfValidHex(pt)) {
-						continue;
-					}
+					if (!this.hexTileMap.checkIfValidHex(pt)) continue;
 					const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
-					if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
-						continue;
-					}
-
+					if (!tempTile.isInBounds()) continue;
 					tempTile.changeTeamNumber(aCampfire.teamNumber);
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 				}
