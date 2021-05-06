@@ -130,6 +130,10 @@ export default class MainMenu extends Phaser.Scene {
 		while (dropdownList!.firstChild) {
 			dropdownList!.removeChild(dropdownList!.firstChild);
 		}
+		const autoselect = document.createElement('option');
+		autoselect.value = '';
+		autoselect.text = 'Autoselect';
+		dropdownList!.appendChild(autoselect);
 
 		for (let i = 0; i < lobbyList.length; i++) {
 			const option = document.createElement('option');
