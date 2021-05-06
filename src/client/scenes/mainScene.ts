@@ -22,7 +22,6 @@ export default class MainScene extends Phaser.Scene {
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 	private hexTiles: HexTiles;
-	private initialized: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -160,13 +159,9 @@ export default class MainScene extends Phaser.Scene {
 		const { player, tileMap } = update;
 		if (player == null) return;
 
-		if (this.initialized != true) {
-			this.createTileMap(tileMap);
-			this.setCamera();
-		}
+		this.createTileMap(tileMap);
+		this.setCamera();
 		this.initializePlayer(player);
-
-		this.initialized = true;
 	}
 
 	private initializePlayer(player: any): void {
