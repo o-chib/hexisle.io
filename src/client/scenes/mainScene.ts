@@ -1,6 +1,5 @@
 import io from 'socket.io-client';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
-
 import { Constant } from './../../shared/constants';
 
 export default class MainScene extends Phaser.Scene {
@@ -341,6 +340,9 @@ export default class MainScene extends Phaser.Scene {
 			});
 
 			// Update anims internal isPlaying/isPaused variables, and loaded anim.
+			structureSprite.anims.play(structureTextureName + '_destroying');
+			structureSprite.anims.pause();
+		} else if (structureSprite.anims.exists(structureTextureName + '_destroying')) {
 			structureSprite.anims.play(structureTextureName + '_destroying');
 			structureSprite.anims.pause();
 		}
