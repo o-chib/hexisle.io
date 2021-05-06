@@ -360,7 +360,7 @@ export default class MainScene extends Phaser.Scene {
 				key: 'campfire_lit',
 				frames: this.anims.generateFrameNames('campfire', {
 					start: 1,
-					end: 3,
+					end: 4,
 				}),
 				frameRate: 5,
 				repeat: -1,
