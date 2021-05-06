@@ -14,7 +14,13 @@ export default class Turret extends DestructibleObj {
 		tile: Tile,
 		gameShootBulletMethod?: (turret: any, direction: number) => void
 	) {
-		super(id, tile.cartesian_coord.xPos, tile.cartesian_coord.yPos, tile.teamNumber, Constant.HP.TURRET);
+		super(
+			id,
+			tile.cartesian_coord.xPos,
+			tile.cartesian_coord.yPos,
+			tile.teamNumber,
+			Constant.HP.TURRET
+		);
 		this.tile = tile;
 		this.direction = 0;
 		this.reloadTimer = 0;

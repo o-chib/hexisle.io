@@ -5,11 +5,14 @@ import { Tile } from './hexTiles';
 export default class Wall extends DestructibleObj {
 	public tile: Tile;
 
-	constructor(
-		id: string,
-		tile: Tile
-	) {
-		super(id, tile.cartesian_coord.xPos, tile.cartesian_coord.yPos, tile.teamNumber, Constant.HP.WALL);
+	constructor(id: string, tile: Tile) {
+		super(
+			id,
+			tile.cartesian_coord.xPos,
+			tile.cartesian_coord.yPos,
+			tile.teamNumber,
+			Constant.HP.WALL
+		);
 		this.tile = tile;
 	}
 

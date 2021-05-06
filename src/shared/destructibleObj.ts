@@ -1,4 +1,4 @@
-import IndestructibleObj from "./indestructibleObj";
+import IndestructibleObj from './indestructibleObj';
 
 export default class DestructibleObj extends IndestructibleObj {
 	public id: string;
@@ -7,13 +7,7 @@ export default class DestructibleObj extends IndestructibleObj {
 	public teamNumber: number;
 	public hp: number;
 
-	constructor(
-		id: string,
-		xPos: number = 0,
-		yPos: number = 0,
-		teamNumber: number = -1,
-		hp: number = 0
-	) {
+	constructor(id: string, xPos = 0, yPos = 0, teamNumber = -1, hp = 0) {
 		super(id, xPos, yPos, teamNumber);
 		this.hp = hp;
 	}

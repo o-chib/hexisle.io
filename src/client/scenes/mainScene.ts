@@ -342,7 +342,9 @@ export default class MainScene extends Phaser.Scene {
 			// Update anims internal isPlaying/isPaused variables, and loaded anim.
 			structureSprite.anims.play(structureTextureName + '_destroying');
 			structureSprite.anims.pause();
-		} else if (structureSprite.anims.exists(structureTextureName + '_destroying')) {
+		} else if (
+			structureSprite.anims.exists(structureTextureName + '_destroying')
+		) {
 			structureSprite.anims.play(structureTextureName + '_destroying');
 			structureSprite.anims.pause();
 		}

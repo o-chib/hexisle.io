@@ -1,4 +1,4 @@
-import IndestructibleObj from "./indestructibleObj";
+import IndestructibleObj from './indestructibleObj';
 
 export default class Territory extends IndestructibleObj {
 	public id: string;

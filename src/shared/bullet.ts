@@ -1,5 +1,5 @@
-import { Constant } from "./constants";
-import IndestructibleObj from "./indestructibleObj";
+import { Constant } from './constants';
+import IndestructibleObj from './indestructibleObj';
 
 export default class Bullet extends IndestructibleObj {
 	public id: string;
@@ -22,7 +22,7 @@ export default class Bullet extends IndestructibleObj {
 		this.speed = Constant.OBJS.BULLET.SPEED;
 		this.xVel = this.speed * Math.cos(direction);
 		this.yVel = this.speed * Math.sin(direction);
-		this.expirationDate = Date.now() + Constant.OBJS.BULLET.LIFELENGTH;;
+		this.expirationDate = Date.now() + Constant.OBJS.BULLET.LIFELENGTH;
 	}
 
 	public updatePosition(timePassed: number) {

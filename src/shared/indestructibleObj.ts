@@ -4,12 +4,7 @@ export default class IndestructibleObj {
 	public yPos: number;
 	public teamNumber: number;
 
-	constructor(
-		id: string,
-		xPos: number = 0,
-		yPos: number = 0,
-		teamNumber: number = -1
-	) {
+	constructor(id: string, xPos = 0, yPos = 0, teamNumber = -1) {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
