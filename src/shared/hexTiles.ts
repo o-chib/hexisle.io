@@ -12,8 +12,8 @@ export class HexTiles {
 	private gameGetBuilding: (building: string, id: string) => any;
 
 	constructor(
-		mapHeight: number = Constant.MAP_HEIGHT,
-		gameGetBuildingMethod?: (building: string, id: string) => any
+		gameGetBuildingMethod?: (building: string, id: string) => any,
+		mapHeight: number = Constant.MAP_HEIGHT
 	) {
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
 		this.mapHeight = mapHeight;
@@ -205,7 +205,7 @@ export class HexTiles {
 		if (
 			this.tileMap[hexCoord.q][hexCoord.r].building !=
 				Constant.BUILDING.NONE ||
-			this.tileMap[hexCoord.q][hexCoord.r].team != -1
+			this.tileMap[hexCoord.q][hexCoord.r].teamNumber != -1
 		) {
 			return false;
 		}
