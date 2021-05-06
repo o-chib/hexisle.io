@@ -19,7 +19,10 @@ export default class MainScene extends Phaser.Scene {
 	private alive: boolean;
 	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
+	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private hexTiles: HexTiles;
+	private initialized: boolean;
+	private debugMode: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -44,6 +47,7 @@ export default class MainScene extends Phaser.Scene {
 		this.campfireSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
+		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
 	}
 
@@ -61,7 +65,27 @@ export default class MainScene extends Phaser.Scene {
 
 	update(): void {
 		this.updateDirection();
+		this.updateDebugInfo();
 		//this.updateMovementDirection();
+	}
+
+	private updateDebugInfo(): void {
+		if (this.debugMode) {
+			const gamePos = this.cameras.main.getWorldPoint(
+				this.input.mousePointer.x,
+				this.input.mousePointer.y
+			);
+			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+				new Point(gamePos.x, gamePos.y)
+			);
+			this.events.emit(
+				'updateDebugInfo',
+				gamePos.x,
+				gamePos.y,
+				coord.q,
+				coord.r
+			);
+		}
 	}
 
 	private generatePlayerSprite(): void {
@@ -80,6 +104,7 @@ export default class MainScene extends Phaser.Scene {
 			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
 			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
+			debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
 		});
 	}
 
@@ -179,24 +204,6 @@ export default class MainScene extends Phaser.Scene {
 
 	private createTileMap(tileMap: any) {
 		this.hexTiles.tileMap = tileMap;
-
-		// DEBUG : DRAW BOUNDARY FOR NOW
-		for (let i = 0; i < this.hexTiles.tileMap.length; ++i) {
-			for (let j = 0; j < this.hexTiles.tileMap[i].length; ++j) {
-				if (
-					this.hexTiles.tileMap[i][j].building ==
-					Constant.BUILDING.BOUNDARY
-				) {
-					this.add
-						.image(
-							this.hexTiles.tileMap[i][j].cartesian_coord.xPos,
-							this.hexTiles.tileMap[i][j].cartesian_coord.yPos,
-							'wall'
-						)
-						.setDepth(100);
-				}
-			}
-		}
 	}
 
 	// Animation control
@@ -356,6 +363,13 @@ export default class MainScene extends Phaser.Scene {
 			);
 		} else if (this.cursors.demolishStructure.isDown) {
 			this.socket.emit(Constant.MESSAGE.DEMOLISH_STRUCTURE, coord);
+		} else if (this.cursors.debugInfo.isDown) {
+			if (this.debugMode) {
+				this.events.emit('clearDebugInfo');
+				this.debugMode = false;
+			} else {
+				this.debugMode = true;
+			}
 		}
 	}
 
@@ -371,6 +385,7 @@ export default class MainScene extends Phaser.Scene {
 			campfires,
 			bases,
 			territories,
+			resources,
 		} = update;
 		if (currentPlayer == null) return;
 
@@ -389,6 +404,8 @@ export default class MainScene extends Phaser.Scene {
 		this.updateBases(bases);
 
 		this.updateTerritories(territories);
+
+		this.updateResources(resources);
 
 		this.events.emit('updateHUD', currentPlayer, time);
 	}
@@ -620,6 +637,34 @@ export default class MainScene extends Phaser.Scene {
 		);
 	}
 
+	private updateResources(resources: any) {
+		this.updateMapOfObjects(
+			resources,
+			this.resourceSprites,
+			'',
+			(newResource, newResourceLiteral) => {
+				if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[0]
+				) {
+					newResource.setTexture('blueRes');
+				} else if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[1]
+				) {
+					newResource.setTexture('greenRes');
+				} else if (
+					newResourceLiteral.type ==
+					Constant.RESOURCE.RESOURCE_NAME[2]
+				) {
+					newResource.setTexture('whiteRes');
+				}
+				newResource.setVisible(true);
+				return newResource;
+			}
+		);
+	}
+
 	private updateMapOfObjects(
 		currentObjects: any,
 		oldObjects: Map<string, any>,
@@ -691,6 +736,7 @@ export default class MainScene extends Phaser.Scene {
 		this.clearMapOfObjects(this.campfireSprites);
 		this.clearMapOfObjects(this.baseSprites);
 		this.clearMapOfObjects(this.territorySprites);
+		this.clearMapOfObjects(this.resourceSprites);
 		this.deadObjects.clear();
 	}
 }

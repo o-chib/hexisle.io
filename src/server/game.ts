@@ -12,10 +12,17 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
+import { MapResources, Resource } from './mapResources';
+import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
 
 export default class Game {
+	hexTileMap: HexTiles;
+	collision: CollisionDetection;
 	teams: Teams;
+	mapResources: MapResources;
+	passiveIncome: PassiveIncome;
+	idGenerator: IDgenerator;
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	walls: Map<string, Wall>;
@@ -23,14 +30,9 @@ export default class Game {
 	campfires: Set<Campfire>;
 	bases: Set<Base>;
 	territories: Set<Territory>;
-	hexTileMap: HexTiles;
-	idGenerator: IDgenerator;
-	changedTiles: Tile[];
-	collision: CollisionDetection;
 	gameInterval: NodeJS.Timeout;
-	resourceInterval: NodeJS.Timeout;
 	gameOverCallback: () => void;
-	previousUpdateTimestamp: any;
+	previousUpdateTimestamp: number;
 	endGameTimestamp: number;
 	gameTimeRemaining: number;
 
@@ -51,7 +53,7 @@ export default class Game {
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
 
-		this.teams = new Teams(2, this.hexTileMap.baseCoords);
+		this.teams = new Teams(Constant.TEAM_COUNT, this.hexTileMap.baseCoords);
 
 		this.collision = new CollisionDetection();
 		this.generateBoundaryColliders();
@@ -60,20 +62,27 @@ export default class Game {
 		this.addBaseTerritories();
 		this.initBases();
 
+		this.mapResources = new MapResources(this.addResource.bind(this));
+		this.mapResources.addInitialResources();
+
+		this.passiveIncome = new PassiveIncome(this.teams);
+
+		this.gameOverCallback = gameOverCallback;
+		this.endGameTimestamp = Date.now() + Constant.TIMING.GAME_TIME_LIMIT;
+
 		this.previousUpdateTimestamp = Date.now();
 		this.gameInterval = setInterval(
 			this.update.bind(this),
 			Constant.TIMING.SERVER_GAME_UPDATE
-		);
-		this.resourceInterval = setInterval(
-			this.updatePlayerResource.bind(this),
-			Constant.INCOME.UPDATE_RATE
 		);
 	}
 
 	update() {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
+
+		if (timePassed > 18)
+			console.log('WARNING: Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -85,7 +94,9 @@ export default class Game {
 
 		this.updateBases();
 
-		this.updatePlayers(currentTimestamp);
+		this.updatePlayers(currentTimestamp, timePassed);
+
+		this.updateMapResources(timePassed);
 
 		if (this.isGameOver()) this.endGame();
 
@@ -98,15 +109,6 @@ export default class Game {
 		this.previousUpdateTimestamp = currentTimestamp;
 
 		return [currentTimestamp, timePassed];
-	}
-
-	updatePlayerResource() {
-		for (const aPlayer of this.players.values()) {
-			const newResourceValue: number =
-				this.teams.getTeam(aPlayer.teamNumber).numCapturedCamps *
-				Constant.INCOME.INCOME_PER_CAMP;
-			aPlayer.updateResource(newResourceValue);
-		}
 	}
 
 	updateBullets(currentTimestamp, timePassed) {
@@ -238,11 +240,23 @@ export default class Game {
 		}
 	}
 
-	updatePlayers(currentTimestamp) {
-		this.updatePlayerPosition(currentTimestamp);
+	updatePlayers(currentTimestamp: number, timePassed: number) {
+		const givePassiveIncome: boolean = this.passiveIncome.givePassiveIncomeIfPossible(
+			timePassed
+		);
+		for (const aPlayer of this.players.values()) {
+			this.updatePlayerPosition(currentTimestamp, aPlayer);
+			if (aPlayer.health > 0 && givePassiveIncome) {
+				this.passiveIncome.updatePlayerResources(aPlayer);
+			}
+		}
 	}
 
-	sendStateToPlayers() {
+	updateMapResources(timePassed: number): void {
+		this.mapResources.updateMapResourcesIfPossible(timePassed);
+	}
+
+	sendStateToPlayers(): void {
 		// Send updates to player
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
@@ -306,26 +320,27 @@ export default class Game {
 
 	stopAllIntervals(): void {
 		clearInterval(this.gameInterval);
-		clearInterval(this.resourceInterval);
 	}
 
-	updatePlayerPosition(currentTimestamp) {
-		for (const aPlayer of this.players.values()) {
-			aPlayer.updatePosition(currentTimestamp, this.collision);
-			this.collision.playerBulletCollision(aPlayer, this.bullets);
-			if (aPlayer.health == 0) {
-				// Give time for player to play death animation
-				// Only call timeout once
-				this.collision.deleteCollider(
-					aPlayer,
-					Constant.RADIUS.COLLISION.PLAYER
-				);
-				aPlayer.health = -1;
-				aPlayer.setNoVelocity();
-				setTimeout(() => {
-					this.respawnPlayer(aPlayer);
-				}, 3000);
-			}
+	updatePlayerPosition(currentTimestamp: number, player: Player): void {
+		player.updatePosition(currentTimestamp, this.collision);
+		this.collision.playerBulletResourceCollision(
+			player,
+			this.bullets,
+			this.mapResources
+		);
+		if (player.health == 0) {
+			// Give time for player to play death animation
+			// Only call timeout once
+			this.collision.deleteCollider(
+				player,
+				Constant.RADIUS.COLLISION.PLAYER
+			);
+			player.health = -1;
+			player.setNoVelocity();
+			setTimeout(() => {
+				this.respawnPlayer(player);
+			}, 3000);
 		}
 	}
 
@@ -456,6 +471,24 @@ export default class Game {
 		return nearbyTerritories;
 	}
 
+	createResourceUpdate(player: Player): Resource[] {
+		const nearbyResources: Resource[] = [];
+
+		for (const aResource of this.mapResources.resources) {
+			if (
+				this.collision.doCirclesCollide(
+					aResource,
+					Constant.RADIUS.RESOURCE,
+					player,
+					Constant.RADIUS.VIEW
+				)
+			)
+				nearbyResources.push(aResource);
+		}
+
+		return nearbyResources;
+	}
+
 	createUpdate(player: Player) {
 		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
 		const nearbyBullets: Bullet[] = this.createBulletUpdate(player);
@@ -466,6 +499,7 @@ export default class Game {
 		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
 			player
 		);
+		const nearbyResources: Resource[] = this.createResourceUpdate(player);
 
 		return {
 			time: this.gameTimeRemaining,
@@ -477,6 +511,7 @@ export default class Game {
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
 			bases: nearbyBases.map((p) => p.serializeForUpdate()),
 			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
+			resources: nearbyResources.map((p) => p.serializeForUpdate()),
 		};
 	}
 
@@ -553,6 +588,38 @@ export default class Game {
 		const player = this.getPlayer(socket.id);
 
 		player?.updateDirection(direction);
+	}
+
+	addResource(): void {
+		const randomPoint = this.getRandomEmptyPointOnMap();
+		if (!randomPoint) return;
+
+		const newResource: Resource = this.mapResources.generateResource(
+			this.idGenerator.newID(),
+			randomPoint
+		);
+
+		this.collision.insertCollider(newResource, Constant.RADIUS.RESOURCE);
+	}
+
+	getRandomEmptyPointOnMap(): Point | null {
+		let loopLimit = Constant.RANDOM_LOOP_LIMIT;
+		let point: Point;
+
+		do {
+			if (loopLimit <= 0) return null;
+			point = this.getRandomMapPoint();
+			loopLimit--;
+		} while (!this.hexTileMap.checkIfValidEmptyPointOnGrid(point));
+
+		return point;
+	}
+
+	getRandomMapPoint(): Point {
+		return new Point(
+			Math.random() * Constant.MAP_WIDTH,
+			Math.random() * Constant.MAP_HEIGHT
+		);
 	}
 
 	shootBullet(object: any, direction: number): void {
