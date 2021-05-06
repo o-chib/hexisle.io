@@ -3,6 +3,7 @@ export const Constant = Object.freeze({
 	MAP_WIDTH: 4000,
 	MAP_HEIGHT: 4000,
 	TEAM_COUNT: 2,
+	RANDOM_LOOP_LIMIT: 10,
 
 	COST: {
 		WALL: 5,
@@ -18,7 +19,7 @@ export const Constant = Object.freeze({
 	},
 
 	INCOME: {
-		UPDATE_RATE: 1 * 1000,
+		UPDATE_RATE: 5 * 1000,
 		INCOME_PER_CAMP: 1,
 	},
 
@@ -34,20 +35,11 @@ export const Constant = Object.freeze({
 		TURRET: 1 * 1000,
 	},
 
-	OBJS: {
-		BULLET: {
-			SPEED: 1,
-			LIFELENGTH: 1 * 1000,
-		},
-
-		PLAYER: {
-			SPEED: 600,
-		},
-	},
-
 	RADIUS: {
+		HEX: 75,
 		PLAYER: 50,
 		BULLET: 15,
+		RESOURCE: 15,
 		WALL: 75,
 		TURRET: 75,
 		BASE: 200,
@@ -67,6 +59,42 @@ export const Constant = Object.freeze({
 
 		RANGE: {
 			TURRET: 750,
+		},
+	},
+
+	RESOURCE: {
+		UPDATE_RATE: 1 * 1000,
+
+		INITIAL_RESOURCES: 50,
+		MAX_RESOURCES: 150,
+		MAX_RESOURCES_PER_UPDATE: 5,
+
+		SPAWN_ATTMEPTS_PER_RESOURCE: 5,
+
+		RESOURCE_ID: [0, 1, 2],
+		RESOURCE_RARITY: [0.6, 0.3, 0.1],
+
+		RESOURCE_NAME: {
+			0: 'BLUE',
+			1: 'GREEN',
+			2: 'WHITE',
+		},
+
+		DROP_AMOUNT: {
+			BLUE: 1,
+			GREEN: 2,
+			WHITE: 5,
+		},
+	},
+
+	OBJS: {
+		BULLET: {
+			SPEED: 1,
+			LIFELENGTH: 1 * 1000,
+		},
+
+		PLAYER: {
+			SPEED: 600,
 		},
 	},
 

@@ -5,11 +5,15 @@ addons:
     chrome: stable
 services:
     - xvfb
+git:
+    autocrlf: input
 before_install:
     - export DISPLAY=:99.0
 before_script:
     - npm install
-script: node_modules/karma/bin/karma start karma.conf.js --single-run
+script: 
+    prettier --check "src/**/*.ts" &&
+    node_modules/karma/bin/karma start karma.conf.js --single-run
 notifications:
     email:
         on_success: change

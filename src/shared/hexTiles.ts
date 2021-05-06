@@ -11,10 +11,12 @@ export class HexTiles {
 	public boundaryCoords: OffsetPoint[];
 	private gameGetBuilding: (building: string, id: string) => any;
 
-	constructor(gameGetBuildingMethod?: (building: string, id: string) => any) {
-		this.hexSize = 75;
+	constructor(
+		mapHeight: number = Constant.MAP_HEIGHT,
+		gameGetBuildingMethod?: (building: string, id: string) => any
+	) {
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
-		this.mapHeight = Constant.MAP_HEIGHT;
+		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();
 		this.campfiresInHalfWidth = this.getNumCampfiresInMapRadius();
 		this.baseCoords = [];
@@ -195,6 +197,22 @@ export class HexTiles {
 		return true;
 	}
 
+	checkIfValidEmptyPointOnGrid(point: Point): boolean {
+		const hexCoord: OffsetPoint = this.cartesianToOffset(point);
+
+		if (!this.checkIfValidHex(hexCoord)) return false;
+
+		if (
+			this.tileMap[hexCoord.q][hexCoord.r].building !=
+				Constant.BUILDING.NONE ||
+			this.tileMap[hexCoord.q][hexCoord.r].team != -1
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
 	getCampfireRadiusPoints(
 		centerPoint: OffsetPoint,
 		radius: number
@@ -338,13 +356,13 @@ export class HexTiles {
 		// returns the offset odd-q coordinate of the hex it's in
 
 		// account for the half a hex to the bottom right we're pushing the map
-		point.xPos = point.xPos - this.hexSize;
-		point.yPos = point.yPos - this.hexSize;
+		let xPos: number = point.xPos;
+		let yPos: number = point.yPos;
+		xPos = xPos - this.hexSize;
+		yPos = yPos - this.hexSize;
 
 		// make the offset coord into a cube format
-		let cube: number[] = this.pixelToCube(
-			new Point(point.xPos, point.yPos)
-		);
+		let cube: number[] = this.pixelToCube(new Point(xPos, yPos));
 
 		// round the cube
 		cube = this.roundCube(cube);
