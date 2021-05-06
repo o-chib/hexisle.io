@@ -1,5 +1,6 @@
 import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
+import IndestructibleObj from '../shared/indestructibleObj';
 
 export class MapResources {
 	private readonly INITIAL_RESOURCES: number;
@@ -101,19 +102,18 @@ export class MapResources {
 	}
 }
 
-export class Resource {
+export class Resource extends IndestructibleObj {
 	public id: string;
 	public xPos: number;
 	public yPos: number;
+	public teamNumber: number;
 	public dropAmount: number;
 	public type: string;
 
 	constructor(id: string, xPos: number, yPos: number, type: string) {
-		this.id = id;
-		this.xPos = xPos;
-		this.yPos = yPos;
-		this.type = type;
+		super(id, xPos, yPos, Constant.TEAM.NONE);
 		this.dropAmount = Constant.RESOURCE.DROP_AMOUNT[type];
+		this.type = type;
 	}
 
 	serializeForUpdate(): any {
