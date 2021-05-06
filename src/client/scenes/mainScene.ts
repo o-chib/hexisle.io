@@ -1,4 +1,6 @@
 import gameOver from './gameOver';
+import mainMenu from './mainMenu';
+import HUDScene from './HUDScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 
 import { Constant } from './../../shared/constants';
@@ -31,6 +33,8 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	init(data): void {
+		this.socket = data.socket;
+
 		this.initializeKeys();
 		this.generatePlayerSprite();
 
@@ -44,8 +48,6 @@ export default class MainScene extends Phaser.Scene {
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
 		this.deadObjects = new Set();
-
-		this.socket = data.socket;
 	}
 
 	create(): void {
@@ -56,6 +58,7 @@ export default class MainScene extends Phaser.Scene {
 		this.registerIntervals();
 
 		this.socket.emit(Constant.MESSAGE.START_GAME);
+		//this.scene.start(HUDScene.Name);
 		this.events.emit('startHUD', this.socket);
 	}
 
@@ -99,7 +102,10 @@ export default class MainScene extends Phaser.Scene {
 			this.updateState.bind(this)
 		);
 
-		this.socket.once(Constant.MESSAGE.GAME_END, this.endGame.bind(this));
+		this.socket.once(Constant.MESSAGE.GAME_END, this.gameOver.bind(this));
+		this.scene
+			.get('HUDScene')
+			.events.once('leaveGame', this.leaveGame.bind(this));
 	}
 
 	private registerInputListeners(): void {
@@ -659,9 +665,9 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	private endGame(endState: any): void {
-		this.emptyAllObjects();
-		this.events.emit('stopHUD');
+	private gameOver(endState: any): void {
+		this.endGame();
+
 		this.scene.start(gameOver.Name, {
 			socket: this.socket,
 			endState: endState,
@@ -669,8 +675,22 @@ export default class MainScene extends Phaser.Scene {
 		});
 	}
 
+	private leaveGame(): void {
+		this.socket.emit(Constant.MESSAGE.LEAVE_GAME);
+		this.endGame();
+
+		this.scene.start(mainMenu.Name, {
+			socket: this.socket,
+		});
+	}
+
+	private endGame(): void {
+		this.emptyAllObjects();
+		this.events.emit('stopHUD');
+		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
+	}
+
 	private emptyAllObjects(): void {
-		this.hexTiles = new HexTiles();
 		this.clearMapOfObjects(this.otherPlayerSprites);
 		this.clearMapOfObjects(this.bulletSprites);
 		this.clearMapOfObjects(this.wallSprites);

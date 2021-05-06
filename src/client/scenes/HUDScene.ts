@@ -26,6 +26,7 @@ export default class HUDScene extends Phaser.Scene {
 	}
 
 	create(): void {
+		this.scene.setVisible(false);
 		// HUD: Left
 		this.infoText = this.add.text(0, 0, '', { font: '48px Arial' });
 		new Anchor(this.infoText, {
@@ -52,13 +53,7 @@ export default class HUDScene extends Phaser.Scene {
 
 		// Set quitButton Interaction
 		this.quitButton.setInteractive();
-		this.quitButton.on(
-			'pointerdown',
-			() => {
-				this.quitCurrentGame();
-			},
-			this
-		);
+		this.quitButton.on('pointerdown', this.quitCurrentGame.bind(this));
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
@@ -115,11 +110,6 @@ export default class HUDScene extends Phaser.Scene {
 	}
 
 	private quitCurrentGame(): void {
-		this.socket.emit(Constant.MESSAGE.LEAVE_GAME);
-		this.scene.stop(mainScene.Name);
-		this.scene.stop(HUDScene.Name);
-		this.scene.start(mainMenu.Name, {
-			socket: this.socket,
-		});
+		this.events.emit('leaveGame');
 	}
 }
