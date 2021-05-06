@@ -6,7 +6,7 @@ export default class MainMenu extends Phaser.Scene {
 	public static Name = 'MainMenu';
 	private socket: SocketIOClient.Socket;
 	private playerName = '';
-	private gameid = '';
+	private gameid: string | undefined = '';
 	private inputBox;
 
 	constructor() {
@@ -142,21 +142,19 @@ export default class MainMenu extends Phaser.Scene {
 				lobbyList[i].gameid + ' | ' + lobbyList[i].info.playerCount;
 			dropdownList!.appendChild(option);
 		}
-
-		console.log(lobbyList);
 	}
 
 	private joinGame(): void {
 		this.playerName = this.inputBox.getChildByName('name').value;
 		this.gameid = this.inputBox.getChildByName('dropdownList').value;
 
-		if (this.gameid != '')
-			this.socket.emit(
-				Constant.MESSAGE.JOIN_GAME,
-				this.gameid,
-				this.playerName
-			);
-		else this.socket.emit(Constant.MESSAGE.JOIN_GAME, this.playerName);
+		if (this.gameid != '') this.gameid = undefined;
+
+		this.socket.emit(
+			Constant.MESSAGE.JOIN_GAME,
+			this.playerName,
+			this.gameid
+		);
 
 		this.socket.once(
 			Constant.MESSAGE.JOIN_GAME_SUCCESS,

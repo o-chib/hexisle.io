@@ -32,7 +32,7 @@ allGames.newGame();
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
-	socket.on(Constant.MESSAGE.JOIN_GAME, (gameID?: string, name = 'Aliem') => {
+	socket.on(Constant.MESSAGE.JOIN_GAME, (name = 'Aliem', gameID?: string) => {
 		if (allGames.addPlayerToGame(socket, name, gameID))
 			socket.emit(Constant.MESSAGE.JOIN_GAME_SUCCESS);
 		else
