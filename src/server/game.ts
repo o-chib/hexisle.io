@@ -144,8 +144,7 @@ export default class Game {
 						.numCapturedCamps++;
 				} else {
 					// If uncaptured, updated numCapturedCamps
-					this.teams.getTeam(prevCampTeam)
-						.numCapturedCamps--;
+					this.teams.getTeam(prevCampTeam).numCapturedCamps--;
 				}
 
 				aCampfire.resetProgress();
