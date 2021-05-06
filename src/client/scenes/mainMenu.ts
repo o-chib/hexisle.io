@@ -82,7 +82,7 @@ export default class MainMenu extends Phaser.Scene {
 			.setVisible(false);
 
 		// Interactions
-		submitKey.on('down', (event) => {
+		submitKey.on('down', () => {
 			this.joinGame();
 		});
 
@@ -179,5 +179,7 @@ export default class MainMenu extends Phaser.Scene {
 		//TODO make error message fancier
 	}
 
-	private loadOptions(): void {}
+	private loadOptions(): void {
+		//TODO remove options?
+	}
 }

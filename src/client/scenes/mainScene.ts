@@ -1,6 +1,5 @@
 import gameOver from './gameOver';
 import mainMenu from './mainMenu';
-import HUDScene from './HUDScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 
 import { Constant } from './../../shared/constants';

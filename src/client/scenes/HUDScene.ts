@@ -1,7 +1,4 @@
-import mainMenu from './mainMenu';
-import mainScene from './mainScene';
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
-import { Constant } from './../../shared/constants';
 
 // Text Structure
 const info_format = `Health:	%1
