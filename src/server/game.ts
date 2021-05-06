@@ -134,6 +134,7 @@ export default class Game {
 			this.collision.campfirePlayerCollision(aCampfire);
 
 			if (aCampfire.captureProgress == 100) {
+				const prevCampTeam: number = aCampfire.teamNumber;
 				aCampfire.checkForCapture();
 				const isCaptured = aCampfire.isCaptured;
 				const points = aCampfire.territoryPoints;
@@ -143,7 +144,7 @@ export default class Game {
 						.numCapturedCamps++;
 				} else {
 					// If uncaptured, updated numCapturedCamps
-					this.teams.getTeam(aCampfire.capturingTeam)
+					this.teams.getTeam(prevCampTeam)
 						.numCapturedCamps--;
 				}
 
@@ -175,6 +176,7 @@ export default class Game {
 						break;
 					}
 				}
+
 				const tempTerritory = new Territory(
 					stringID,
 					xPosition,
