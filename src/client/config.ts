@@ -16,13 +16,6 @@ export const config: Phaser.Types.Core.GameConfig = {
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
 	scene: [boot, preloader, mainMenu, mainScene, HUDScene, gameOver],
-	physics: {
-		default: 'arcade',
-		arcade: {
-			debug: true,
-			gravity: { y: 100 },
-		},
-	},
 	dom: {
 		createContainer: true,
 	},
