@@ -3,8 +3,7 @@ import Utilities from './Utilities';
 
 // Text Structure
 const info_format = `Health:	%1
-Score:	%2
-Resources:	%3`;
+Resources:	%2`;
 const timer_format = `%1:%2`;
 const debug_format = `cursor:
 xPos/yPos:%1/%2
@@ -121,7 +120,6 @@ export default class HUDScene extends Phaser.Scene {
 
 		const playerText = Phaser.Utils.String.Format(info_format, [
 			playerHealth,
-			currentPlayer.score,
 			currentPlayer.resources,
 		]);
 		this.infoText?.setText(playerText);
