@@ -10,9 +10,7 @@ export class HexTiles {
 	public baseCoords: OffsetPoint[];
 	public boundaryCoords: OffsetPoint[];
 
-	constructor(
-		mapHeight: number = Constant.MAP_HEIGHT
-	) {
+	constructor(mapHeight: number = Constant.MAP_HEIGHT) {
 		this.hexSize = Constant.RADIUS.HEX;
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
 		this.mapHeight = mapHeight;
@@ -43,10 +41,7 @@ export class HexTiles {
 
 			// for each row
 			for (let row = 0; row < 2 * this.hexRadius + 1; row++) {
-				this.tileMap[col][row] = new Tile(
-					Constant.BUILDING.NONE,
-					-1
-				);
+				this.tileMap[col][row] = new Tile(Constant.BUILDING.NONE, -1);
 				this.tileMap[col][row].offset_coord = new OffsetPoint(col, row);
 				this.tileMap[col][row].cartesian_coord = this.offsetToCartesian(
 					this.tileMap[col][row].offset_coord
@@ -619,20 +614,14 @@ export class Tile {
 	public building: string;
 	public buildingObj: any;
 
-	constructor(
-		building: string = Constant.BUILDING.NONE,
-		teamNumber = -1,
-	) {
+	constructor(building: string = Constant.BUILDING.NONE, teamNumber = -1) {
 		this.teamNumber = teamNumber;
 		this.building = building;
 		this.buildingObj = null;
 	}
 
 	public hasNoBuilding(): boolean {
-		return (
-			this.building == Constant.BUILDING.NONE &&
-			!this.buildingObj
-		);
+		return this.building == Constant.BUILDING.NONE && !this.buildingObj;
 	}
 
 	public setBuilding(buildingType: string, buildingObj: any): void {
@@ -647,8 +636,7 @@ export class Tile {
 
 	public changeTeamNumber(teamNumber: number) {
 		this.teamNumber = teamNumber;
-		if (this.buildingObj)
-			this.buildingObj.teamNumber = teamNumber;
+		if (this.buildingObj) this.buildingObj.teamNumber = teamNumber;
 	}
 
 	public isInBounds(): boolean {
