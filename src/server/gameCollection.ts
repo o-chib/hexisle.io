@@ -43,11 +43,15 @@ export class GameCollection {
 	}
 
 	private findBestGameToJoin(): GameWrapper | null {
+		let chosenGame: GameWrapper | null = null;
 		for (const game of this.allGames.values()) {
-			//TODO imporve selection
-			return game;
+			if (
+				!chosenGame ||
+				(!game.isFull() && game.playerCount > chosenGame?.playerCount)
+			)
+				chosenGame = game;
 		}
-		return null;
+		return chosenGame;
 	}
 
 	public getGameList(): { gameid: string; info: any }[] {

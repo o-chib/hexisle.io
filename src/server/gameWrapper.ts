@@ -23,7 +23,8 @@ export default class GameWrapper {
 
 	// Returns true if successfully added player
 	public addPlayer(socket: SocketIO.Socket, name = ''): boolean {
-		if (this.isFull()) return false;
+		//TODO reenable player limit later
+		// if (this.isFull()) return false;
 
 		this.updateSocket(socket, name);
 		this.playerCount++;
