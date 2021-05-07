@@ -127,13 +127,10 @@ export default class MainMenu extends Phaser.Scene {
 
 	private initializeLobbyList(lobbyList): void {
 		const dropdownList = document.getElementById('dropdownList');
-		while (dropdownList!.firstChild) {
-			dropdownList!.removeChild(dropdownList!.firstChild);
-		}
-		const autoselect = document.createElement('option');
-		autoselect.value = '';
-		autoselect.text = 'Autoselect';
-		dropdownList!.appendChild(autoselect);
+		if (!dropdownList) return;
+
+		this.clearDropdownList(dropdownList);
+		this.addAutoselectOption(dropdownList);
 
 		for (let i = 0; i < lobbyList.length; i++) {
 			const option = document.createElement('option');
@@ -143,7 +140,20 @@ export default class MainMenu extends Phaser.Scene {
 				' (' +
 				lobbyList[i].info.playerCount +
 				')';
-			dropdownList!.appendChild(option);
+			dropdownList.appendChild(option);
+		}
+	}
+
+	private addAutoselectOption(dropdownList: HTMLElement) {
+		const autoselect = document.createElement('option');
+		autoselect.value = '';
+		autoselect.text = 'Autoselect';
+		dropdownList.appendChild(autoselect);
+	}
+
+	private clearDropdownList(dropdownList: HTMLElement) {
+		while (dropdownList.firstChild) {
+			dropdownList.removeChild(dropdownList.firstChild);
 		}
 	}
 
