@@ -161,6 +161,7 @@ export default class HUDScene extends Phaser.Scene {
 
 	private stopHUD(): void {
 		this.scene.setVisible(false);
+		this.scene.pause();
 	}
 
 	private quitCurrentGame(): void {
