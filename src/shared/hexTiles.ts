@@ -9,10 +9,8 @@ export class HexTiles {
 	public campfiresInHalfWidth: number;
 	public baseCoords: OffsetPoint[];
 	public boundaryCoords: OffsetPoint[];
-	private gameGetBuilding: (building: string, id: string) => any;
 
 	constructor(
-		gameGetBuildingMethod?: (building: string, id: string) => any,
 		mapHeight: number = Constant.MAP_HEIGHT
 	) {
 		this.hexSize = Constant.RADIUS.HEX;
@@ -22,7 +20,6 @@ export class HexTiles {
 		this.campfiresInHalfWidth = this.getNumCampfiresInMapRadius();
 		this.baseCoords = [];
 		this.boundaryCoords = [];
-		if (gameGetBuildingMethod) this.gameGetBuilding = gameGetBuildingMethod;
 	}
 
 	generateMap(): void {
