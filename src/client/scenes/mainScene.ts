@@ -249,7 +249,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializeGame(update: any): void {
-		const { player, tileMap } = update;
+		const { player } = update;
 		if (player == null) return;
 
 		if (this.initialized != true) {
