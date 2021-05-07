@@ -253,7 +253,6 @@ export default class MainScene extends Phaser.Scene {
 		if (player == null) return;
 
 		if (this.initialized != true) {
-			this.createTileMap(tileMap);
 			this.setCamera();
 		}
 		this.initializePlayer(player);
@@ -274,10 +273,6 @@ export default class MainScene extends Phaser.Scene {
 	private setCamera(): void {
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
 		this.cameras.main.setZoom(0.75);
-	}
-
-	private createTileMap(tileMap: any) {
-		this.hexTiles.tileMap = tileMap;
 	}
 
 	// Animation control

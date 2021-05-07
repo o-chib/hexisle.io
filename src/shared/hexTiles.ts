@@ -623,19 +623,26 @@ export class Tile {
 	public building: string;
 	public buildingId: string;
 	private gameGetBuilding: (building: string, id: string) => any;
+	public buildingObj: any;
 
 	constructor(
 		building: string = Constant.BUILDING.NONE,
 		teamNumber = -1,
 		gameGetBuildingMethod?: (building: string, id: string) => any
 	) {
-		this.building = building;
 		this.teamNumber = teamNumber;
+		this.building = building;
+		this.buildingObj = null;
 		if (gameGetBuildingMethod) this.gameGetBuilding = gameGetBuildingMethod;
 	}
 
 	public hasNoBuilding(): boolean {
 		return this.building == Constant.BUILDING.NONE;
+	}
+
+	public setBuilding(buildingType: string, buildingObj: any): void {
+		this.building = buildingType;
+		this.buildingObj = buildingObj;
 	}
 
 	public removeBuilding(): void {
@@ -645,13 +652,15 @@ export class Tile {
 
 	public changeTeamNumber(teamNumber: number) {
 		this.teamNumber = teamNumber;
-		const building: any = this.gameGetBuilding(
-			this.building,
-			this.buildingId
-		);
-		if (building) {
-			building.teamNumber = teamNumber;
-		}
+		// const building: any = this.gameGetBuilding(
+		// 	this.building,
+		// 	this.buildingId
+		// );
+		// if (building) {
+		// 	building.teamNumber = teamNumber;
+		// }
+		if (this.buildingObj)
+			this.buildingObj.teamNumber = teamNumber;
 	}
 
 	public isInBounds(): boolean {

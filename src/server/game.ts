@@ -511,7 +511,6 @@ export default class Game {
 	initiateGame(newPlayer, socket) {
 		const initObject = {
 			player: newPlayer.serializeForUpdate(),
-			tileMap: this.hexTileMap.tileMap,
 		};
 
 		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
@@ -685,7 +684,7 @@ export default class Game {
 	addWall(tile: Tile): void {
 		const wall: Wall = new Wall(this.idGenerator.newID(), tile);
 		this.walls.set(wall.id, wall);
-		tile.building = Constant.BUILDING.WALL;
+		tile.setBuilding(Constant.BUILDING.WALL, wall);
 		tile.buildingId = wall.id;
 		this.collision.insertCollider(wall, Constant.RADIUS.COLLISION.WALL);
 	}
@@ -697,7 +696,7 @@ export default class Game {
 			this.shootBullet.bind(this)
 		);
 		this.turrets.set(turret.id, turret);
-		tile.building = Constant.BUILDING.TURRET;
+		tile.setBuilding(Constant.BUILDING.TURRET, turret);
 		tile.buildingId = turret.id;
 		this.collision.insertCollider(turret, Constant.RADIUS.COLLISION.TURRET);
 	}
