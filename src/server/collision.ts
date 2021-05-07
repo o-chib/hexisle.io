@@ -177,7 +177,6 @@ export default class CollisionDetection {
 		);
 
 		for (const result of results) {
-			// TODO replace Point with some better invisible collider when refactoring
 			if (
 				this.isStructure(result.payload) &&
 				this.doCirclesCollide(
