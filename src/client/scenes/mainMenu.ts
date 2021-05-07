@@ -8,6 +8,7 @@ export default class MainMenu extends Phaser.Scene {
 	private playerName = '';
 	private gameid: string | undefined = '';
 	private inputBox;
+	private nextUpdateTime: number;
 
 	constructor() {
 		super('MainMenu');
@@ -28,7 +29,7 @@ export default class MainMenu extends Phaser.Scene {
 
 	public create(): void {
 		Utilities.LogSceneMethodEntry('MainMenu', 'create');
-		this.socket.emit(Constant.MESSAGE.ASK_GAME_LIST);
+		this.askForUpdatedGameList();
 
 		const renderWidth = this.game.renderer.width;
 		const renderHeight = this.game.renderer.height;
@@ -123,6 +124,15 @@ export default class MainMenu extends Phaser.Scene {
 			},
 			this
 		);
+	}
+
+	private askForUpdatedGameList() {
+		this.socket.emit(Constant.MESSAGE.ASK_GAME_LIST);
+		this.nextUpdateTime = Date.now() + 1000;
+	}
+
+	public update(): void {
+		if (Date.now() >= this.nextUpdateTime) this.askForUpdatedGameList();
 	}
 
 	private initializeLobbyList(lobbyList): void {
