@@ -2,17 +2,17 @@ import { Constant } from '../shared/constants';
 import Collision from './../server/collision';
 
 export default class Player {
-	// extends Phaser.Physics.Matter.Sprite
+	private PLAYER_SPEED = 600;
 	lastUpdateTime: number;
 
 	id: string;
+	teamNumber: number;
 	xPos: number;
 	yPos: number;
 	private xVel: number;
 	private yVel: number;
 	private direction: number;
-	teamNumber: number;
-	speed: number;
+	name: string;
 
 	// Score tracking & player stats
 	health: number;
@@ -21,15 +21,10 @@ export default class Player {
 
 	socket: SocketIOClient.Socket;
 
-	constructor(
-		socket: SocketIOClient.Socket,
-		xPos: number,
-		yPos: number,
-		teamNumber: number
-	) {
+	constructor(socket: SocketIOClient.Socket, teamNumber: number, name = '') {
 		this.id = socket.id;
-		this.xPos = xPos;
-		this.yPos = yPos;
+		//this.xPos = 0;
+		//this.yPos = 0;
 		this.xVel = 0;
 		this.yVel = 0;
 		this.direction = 0;
@@ -37,10 +32,10 @@ export default class Player {
 		this.score = 0;
 		this.health = Constant.HP.PLAYER;
 		//this.healthRegen = 1;
-		this.speed = 600;
 		this.socket = socket;
 		this.resources = 0;
 		this.lastUpdateTime = Date.now();
+		this.name = name;
 	}
 
 	updateResource(resourceValue: number) {
@@ -56,8 +51,8 @@ export default class Player {
 			this.xVel = 0;
 			this.yVel = 0;
 		} else {
-			this.xVel = this.speed * Math.cos(direction);
-			this.yVel = this.speed * Math.sin(direction);
+			this.xVel = this.PLAYER_SPEED * Math.cos(direction);
+			this.yVel = this.PLAYER_SPEED * Math.sin(direction);
 		}
 	}
 
@@ -109,6 +104,7 @@ export default class Player {
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos,
+			name: this.name,
 			direction: this.direction,
 			health: this.health,
 			resources: this.resources,
