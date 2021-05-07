@@ -727,6 +727,7 @@ export default class MainScene extends Phaser.Scene {
 
 	private endGame(): void {
 		this.emptyAllObjects();
+		this.cameras.resetAll();
 		this.events.emit('stopHUD');
 		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
 	}
