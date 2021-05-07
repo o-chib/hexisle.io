@@ -4,6 +4,7 @@ import * as SocketIO from 'socket.io';
 import { OffsetPoint } from '../shared/hexTiles';
 
 export default class GameWrapper {
+	private readonly MAX_PLAYERS = Constant.MAX_PLAYERS;
 	private game: Game;
 	private collectionGameOverCallback: (id: string) => void;
 	public id: string;
@@ -22,11 +23,16 @@ export default class GameWrapper {
 
 	// Returns true if successfully added player
 	public addPlayer(socket: SocketIO.Socket, name = ''): boolean {
-		//TODO check max player count
+		if (this.isFull()) return false;
+
 		this.updateSocket(socket, name);
 		this.playerCount++;
 
 		return true;
+	}
+
+	public isFull(): boolean {
+		return this.playerCount >= this.MAX_PLAYERS;
 	}
 
 	private updateSocket(socket: SocketIO.Socket, name: string) {
@@ -72,6 +78,8 @@ export default class GameWrapper {
 		socket.removeAllListeners(Constant.MESSAGE.ROTATE);
 		socket.removeAllListeners(Constant.MESSAGE.DEMOLISH_STRUCTURE);
 		socket.removeAllListeners(Constant.MESSAGE.BUILD_STRUCTURE);
+		socket.removeAllListeners(Constant.MESSAGE.LEAVE_GAME);
+		socket.removeAllListeners('disconnect');
 		this.game.removePlayer(socket);
 		this.playerCount--;
 	}

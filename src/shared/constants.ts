@@ -3,6 +3,7 @@ export const Constant = Object.freeze({
 	MAP_WIDTH: 10000,
 	MAP_HEIGHT: 10000,
 	TEAM_COUNT: 2,
+	MAX_PLAYERS: 50, //TODO lower this maybe, I set it high for demo
 	RANDOM_LOOP_LIMIT: 10,
 
 	COST: {
