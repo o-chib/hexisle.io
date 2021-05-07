@@ -1,6 +1,7 @@
 import 'phaser';
 import mainScene from './scenes/mainScene';
 import HUDScene from './scenes/HUDScene';
+import UIScene from './scenes/UIScene';
 
 export const config: Phaser.Types.Core.GameConfig = {
 	parent: 'game-canvas',
@@ -11,7 +12,7 @@ export const config: Phaser.Types.Core.GameConfig = {
 		mode: Phaser.Scale.ENVELOP,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
-	scene: [mainScene, HUDScene],
+	scene: [mainScene, HUDScene, UIScene],
 	physics: {
 		default: 'arcade',
 		arcade: {

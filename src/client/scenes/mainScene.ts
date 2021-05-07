@@ -94,6 +94,11 @@ export default class MainScene extends Phaser.Scene {
 		this.load.image('grass_chunk', '../assets/chunk.png');
 		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
 		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
+
+		// UI
+		this.load.image('help_button_unpressed','../assets/help_button_unpressed.png');
+		this.load.image('help_button_pressed','../assets/help_button_pressed.png');
+		this.load.image('help_popup','../assets/help_popup.png');
 	}
 
 	init(): void {
@@ -116,6 +121,8 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create(): void {
+		this.scene.launch('UIScene');
+
 		this.game.canvas.oncontextmenu = function (e) {
 			e.preventDefault();
 		};
@@ -167,6 +174,7 @@ export default class MainScene extends Phaser.Scene {
 			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
 			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
 			debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
+			toggleHelp: Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH,
 		});
 	}
 
@@ -425,6 +433,9 @@ export default class MainScene extends Phaser.Scene {
 			} else {
 				this.debugMode = true;
 			}
+		} else if (this.cursors.toggleHelp.isDown){
+			this.events.emit('toggleHelpUI');
+
 		}
 	}
 
