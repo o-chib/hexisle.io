@@ -674,7 +674,6 @@ export default class Game {
 		const wall: Wall = new Wall(this.idGenerator.newID(), tile);
 		this.walls.set(wall.id, wall);
 		tile.setBuilding(Constant.BUILDING.WALL, wall);
-		tile.buildingId = wall.id;
 		this.collision.insertCollider(wall, Constant.RADIUS.COLLISION.WALL);
 	}
 
@@ -686,7 +685,6 @@ export default class Game {
 		);
 		this.turrets.set(turret.id, turret);
 		tile.setBuilding(Constant.BUILDING.TURRET, turret);
-		tile.buildingId = turret.id;
 		this.collision.insertCollider(turret, Constant.RADIUS.COLLISION.TURRET);
 	}
 
@@ -716,9 +714,9 @@ export default class Game {
 
 		player.refundStructure(tile.building);
 		if (tile.building == Constant.BUILDING.WALL) {
-			this.removeWall(this.walls.get(tile.buildingId)!);
+			this.removeWall(this.walls.get(tile.buildingObj.id)!);
 		} else if (tile.building == Constant.BUILDING.TURRET) {
-			this.removeTurret(this.turrets.get(tile.buildingId)!);
+			this.removeTurret(this.turrets.get(tile.buildingObj.id)!);
 		}
 	}
 
