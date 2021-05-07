@@ -91,6 +91,7 @@ export const Constant = Object.freeze({
 		BULLET: {
 			SPEED: 1,
 			LIFELENGTH: 1 * 1000,
+			DAMAGE: 10,
 		},
 
 		PLAYER: {

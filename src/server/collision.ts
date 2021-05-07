@@ -83,7 +83,7 @@ export default class CollisionDetection {
 					Constant.RADIUS.COLLISION.BULLET
 				)
 			) {
-				player.hp -= 10;
+				player.hp -= Constant.OBJS.BULLET.DAMAGE;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
@@ -145,7 +145,7 @@ export default class CollisionDetection {
 					Constant.RADIUS.COLLISION.BULLET
 				)
 			) {
-				building.hp -= 10;
+				building.hp -= Constant.OBJS.BULLET.DAMAGE;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
