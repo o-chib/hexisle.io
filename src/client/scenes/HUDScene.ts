@@ -1,4 +1,5 @@
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
+import Utilities from './Utilities';
 
 // Text Structure
 const info_format = `Health:	%1
@@ -24,11 +25,13 @@ export default class HUDScene extends Phaser.Scene {
 	private quitButton?: Phaser.GameObjects.Image;
 
 	constructor() {
-		super({ key: 'HUDScene', active: true });
+		super('HUDScene');
 	}
 
 	create(): void {
-		this.scene.setVisible(false);
+		Utilities.LogSceneMethodEntry('HUDScene', 'create');
+		//this.scene.setVisible(false);
+
 		// HUD: Left
 		this.infoText = this.add.text(0, 0, '', {
 			font: '48px Arial',

@@ -3,6 +3,7 @@ import mainMenu from './mainMenu';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 
 import { Constant } from './../../shared/constants';
+import Utilities from './Utilities';
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
@@ -52,6 +53,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create(): void {
+		Utilities.LogSceneMethodEntry('MainScene', 'create');
+
+		this.scene.launch('HUDScene');
 		this.game.canvas.oncontextmenu = function (e) {
 			e.preventDefault();
 		};
