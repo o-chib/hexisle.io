@@ -281,7 +281,7 @@ export default class Game {
 			);
 		}
 		this.stopAllIntervals();
-		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
+		this.gameOverCallback();
 	}
 
 	createGameEndRecap() {
