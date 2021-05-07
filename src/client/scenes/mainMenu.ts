@@ -132,7 +132,7 @@ export default class MainMenu extends Phaser.Scene {
 	}
 
 	public update(): void {
-		if (Date.now() >= this.nextUpdateTime) this.askForUpdatedGameList();
+		//if (Date.now() >= this.nextUpdateTime) this.askForUpdatedGameList();
 	}
 
 	private initializeLobbyList(lobbyList): void {
