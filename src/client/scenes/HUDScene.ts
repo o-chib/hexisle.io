@@ -85,10 +85,16 @@ export default class HUDScene extends Phaser.Scene {
 			this.clearDebugInfo,
 			this
 		);
+
 		// HUD: Right
-		this.quitButton = this.add.image(0, 0, 'quitButton').setDepth(99);
+		this.quitButton = this.add
+			.image(0, 0, 'quitButton')
+			.setDepth(99)
+			.setDisplayOrigin(0.5, 0.5)
+			.setScale(0.35);
+
 		new Anchor(this.quitButton, {
-			centerX: 'right-100',
+			right: 'right-10',
 			top: 'top+10',
 		});
 
