@@ -81,8 +81,8 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (timePassed > 18)
-			console.log('WARNING: Update took ', timePassed, 'ms');
+		if (timePassed > 19)
+			console.log('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
 
