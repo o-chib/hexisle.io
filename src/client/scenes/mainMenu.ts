@@ -133,15 +133,15 @@ export default class MainMenu extends Phaser.Scene {
 		this.addAutoselectOption(dropdownList);
 
 		for (let i = 0; i < lobbyList.length; i++) {
-			const option = document.createElement('option');
-			option.value = lobbyList[i].gameid;
-			option.text =
-				lobbyList[i].gameid +
-				' (' +
-				lobbyList[i].info.playerCount +
-				')';
-			dropdownList.appendChild(option);
+			this.addGameToDropdownList(lobbyList[i], dropdownList);
 		}
+	}
+
+	private addGameToDropdownList(gameInfo: any, dropdownList: HTMLElement) {
+		const option = document.createElement('option');
+		option.value = gameInfo.gameid;
+		option.text = gameInfo.gameid + ' (' + gameInfo.info.playerCount + ')';
+		dropdownList.appendChild(option);
 	}
 
 	private addAutoselectOption(dropdownList: HTMLElement) {
