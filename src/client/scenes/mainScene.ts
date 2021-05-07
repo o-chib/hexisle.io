@@ -204,7 +204,7 @@ export default class MainScene extends Phaser.Scene {
 	private setCamera(): void {
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
 		this.cameras.main.setZoom(0.75);
-		this.cameras.main.setBackgroundColor('#011C6B');
+		this.cameras.main.setBackgroundColor('#0B4574');
 	}
 
 	private createTileMap(tileMap: any) {
