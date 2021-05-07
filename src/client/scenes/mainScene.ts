@@ -377,9 +377,8 @@ export default class MainScene extends Phaser.Scene {
 			} else {
 				this.debugMode = true;
 			}
-		} else if (this.cursors.toggleHelp.isDown){
+		} else if (this.cursors.toggleHelp.isDown) {
 			this.events.emit('toggleHelpUI');
-
 		}
 	}
 
