@@ -139,7 +139,10 @@ export default class MainMenu extends Phaser.Scene {
 			const option = document.createElement('option');
 			option.value = lobbyList[i].gameid;
 			option.text =
-				lobbyList[i].gameid + ' | ' + lobbyList[i].info.playerCount;
+				lobbyList[i].gameid +
+				' (' +
+				lobbyList[i].info.playerCount +
+				')';
 			dropdownList!.appendChild(option);
 		}
 	}
