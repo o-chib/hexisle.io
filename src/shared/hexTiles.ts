@@ -48,8 +48,7 @@ export class HexTiles {
 			for (let row = 0; row < 2 * this.hexRadius + 1; row++) {
 				this.tileMap[col][row] = new Tile(
 					Constant.BUILDING.NONE,
-					-1,
-					this.gameGetBuilding
+					-1
 				);
 				this.tileMap[col][row].offset_coord = new OffsetPoint(col, row);
 				this.tileMap[col][row].cartesian_coord = this.offsetToCartesian(
@@ -628,12 +627,10 @@ export class Tile {
 	constructor(
 		building: string = Constant.BUILDING.NONE,
 		teamNumber = -1,
-		gameGetBuildingMethod?: (building: string, id: string) => any
 	) {
 		this.teamNumber = teamNumber;
 		this.building = building;
 		this.buildingObj = null;
-		if (gameGetBuildingMethod) this.gameGetBuilding = gameGetBuildingMethod;
 	}
 
 	public hasNoBuilding(): boolean {
@@ -652,13 +649,6 @@ export class Tile {
 
 	public changeTeamNumber(teamNumber: number) {
 		this.teamNumber = teamNumber;
-		// const building: any = this.gameGetBuilding(
-		// 	this.building,
-		// 	this.buildingId
-		// );
-		// if (building) {
-		// 	building.teamNumber = teamNumber;
-		// }
 		if (this.buildingObj)
 			this.buildingObj.teamNumber = teamNumber;
 	}
