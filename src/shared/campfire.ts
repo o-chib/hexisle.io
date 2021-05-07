@@ -94,8 +94,8 @@ export default class Campfire extends IndestructibleObj {
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos,
-			captureProgress: this.captureProgress,
 			teamNumber: this.teamNumber,
+			captureProgress: this.captureProgress,
 		};
 	}
 }

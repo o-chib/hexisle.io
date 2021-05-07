@@ -23,7 +23,6 @@ export default class Wall extends DestructibleObj {
 			yPos: this.yPos,
 			teamNumber: this.teamNumber,
 			hp: this.hp,
-			tile: this.tile,
 		};
 	}
 }
