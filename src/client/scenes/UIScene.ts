@@ -1,4 +1,5 @@
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
+import Utilities from './Utilities';
 
 export default class UIScene extends Phaser.Scene {
 	private mainSceneObj: any;
@@ -11,6 +12,8 @@ export default class UIScene extends Phaser.Scene {
 	}
 
 	create(): void {
+		Utilities.LogSceneMethodEntry('UIScene', 'create');
+
 		this.helpButtonSprite = this.add
 			.sprite(0, 0, 'help_button_unpressed')
 			.setDepth(1000);
@@ -29,8 +32,9 @@ export default class UIScene extends Phaser.Scene {
 			bottom: 'bottom-85',
 		});
 
-		this.helpPopupSprite.setInteractive();
-		this.helpPopupSprite.on('pointerdown', this.toggleHelp.bind(this));
+		// Set help button Interaction
+		this.helpButtonSprite.setInteractive();
+		this.helpButtonSprite.on('pointerdown', this.toggleHelp.bind(this));
 
 		// Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
