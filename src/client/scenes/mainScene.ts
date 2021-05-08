@@ -56,7 +56,7 @@ export default class MainScene extends Phaser.Scene {
 		Utilities.LogSceneMethodEntry('MainScene', 'create');
 
 		this.scene.launch('HUDScene');
-		this.scene.launch('UIScene');
+		this.scene.launch('HelpOverlayScene');
 
 		this.game.canvas.oncontextmenu = function (e) {
 			e.preventDefault();

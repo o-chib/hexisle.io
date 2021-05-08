@@ -1,18 +1,18 @@
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 import Utilities from './Utilities';
 
-export default class UIScene extends Phaser.Scene {
+export default class HelpOverlayScene extends Phaser.Scene {
+	// Scene overlays help button and popop during game.
 	private mainSceneObj: any;
-	// help UI
 	private helpButtonSprite: Phaser.GameObjects.Sprite;
 	private helpPopupSprite: Phaser.GameObjects.Sprite;
 
 	constructor() {
-		super('UIScene');
+		super('HelpOverlayScene');
 	}
 
 	create(): void {
-		Utilities.LogSceneMethodEntry('UIScene', 'create');
+		Utilities.LogSceneMethodEntry('HelpOverlayScene', 'create');
 
 		this.helpButtonSprite = this.add
 			.sprite(0, 0, 'help_button_unpressed')
