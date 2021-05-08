@@ -2,42 +2,93 @@
 <html>
     <head>
         <style>
+            *,
+            *::before,
+            *::after {
+                padding: 0px;
+                margin: 0px;
+                box-sizing: border-box;
+            }
+
             #input-form {
-                padding: 5px;
-                border-radius: 5px;
+                padding: 20px 5px ;
+                margin:auto;
                 width: 300px;
-                background-color: #fff;
-                background-color: rgba(255,255,255,0.5);
+                height: auto;
+                border-radius: 5px;
+                background: rgba(50,50,50,.8);
+                box-shadow: 1px 1px 5px #000;
 
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
+                align-content: flex-start;
             }
-            #input-form input {
-                padding: 10px;
-                border-radius: 5px;
-                font-size: 20px;
+            #input-form input, select{
+                font-family: 'Open Sans Condensed', sans-serif;
+                text-decoration: none;
                 width: 250px;
+                display: block;
+                margin: 9px auto;
+                padding: 10px;
+                font-size: 20px;
+                color: rgba(3,3,3,.8);
+                background: rgba(255,255,255,.8);
+                border: none;
+                border-radius: 8px;
+                transition: all 0.2s ease-in-out;
             }
-            #input-form select {
-                margin-top: 5px;
-                padding: 5px;
-                width: 40%;
-                height: 30px;
-                font-size: 15px;
+            #input-form input:focus, select:focus{
+              outline: none;
             }
             #input-form option {
-                font-size: 12px;
+                font-size: 14px;
             }
+            #divider{
+                display: block;
+                width: 250px;
+                height: 2px;
+                margin: 10px 8px 20px;
+                background: rgba(200,200,200,0.5);
+            }
+            button{
+                margin: 15px auto;
+                padding: 20px 8px;
+                display: block;
+                width: 250px;
+                border-radius: 5px;
+                background: rgba(20,140,150,1);
+                color: rgba(255,255,255,.8);
+                border: none;
+                border-radius: 3px;
 
+                text-decoration: none;
+                font-family: 'Open Sans Condensed', sans-serif;
+                font-size: 20px;
+                font-weight: bold;
+            }
+            button:hover{
+                background: rgba(10,110,120,1);
+                transition: all 0.2s ease-in-out;
+            }
+            #logo{
+                height: 200px;
+                width:100px;
+            }
         </style>
     </head>
     <body>
+        <div id="logo"></div>
         <div id="input-form">
             <input type="text" name="name" placeholder="Enter Username.." value="" />
             <select id="dropdownList" name="dropdownList">
                 <!-- Filled with Phaser -->
             </select>
+            <div id="divider"></div>
+            <button id="playButton">Play</button>
+            <button id="optionsButton">Options</button>
+            <button id="helpButton">Help</button>
         </div>
+
     </body>
 </html>

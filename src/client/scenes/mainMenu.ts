@@ -157,7 +157,7 @@ export default class MainMenu extends Phaser.Scene {
 	private addAutoselectOption(dropdownList: HTMLElement) {
 		const autoselect = document.createElement('option');
 		autoselect.value = '';
-		autoselect.text = 'Autoselect';
+		autoselect.text = 'Choose Server (Auto)';
 		dropdownList.appendChild(autoselect);
 	}
 
