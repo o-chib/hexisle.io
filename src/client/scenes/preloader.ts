@@ -84,7 +84,8 @@ export default class Preloader extends Phaser.Scene {
 		this.load.html('form', '../supportfiles/form.html');
 
 		// Main Game
-		this.load.image('quitButton', '../assets/quitButton.png');
+		this.load.image('quit_button_unpressed', '../assets/quit_button_unpressed.png');
+		this.load.image('quit_button_pressed', '../assets/quit_button_pressed.png');
 
 		// GameOver
 		this.load.image('playAgain', '../assets/gameover_playagain.png');
