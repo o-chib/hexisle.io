@@ -16,10 +16,6 @@ export default class gameOver extends Phaser.Scene {
 		this.endState = data.endState;
 	}
 
-	preload(): void {
-		// Preload stuff here
-	}
-
 	create(): void {
 		Utilities.LogSceneMethodEntry('gameOver', 'create');
 

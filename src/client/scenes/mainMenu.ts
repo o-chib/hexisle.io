@@ -23,10 +23,6 @@ export default class MainMenu extends Phaser.Scene {
 		);
 	}
 
-	public preload(): void {
-		//preload things here
-	}
-
 	public create(): void {
 		Utilities.LogSceneMethodEntry('MainMenu', 'create');
 		this.askForUpdatedGameList();

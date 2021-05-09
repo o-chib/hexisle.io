@@ -29,10 +29,6 @@ export default class MainScene extends Phaser.Scene {
 		super('MainScene');
 	}
 
-	preload(): void {
-		// Preload stuff here
-	}
-
 	init(data): void {
 		this.socket = data.socket;
 
