@@ -612,6 +612,12 @@ export default class MainScene extends Phaser.Scene {
 					healthPercent
 				);
 
+				this.events.emit(
+					'updateHealthBar',
+					newBaseLiteral.teamNumber,
+					healthPercent
+				);
+
 				return newBase;
 			}
 		);
