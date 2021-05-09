@@ -17,14 +17,15 @@ export default class MainScene extends Phaser.Scene {
 	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private cursors: KeySet;
-	private socket: SocketIOClient.Socket;
-	private alive: boolean;
-	private deadObjects: Set<unknown>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private deadObjects: Set<unknown>;
+	private moveKeys: KeySet;
+	private actionKeys: KeySet;
+	private socket: SocketIOClient.Socket;
+	private alive = false;
 	private hexTiles: HexTiles;
-	private debugMode: boolean;
+	private debugMode = false;
 
 	constructor() {
 		super('MainScene');
@@ -96,11 +97,14 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializeKeys(): void {
-		this.cursors = <KeySet>this.input.keyboard.addKeys({
+		this.moveKeys = <KeySet>this.input.keyboard.addKeys({
 			up: Phaser.Input.Keyboard.KeyCodes.W,
 			down: Phaser.Input.Keyboard.KeyCodes.S,
 			left: Phaser.Input.Keyboard.KeyCodes.A,
 			right: Phaser.Input.Keyboard.KeyCodes.D,
+		});
+
+		this.actionKeys = <KeySet>this.input.keyboard.addKeys({
 			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
 			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
@@ -138,15 +142,20 @@ export default class MainScene extends Phaser.Scene {
 			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 		});
 
-		this.input.keyboard.on(
-			'keydown',
-			this.updateMovementDirection.bind(this)
-		);
+		for (const key in this.moveKeys) {
+			this.moveKeys[key].addListener(
+				'down',
+				this.updateMovementDirection.bind(this)
+			);
+			this.moveKeys[key].addListener(
+				'up',
+				this.updateMovementDirection.bind(this)
+			);
+		}
+	}
 
-		this.input.keyboard.on(
-			'keyup',
-			this.updateMovementDirection.bind(this)
-		);
+	private deregisterInputListeners(): void {
+
 	}
 
 	private registerIntervals(): void {
@@ -314,22 +323,22 @@ export default class MainScene extends Phaser.Scene {
 
 	calculateDirection() {
 		let direction = NaN;
-		if (this.cursors.left.isDown && !this.cursors.right.isDown) {
-			if (this.cursors.up.isDown && !this.cursors.down.isDown)
+		if (this.moveKeys.left.isDown && !this.moveKeys.right.isDown) {
+			if (this.moveKeys.up.isDown && !this.moveKeys.down.isDown)
 				direction = Constant.DIRECTION.NW;
-			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
+			else if (this.moveKeys.down.isDown && !this.moveKeys.up.isDown)
 				direction = Constant.DIRECTION.SW;
 			else direction = Constant.DIRECTION.W;
-		} else if (this.cursors.right.isDown && !this.cursors.left.isDown) {
-			if (this.cursors.up.isDown && !this.cursors.down.isDown)
+		} else if (this.moveKeys.right.isDown && !this.moveKeys.left.isDown) {
+			if (this.moveKeys.up.isDown && !this.moveKeys.down.isDown)
 				direction = Constant.DIRECTION.NE;
-			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
+			else if (this.moveKeys.down.isDown && !this.moveKeys.up.isDown)
 				direction = Constant.DIRECTION.SE;
 			else direction = Constant.DIRECTION.E;
 		} else {
-			if (this.cursors.up.isDown && !this.cursors.down.isDown)
+			if (this.moveKeys.up.isDown && !this.moveKeys.down.isDown)
 				direction = Constant.DIRECTION.N;
-			else if (this.cursors.down.isDown && !this.cursors.up.isDown)
+			else if (this.moveKeys.down.isDown && !this.moveKeys.up.isDown)
 				direction = Constant.DIRECTION.S;
 		}
 		return direction;
@@ -350,27 +359,23 @@ export default class MainScene extends Phaser.Scene {
 			new Point(gamePos.x, gamePos.y)
 		);
 
-		if (this.cursors.buildWall.isDown) {
+		if (this.actionKeys.buildWall.isDown) {
 			this.socket.emit(
 				Constant.MESSAGE.BUILD_STRUCTURE,
 				coord,
 				Constant.BUILDING.WALL
 			);
-		} else if (this.cursors.buildTurret.isDown) {
+		} else if (this.actionKeys.buildTurret.isDown) {
 			this.socket.emit(
 				Constant.MESSAGE.BUILD_STRUCTURE,
 				coord,
 				Constant.BUILDING.TURRET
 			);
-		} else if (this.cursors.demolishStructure.isDown) {
+		} else if (this.actionKeys.demolishStructure.isDown) {
 			this.socket.emit(Constant.MESSAGE.DEMOLISH_STRUCTURE, coord);
-		} else if (this.cursors.debugInfo.isDown) {
-			if (this.debugMode) {
-				this.events.emit('clearDebugInfo');
-				this.debugMode = false;
-			} else {
-				this.debugMode = true;
-			}
+		} else if (this.actionKeys.debugInfo.isDown) {
+			if (this.debugMode) this.events.emit('clearDebugInfo');
+			this.debugMode = !this.debugMode;
 		}
 	}
 
@@ -724,6 +729,7 @@ export default class MainScene extends Phaser.Scene {
 
 	private endGame(): void {
 		this.emptyAllObjects();
+		this.deregisterInputListeners();
 		this.cameras.resetAll();
 		this.events.emit('stopHUD');
 		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
