@@ -5,6 +5,8 @@ import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 
+type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
+
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
@@ -15,7 +17,7 @@ export default class MainScene extends Phaser.Scene {
 	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private cursors /*:Phaser.Types.Input.Keyboard.CursorKeys*/;
+	private cursors: KeySet;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
 	private deadObjects: Set<unknown>;
@@ -94,7 +96,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializeKeys(): void {
-		this.cursors = this.input.keyboard.addKeys({
+		this.cursors = <KeySet>this.input.keyboard.addKeys({
 			up: Phaser.Input.Keyboard.KeyCodes.W,
 			down: Phaser.Input.Keyboard.KeyCodes.S,
 			left: Phaser.Input.Keyboard.KeyCodes.A,
