@@ -151,7 +151,12 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private deregisterInputListeners(): void {
-
+		for (const key in this.moveKeys) {
+			this.moveKeys[key].removeAllListeners();
+		}
+		for (const key in this.actionKeys) {
+			this.actionKeys[key].removeAllListeners();
+		}
 	}
 
 	private updateDirection() {
