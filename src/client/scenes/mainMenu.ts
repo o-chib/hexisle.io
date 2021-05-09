@@ -61,22 +61,12 @@ export default class MainMenu extends Phaser.Scene {
 			Phaser.Input.Keyboard.KeyCodes.ENTER
 		);
 
-		// Buttons in a Container
-		const playButton = this.add
-			.image(0, renderHeight * 0.55, 'lobby_play')
-			.setDepth(1)
-			.setScale(0.75);
-		menuContainer.add(playButton);
-		const optionButton = this.add
-			.image(0, renderHeight * 0.65, 'lobby_options')
-			.setDepth(1)
-			.setScale(0.75);
-		menuContainer.add(optionButton);
-		const helpButton = this.add
-			.image(0, renderHeight * 0.75, 'lobby_help')
-			.setDepth(1)
-			.setScale(0.75);
-		menuContainer.add(helpButton);
+		// Menu Buttons from form
+		const playButton = document.getElementById('playButton') as HTMLLinkElement;
+		const optionButton = document.getElementById('optionButton') as HTMLLinkElement;
+		const helpButton = document.getElementById('helpButton') as HTMLLinkElement;
+
+ 		// Help Panel
 		const helpMenu = this.add
 			.image(renderWidth / 2, renderHeight / 2, 'help_menu')
 			.setDepth(2)
@@ -87,33 +77,21 @@ export default class MainMenu extends Phaser.Scene {
 			this.joinGame();
 		});
 
-		playButton.setInteractive();
-		playButton.on(
-			'pointerdown',
-			() => {
-				this.joinGame();
-			},
-			this
-		);
+		playButton.addEventListener('click', () => this.joinGame());
+		playButton.addEventListener('mouseover', () => this.setButtonTextureOnMouseIn(playButton));
+		playButton.addEventListener('mouseout', () => this.setButtonTextureOnMouseOut(playButton));
 
-		optionButton.setInteractive();
-		optionButton.on(
-			'pointerdown',
-			() => {
-				this.loadOptions();
-			},
-			this
-		);
+		optionButton.addEventListener('click', () => this.loadOptions());
+		optionButton.addEventListener('mouseover', () => this.setButtonTextureOnMouseIn(optionButton));
+		optionButton.addEventListener('mouseout', () => this.setButtonTextureOnMouseOut(optionButton));
 
-		helpButton.setInteractive();
-		helpButton.on(
-			'pointerdown',
-			() => {
-				menuContainer.setVisible(false);
-				helpMenu.setVisible(true);
-			},
-			this
-		);
+		helpButton.addEventListener('click', () => {
+			menuContainer.setVisible(false);
+			helpMenu.setVisible(true);
+		});
+		helpButton.addEventListener('mouseover', () => this.setButtonTextureOnMouseIn(helpButton));
+		helpButton.addEventListener('mouseout', () => this.setButtonTextureOnMouseOut(helpButton));
+
 
 		helpMenu.setInteractive();
 		helpMenu.on(
@@ -124,6 +102,23 @@ export default class MainMenu extends Phaser.Scene {
 			},
 			this
 		);
+
+	}
+	private setButtonTextureOnMouseIn(button: HTMLElement){
+		// Hover the button
+		var unpressed = button.getElementsByClassName('button-unpressed')[0];
+		unpressed.setAttribute("style", "display:none");
+
+		var pressed = button.getElementsByClassName('button-pressed')[0];
+		pressed.setAttribute("style", "display:block");
+	}
+	private setButtonTextureOnMouseOut(button: HTMLElement){
+		// Un-hover the button
+		var unpressed = button.getElementsByClassName('button-unpressed')[0];
+		unpressed.setAttribute("style", "display:block");
+
+		var pressed = button.getElementsByClassName('button-pressed')[0];
+		pressed.setAttribute("style", "display:none");
 	}
 
 	private askForUpdatedGameList() {

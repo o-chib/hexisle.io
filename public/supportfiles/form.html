@@ -9,7 +9,6 @@
                 margin: 0px;
                 box-sizing: border-box;
             }
-
             #input-form {
                 padding: 20px 5px ;
                 margin:auto;
@@ -20,9 +19,11 @@
                 box-shadow: 1px 1px 5px #000;
 
                 display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                align-content: flex-start;
+                flex-direction: column;
+            }
+            #logo{
+                height: 200px;
+                width:100px;
             }
             #input-form input, select{
                 font-family: 'Open Sans Condensed', sans-serif;
@@ -48,16 +49,16 @@
                 display: block;
                 width: 250px;
                 height: 2px;
-                margin: 10px 8px 20px;
+                margin: 10px auto 20px auto;
                 background: rgba(200,200,200,0.5);
             }
             button{
                 margin: 15px auto;
-                padding: 20px 8px;
+                padding: 0px;
                 display: block;
-                width: 250px;
+                width:250px;
                 border-radius: 5px;
-                background: rgba(20,140,150,1);
+                background: rgba(20,140,150,0);
                 color: rgba(255,255,255,.8);
                 border: none;
                 border-radius: 3px;
@@ -68,12 +69,14 @@
                 font-weight: bold;
             }
             button:hover{
-                background: rgba(10,110,120,1);
+                background: rgba(10,110,120,0);
                 transition: all 0.2s ease-in-out;
             }
-            #logo{
-                height: 200px;
-                width:100px;
+            img.button-pressed{
+                display: none;
+            }
+            img.button-unpressed{
+                display: block;
             }
         </style>
     </head>
@@ -85,9 +88,18 @@
                 <!-- Filled with Phaser -->
             </select>
             <div id="divider"></div>
-            <button id="playButton">Play</button>
-            <button id="optionsButton">Options</button>
-            <button id="helpButton">Help</button>
+            <button id="playButton">
+                <img class="button-unpressed" src="../assets/lobby_play_button_unpressed.png">
+                <img class="button-pressed" src="../assets/lobby_play_button_pressed.png"></img>
+            </button>
+            <button id="optionButton">
+                <img class="button-unpressed" src="../assets/lobby_options_button_unpressed.png"></img>
+                <img class="button-pressed" src="../assets/lobby_options_button_pressed.png"></img>
+            </button>
+            <button id="helpButton">
+                <img class="button-unpressed" src="../assets/lobby_help_button_unpressed.png"></img>
+                <img class="button-pressed" src="../assets/lobby_help_button_pressed.png"></img>
+            </button>
         </div>
 
     </body>
