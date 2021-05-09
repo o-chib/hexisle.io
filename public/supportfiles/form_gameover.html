@@ -12,42 +12,43 @@
             #input-form {
                 padding: 20px 5px ;
                 margin:auto;
-                width: 300px;
+                width: 325px;
                 height: auto;
                 border-radius: 5px;
                 background: rgba(50,50,50,.8);
                 box-shadow: 1px 1px 5px #000;
 
                 display: flex;
+                align-content: center;
                 flex-direction: column;
+                top:100;
+            }
+            h1{
+                font-family: 'Open Sans Condensed', sans-serif;
+                font-size: 36px;
+                font-weight: bold;
+                align-self: center;
+                color:rgba(255, 255, 255, 0.8);
+                margin: auto;
+                padding-top: 40px;
+            }
+            #message{
+                font-family: 'Open Sans Condensed', sans-serif;
+                font-size: 24px;
+                color:rgba(255, 255, 255, 0.8);
+                align-self: center;
+                height: 200px;
+                width:275px;
+                margin:20px;
+                padding: 20px 10px;
             }
             #logo{
                 height: 200px;
                 width:100px;
             }
-            #input-form input, select{
-                font-family: 'Open Sans Condensed', sans-serif;
-                text-decoration: none;
-                width: 250px;
-                display: block;
-                margin: 9px auto;
-                padding: 10px;
-                font-size: 20px;
-                color: rgba(3,3,3,.8);
-                background: rgba(255,255,255,.8);
-                border: none;
-                border-radius: 8px;
-                transition: all 0.2s ease-in-out;
-            }
-            #input-form input:focus, select:focus{
-              outline: none;
-            }
-            #input-form option {
-                font-size: 14px;
-            }
             #divider{
                 display: block;
-                width: 250px;
+                width: 275px;
                 height: 2px;
                 margin: 10px auto 20px auto;
                 background: rgba(200,200,200,0.5);
@@ -56,8 +57,7 @@
                 margin: 15px auto;
                 padding: 0px;
                 display: block;
-                width:250px;
-                border-radius: 5px;
+                width:275px;
                 background: rgba(20,140,150,0);
                 color: rgba(255,255,255,.8);
                 border: none;
@@ -83,22 +83,12 @@
     <body>
         <div id="logo"></div>
         <div id="input-form">
-            <input type="text" name="name" placeholder="Enter Username.." value="" />
-            <select id="dropdownList" name="dropdownList">
-                <!-- Filled with Phaser -->
-            </select>
+            <h1>Game Over!</h1>
+            <div id="message"></div>
             <div id="divider"></div>
-            <button id="playButton">
-                <img class="button-unpressed" src="../assets/lobby_play_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_play_button_pressed.png"></img>
-            </button>
-            <button id="optionButton">
-                <img class="button-unpressed" src="../assets/lobby_options_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_options_button_pressed.png"></img>
-            </button>
-            <button id="helpButton">
-                <img class="button-unpressed" src="../assets/lobby_help_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_help_button_pressed.png"></img>
+            <button id="returnButton">
+                <img class="button-unpressed" src="../assets/return_button_unpressed.png"></img>
+                <img class="button-pressed" src="../assets/return_button_pressed.png"></img>
             </button>
         </div>
 

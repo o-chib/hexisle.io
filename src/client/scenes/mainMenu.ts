@@ -1,5 +1,6 @@
 import mainScene from './mainScene';
 import Utilities from './Utilities';
+import FormUtilities from './FormUtilities';
 import { Constant } from './../../shared/constants';
 
 export default class MainMenu extends Phaser.Scene {
@@ -78,19 +79,19 @@ export default class MainMenu extends Phaser.Scene {
 		});
 
 		playButton.addEventListener('click', () => this.joinGame());
-		playButton.addEventListener('mouseover', () => this.setButtonTextureOnMouseIn(playButton));
-		playButton.addEventListener('mouseout', () => this.setButtonTextureOnMouseOut(playButton));
+		playButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(playButton));
+		playButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(playButton));
 
 		optionButton.addEventListener('click', () => this.loadOptions());
-		optionButton.addEventListener('mouseover', () => this.setButtonTextureOnMouseIn(optionButton));
-		optionButton.addEventListener('mouseout', () => this.setButtonTextureOnMouseOut(optionButton));
+		optionButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(optionButton));
+		optionButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(optionButton));
 
 		helpButton.addEventListener('click', () => {
 			menuContainer.setVisible(false);
 			helpMenu.setVisible(true);
 		});
-		helpButton.addEventListener('mouseover', () => this.setButtonTextureOnMouseIn(helpButton));
-		helpButton.addEventListener('mouseout', () => this.setButtonTextureOnMouseOut(helpButton));
+		helpButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(helpButton));
+		helpButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(helpButton));
 
 
 		helpMenu.setInteractive();
@@ -102,24 +103,9 @@ export default class MainMenu extends Phaser.Scene {
 			},
 			this
 		);
-
 	}
-	private setButtonTextureOnMouseIn(button: HTMLElement){
-		// Hover the button
-		var unpressed = button.getElementsByClassName('button-unpressed')[0];
-		unpressed.setAttribute("style", "display:none");
 
-		var pressed = button.getElementsByClassName('button-pressed')[0];
-		pressed.setAttribute("style", "display:block");
-	}
-	private setButtonTextureOnMouseOut(button: HTMLElement){
-		// Un-hover the button
-		var unpressed = button.getElementsByClassName('button-unpressed')[0];
-		unpressed.setAttribute("style", "display:block");
 
-		var pressed = button.getElementsByClassName('button-pressed')[0];
-		pressed.setAttribute("style", "display:none");
-	}
 
 	private askForUpdatedGameList() {
 		this.socket.emit(Constant.MESSAGE.ASK_GAME_LIST);
