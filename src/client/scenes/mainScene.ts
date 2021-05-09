@@ -148,6 +148,13 @@ export default class MainScene extends Phaser.Scene {
 				this.updateMovementDirection.bind(this)
 			);
 		}
+
+		for (const key in this.actionKeys) {
+			this.actionKeys[key].addListener(
+				'down',
+				this.actionButtonPress.bind(this)
+			);
+		}
 	}
 
 	private deregisterInputListeners(): void {
@@ -344,7 +351,9 @@ export default class MainScene extends Phaser.Scene {
 		const direction = this.calculateDirection();
 
 		this.socket.emit(Constant.MESSAGE.MOVEMENT, direction);
+	}
 
+	private actionButtonPress(): void {
 		const gamePos = this.cameras.main.getWorldPoint(
 			this.input.mousePointer.x,
 			this.input.mousePointer.y
