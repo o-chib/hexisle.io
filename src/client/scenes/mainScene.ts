@@ -22,7 +22,6 @@ export default class MainScene extends Phaser.Scene {
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private hexTiles: HexTiles;
-	private initialized: boolean;
 	private debugMode: boolean;
 
 	constructor() {
