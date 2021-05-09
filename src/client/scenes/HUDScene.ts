@@ -10,7 +10,7 @@ xPos/yPos:%1/%2
 hexQ/hexR:%3/%4`;
 
 export default class HUDScene extends Phaser.Scene {
-	public static Name = 'HuDScene';
+	public static Name = 'HUDScene';
 	private mainSceneObj: any;
 	private socket: SocketIOClient.Socket;
 
