@@ -58,7 +58,6 @@ export default class MainScene extends Phaser.Scene {
 			e.preventDefault();
 		};
 		this.registerListeners();
-		this.registerIntervals();
 
 		this.socket.emit(Constant.MESSAGE.START_GAME);
 		this.events.emit('startHUD');
@@ -156,12 +155,6 @@ export default class MainScene extends Phaser.Scene {
 
 	private deregisterInputListeners(): void {
 
-	}
-
-	private registerIntervals(): void {
-		//setInterval(() => {
-		//	this.updateDirection();
-		//}, 1000 / 60);
 	}
 
 	private updateDirection() {
