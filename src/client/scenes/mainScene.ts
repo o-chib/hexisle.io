@@ -65,27 +65,24 @@ export default class MainScene extends Phaser.Scene {
 
 	update(): void {
 		this.updateDirection();
-		this.updateDebugInfo();
-		//this.updateMovementDirection();
+		if (this.debugMode) this.updateDebugInfo();
 	}
 
 	private updateDebugInfo(): void {
-		if (this.debugMode) {
-			const gamePos = this.cameras.main.getWorldPoint(
-				this.input.mousePointer.x,
-				this.input.mousePointer.y
-			);
-			const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-				new Point(gamePos.x, gamePos.y)
-			);
-			this.events.emit(
-				'updateDebugInfo',
-				gamePos.x,
-				gamePos.y,
-				coord.q,
-				coord.r
-			);
-		}
+		const gamePos = this.cameras.main.getWorldPoint(
+			this.input.mousePointer.x,
+			this.input.mousePointer.y
+		);
+		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+			new Point(gamePos.x, gamePos.y)
+		);
+		this.events.emit(
+			'updateDebugInfo',
+			gamePos.x,
+			gamePos.y,
+			coord.q,
+			coord.r
+		);
 	}
 
 	private generatePlayerSprite(): void {
