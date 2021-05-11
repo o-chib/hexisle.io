@@ -3,7 +3,7 @@ import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
 export default class Turret extends DestructibleObj {
-	private static readonly RELOAD_TIME = 1 * 1000;
+	public static readonly RELOAD_TIME = 1 * 1000;
 
 	public direction: number;
 	public tile: Tile;
