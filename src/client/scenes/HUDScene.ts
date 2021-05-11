@@ -1,15 +1,16 @@
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
+import Utilities from './Utilities';
 
 // Text Structure
 const info_format = `Health:	%1
-Score:	%2
-Resources:	%3`;
+Resources:	%2`;
 const timer_format = `%1:%2`;
 const debug_format = `cursor:
 xPos/yPos:%1/%2
 hexQ/hexR:%3/%4`;
 
 export default class HUDScene extends Phaser.Scene {
+	public static Name = 'HUDScene';
 	private mainSceneObj: any;
 
 	// Text/Scoring
@@ -18,12 +19,18 @@ export default class HUDScene extends Phaser.Scene {
 	private gameTimeText?: Phaser.GameObjects.Text;
 	// Debug Info
 	private debugInfoText?: Phaser.GameObjects.Text;
+	// Quit Button
+	private quitButton?: Phaser.GameObjects.Image;
 
 	constructor() {
-		super({ key: 'HUDScene', active: true });
+		super('HUDScene');
 	}
 
 	create(): void {
+		Utilities.LogSceneMethodEntry('HUDScene', 'create');
+		//this.scene.setVisible(false);
+
+		// HUD: Left
 		this.infoText = this.add.text(0, 0, '', {
 			font: '48px Arial',
 			stroke: '#000000',
@@ -34,6 +41,7 @@ export default class HUDScene extends Phaser.Scene {
 			top: 'top+10',
 		});
 
+		// HUD: Center
 		this.gameTimeText = this.add.text(0, 0, '', {
 			font: '48px Arial',
 			align: 'center',
@@ -75,6 +83,30 @@ export default class HUDScene extends Phaser.Scene {
 			this.clearDebugInfo,
 			this
 		);
+
+		// HUD: Right
+		this.quitButton = this.add
+			.image(0, 0, 'quitButton')
+			.setDepth(99)
+			.setDisplayOrigin(0.5, 0.5)
+			.setScale(0.35);
+
+		new Anchor(this.quitButton, {
+			right: 'right-10',
+			top: 'top+10',
+		});
+
+		// Set quitButton Interaction
+		this.quitButton.setInteractive();
+		this.quitButton.on('pointerdown', this.quitCurrentGame.bind(this));
+
+		//  Grab a reference to the Game Scene
+		this.mainSceneObj = this.scene.get('MainScene');
+
+		//  Listen for events from it
+		this.mainSceneObj.events.on('startHUD', this.startHUD, this);
+		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
+		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);
 	}
 
 	private updateText(currentPlayer: any, time: number): void {
@@ -87,7 +119,6 @@ export default class HUDScene extends Phaser.Scene {
 
 		const playerText = Phaser.Utils.String.Format(info_format, [
 			playerHealth,
-			currentPlayer.score,
 			currentPlayer.resources,
 		]);
 		this.infoText?.setText(playerText);
@@ -122,5 +153,20 @@ export default class HUDScene extends Phaser.Scene {
 		const timeStr = time.toString();
 		if (time > 9) return timeStr;
 		return '0' + timeStr;
+	}
+
+	private startHUD(): void {
+		this.infoText?.setText('');
+		this.gameTimeText?.setText('');
+		this.scene.setVisible(true);
+	}
+
+	private stopHUD(): void {
+		this.scene.setVisible(false);
+		this.scene.pause();
+	}
+
+	private quitCurrentGame(): void {
+		this.events.emit('leaveGame');
 	}
 }

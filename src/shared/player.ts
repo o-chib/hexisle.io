@@ -4,37 +4,34 @@ import Collision from './../server/collision';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
+	private PLAYER_SPEED = 600;
+
 	public id: string;
 	public xPos: number;
 	public yPos: number;
 	public teamNumber: number;
 	public socket: SocketIOClient.Socket;
+	public name: string;
+	public hp: number;
+	public resources: number;
 	private xVel: number;
 	private yVel: number;
 	private direction: number;
-	private speed: number;
 	private lastUpdateTime: number;
-
-	// Score tracking & player stats
-	public hp: number;
-	public score: number;
-	public resources: number;
 
 	constructor(
 		socket: SocketIOClient.Socket,
-		xPos: number,
-		yPos: number,
-		teamNumber: number
+		teamNumber: number,
+		name: string = ''
 	) {
-		super(socket.id, xPos, yPos, teamNumber, Constant.HP.PLAYER);
+		super(socket.id, 0, 0, teamNumber, Constant.HP.PLAYER);
 		this.socket = socket;
+		this.name = name;
+		this.resources = 0;
 		this.xVel = 0;
 		this.yVel = 0;
 		this.direction = 0;
-		this.speed = Constant.OBJS.PLAYER.SPEED;
 		this.lastUpdateTime = Date.now();
-		this.score = 0;
-		this.resources = 0;
 	}
 
 	public updateResource(resourceValue: number) {
@@ -50,8 +47,8 @@ export default class Player extends DestructibleObj {
 			this.xVel = 0;
 			this.yVel = 0;
 		} else {
-			this.xVel = this.speed * Math.cos(direction);
-			this.yVel = this.speed * Math.sin(direction);
+			this.xVel = this.PLAYER_SPEED * Math.cos(direction);
+			this.yVel = this.PLAYER_SPEED * Math.sin(direction);
 		}
 	}
 
@@ -112,11 +109,11 @@ export default class Player extends DestructibleObj {
 			yPos: this.yPos,
 			teamNumber: this.teamNumber,
 			hp: this.hp,
+			name: this.name,
+			resources: this.resources,
 			xVel: this.xVel,
 			yVel: this.yVel,
 			direction: this.direction,
-			score: this.score,
-			resources: this.resources,
 		};
 	}
 }
