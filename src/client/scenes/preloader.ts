@@ -73,6 +73,10 @@ export default class Preloader extends Phaser.Scene {
 				frameHeight: 134,
 			}
 		);
+		this.load.spritesheet('campfire', '../assets/campfire.png', {
+			frameWidth: 246,
+			frameHeight: 255,
+		});
 
 		// Lobby
 		this.load.image('lobby_bg', '../assets/lobby_bg.png');
