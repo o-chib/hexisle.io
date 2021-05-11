@@ -4,7 +4,8 @@ import Collision from './../server/collision';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
-	private PLAYER_SPEED = 600;
+	private static readonly SPEED = 600;
+	private static readonly RELOAD_TIME = 0.5 * 1000;
 
 	public id: string;
 	public xPos: number;
@@ -47,8 +48,8 @@ export default class Player extends DestructibleObj {
 			this.xVel = 0;
 			this.yVel = 0;
 		} else {
-			this.xVel = this.PLAYER_SPEED * Math.cos(direction);
-			this.yVel = this.PLAYER_SPEED * Math.sin(direction);
+			this.xVel = Player.SPEED * Math.cos(direction);
+			this.yVel = Player.SPEED * Math.sin(direction);
 		}
 	}
 

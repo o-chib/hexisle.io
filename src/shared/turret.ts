@@ -3,6 +3,8 @@ import { Constant } from './constants';
 import { Tile } from './hexTiles';
 
 export default class Turret extends DestructibleObj {
+	private static readonly RELOAD_TIME = 1 * 1000;
+
 	public direction: number;
 	public tile: Tile;
 	public reloadTimer: number;
@@ -53,7 +55,7 @@ export default class Turret extends DestructibleObj {
 	}
 
 	public resetReloadTimer(): void {
-		this.reloadTimer = Constant.RELOAD_TIMING.TURRET;
+		this.reloadTimer = Turret.RELOAD_TIME;
 	}
 
 	public reload(timePassed: number): void {

@@ -31,11 +31,6 @@ export const Constant = Object.freeze({
 		TIME_LIMIT: 5 * (60 * 1000),
 	},
 
-	RELOAD_TIMING: {
-		PLAYER: 0.5 * 1000,
-		TURRET: 1 * 1000,
-	},
-
 	RADIUS: {
 		HEX: 75,
 		PLAYER: 50,
@@ -85,18 +80,6 @@ export const Constant = Object.freeze({
 			BLUE: 1,
 			GREEN: 2,
 			WHITE: 5,
-		},
-	},
-
-	OBJS: {
-		BULLET: {
-			SPEED: 1,
-			LIFELENGTH: 1 * 1000,
-			DAMAGE: 10,
-		},
-
-		PLAYER: {
-			SPEED: 600,
 		},
 	},
 
