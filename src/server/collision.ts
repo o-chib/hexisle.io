@@ -7,6 +7,7 @@ import Base from '../shared/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';
+import { MapResources, Resource } from './mapResources';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
@@ -50,7 +51,11 @@ export default class CollisionDetection {
 		campfire.updateCaptureState(playerCount);
 	}
 
-	playerBulletCollision(player: Player, bullets: Set<Bullet>): void {
+	playerBulletResourceCollision(
+		player: Player,
+		bullets: Set<Bullet>,
+		mapResources: MapResources
+	): void {
 		if (player.health <= 0) {
 			return;
 		}
@@ -86,6 +91,27 @@ export default class CollisionDetection {
 						result.payload.xPos + Constant.RADIUS.COLLISION.BULLET,
 						result.payload.yPos + Constant.RADIUS.COLLISION.BULLET,
 						result.payload.yPos - Constant.RADIUS.COLLISION.BULLET,
+						result.payload
+					)
+				);
+			} else if (
+				result.payload instanceof Resource &&
+				result.payload.dropAmount > 0 &&
+				this.doCirclesCollide(
+					player,
+					Constant.RADIUS.PLAYER,
+					result.payload,
+					Constant.RADIUS.RESOURCE
+				)
+			) {
+				player.updateResource(result.payload.dropAmount);
+				mapResources.deleteResource(result.payload);
+				this.quadtree.deleteFromQuadtree(
+					new CollisionObject(
+						result.payload.xPos - Constant.RADIUS.RESOURCE,
+						result.payload.xPos + Constant.RADIUS.RESOURCE,
+						result.payload.yPos + Constant.RADIUS.RESOURCE,
+						result.payload.yPos - Constant.RADIUS.RESOURCE,
 						result.payload
 					)
 				);
@@ -132,10 +158,6 @@ export default class CollisionDetection {
 				);
 			}
 		});
-	}
-
-	zombieBulletPlayerCollision(): void {
-		// future implementation
 	}
 
 	doesObjCollideWithStructure(
