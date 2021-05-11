@@ -37,9 +37,6 @@ export default class Game {
 	gameTimeRemaining: number;
 
 	constructor(gameOverCallback: () => any) {
-		this.gameOverCallback = gameOverCallback;
-
-		this.endGameTimestamp = Date.now() + Constant.GAME_TIMING.TIME_LIMIT;
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Map();
@@ -69,6 +66,7 @@ export default class Game {
 
 		this.gameOverCallback = gameOverCallback;
 		this.endGameTimestamp = Date.now() + Constant.GAME_TIMING.TIME_LIMIT;
+		this.gameTimeRemaining = Constant.GAME_TIMING.TIME_LIMIT;
 
 		this.previousUpdateTimestamp = Date.now();
 		this.gameInterval = setInterval(

@@ -7,13 +7,8 @@ export default class Player extends DestructibleObj {
 	private static readonly SPEED = 600;
 	private static readonly RELOAD_TIME = 0.5 * 1000;
 
-	public id: string;
-	public xPos: number;
-	public yPos: number;
-	public teamNumber: number;
 	public socket: SocketIOClient.Socket;
 	public name: string;
-	public hp: number;
 	public resources: number;
 	private xVel: number;
 	private yVel: number;

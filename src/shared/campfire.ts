@@ -2,10 +2,6 @@ import { OffsetPoint } from './hexTiles';
 import IndestructibleObj from './indestructibleObj';
 
 export default class Campfire extends IndestructibleObj {
-	public id: string;
-	public xPos: number;
-	public yPos: number;
-	public teamNumber: number;
 	public territoryPoints: OffsetPoint[];
 	public captureProgress: number; // Variable Progress Bar (0-100)
 	public isCaptured: boolean;
@@ -16,6 +12,7 @@ export default class Campfire extends IndestructibleObj {
 		this.isCaptured = false;
 		this.captureProgress = 0;
 		this.capturingTeam = -1;
+		this.territoryPoints = [];
 	}
 
 	public setTerritoryPoints(territoryPoints: OffsetPoint[]) {

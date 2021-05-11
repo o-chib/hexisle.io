@@ -1,4 +1,3 @@
-import { Constant } from './constants';
 import IndestructibleObj from './indestructibleObj';
 
 export default class Bullet extends IndestructibleObj {
@@ -6,10 +5,6 @@ export default class Bullet extends IndestructibleObj {
 	private static readonly SPEED = 1;
 	private static readonly LIFELENGTH = 1 * 1000;
 
-	public id: string;
-	public xPos: number;
-	public yPos: number;
-	public teamNumber: number;
 	public speed: number;
 	public xVel: number;
 	public yVel: number;
