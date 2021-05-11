@@ -11,9 +11,8 @@ xPos/yPos:%1/%2
 hexQ/hexR:%3/%4`;
 
 export default class HUDScene extends Phaser.Scene {
-	public static Name = 'HuDScene';
+	public static Name = 'HUDScene';
 	private mainSceneObj: any;
-	private socket: SocketIOClient.Socket;
 
 	// Text/Scoring
 	private infoText?: Phaser.GameObjects.Text;
@@ -263,8 +262,7 @@ export default class HUDScene extends Phaser.Scene {
 		return '0' + timeStr;
 	}
 
-	private startHUD(socket): void {
-		this.socket = socket;
+	private startHUD(): void {
 		this.infoText?.setText('');
 		this.gameTimeText?.setText('');
 		this.scene.setVisible(true);
