@@ -14,6 +14,7 @@ import { Constant } from '../shared/constants';
 import Territory from './../shared/territory';
 import { MapResources, Resource } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
+import * as SocketIO from 'socket.io';
 
 export default class Game {
 	hexTileMap: HexTiles;
@@ -35,7 +36,10 @@ export default class Game {
 	endGameTimestamp: number;
 	gameTimeRemaining: number;
 
-	constructor(gameOverCallback) {
+	constructor(gameOverCallback: () => any) {
+		this.gameOverCallback = gameOverCallback;
+
+		this.endGameTimestamp = Date.now() + Constant.TIMING.GAME_TIME_LIMIT;
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Map();
@@ -77,8 +81,8 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (timePassed > 18)
-			console.log('WARNING: Update took ', timePassed, 'ms');
+		if (timePassed > 24)
+			console.log('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -277,7 +281,7 @@ export default class Game {
 			);
 		}
 		this.stopAllIntervals();
-		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
+		this.gameOverCallback();
 	}
 
 	createGameEndRecap() {
@@ -520,15 +524,15 @@ export default class Game {
 		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
 	}
 
-	generateNewPlayer(socket) {
+	generateNewPlayer(socket, name: string) {
 		const team: number = this.teams.addNewPlayer(socket.id);
-		const newPlayer = new Player(socket, 0, 0, team);
+		const newPlayer = new Player(socket, team, name);
 		this.players.set(socket.id, newPlayer);
 		return newPlayer;
 	}
 
-	addPlayer(socket: SocketIOClient.Socket) {
-		const newPlayer = this.generateNewPlayer(socket);
+	addPlayer(socket: SocketIO.Socket, name = '') {
+		const newPlayer = this.generateNewPlayer(socket, name);
 
 		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
 		newPlayer.xPos = respawnPoint.xPos;
@@ -542,7 +546,7 @@ export default class Game {
 		this.initiateGame(newPlayer, socket);
 	}
 
-	removePlayer(socket: SocketIOClient.Socket) {
+	removePlayer(socket: SocketIO.Socket) {
 		if (!this.players.has(socket.id)) return;
 
 		const player: Player = this.getPlayer(socket.id);
@@ -570,7 +574,7 @@ export default class Game {
 		return this.hexTileMap.offsetToCartesian(coords[index]);
 	}
 
-	movePlayer(socket: SocketIOClient.Socket, direction: number) {
+	movePlayer(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 
@@ -579,7 +583,7 @@ export default class Game {
 		this.collision.updateCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 	}
 
-	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
+	rotatePlayer(socket: SocketIO.Socket, direction: number): void {
 		if (!this.players.has(socket.id)) return;
 		const player = this.getPlayer(socket.id);
 
@@ -630,7 +634,7 @@ export default class Game {
 		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
 	}
 
-	playerShootBullet(socket: SocketIOClient.Socket, direction: number) {
+	playerShootBullet(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 		this.shootBullet(player, direction);
@@ -655,7 +659,7 @@ export default class Game {
 	}
 
 	buildStructure(
-		socket: SocketIOClient.Socket,
+		socket: SocketIO.Socket,
 		coord: OffsetPoint,
 		building: string
 	): void {
@@ -716,7 +720,7 @@ export default class Game {
 		return true;
 	}
 
-	demolishStructure(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+	demolishStructure(socket: SocketIO.Socket, coord: OffsetPoint): void {
 		if (
 			!this.players.has(socket.id) ||
 			!this.hexTileMap.checkIfValidHex(coord)
