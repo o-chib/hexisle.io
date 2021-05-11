@@ -12,33 +12,33 @@ export default class Teams {
 		this.initBases(baseCoords);
 	}
 
-	getTeam(teamNum: number): Team {
+	public getTeam(teamNum: number): Team {
 		return this.teams.get(teamNum)!;
 	}
 
-	getTeamCampNum(teamNum: number): number {
+	public getTeamCampNum(teamNum: number): number {
 		return this.teams.get(teamNum)!.numCapturedCamps;
 	}
 
-	getNumTeams(): number {
+	public getNumTeams(): number {
 		return this.numTeams;
 	}
 
-	getTeamBaseCoord(teamNum: number): OffsetPoint {
+	public getTeamBaseCoord(teamNum: number): OffsetPoint {
 		return this.teams.get(teamNum)!.baseCoord;
 	}
 
-	getRespawnCoords(teamNum: number): OffsetPoint[] {
+	public getRespawnCoords(teamNum: number): OffsetPoint[] {
 		return this.teams.get(teamNum)!.respawnCoords;
 	}
 
-	addNewPlayer(playerID: string): number {
+	public addNewPlayer(playerID: string): number {
 		const teamNumber: number = this.getNewPlayerTeamNumber();
 		this.addPlayerToTeam(teamNumber, playerID);
 		return teamNumber;
 	}
 
-	removePlayer(playerID: string, teamNumber: number): void {
+	public removePlayer(playerID: string, teamNumber: number): void {
 		this.removePlayerFromTeam(teamNumber, playerID);
 	}
 
@@ -89,17 +89,17 @@ class Team {
 		this.playerCount = 0;
 	}
 
-	addPlayer(playerID: string): void {
+	public addPlayer(playerID: string): void {
 		this.playerIDs.push(playerID);
 		this.playerCount += 1;
 	}
 
-	removePlayer(playerID: string): void {
+	public removePlayer(playerID: string): void {
 		this.playerIDs = this.playerIDs.filter((id) => id !== playerID);
 		this.playerCount -= 1;
 	}
 
-	getCampNum(): number {
+	public getCampNum(): number {
 		return this.numCapturedCamps;
 	}
 }
