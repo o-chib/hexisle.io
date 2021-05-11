@@ -15,11 +15,7 @@ export default class Player extends DestructibleObj {
 	private direction: number;
 	private lastUpdateTime: number;
 
-	constructor(
-		socket: SocketIOClient.Socket,
-		teamNumber: number,
-		name: string = ''
-	) {
+	constructor(socket: SocketIOClient.Socket, teamNumber: number, name = '') {
 		super(socket.id, 0, 0, teamNumber, Constant.HP.PLAYER);
 		this.socket = socket;
 		this.name = name;
