@@ -39,6 +39,10 @@ export default class Preloader extends Phaser.Scene {
 		});
 
 		// Walls
+		this.load.spritesheet('wall_neutral', '../assets/wall_neutral.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
 		this.load.spritesheet('wall_red', '../assets/wall_red.png', {
 			frameWidth: 154,
 			frameHeight: 134,
@@ -49,6 +53,14 @@ export default class Preloader extends Phaser.Scene {
 		});
 
 		// Turrets
+		this.load.spritesheet(
+			'turret_base_neutral',
+			'../assets/turret_base_neutral.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
 		this.load.spritesheet(
 			'turret_base_red',
 			'../assets/turret_base_red.png',
