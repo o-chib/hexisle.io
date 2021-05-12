@@ -1,0 +1,13 @@
+/* Resets any brower-defined default values, so the page ends up looking the same in all browsers */
+
+* {	
+    vertical-align: baseline;
+    font-weight: inherit;
+    font-family: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    border: 0 none;
+    outline: 0;
+    padding: 0;
+    margin: 0;
+}
