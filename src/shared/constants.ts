@@ -50,7 +50,7 @@ export const Constant = Object.freeze({
 			WALL: 75 * 0.75,
 			TURRET: 75 * 0.75,
 			BASE: 200 * 0.75,
-			CAMP: 75,
+			CAMP: 75 * 1.5,
 		},
 
 		RANGE: {
