@@ -11,6 +11,6 @@ describe('Bullet', () => {
 
 		bullet.updatePosition(100);
 
-		expect(bullet.yPos).toEqual(y + bullet.speed * 100);
+		expect(bullet.yPos).toEqual(y + Bullet.SPEED * 100);
 	});
 });
