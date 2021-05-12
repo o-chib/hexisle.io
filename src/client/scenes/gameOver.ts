@@ -1,3 +1,4 @@
+import { Constant } from '../../shared/constants';
 import mainMenu from './mainMenu';
 import Utilities from './Utilities';
 
@@ -13,10 +14,6 @@ export default class gameOver extends Phaser.Scene {
 	init(data): void {
 		this.socket = data.socket;
 		this.endState = data.endState;
-	}
-
-	preload(): void {
-		// Preload stuff here
 	}
 
 	create(): void {
@@ -38,14 +35,21 @@ export default class gameOver extends Phaser.Scene {
 			.setScale(0.5);
 
 		// Message
-		this.add.text(
+		const message = this.add.text(
 			renderWidth / 2 - 200,
-			renderHeight * 0.5,
-			'Game Over,\n' + this.endState.message,
+			renderHeight * 0.5 - 120,
+			'Game Over, ',
 			{
-				fontSize: '36px',
+				font: '36px Arial',
+				align: 'left',
+				stroke: '#000000',
+				strokeThickness: 5,
 			}
 		);
+		message.text +=
+			this.endState.winner == Constant.TEAM.BLUE ? 'Blue' : 'Red';
+		message.text += ' team wins!';
+		message.text += '\n' + this.endState.message;
 
 		// Play Again
 		const playAgainbutton = this.add

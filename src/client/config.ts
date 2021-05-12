@@ -25,13 +25,6 @@ export const config: Phaser.Types.Core.GameConfig = {
 		HelpOverlayScene,
 		gameOver,
 	],
-	physics: {
-		default: 'arcade',
-		arcade: {
-			debug: true,
-			gravity: { y: 100 },
-		},
-	},
 	dom: {
 		createContainer: true,
 	},

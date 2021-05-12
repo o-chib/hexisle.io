@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 
 // Start listening for people to connect
 const ip = process.env.IP || 'localhost';
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
 const server = http.createServer(app).listen(port, () => {
 	console.log('Server started:  http://' + ip + ':' + port);
 });

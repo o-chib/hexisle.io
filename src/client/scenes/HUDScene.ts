@@ -3,17 +3,15 @@ import Utilities from './Utilities';
 
 // Text Structure
 const info_format = `Health:	%1
-Score:	%2
-Resources:	%3`;
+Resources:	%2`;
 const timer_format = `%1:%2`;
 const debug_format = `cursor:
 xPos/yPos:%1/%2
 hexQ/hexR:%3/%4`;
 
 export default class HUDScene extends Phaser.Scene {
-	public static Name = 'HuDScene';
+	public static Name = 'HUDScene';
 	private mainSceneObj: any;
-	private socket: SocketIOClient.Socket;
 
 	// Text/Scoring
 	private infoText?: Phaser.GameObjects.Text;
@@ -85,10 +83,16 @@ export default class HUDScene extends Phaser.Scene {
 			this.clearDebugInfo,
 			this
 		);
+
 		// HUD: Right
-		this.quitButton = this.add.image(0, 0, 'quitButton').setDepth(99);
+		this.quitButton = this.add
+			.image(0, 0, 'quitButton')
+			.setDepth(99)
+			.setDisplayOrigin(0.5, 0.5)
+			.setScale(0.35);
+
 		new Anchor(this.quitButton, {
-			centerX: 'right-100',
+			right: 'right-10',
 			top: 'top+10',
 		});
 
@@ -115,7 +119,6 @@ export default class HUDScene extends Phaser.Scene {
 
 		const playerText = Phaser.Utils.String.Format(info_format, [
 			playerHealth,
-			currentPlayer.score,
 			currentPlayer.resources,
 		]);
 		this.infoText?.setText(playerText);
@@ -152,8 +155,7 @@ export default class HUDScene extends Phaser.Scene {
 		return '0' + timeStr;
 	}
 
-	private startHUD(socket): void {
-		this.socket = socket;
+	private startHUD(): void {
 		this.infoText?.setText('');
 		this.gameTimeText?.setText('');
 		this.scene.setVisible(true);
@@ -161,6 +163,7 @@ export default class HUDScene extends Phaser.Scene {
 
 	private stopHUD(): void {
 		this.scene.setVisible(false);
+		this.scene.pause();
 	}
 
 	private quitCurrentGame(): void {
