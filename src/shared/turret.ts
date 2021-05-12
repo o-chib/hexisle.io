@@ -5,8 +5,8 @@ import { Tile } from './hexTiles';
 export default class Turret extends DestructibleObj {
 	public static readonly RELOAD_TIME = 1 * 1000;
 
-	public direction: number;
 	public tile: Tile;
+	public direction: number;
 	public reloadTimer: number;
 	public hasTarget: boolean;
 	private gameShootBullet: (turret: any, direction: number) => void;
@@ -36,7 +36,7 @@ export default class Turret extends DestructibleObj {
 		else this.reload(timePassed);
 	}
 
-	public aim(direction: number) {
+	private aim(direction: number) {
 		if (direction != Constant.DIRECTION.INVALID) {
 			this.direction = direction;
 			this.hasTarget = true;
@@ -45,20 +45,20 @@ export default class Turret extends DestructibleObj {
 		}
 	}
 
-	public canShoot(): boolean {
+	private canShoot(): boolean {
 		return this.hasTarget && this.reloadTimer <= 0;
 	}
 
-	public turretShootBullet() {
+	private turretShootBullet() {
 		this.gameShootBullet(this, this.direction);
 		this.resetReloadTimer();
 	}
 
-	public resetReloadTimer(): void {
+	private resetReloadTimer(): void {
 		this.reloadTimer = Turret.RELOAD_TIME;
 	}
 
-	public reload(timePassed: number): void {
+	private reload(timePassed: number): void {
 		if (this.reloadTimer > 0) this.reloadTimer -= timePassed;
 	}
 
