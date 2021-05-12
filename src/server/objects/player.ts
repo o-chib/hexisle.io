@@ -5,7 +5,10 @@ import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
 	private static readonly SPEED = 600;
-	private static readonly RELOAD_TIME = 0.5 * 1000;
+
+	private static readonly RELOAD_TIME = 0.1 * 1000;
+	private reloadTimer = 0;
+	private gameShootBullet: (turret: any, direction: number) => void;
 
 	public socket: SocketIOClient.Socket;
 	public name: string;
@@ -15,7 +18,12 @@ export default class Player extends DestructibleObj {
 	private direction: number;
 	private lastUpdateTime: number;
 
-	constructor(socket: SocketIOClient.Socket, teamNumber: number, name = '') {
+	constructor(
+		socket: SocketIOClient.Socket,
+		teamNumber: number,
+		name = '',
+		gameShootBulletMethod?: (turret: any, direction: number) => void
+	) {
 		super(socket.id, 0, 0, teamNumber, Constant.HP.PLAYER);
 		this.socket = socket;
 		this.name = name;
@@ -24,6 +32,7 @@ export default class Player extends DestructibleObj {
 		this.yVel = 0;
 		this.direction = 0;
 		this.lastUpdateTime = Date.now();
+		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
 	}
 
 	public updateResource(resourceValue: number) {
@@ -107,5 +116,23 @@ export default class Player extends DestructibleObj {
 			yVel: this.yVel,
 			direction: this.direction,
 		};
+	}
+
+	public canShoot(): boolean {
+		return this.reloadTimer <= 0;
+	}
+
+	public shootBullet(direction: number) {
+		if (!this.canShoot()) return;
+		this.gameShootBullet(this, direction);
+		this.resetReloadTimer();
+	}
+
+	public resetReloadTimer(): void {
+		this.reloadTimer = Player.RELOAD_TIME;
+	}
+
+	public reload(timePassed: number): void {
+		if (this.reloadTimer > 0) this.reloadTimer -= timePassed;
 	}
 }
