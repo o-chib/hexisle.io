@@ -3,6 +3,7 @@ import Utilities from './Utilities';
 
 export default class HelpOverlayScene extends Phaser.Scene {
 	// Scene overlays help button and popop during game.
+	public static Name = 'HelpOverlayScene';
 	private mainSceneObj: any;
 	private helpButtonSprite: Phaser.GameObjects.Sprite;
 	private helpPopupSprite: Phaser.GameObjects.Sprite;
@@ -40,7 +41,12 @@ export default class HelpOverlayScene extends Phaser.Scene {
 		this.mainSceneObj = this.scene.get('MainScene');
 
 		// Listen for events from it
+		this.mainSceneObj.events.off('toggleHelpUI');
+		this.mainSceneObj.events.off('showUI');
+		this.mainSceneObj.events.off('stopUI');
+
 		this.mainSceneObj.events.on('toggleHelpUI', this.toggleHelp, this);
+		this.mainSceneObj.events.on('showUI', this.showUI, this);
 		this.mainSceneObj.events.on('stopUI', this.stopUI, this);
 	}
 
@@ -56,6 +62,9 @@ export default class HelpOverlayScene extends Phaser.Scene {
 		}
 	}
 
+	private showUI(): void {
+		this.scene.setVisible(true);
+	}
 	private stopUI(): void {
 		this.scene.setVisible(false);
 	}
