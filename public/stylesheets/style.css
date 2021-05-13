@@ -6,3 +6,7 @@ body {
   .aboutCard {
     width: 21%;
   }
+
+  .serverStatus {
+    border: 2px solid white;
+  }

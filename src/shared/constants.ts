@@ -6,6 +6,13 @@ export const Constant = Object.freeze({
 	MAX_PLAYERS: 50, //TODO lower this maybe, I set it high for demo
 	RANDOM_LOOP_LIMIT: 10,
 
+	SERVER: {
+		GIVE_STATUS: 'GIVE_STATUS',
+		RETURN_STATUS: 'RETURN_STATUS',
+		OK: 'OK',
+		ERROR: 'ERROR',
+	},
+
 	COST: {
 		WALL: 5,
 		TURRET: 10,

@@ -46,4 +46,13 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 	socket.on(Constant.MESSAGE.ASK_GAME_LIST, () => {
 		socket.emit(Constant.MESSAGE.GIVE_GAME_LIST, allGames.getGameList());
 	});
+
+	socket.on(Constant.SERVER.GIVE_STATUS, () => {
+		if(allGames.getGameCount() > 0) {
+			socket.emit(Constant.SERVER.RETURN_STATUS, Constant.SERVER.OK);
+		} else {
+			socket.emit(Constant.SERVER.RETURN_STATUS, Constant.SERVER.ERROR);
+		}
+		
+	});
 });
