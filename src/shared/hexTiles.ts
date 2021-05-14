@@ -1,6 +1,5 @@
 import { Constant } from '../shared/constants';
-import Turret from './turret';
-import Wall from './wall';
+import Structure from './structure';
 
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
@@ -614,7 +613,7 @@ export class Tile {
 	public cartesian_coord: Point;
 	public teamNumber: number;
 	public building: string;
-	public buildingObj: Wall | Turret | null;
+	public buildingObj: Structure | null;
 
 	constructor(building: string = Constant.BUILDING.NONE, teamNumber = -1) {
 		this.teamNumber = teamNumber;
