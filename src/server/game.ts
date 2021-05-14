@@ -716,9 +716,9 @@ export default class Game {
 
 		player.refundStructure(tile.building);
 		if (tile.building == Constant.BUILDING.WALL) {
-			this.removeWall(this.walls.get(tile.buildingObj.id)!);
+			this.removeWall(this.walls.get(tile.buildingObj!.id)!);
 		} else if (tile.building == Constant.BUILDING.TURRET) {
-			this.removeTurret(this.turrets.get(tile.buildingObj.id)!);
+			this.removeTurret(this.turrets.get(tile.buildingObj!.id)!);
 		}
 	}
 
