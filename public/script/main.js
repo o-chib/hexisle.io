@@ -2,6 +2,11 @@
 const playButton = document.getElementById("playNow");
 playButton.onclick = playNow;
 
+const userGuide = document.getElementById("userGuide")
+userGuide.onclick = userGuideRedirect;
+const githubWiki = document.getElementById('githubWiki')
+githubWiki.onclick = githubWikiRedirect;
+
 onLoad();
 
 function onLoad() {
@@ -44,4 +49,13 @@ function setGameStatus(status) {
 
 function playNow() {
     window.location.href="game.html";
+}
+
+function userGuideRedirect() {
+    console.log("userGuide");
+    window.open('https://docs.google.com/document/d/1YHrR4WNBf9_-gPamyvvTtFYI9yxm49cz7WaIZMAzbWY/edit?usp=sharing');
+}
+
+function githubWikiRedirect() {
+    window.open('https://github.com/o-chib/teamIO-project/wiki');
 }

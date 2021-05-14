@@ -11,3 +11,8 @@ body {
   .serverStatus {
     border: 2px solid white;
   }
+
+  .customALink {
+    color: black;
+    text-decoration: none;
+}
