@@ -11,7 +11,7 @@ export class PassiveIncome {
 		this.teams = teams;
 	}
 
-	givePassiveIncomeIfPossible(timePassed: number): boolean {
+	public givePassiveIncomeIfPossible(timePassed: number): boolean {
 		const givePassiveIncome = this.canGivePassiveIncome();
 		if (givePassiveIncome) {
 			this.resetUpdateTimer();
@@ -21,7 +21,7 @@ export class PassiveIncome {
 		return givePassiveIncome;
 	}
 
-	updatePlayerResources(player: Player) {
+	public updatePlayerResources(player: Player) {
 		const newResourceValue: number =
 			this.teams.getTeam(player.teamNumber).numCapturedCamps *
 			Constant.INCOME.INCOME_PER_CAMP;
