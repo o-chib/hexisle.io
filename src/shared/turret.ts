@@ -5,7 +5,6 @@ import { Tile } from './hexTiles';
 export default class Turret extends Structure {
 	public static readonly RELOAD_TIME = 1 * 1000;
 
-	public tile: Tile;
 	public direction: number;
 	public reloadTimer: number;
 	public hasTarget: boolean;
