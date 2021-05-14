@@ -103,10 +103,6 @@ export class MapResources {
 }
 
 export class Resource extends IndestructibleObj {
-	public id: string;
-	public xPos: number;
-	public yPos: number;
-	public teamNumber: number;
 	public dropAmount: number;
 	public type: string;
 
