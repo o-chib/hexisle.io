@@ -693,8 +693,8 @@ export default class Game {
 	canDemolishStructure(player: Player, tile: Tile): boolean {
 		if (
 			tile.hasNoBuilding() ||
-			(tile.buildingType != Constant.BUILDING.WALL &&
-				tile.buildingType != Constant.BUILDING.TURRET) ||
+			(tile.building != Constant.BUILDING.WALL &&
+				tile.building != Constant.BUILDING.TURRET) ||
 			tile.teamNumber != player.teamNumber
 		)
 			return false;
@@ -714,11 +714,11 @@ export default class Game {
 
 		if (!this.canDemolishStructure(player, tile)) return;
 
-		player.refundStructure(tile.buildingType);
-		if (tile.buildingType == Constant.BUILDING.WALL) {
-			this.removeWall(this.walls.get(tile.buildingObj!.id)!);
-		} else if (tile.buildingType == Constant.BUILDING.TURRET) {
-			this.removeTurret(this.turrets.get(tile.buildingObj!.id)!);
+		player.refundStructure(tile.building);
+		if (tile.building == Constant.BUILDING.WALL) {
+			this.removeWall(this.walls.get(tile.buildingObj.id)!);
+		} else if (tile.building == Constant.BUILDING.TURRET) {
+			this.removeTurret(this.turrets.get(tile.buildingObj.id)!);
 		}
 	}
 
@@ -763,7 +763,7 @@ export default class Game {
 			Constant.TEAM.NONE
 		);
 		this.territories.add(territory);
-		tile.buildingType = Constant.BUILDING.CAMP;
+		tile.building = Constant.BUILDING.CAMP;
 
 		this.collision.insertCollider(campfire, Constant.RADIUS.COLLISION.WALL);
 	}
@@ -772,7 +772,7 @@ export default class Game {
 		const tilemap = this.hexTileMap.tileMap;
 		for (let i = 0; i < tilemap.length; i++) {
 			for (let j = 0; j < tilemap[i].length; j++) {
-				if (tilemap[i][j].buildingType == Constant.BUILDING.CAMP) {
+				if (tilemap[i][j].building == Constant.BUILDING.CAMP) {
 					this.buildCampfire(tilemap[i][j].offset_coord);
 				}
 			}
@@ -786,7 +786,7 @@ export default class Game {
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 		tile.teamNumber = teamNum;
-		tile.buildingType = Constant.BUILDING.BASE;
+		tile.building = Constant.BUILDING.BASE;
 
 		const base: Base = new Base(
 			this.idGenerator.newID(),
@@ -806,7 +806,7 @@ export default class Game {
 		// make it so you cant build on and around the base
 		for (let i = 0; i <= 2; i++) {
 			this.hexTileMap.getHexRingPoints(tile, i).forEach((coord) => {
-				this.hexTileMap.tileMap[coord.q][coord.r].buildingType =
+				this.hexTileMap.tileMap[coord.q][coord.r].building =
 					Constant.BUILDING.CANT_BUILD;
 			});
 		}
@@ -821,7 +821,7 @@ export default class Game {
 	setBaseTerritory(teamNumber, points) {
 		for (const pt of points) {
 			const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
-			if (tempTile.buildingType == Constant.BUILDING.OUT_OF_BOUNDS) {
+			if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
 				continue;
 			}
 			tempTile.teamNumber = teamNumber;

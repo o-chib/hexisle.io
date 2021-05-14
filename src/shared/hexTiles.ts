@@ -49,7 +49,7 @@ export class HexTiles {
 					this.tileMap[col][row].offset_coord
 				);
 
-				this.tileMap[col][row].buildingType =
+				this.tileMap[col][row].building =
 					Constant.BUILDING.OUT_OF_BOUNDS;
 			}
 		}
@@ -66,7 +66,7 @@ export class HexTiles {
 			this.hexRadius
 		);
 
-		this.tileMap[hex.q][hex.r].buildingType = Constant.BUILDING.CAMP;
+		this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
 		const hexesToCheck: OffsetPoint[] = this.getCampfireRadiusPoints(
 			hex,
 			this.campfiresInHalfWidth
@@ -97,24 +97,24 @@ export class HexTiles {
 			}
 			if (isValid) {
 				//Set this chunk center as camp
-				this.tileMap[hex.q][hex.r].buildingType = Constant.BUILDING.CAMP;
+				this.tileMap[hex.q][hex.r].building = Constant.BUILDING.CAMP;
 				// Set territory hexes as playable
 				for (const tile of territoryHexes) {
 					if (
-						this.tileMap[tile.q][tile.r].buildingType !=
+						this.tileMap[tile.q][tile.r].building !=
 						Constant.BUILDING.CAMP
 					) {
-						this.tileMap[tile.q][tile.r].buildingType =
+						this.tileMap[tile.q][tile.r].building =
 							Constant.BUILDING.NONE;
 					}
 				}
 				// Set boundary ring hexes
 				for (const tile of boundaryRingHexes) {
 					if (
-						this.tileMap[tile.q][tile.r].buildingType ==
+						this.tileMap[tile.q][tile.r].building ==
 						Constant.BUILDING.OUT_OF_BOUNDS
 					) {
-						this.tileMap[tile.q][tile.r].buildingType =
+						this.tileMap[tile.q][tile.r].building =
 							Constant.BUILDING.BOUNDARY;
 					}
 				}
@@ -125,7 +125,7 @@ export class HexTiles {
 	generateBoundary(): void {
 		for (let q = 0; q < this.tileMap.length; ++q) {
 			for (let r = 0; r < this.tileMap[q].length; ++r) {
-				if (this.tileMap[q][r].buildingType == Constant.BUILDING.BOUNDARY)
+				if (this.tileMap[q][r].building == Constant.BUILDING.BOUNDARY)
 					this.boundaryCoords.push(this.tileMap[q][r].offset_coord);
 			}
 		}
@@ -136,7 +136,7 @@ export class HexTiles {
 		// teamCount is the number of teams, with a maximum of 6
 		// campDistanceFromCenter is how many camps away radially the bases should spawn
 		if (teamCount == 1) {
-			this.tileMap[this.hexRadius][this.hexRadius].buildingType =
+			this.tileMap[this.hexRadius][this.hexRadius].building =
 				Constant.BUILDING.BASE;
 			this.baseCoords.push(
 				new OffsetPoint(this.hexRadius, this.hexRadius)
@@ -170,7 +170,7 @@ export class HexTiles {
 			// Assign it to a base
 			if (this.checkIfValidHex(travHex)) {
 				if (this.tileMap[travHex.q][travHex.r].isInBounds())
-					this.tileMap[travHex.q][travHex.r].buildingType =
+					this.tileMap[travHex.q][travHex.r].building =
 						Constant.BUILDING.BASE;
 				this.baseCoords.push(travHex);
 			}
@@ -197,7 +197,7 @@ export class HexTiles {
 		if (!this.checkIfValidHex(hexCoord)) return false;
 
 		if (
-			this.tileMap[hexCoord.q][hexCoord.r].buildingType !=
+			this.tileMap[hexCoord.q][hexCoord.r].building !=
 				Constant.BUILDING.NONE ||
 			this.tileMap[hexCoord.q][hexCoord.r].teamNumber != -1
 		) {
@@ -613,26 +613,26 @@ export class Tile {
 	public offset_coord: OffsetPoint;
 	public cartesian_coord: Point;
 	public teamNumber: number;
-	public buildingType: string;
+	public building: string;
 	public buildingObj: Wall | Turret | null;
 
 	constructor(building: string = Constant.BUILDING.NONE, teamNumber = -1) {
 		this.teamNumber = teamNumber;
-		this.buildingType = building;
+		this.building = building;
 		this.buildingObj = null;
 	}
 
 	public hasNoBuilding(): boolean {
-		return this.buildingType == Constant.BUILDING.NONE && !this.buildingObj;
+		return this.building == Constant.BUILDING.NONE && !this.buildingObj;
 	}
 
 	public setBuilding(buildingType: string, buildingObj: any): void {
-		this.buildingType = buildingType;
+		this.building = buildingType;
 		this.buildingObj = buildingObj;
 	}
 
 	public removeBuilding(): void {
-		this.buildingType = Constant.BUILDING.NONE;
+		this.building = Constant.BUILDING.NONE;
 		this.buildingObj = null;
 	}
 
@@ -643,14 +643,14 @@ export class Tile {
 
 	public isInBounds(): boolean {
 		return (
-			this.buildingType != Constant.BUILDING.OUT_OF_BOUNDS &&
-			this.buildingType != Constant.BUILDING.BOUNDARY
+			this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
+			this.building != Constant.BUILDING.BOUNDARY
 		);
 	}
 
 	public serializeForUpdate(): any {
 		return {
-			id: this.buildingType,
+			id: this.building,
 			xPos: this.cartesian_coord.xPos,
 			yPos: this.cartesian_coord.yPos,
 		};
