@@ -96,12 +96,6 @@ export default class Preloader extends Phaser.Scene {
 		this.load.image('healthbar_shadow', '../assets/healthbar_shadow.png');
 		this.load.image('healthbar_outline', '../assets/healthbar_outline.png');
 
-		this.load.image('tile_outline_red', '../assets/tile_outline_red.png');
-		this.load.image(
-			'tile_outline_green',
-			'../assets/tile_outline_green.png'
-		);
-
 		// GameOver
 		this.load.image(
 			'return_button_unpressed',

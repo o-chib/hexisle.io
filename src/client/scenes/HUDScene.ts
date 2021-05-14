@@ -29,8 +29,6 @@ export default class HUDScene extends Phaser.Scene {
 	private healthbar_red: Phaser.GameObjects.Image;
 	private x_red: number;
 
-	private currentTileIndicator: Phaser.GameObjects.Image;
-
 	constructor() {
 		super('HUDScene');
 	}
@@ -38,13 +36,6 @@ export default class HUDScene extends Phaser.Scene {
 	create(): void {
 		Utilities.LogSceneMethodEntry('HUDScene', 'create');
 		//this.scene.setVisible(false
-
-		//  Grab a reference to the Game Scene
-		this.mainSceneObj = this.scene.get('MainScene');
-
-		this.currentTileIndicator = this.mainSceneObj.add
-			.image(0, 0, 'tile_outline_green')
-			.setDepth(-900);
 
 		this.createHealthBar();
 
@@ -82,6 +73,26 @@ export default class HUDScene extends Phaser.Scene {
 			bottom: 'bottom-118',
 		});
 
+		// Grab a reference to the Game Scene
+		this.mainSceneObj = this.scene.get('MainScene');
+
+		// Listen for events from it
+		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
+
+		// Listen for debug info update events
+		this.mainSceneObj.events.on(
+			'updateDebugInfo',
+			this.updateDebugInfo,
+			this
+		);
+
+		// Listen for clear debug info event
+		this.mainSceneObj.events.on(
+			'clearDebugInfo',
+			this.clearDebugInfo,
+			this
+		);
+
 		// HUD: Right
 		this.quitButton = this.add
 			.image(0, 0, 'quit_button_unpressed')
@@ -104,56 +115,17 @@ export default class HUDScene extends Phaser.Scene {
 			this.quitButton.setTexture('quit_button_unpressed');
 		});
 
-		//  Listen for events
-		this.mainSceneObj.events.off('startHUD');
+		//  Grab a reference to the Game Scene
+		this.mainSceneObj = this.scene.get('MainScene');
+
+		//  Listen for events from it
 		this.mainSceneObj.events.on('startHUD', this.startHUD, this);
-
-		this.mainSceneObj.events.off('updateHUD');
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
-
-		this.mainSceneObj.events.off('stopHUD');
 		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);
 
-		this.mainSceneObj.events.off('updateHealthBar');
 		this.mainSceneObj.events.on(
 			'updateHealthBar',
 			this.updateHealthBar,
-			this
-		);
-
-		// Tile Indicator Listeners
-		this.mainSceneObj.events.off('updateTileIndicatorPosition');
-		this.mainSceneObj.events.on(
-			'updateTileIndicatorPosition',
-			this.updateTileIndicatorPosition,
-			this
-		);
-		this.mainSceneObj.events.off('updateTileIndicatorColor');
-		this.mainSceneObj.events.on(
-			'updateTileIndicatorColor',
-			this.updateTileIndicatorColor,
-			this
-		);
-		this.mainSceneObj.events.off('updateTileIndicatorVisibility');
-		this.mainSceneObj.events.on(
-			'updateTileIndicatorVisibility',
-			this.updateTileIndicatorVisibility,
-			this
-		);
-
-		// Listen for debug info update events
-		this.mainSceneObj.events.off('updateDebugInfo');
-		this.mainSceneObj.events.on(
-			'updateDebugInfo',
-			this.updateDebugInfo,
-			this
-		);
-
-		// Listen for clear debug info event
-		this.mainSceneObj.events.off('clearDebugInfo');
-		this.mainSceneObj.events.on(
-			'clearDebugInfo',
-			this.clearDebugInfo,
 			this
 		);
 	}
@@ -268,26 +240,6 @@ export default class HUDScene extends Phaser.Scene {
 			this.addLeadingZeros(seconds),
 		]);
 		this.gameTimeText?.setText(gameTimeText);
-	}
-
-	private updateTileIndicatorPosition(newX: number, newY: number): void {
-		this.currentTileIndicator.setPosition(newX, newY);
-	}
-
-	private updateTileIndicatorColor(canBuildOn = false): void {
-		if (canBuildOn) {
-			this.currentTileIndicator.setTexture('tile_outline_green');
-		} else {
-			this.currentTileIndicator.setTexture('tile_outline_red');
-		}
-	}
-
-	private updateTileIndicatorVisibility(isOutOfBounds = false): void {
-		if (isOutOfBounds) {
-			this.currentTileIndicator.setVisible(false);
-		} else {
-			this.currentTileIndicator.setVisible(true);
-		}
 	}
 
 	private updateDebugInfo(xPos, yPos, hexQ, hexR): void {
