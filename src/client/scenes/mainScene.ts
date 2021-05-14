@@ -66,6 +66,84 @@ export default class MainScene extends Phaser.Scene {
 	update(): void {
 		this.updateDirection();
 		if (this.debugMode) this.updateDebugInfo();
+		this.updateCurrentTileIndicatorPosition();
+		this.updateCurrentTileIndicatorColor();
+	}
+
+	private updateCurrentTileIndicatorColor(): void {
+		const gamePos = this.cameras.main.getWorldPoint(
+			this.input.mousePointer.x,
+			this.input.mousePointer.y
+		);
+		// Get Bounding Tile Q/R
+		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+			new Point(gamePos.x, gamePos.y)
+		);
+
+		let canBuildOn = true;
+		let outOfBounds = true;
+
+		if (this.hexTiles.tileMap == null) {
+			return;
+		}
+		if (
+			this.hexTiles.tileMap[coord.q][coord.r].building !=
+			Constant.BUILDING.NONE
+		) {
+			canBuildOn = false;
+		}
+
+		// TODO : Add red indicator for non-friendly territory (needs player team, needs class)
+		if (
+			this.hexTiles.tileMap[coord.q][coord.r].building !=
+				Constant.BUILDING.OUT_OF_BOUNDS &&
+			this.hexTiles.tileMap[coord.q][coord.r].building !=
+				Constant.BUILDING.BOUNDARY
+		) {
+			outOfBounds = false;
+		}
+
+		// TODO : updateState should send nearbyTiles to update TileMap[][]; will show updated building and teamNumbers.
+		let playerCoord: OffsetPoint = this.hexTiles.cartesianToOffset(
+			new Point(this.myPlayerSprite.x, this.myPlayerSprite.y)
+		);
+		if (playerCoord.q == coord.q && playerCoord.r == coord.r) {
+			canBuildOn = false;
+		}
+
+		this.otherPlayerSprites.forEach((otherPlayer) => {
+			playerCoord = this.hexTiles.cartesianToOffset(
+				new Point(otherPlayer.x, otherPlayer.y)
+			);
+			if (playerCoord.q == coord.q && playerCoord.r == coord.r) {
+				canBuildOn = false;
+				return;
+			}
+		});
+
+		this.events.emit('updateTileIndicatorColor', canBuildOn);
+		this.events.emit('updateTileIndicatorVisibility', outOfBounds);
+	}
+
+	private updateCurrentTileIndicatorPosition(): void {
+		// Get Mouse X/Y
+		const gamePos = this.cameras.main.getWorldPoint(
+			this.input.mousePointer.x,
+			this.input.mousePointer.y
+		);
+		// Get Bounding Tile Q/R
+		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+			new Point(gamePos.x, gamePos.y)
+		);
+
+		// Get centerpoint of tile in X/Y
+		const tileCenter: Point = this.hexTiles.offsetToCartesian(coord);
+
+		this.events.emit(
+			'updateTileIndicatorPosition',
+			tileCenter.xPos,
+			tileCenter.yPos
+		);
 	}
 
 	private updateDebugInfo(): void {
