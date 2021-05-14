@@ -1,6 +1,6 @@
 import IndestructibleObj from './indestructibleObj';
 
-export default class DestructibleObj extends IndestructibleObj {
+export default abstract class DestructibleObj extends IndestructibleObj {
 	public hp: number;
 
 	constructor(id: string, xPos = 0, yPos = 0, teamNumber = -1, hp = 0) {

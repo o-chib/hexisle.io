@@ -1,4 +1,4 @@
-export default class IndestructibleObj {
+export default abstract class IndestructibleObj {
 	public id: string;
 	public xPos: number;
 	public yPos: number;
