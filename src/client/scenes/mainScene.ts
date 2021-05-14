@@ -657,17 +657,17 @@ export default class MainScene extends Phaser.Scene {
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[0]
 				) {
-					newResource.setTexture('blueRes');
+					newResource.setTexture('resSmall');
 				} else if (
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[1]
 				) {
-					newResource.setTexture('greenRes');
+					newResource.setTexture('resMedium');
 				} else if (
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[2]
 				) {
-					newResource.setTexture('whiteRes');
+					newResource.setTexture('resLarge');
 				}
 				newResource.setVisible(true);
 				return newResource;
