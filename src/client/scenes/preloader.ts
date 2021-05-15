@@ -100,6 +100,17 @@ export default class Preloader extends Phaser.Scene {
 		this.load.image('grass_chunk', '../assets/chunk.png');
 		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
 		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
+
+		// UI
+		this.load.image(
+			'help_button_unpressed',
+			'../assets/help_button_unpressed.png'
+		);
+		this.load.image(
+			'help_button_pressed',
+			'../assets/help_button_pressed.png'
+		);
+		this.load.image('help_popup', '../assets/help_popup.png');
 	}
 
 	public create(): void {
