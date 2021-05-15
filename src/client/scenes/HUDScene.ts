@@ -1,5 +1,4 @@
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
-import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 
 // Text Structure
@@ -23,21 +22,13 @@ export default class HUDScene extends Phaser.Scene {
 	// Quit Button
 	private quitButton: Phaser.GameObjects.Image;
 
-	private healthbar_blue: Phaser.GameObjects.Image;
-	private x_blue: number;
-
-	private healthbar_red: Phaser.GameObjects.Image;
-	private x_red: number;
-
 	constructor() {
 		super('HUDScene');
 	}
 
 	create(): void {
 		Utilities.LogSceneMethodEntry('HUDScene', 'create');
-		//this.scene.setVisible(false
-
-		this.createHealthBar();
+		//this.scene.setVisible(false);
 
 		// HUD: Left
 		this.infoText = this.add.text(0, 0, '', {
@@ -115,6 +106,7 @@ export default class HUDScene extends Phaser.Scene {
 			this.quitButton.setTexture('quit_button_unpressed');
 		});
 
+
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
 
@@ -122,98 +114,6 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj.events.on('startHUD', this.startHUD, this);
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
 		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);
-
-		this.mainSceneObj.events.on(
-			'updateHealthBar',
-			this.updateHealthBar,
-			this
-		);
-	}
-
-	private createHealthBar() {
-		for (let i = 0; i < Constant.TEAM_COUNT; ++i) {
-			let healthbar_shadow: Phaser.GameObjects.Image;
-			let healthbar_outline: Phaser.GameObjects.Image;
-
-			let centerString = 'center';
-			const bottomString = 'bottom-20';
-
-			switch (i) {
-				case Constant.TEAM.BLUE:
-					centerString += '+155';
-					healthbar_shadow = this.add.image(0, 0, 'healthbar_shadow');
-					this.healthbar_blue = this.add.image(
-						0,
-						0,
-						'healthbar_blue'
-					);
-					healthbar_outline = this.add.image(
-						0,
-						0,
-						'healthbar_outline'
-					);
-
-					const config_blue = {
-						centerX: centerString,
-						bottom: bottomString,
-					};
-
-					new Anchor(healthbar_shadow, config_blue);
-					new Anchor(this.healthbar_blue, config_blue);
-					new Anchor(healthbar_outline, config_blue);
-
-					this.x_blue = this.healthbar_blue.x;
-
-					break;
-
-				case Constant.TEAM.RED:
-					centerString += '-155';
-
-					healthbar_shadow = this.add.image(0, 0, 'healthbar_shadow');
-					this.healthbar_red = this.add.image(0, 0, 'healthbar_red');
-					healthbar_outline = this.add.image(
-						0,
-						0,
-						'healthbar_outline'
-					);
-
-					const config_red = {
-						centerX: centerString,
-						bottom: bottomString,
-					};
-
-					new Anchor(healthbar_shadow, config_red);
-					new Anchor(this.healthbar_red, config_red);
-					new Anchor(healthbar_outline, config_red);
-
-					this.x_red = this.healthbar_red.x;
-					break;
-			}
-		}
-	}
-
-	private updateHealthBar(teamNumber: number, healthPercent: number): void {
-		let offset: number;
-		switch (teamNumber) {
-			case Constant.TEAM.BLUE:
-				this.healthbar_blue.setScale(healthPercent, 1);
-				offset =
-					this.x_blue -
-					(this.healthbar_blue.width -
-						this.healthbar_blue.displayWidth) /
-						2;
-				this.healthbar_blue.setX(offset);
-				break;
-			case Constant.TEAM.RED:
-				this.healthbar_red.setScale(healthPercent, 1);
-				offset =
-					this.x_red +
-					(this.healthbar_red.width -
-						this.healthbar_red.displayWidth) /
-						2;
-				this.healthbar_red.setX(offset);
-				break;
-		}
 	}
 
 	private updateText(currentPlayer: any, time: number): void {

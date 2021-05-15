@@ -59,17 +59,11 @@ export default class MainMenu extends Phaser.Scene {
 		);
 
 		// Menu Buttons from form
-		const playButton = document.getElementById(
-			'playButton'
-		) as HTMLLinkElement;
-		const optionButton = document.getElementById(
-			'optionButton'
-		) as HTMLLinkElement;
-		const helpButton = document.getElementById(
-			'helpButton'
-		) as HTMLLinkElement;
+		const playButton = document.getElementById('playButton') as HTMLLinkElement;
+		const optionButton = document.getElementById('optionButton') as HTMLLinkElement;
+		const helpButton = document.getElementById('helpButton') as HTMLLinkElement;
 
-		// Help Panel
+ 		// Help Panel
 		const helpMenu = this.add
 			.image(renderWidth / 2, renderHeight / 2, 'help_menu')
 			.setDepth(2)
@@ -81,31 +75,20 @@ export default class MainMenu extends Phaser.Scene {
 		});
 
 		playButton.addEventListener('click', () => this.joinGame());
-		playButton.addEventListener('mouseover', () =>
-			FormUtilities.setButtonTextureOnMouseIn(playButton)
-		);
-		playButton.addEventListener('mouseout', () =>
-			FormUtilities.setButtonTextureOnMouseOut(playButton)
-		);
+		playButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(playButton));
+		playButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(playButton));
 
 		optionButton.addEventListener('click', () => this.loadOptions());
-		optionButton.addEventListener('mouseover', () =>
-			FormUtilities.setButtonTextureOnMouseIn(optionButton)
-		);
-		optionButton.addEventListener('mouseout', () =>
-			FormUtilities.setButtonTextureOnMouseOut(optionButton)
-		);
+		optionButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(optionButton));
+		optionButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(optionButton));
 
 		helpButton.addEventListener('click', () => {
 			menuContainer.setVisible(false);
 			helpMenu.setVisible(true);
 		});
-		helpButton.addEventListener('mouseover', () =>
-			FormUtilities.setButtonTextureOnMouseIn(helpButton)
-		);
-		helpButton.addEventListener('mouseout', () =>
-			FormUtilities.setButtonTextureOnMouseOut(helpButton)
-		);
+		helpButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(helpButton));
+		helpButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(helpButton));
+
 
 		helpMenu.setInteractive();
 		helpMenu.on(
@@ -117,6 +100,8 @@ export default class MainMenu extends Phaser.Scene {
 			this
 		);
 	}
+
+
 
 	private askForUpdatedGameList() {
 		this.socket.emit(Constant.MESSAGE.ASK_GAME_LIST);
