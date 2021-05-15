@@ -7,21 +7,6 @@ userGuide.onclick = userGuideRedirect;
 const githubWiki = document.getElementById('githubWiki')
 githubWiki.onclick = githubWikiRedirect;
 
-onLoad();
-
-function onLoad() {
-    let socket= io();
-
-    socket.on(
-        'RETURN_STATUS',
-        setGameStatus.bind(this)
-    );
-
-    socket.emit('GIVE_STATUS');
-
-    console.log('onLoad finished');
-}
-
 function setGameStatus(status) {
     const serverStatus = document.createElement('span');
 
@@ -48,7 +33,7 @@ function setGameStatus(status) {
 }
 
 function playNow() {
-    window.location.href="game.html";
+    window.location.href="https://play.hexisle.io/";
 }
 
 function userGuideRedirect() {
@@ -58,4 +43,23 @@ function userGuideRedirect() {
 
 function githubWikiRedirect() {
     window.open('https://github.com/o-chib/teamIO-project/wiki');
+}
+
+//  Server Online Check
+// -----------------------------------------------
+
+checkServerStatus();
+function checkServerStatus()
+{
+    let img = document.body.appendChild(document.createElement("img"));
+    img.onload = function()
+    {
+        setGameStatus("OK");
+    };
+    img.onerror = function()
+    {
+        setGameStatus("ERROR");
+    };
+    document.body.removeChild(img)
+    img.src = "https://play.hexisle.io/assets/help.png";
 }
