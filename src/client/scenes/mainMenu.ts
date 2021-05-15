@@ -5,7 +5,7 @@ import { Constant } from './../../shared/constants';
 export default class MainMenu extends Phaser.Scene {
 	public static Name = 'MainMenu';
 	private socket: SocketIOClient.Socket;
-	private playerName = '';
+	private playerName: string | undefined = '';
 	private gameid: string | undefined = '';
 	private inputBox;
 	private nextUpdateTime: number;
@@ -169,6 +169,7 @@ export default class MainMenu extends Phaser.Scene {
 		this.gameid = this.inputBox.getChildByName('dropdownList').value;
 
 		if (this.gameid == '') this.gameid = undefined;
+		if (this.playerName == '') this.playerName = undefined;
 
 		this.socket.emit(
 			Constant.MESSAGE.JOIN_GAME,
