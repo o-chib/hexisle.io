@@ -383,11 +383,12 @@ export default class MainScene extends Phaser.Scene {
 				key: 'campfire_ring_loader_capturing',
 				frames: this.anims.generateFrameNames('campfire_ring_loader'),
 			});
-			campfireRingSprite.anims.startAnimation('campfire_ring_loader_capturing');
+			campfireRingSprite.anims.startAnimation(
+				'campfire_ring_loader_capturing'
+			);
 			campfireRingSprite.anims.pause();
 		}
-		campfireRingSprite.anims.setProgress(captureProgress/100);
-
+		campfireRingSprite.anims.setProgress(captureProgress / 100);
 	}
 
 	calculateDirection() {
