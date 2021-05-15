@@ -1,19 +1,14 @@
-import DestructibleObj from './destructibleObj';
 import { Constant } from './constants';
 import { Tile } from './hexTiles';
+import Structure from './structure';
 
-export default class Base extends DestructibleObj {
-	public tile: Tile;
+export default class Base extends Structure {
+	constructor(id: string, tile: Tile) {
+		super(id, Constant.HP.BASE, tile);
+	}
 
-	constructor(
-		id: string,
-		xPos: number,
-		yPos: number,
-		teamNumber: number,
-		tile: Tile
-	) {
-		super(id, xPos, yPos, teamNumber, Constant.HP.BASE);
-		this.tile = tile;
+	public getBuildingType(): string {
+		return Constant.BUILDING.BASE;
 	}
 
 	public serializeForUpdate(): any {

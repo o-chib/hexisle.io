@@ -788,13 +788,7 @@ export default class Game {
 		tile.teamNumber = teamNum;
 		tile.building = Constant.BUILDING.BASE;
 
-		const base: Base = new Base(
-			this.idGenerator.newID(),
-			tile.cartesian_coord.xPos,
-			tile.cartesian_coord.yPos,
-			teamNum,
-			tile
-		);
+		const base: Base = new Base(this.idGenerator.newID(), tile);
 
 		this.bases.add(base);
 		this.collision.insertCollider(base, Constant.RADIUS.COLLISION.BASE);
