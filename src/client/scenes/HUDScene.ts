@@ -104,10 +104,6 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj = this.scene.get('MainScene');
 
 		//  Listen for events from it
-		this.mainSceneObj.events.off('startHUD');
-		this.mainSceneObj.events.off('updateHUD');
-		this.mainSceneObj.events.off('stopHUD');
-
 		this.mainSceneObj.events.on('startHUD', this.startHUD, this);
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
 		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);

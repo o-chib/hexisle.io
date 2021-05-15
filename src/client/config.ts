@@ -4,7 +4,6 @@ import preloader from './scenes/preloader';
 import mainMenu from './scenes/mainMenu';
 import mainScene from './scenes/mainScene';
 import HUDScene from './scenes/HUDScene';
-import HelpOverlayScene from './scenes/helpOverlayScene';
 import gameOver from './scenes/gameOver';
 
 export const config: Phaser.Types.Core.GameConfig = {
@@ -16,15 +15,7 @@ export const config: Phaser.Types.Core.GameConfig = {
 		mode: Phaser.Scale.ENVELOP,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
-	scene: [
-		boot,
-		preloader,
-		mainMenu,
-		mainScene,
-		HUDScene,
-		HelpOverlayScene,
-		gameOver,
-	],
+	scene: [boot, preloader, mainMenu, mainScene, HUDScene, gameOver],
 	dom: {
 		createContainer: true,
 	},
