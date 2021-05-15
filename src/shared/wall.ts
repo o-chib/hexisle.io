@@ -1,10 +1,19 @@
 import Structure from './structure';
 import { Constant } from './constants';
 import { Tile } from './hexTiles';
+import DestructibleObj from './destructibleObj';
 
-export default class Wall extends Structure {
+export default class Wall extends DestructibleObj implements Structure {
+	public tile: Tile;
+
 	constructor(id: string, tile: Tile) {
-		super(id, Constant.HP.WALL, tile);
+		super(
+			id,
+			tile.cartesian_coord.xPos,
+			tile.cartesian_coord.yPos,
+			tile.teamNumber,
+			Constant.HP.WALL
+		);
 		this.tile = tile;
 	}
 
