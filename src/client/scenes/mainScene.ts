@@ -449,7 +449,7 @@ export default class MainScene extends Phaser.Scene {
 			this.bulletSprites,
 			'bullet',
 			(newBullet, newBulletLiteral) => {
-				if (newBulletLiteral.teamNumber == 1)
+				if (newBulletLiteral.teamNumber == Constant.TEAM.BLUE)
 					newBullet.setTexture('bulletblue');
 				return newBullet;
 			}

@@ -615,7 +615,10 @@ export class Tile {
 	public building: string;
 	public buildingObj: Structure | null;
 
-	constructor(building: string = Constant.BUILDING.NONE, teamNumber = -1) {
+	constructor(
+		building: string = Constant.BUILDING.NONE,
+		teamNumber = Constant.TEAM.NONE
+	) {
 		this.teamNumber = teamNumber;
 		this.building = building;
 		this.buildingObj = null;

@@ -1,9 +1,16 @@
+import { Constant } from './constants';
 import IndestructibleObj from './indestructibleObj';
 
 export default abstract class DestructibleObj extends IndestructibleObj {
 	public hp: number;
 
-	constructor(id: string, xPos = 0, yPos = 0, teamNumber = -1, hp = 0) {
+	constructor(
+		id: string,
+		xPos = 0,
+		yPos = 0,
+		teamNumber = Constant.TEAM.NONE,
+		hp = 0
+	) {
 		super(id, xPos, yPos, teamNumber);
 		this.hp = hp;
 	}

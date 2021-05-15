@@ -1,3 +1,4 @@
+import { Constant } from './constants';
 import { OffsetPoint } from './hexTiles';
 import IndestructibleObj from './indestructibleObj';
 
@@ -66,7 +67,7 @@ export default class Campfire extends IndestructibleObj {
 	public checkForCapture() {
 		if (this.isCaptured) {
 			// Turn Back to Neutral!
-			this.teamNumber = -1;
+			this.teamNumber = Constant.TEAM.NONE;
 			this.isCaptured = false;
 		} else {
 			// Was Captured!
