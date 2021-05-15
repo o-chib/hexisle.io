@@ -54,7 +54,8 @@ export default class MainMenu extends Phaser.Scene {
 			.setDepth(1);
 		menuContainer.add(this.inputBox);
 		const submitKey = this.input.keyboard.addKey(
-			Phaser.Input.Keyboard.KeyCodes.ENTER
+			Phaser.Input.Keyboard.KeyCodes.ENTER,
+			false
 		);
 
 		// Buttons in a Container
