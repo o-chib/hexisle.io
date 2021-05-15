@@ -13,10 +13,11 @@ function setGameStatus(status) {
     if(status == 'OK') {
         serverStatus.setAttribute('class', 'spinner-grow spinner-grow-sm me-2 text-success serverStatus');
         playButton.setAttribute('title','Game is Online :)');
+        playButton.removeAttribute('disabled');
     } else if(status == 'ERROR') {
         serverStatus.setAttribute('class', 'spinner-grow spinner-grow-sm me-2 text-danger serverStatus');
         playButton.setAttribute('title','Game is Offline :(');
-        playButton.setAttribute('disabled','disabled');
+        // playButton.setAttribute('disabled', 'true');
     }
 
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -26,10 +27,10 @@ function setGameStatus(status) {
     
     serverStatus.setAttribute('role', 'status');
     serverStatus.setAttribute('aria-hidden', 'true');
-    playButton.appendChild(serverStatus);
+    playButton.insertBefore(serverStatus, playButton.firstChild);
 
-    const newContent = document.createTextNode("Play Now");
-    playButton.appendChild(newContent);
+    // const newContent = document.createTextNode("Play Now");
+    // playButton.appendChild(newContent);
 }
 
 function playNow() {
@@ -62,4 +63,5 @@ function checkServerStatus()
     };
     document.body.removeChild(img)
     img.src = "https://play.hexisle.io/assets/help.png";
+    // img.src = "https://raw.githubusercontent.com/o-chib/teamIO-project/main/public/assets/base_red.png?token=AHYXK3SYAE26AUBRMPZR3HTAVBMDS";
 }
