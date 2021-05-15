@@ -23,6 +23,10 @@ export default class Turret extends Structure {
 		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
 	}
 
+	public getBuildingType() {
+		return Constant.BUILDING.TURRET;
+	}
+
 	public aimAndFireIfPossible(direction: number, timePassed: number) {
 		this.aim(direction);
 		if (this.canShoot()) this.turretShootBullet();

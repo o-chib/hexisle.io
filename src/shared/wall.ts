@@ -8,6 +8,10 @@ export default class Wall extends Structure {
 		this.tile = tile;
 	}
 
+	public getBuildingType() {
+		return Constant.BUILDING.WALL;
+	}
+
 	public serializeForUpdate(): any {
 		return {
 			id: this.id,
