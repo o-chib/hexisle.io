@@ -1,4 +1,4 @@
-import { Constant } from "./constants";
+import { Constant } from './constants';
 
 export default abstract class IndestructibleObj {
 	public id: string;
