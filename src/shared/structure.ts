@@ -1,7 +1,19 @@
+import DestructibleObj from './destructibleObj';
 import { Tile } from './hexTiles';
-import IndestructibleObj from './indestructibleObj';
 
-export default interface Structure extends IndestructibleObj {
-	tile: Tile;
-	getBuildingType(): string;
+export default abstract class Structure extends DestructibleObj {
+	public tile: Tile;
+
+	constructor(id: string, hp = 0, tile: Tile) {
+		super(
+			id,
+			tile.cartesian_coord.xPos,
+			tile.cartesian_coord.yPos,
+			tile.teamNumber,
+			hp
+		);
+		this.tile = tile;
+	}
+
+	public abstract getBuildingType(): string;
 }

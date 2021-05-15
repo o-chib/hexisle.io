@@ -6,13 +6,13 @@ export default class Campfire extends IndestructibleObj {
 	public territoryPoints: OffsetPoint[];
 	public captureProgress: number; // Variable Progress Bar (0-100)
 	public isCaptured: boolean;
-	public capturingTeam: number; // denotes who is capturing
+	public capturingTeam: number; // denotes who is capturing (-1 = no team)
 
 	constructor(id: string, xPos: number, yPos: number) {
-		super(id, xPos, yPos, Constant.TEAM.NONE);
+		super(id, xPos, yPos, -1);
 		this.isCaptured = false;
 		this.captureProgress = 0;
-		this.capturingTeam = Constant.TEAM.NONE;
+		this.capturingTeam = -1;
 		this.territoryPoints = [];
 	}
 

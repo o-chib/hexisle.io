@@ -1,29 +1,21 @@
 import Structure from './structure';
 import { Constant } from './constants';
 import { Tile } from './hexTiles';
-import DestructibleObj from './destructibleObj';
 
-export default class Turret extends DestructibleObj implements Structure {
+export default class Turret extends Structure {
 	public static readonly RELOAD_TIME = 1 * 1000;
 
 	public direction: number;
 	public reloadTimer: number;
 	public hasTarget: boolean;
 	private gameShootBullet: (turret: any, direction: number) => void;
-	public tile: Tile;
 
 	constructor(
 		id: string,
 		tile: Tile,
 		gameShootBulletMethod?: (turret: any, direction: number) => void
 	) {
-		super(
-			id,
-			tile.cartesian_coord.xPos,
-			tile.cartesian_coord.yPos,
-			tile.teamNumber,
-			Constant.HP.TURRET
-		);
+		super(id, Constant.HP.TURRET, tile);
 		this.tile = tile;
 		this.direction = 0;
 		this.reloadTimer = 0;
