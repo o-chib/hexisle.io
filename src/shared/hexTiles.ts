@@ -198,7 +198,8 @@ export class HexTiles {
 		if (
 			this.tileMap[hexCoord.q][hexCoord.r].building !=
 				Constant.BUILDING.NONE ||
-			this.tileMap[hexCoord.q][hexCoord.r].teamNumber != -1
+			this.tileMap[hexCoord.q][hexCoord.r].teamNumber !=
+				Constant.TEAM.NONE
 		) {
 			return false;
 		}
