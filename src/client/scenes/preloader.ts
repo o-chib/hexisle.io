@@ -73,6 +73,10 @@ export default class Preloader extends Phaser.Scene {
 				frameHeight: 134,
 			}
 		);
+		this.load.spritesheet('campfire', '../assets/campfire.png', {
+			frameWidth: 246,
+			frameHeight: 255,
+		});
 
 		// Lobby
 		this.load.image('lobby_bg', '../assets/lobby_bg.png');
@@ -92,7 +96,6 @@ export default class Preloader extends Phaser.Scene {
 		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
-		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
 		this.load.image('resSmall', '../assets/resourceSmall.png');
 		this.load.image('resMedium', '../assets/resourceMedium.png');
