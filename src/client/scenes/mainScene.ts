@@ -329,6 +329,54 @@ export default class MainScene extends Phaser.Scene {
 		return structureSprite;
 	}
 
+	private handleCampfireAnimation(
+		campfireSprite: Phaser.GameObjects.Sprite,
+		teamNumber: number
+	) {
+		campfireSprite.setDepth(0);
+
+		if (!campfireSprite.anims.get('campfire_lit')) {
+			campfireSprite.anims.create({
+				key: 'campfire_lit',
+				frames: this.anims.generateFrameNames('campfire', {
+					start: 1,
+					end: 4,
+				}),
+				frameRate: 5,
+				repeat: -1,
+			});
+		}
+		if (!campfireSprite.anims.get('campfire_unlit')) {
+			campfireSprite.anims.create({
+				key: 'campfire_unlit',
+				frames: this.anims.generateFrameNames('campfire', {
+					start: 0,
+					end: 0,
+				}),
+				frameRate: 1,
+				repeat: -1,
+			});
+		}
+
+		if (teamNumber != Constant.TEAM.NONE) {
+			if (
+				campfireSprite.anims.getName() == 'campfire_unlit' ||
+				campfireSprite.anims.getName() == ''
+			) {
+				campfireSprite.anims.stop();
+				campfireSprite.anims.play('campfire_lit', true);
+			}
+		} else {
+			if (
+				campfireSprite.anims.getName() == 'campfire_lit' ||
+				campfireSprite.anims.getName() == ''
+			) {
+				campfireSprite.anims.stop();
+				campfireSprite.anims.play('campfire_unlit', true);
+			}
+		}
+	}
+
 	calculateDirection() {
 		let direction = NaN;
 		if (this.moveKeys.left.isDown && !this.moveKeys.right.isDown) {
@@ -590,11 +638,12 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			campfires,
 			this.campfireSprites,
-			'campfire_unlit',
+			'campfire',
 			(newCampfire, newCampfireLiteral) => {
-				if (newCampfireLiteral.teamNumber != Constant.TEAM.NONE)
-					newCampfire.setTexture('campfire_lit').setDepth(0);
-				else newCampfire.setTexture('campfire_unlit').setDepth(0);
+				this.handleCampfireAnimation(
+					newCampfire,
+					newCampfireLiteral.teamNumber
+				);
 				return newCampfire;
 			}
 		);
@@ -664,17 +713,17 @@ export default class MainScene extends Phaser.Scene {
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[0]
 				) {
-					newResource.setTexture('blueRes');
+					newResource.setTexture('resSmall');
 				} else if (
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[1]
 				) {
-					newResource.setTexture('greenRes');
+					newResource.setTexture('resMedium');
 				} else if (
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[2]
 				) {
-					newResource.setTexture('whiteRes');
+					newResource.setTexture('resLarge');
 				}
 				newResource.setVisible(true);
 				return newResource;
