@@ -789,6 +789,7 @@ export default class Game {
 		tile.building = Constant.BUILDING.BASE;
 
 		const base: Base = new Base(this.idGenerator.newID(), tile);
+		tile.buildingObj = base;
 
 		this.bases.add(base);
 		this.collision.insertCollider(base, Constant.RADIUS.COLLISION.BASE);
@@ -802,6 +803,7 @@ export default class Game {
 			this.hexTileMap.getHexRingPoints(tile, i).forEach((coord) => {
 				this.hexTileMap.tileMap[coord.q][coord.r].building =
 					Constant.BUILDING.CANT_BUILD;
+				this.hexTileMap.tileMap[coord.q][coord.r].buildingObj = base;
 			});
 		}
 	}
