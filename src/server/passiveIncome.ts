@@ -1,6 +1,6 @@
 import { Constant } from '../shared/constants';
-import Player from '../shared/player';
-import Teams from '../shared/teams';
+import Player from './objects/player';
+import Teams from './objects/teams';
 
 export class PassiveIncome {
 	private updateTimer: number;

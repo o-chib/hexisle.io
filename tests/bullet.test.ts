@@ -1,4 +1,4 @@
-import Bullet from '../src/shared/bullet';
+import Bullet from '../src/server/objects/bullet';
 import { Constant } from '../src/shared/constants';
 
 describe('Bullet', () => {

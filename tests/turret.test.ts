@@ -1,4 +1,4 @@
-import Turret from '../src/shared/turret';
+import Turret from '../src/server/objects/turret';
 import { Constant } from '../src/shared/constants';
 import { Tile, Point } from '../src/shared/hexTiles';
 
