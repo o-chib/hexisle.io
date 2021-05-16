@@ -1,6 +1,6 @@
-import { Constant } from '../shared/constants';
-import { Point } from './hexTiles';
-import Collision from './../server/collision';
+import { Constant } from '../../shared/constants';
+import { Point } from '../../shared/hexTiles';
+import Collision from '../collision';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {

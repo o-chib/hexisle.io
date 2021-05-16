@@ -1,5 +1,5 @@
-import { Constant } from './constants';
-import { Tile } from './hexTiles';
+import { Constant } from '../../shared/constants';
+import { Tile } from '../../shared/hexTiles';
 import Structure from './structure';
 
 export default class Base extends Structure {

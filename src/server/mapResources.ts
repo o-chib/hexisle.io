@@ -1,6 +1,6 @@
 import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
-import IndestructibleObj from '../shared/indestructibleObj';
+import IndestructibleObj from './objects/indestructibleObj';
 
 export class MapResources {
 	private readonly INITIAL_RESOURCES: number;

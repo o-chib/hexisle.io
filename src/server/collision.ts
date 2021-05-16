@@ -1,9 +1,9 @@
-import Player from './../shared/player';
-import Bullet from './../shared/bullet';
-import Wall from '../shared/wall';
-import Turret from '../shared/turret';
-import Campfire from '../shared/campfire';
-import Base from '../shared/base';
+import Player from './objects/player';
+import Bullet from './objects/bullet';
+import Wall from './objects/wall';
+import Turret from './objects/turret';
+import Campfire from './objects/campfire';
+import Base from './objects/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';

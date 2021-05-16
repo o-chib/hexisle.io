@@ -1,5 +1,5 @@
-import { Constant } from './constants';
-import { OffsetPoint } from './hexTiles';
+import { Constant } from '../../shared/constants';
+import { OffsetPoint } from '../../shared/hexTiles';
 import IndestructibleObj from './indestructibleObj';
 
 export default class Campfire extends IndestructibleObj {

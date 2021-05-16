@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import Player from './../shared/player';
-import Teams from '../shared/teams';
-import Bullet from './../shared/bullet';
-import Wall from './../shared/wall';
-import Turret from '../shared/turret';
-import Campfire from './../shared/campfire';
-import Base from './../shared/base';
+import Player from './objects/player';
+import Teams from './objects/teams';
+import Bullet from './objects/bullet';
+import Wall from './objects/wall';
+import Turret from './objects/turret';
+import Campfire from './objects/campfire';
+import Base from './objects/base';
 import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
-import Territory from './../shared/territory';
+import Territory from './objects/territory';
 import { MapResources, Resource } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';

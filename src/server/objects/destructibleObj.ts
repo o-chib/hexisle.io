@@ -1,4 +1,4 @@
-import { Constant } from './constants';
+import { Constant } from '../../shared/constants';
 import IndestructibleObj from './indestructibleObj';
 
 export default abstract class DestructibleObj extends IndestructibleObj {

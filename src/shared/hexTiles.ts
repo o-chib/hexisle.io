@@ -1,5 +1,5 @@
 import { Constant } from '../shared/constants';
-import Structure from './structure';
+import Structure from '../server/objects/structure';
 
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates

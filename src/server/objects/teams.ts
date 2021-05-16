@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { OffsetPoint } from './hexTiles';
+import { OffsetPoint } from '../../shared/hexTiles';
 
 export default class Teams {
 	private teams: Map<number, Team>;

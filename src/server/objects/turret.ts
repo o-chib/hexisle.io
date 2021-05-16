@@ -1,6 +1,6 @@
 import Structure from './structure';
-import { Constant } from './constants';
-import { Tile } from './hexTiles';
+import { Constant } from '../../shared/constants';
+import { Tile } from '../../shared/hexTiles';
 
 export default class Turret extends Structure {
 	public static readonly RELOAD_TIME = 1 * 1000;

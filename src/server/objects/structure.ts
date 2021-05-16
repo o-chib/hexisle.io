@@ -1,5 +1,5 @@
 import DestructibleObj from './destructibleObj';
-import { Tile } from './hexTiles';
+import { Tile } from '../../shared/hexTiles';
 
 export default abstract class Structure extends DestructibleObj {
 	public tile: Tile;
