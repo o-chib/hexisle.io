@@ -35,6 +35,7 @@ export default class Game {
 	previousUpdateTimestamp: number;
 	endGameTimestamp: number;
 	gameTimeRemaining: number;
+	performanceSample = 0;
 
 	constructor(gameOverCallback: () => any) {
 		this.gameOverCallback = gameOverCallback;
@@ -78,29 +79,62 @@ export default class Game {
 	}
 
 	update() {
+		console.time('Total');
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (timePassed > 24)
-			console.log('WARNING : Update took ', timePassed, 'ms');
+		if (this.performanceSample <= 0) {
+			this.updatePerformanceStats(timePassed);
+			this.performanceSample = 20;
+		} else {
+			this.performanceSample--;
+		}
 
+		console.time('Bullets');
 		this.updateBullets(currentTimestamp, timePassed);
+		console.timeEnd('Bullets');
 
+		console.time('Territories');
 		this.updateTerritories();
+		console.timeEnd('Territories');
 
+		console.time('Walls');
 		this.updateWalls();
+		console.timeEnd('Walls');
 
+		console.time('Turrets');
 		this.updateTurrets(timePassed);
+		console.timeEnd('Turrets');
 
+		console.time('Bases');
 		this.updateBases();
+		console.timeEnd('Bases');
 
+		console.time('Players');
 		this.updatePlayers(currentTimestamp, timePassed);
+		console.timeEnd('Players');
 
+		console.time('Resources');
 		this.updateMapResources(timePassed);
+		console.timeEnd('Resources');
 
+		console.time('Game Over');
 		if (this.isGameOver()) this.endGame();
+		console.timeEnd('Game Over');
 
+		console.time('Send Updates');
 		this.sendStateToPlayers();
+		console.timeEnd('Send Updates');
+
+		console.timeEnd('Total');
+		console.log('');
+	}
+
+	private async updatePerformanceStats(timePassed: number) {
+		process.stdout.cursorTo(0);
+		process.stdout.write(
+			'Update: ' + Math.round(1000 / timePassed) + 'fps'
+		);
 	}
 
 	calculateTimePassed(): [number, number] {
