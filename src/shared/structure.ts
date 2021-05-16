@@ -13,6 +13,7 @@ export default abstract class Structure extends DestructibleObj {
 			hp
 		);
 		this.tile = tile;
+		this.tile.building = this.getBuildingType();
 	}
 
 	public abstract getBuildingType(): string;
