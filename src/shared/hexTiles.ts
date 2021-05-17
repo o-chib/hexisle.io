@@ -614,7 +614,7 @@ export class Tile {
 	public cartesian_coord: Point;
 	public teamNumber: number;
 	public building: string;
-	public buildingObj: Structure | null;
+	private buildingObj: Structure | null;
 
 	constructor(
 		building: string = Constant.BUILDING.NONE,
@@ -625,11 +625,15 @@ export class Tile {
 		this.buildingObj = null;
 	}
 
+	public getBuildingId(): string {
+		return this.buildingObj!.id;
+	}
+
 	public hasNoBuilding(): boolean {
 		return this.building == Constant.BUILDING.NONE && !this.buildingObj;
 	}
 
-	public setBuilding(buildingType: string, buildingObj: any): void {
+	public setBuilding(buildingType: string, buildingObj: Structure): void {
 		this.building = buildingType;
 		this.buildingObj = buildingObj;
 	}

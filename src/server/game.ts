@@ -676,7 +676,6 @@ export default class Game {
 	addWall(tile: Tile): void {
 		const wall: Wall = new Wall(this.idGenerator.newID(), tile);
 		this.walls.set(wall.id, wall);
-		tile.setBuilding(Constant.BUILDING.WALL, wall);
 		this.collision.insertCollider(wall, Constant.RADIUS.COLLISION.WALL);
 	}
 
@@ -687,7 +686,6 @@ export default class Game {
 			this.shootBullet.bind(this)
 		);
 		this.turrets.set(turret.id, turret);
-		tile.setBuilding(Constant.BUILDING.TURRET, turret);
 		this.collision.insertCollider(turret, Constant.RADIUS.COLLISION.TURRET);
 	}
 
@@ -717,9 +715,9 @@ export default class Game {
 
 		player.refundStructure(tile.building);
 		if (tile.building == Constant.BUILDING.WALL) {
-			this.removeWall(this.walls.get(tile.buildingObj!.id)!);
+			this.removeWall(this.walls.get(tile.getBuildingId())!);
 		} else if (tile.building == Constant.BUILDING.TURRET) {
-			this.removeTurret(this.turrets.get(tile.buildingObj!.id)!);
+			this.removeTurret(this.turrets.get(tile.getBuildingId())!);
 		}
 	}
 
@@ -788,7 +786,6 @@ export default class Game {
 		tile.teamNumber = teamNum;
 
 		const base: Base = new Base(this.idGenerator.newID(), tile);
-		tile.buildingObj = base;
 
 		this.bases.add(base);
 		this.collision.insertCollider(base, Constant.RADIUS.COLLISION.BASE);
@@ -800,7 +797,10 @@ export default class Game {
 		// make it so you cant build on and around the base
 		for (let i = 0; i <= 2; i++) {
 			this.hexTileMap.getHexRingPoints(tile, i).forEach((coord) => {
-				this.hexTileMap.tileMap[coord.q][coord.r].buildingObj = base;
+				this.hexTileMap.tileMap[coord.q][coord.r].setBuilding(
+					base.getBuildingType(),
+					base
+				);
 			});
 		}
 	}
