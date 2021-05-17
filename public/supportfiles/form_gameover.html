@@ -9,6 +9,15 @@
                 margin: 0px;
                 box-sizing: border-box;
             }
+            #scene{
+                display: flex;
+                flex-direction: column;
+            }
+            #logo img{
+                height: 400px;
+                width: 800px;
+                margin: auto;
+            }
             #input-form {
                 padding: 20px 5px ;
                 margin:auto;
@@ -41,10 +50,6 @@
                 width:275px;
                 margin:20px;
                 padding: 20px 10px;
-            }
-            #logo{
-                height: 200px;
-                width:100px;
             }
             #divider{
                 display: block;
@@ -81,16 +86,17 @@
         </style>
     </head>
     <body>
-        <div id="logo"></div>
-        <div id="input-form">
-            <h1>Game Over!</h1>
-            <div id="message"></div>
-            <div id="divider"></div>
-            <button id="returnButton">
-                <img class="button-unpressed" src="../assets/return_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/return_button_pressed.png"></img>
-            </button>
+        <div id='scene'>
+            <div id="logo"><img src="../assets/logo.png"></img></div>
+            <div id="input-form">
+                <h1>Game Over!</h1>
+                <div id="message"></div>
+                <div id="divider"></div>
+                <button id="returnButton">
+                    <img class="button-unpressed" src="../assets/return_button_unpressed.png"></img>
+                    <img class="button-pressed" src="../assets/return_button_pressed.png"></img>
+                </button>
+            </div>
         </div>
-
     </body>
 </html>

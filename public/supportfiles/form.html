@@ -9,6 +9,15 @@
                 margin: 0px;
                 box-sizing: border-box;
             }
+            #scene{
+                display: flex;
+                flex-direction: column;
+            }
+            #logo img{
+                height: 300px;
+                width: 600px;
+                margin: auto;
+            }
             #input-form {
                 padding: 20px 5px ;
                 margin:auto;
@@ -20,10 +29,6 @@
 
                 display: flex;
                 flex-direction: column;
-            }
-            #logo{
-                height: 200px;
-                width:100px;
             }
             #input-form input, select{
                 font-family: 'Open Sans Condensed', sans-serif;
@@ -81,26 +86,27 @@
         </style>
     </head>
     <body>
-        <div id="logo"></div>
-        <div id="input-form">
-            <input type="text" name="name" placeholder="Enter Username.." value="" />
-            <select id="dropdownList" name="dropdownList">
-                <!-- Filled with Phaser -->
-            </select>
-            <div id="divider"></div>
-            <button id="playButton">
-                <img class="button-unpressed" src="../assets/lobby_play_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_play_button_pressed.png"></img>
-            </button>
-            <button id="optionButton">
-                <img class="button-unpressed" src="../assets/lobby_options_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_options_button_pressed.png"></img>
-            </button>
-            <button id="helpButton">
-                <img class="button-unpressed" src="../assets/lobby_help_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_help_button_pressed.png"></img>
-            </button>
+        <div id='scene'>
+            <div id="logo"><img src="../assets/logo.png"></img></div>
+            <div id="input-form">
+                <input type="text" name="name" placeholder="Enter Username.." value="" />
+                <select id="dropdownList" name="dropdownList">
+                    <!-- Filled with Phaser -->
+                </select>
+                <div id="divider"></div>
+                <button id="playButton">
+                    <img class="button-unpressed" src="../assets/lobby_play_button_unpressed.png"></img>
+                    <img class="button-pressed" src="../assets/lobby_play_button_pressed.png"></img>
+                </button>
+                <button id="optionButton">
+                    <img class="button-unpressed" src="../assets/lobby_options_button_unpressed.png"></img>
+                    <img class="button-pressed" src="../assets/lobby_options_button_pressed.png"></img>
+                </button>
+                <button id="helpButton">
+                    <img class="button-unpressed" src="../assets/lobby_help_button_unpressed.png"></img>
+                    <img class="button-pressed" src="../assets/lobby_help_button_pressed.png"></img>
+                </button>
+            </div>
         </div>
-
     </body>
 </html>

@@ -32,21 +32,25 @@ export default class MainMenu extends Phaser.Scene {
 		const renderHeight = this.game.renderer.height;
 
 		// Background image
-		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
+		var bg = this.add.image(0,0, 'lobby_bg').setOrigin(0.5).setDepth(0).setScale(0.75);
+		var circle = new Phaser.Geom.Circle(0, 0, 200);
+		Phaser.Actions.PlaceOnCircle([bg], circle,Phaser.Math.DegToRad(-180));
+		const tweenAngleToRotateBy = 0.02;
+		var tween = this.tweens.add({
+			targets: circle,
+	        radius: 200,
+	        ease: 'Quintic.easeInOut',
+	        duration: 1500,
+	        yoyo: true,
+	        repeat: -1,
+	        onUpdate: function ()
+	        {
+	           //Phaser.Actions.RotateAroundDistance([bg], { x: 400, y: 300 }, tweenAngleToRotateBy, 200);
+	        }
+		});
 
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);
-
-		// Logo and Title
-		const logoImg = this.add
-			.image(0, renderHeight * 0.2, 'campfire_lit')
-			.setDepth(1);
-		menuContainer.add(logoImg);
-		const newGameText = this.add
-			.image(0, logoImg.y + 50, 'lobby_logo')
-			.setDepth(2)
-			.setScale(0.5);
-		menuContainer.add(newGameText);
 
 		// Form Box
 		this.inputBox = this.add

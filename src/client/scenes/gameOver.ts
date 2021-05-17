@@ -31,17 +31,6 @@ export default class gameOver extends Phaser.Scene {
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);
 
-		// Logo and Title
-		const logoImg = this.add
-			.image(0, renderHeight * 0.2, 'campfire_lit')
-			.setDepth(1);
-		menuContainer.add(logoImg);
-		const newGameText = this.add
-			.image(0, logoImg.y + 50, 'lobby_logo')
-			.setDepth(2)
-			.setScale(0.5);
-		menuContainer.add(newGameText);
-
 		// Form Box
 		this.messageBox = this.add
 			.dom(0, renderHeight * 0.45)
@@ -51,21 +40,7 @@ export default class gameOver extends Phaser.Scene {
 
 		// Message
 		var textMessage = "";
-		// const message = this.add.text(
-		// 	renderWidth / 2 - 200,
-		// 	renderHeight * 0.5 - 120,
-		// 	'Game Over, ',
-		// 	{
-		// 		font: '36px Arial',
-		// 		align: 'left',
-		// 		stroke: '#000000',
-		// 		strokeThickness: 5,
-		// 	}
-		// );
-		// message.text +=
-		// 	this.endState.winner == Constant.TEAM.BLUE ? 'Blue' : 'Red';
-		// message.text += ' team wins!';
-		// message.text += '\n' + this.endState.message;
+		
 		textMessage +=
 			this.endState.winner == Constant.TEAM.BLUE ? 'Blue' : 'Red';
 		textMessage += ' team wins!';
