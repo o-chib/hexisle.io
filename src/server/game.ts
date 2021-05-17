@@ -781,13 +781,11 @@ export default class Game {
 	}
 
 	buildBase(teamNum: number, coord: OffsetPoint): void {
-		if (!this.hexTileMap.checkIfValidHex(coord)) {
-			return;
-		}
+		if (!this.hexTileMap.checkIfValidHex(coord))
+			throw new Error('Base is not on a valid hex.');
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
 		tile.teamNumber = teamNum;
-		tile.building = Constant.BUILDING.BASE;
 
 		const base: Base = new Base(this.idGenerator.newID(), tile);
 		tile.buildingObj = base;
@@ -802,8 +800,6 @@ export default class Game {
 		// make it so you cant build on and around the base
 		for (let i = 0; i <= 2; i++) {
 			this.hexTileMap.getHexRingPoints(tile, i).forEach((coord) => {
-				this.hexTileMap.tileMap[coord.q][coord.r].building =
-					Constant.BUILDING.CANT_BUILD;
 				this.hexTileMap.tileMap[coord.q][coord.r].buildingObj = base;
 			});
 		}

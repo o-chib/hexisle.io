@@ -90,7 +90,6 @@ export const Constant = Object.freeze({
 		TURRET: 'TURRET',
 		CAMP: 'CAMP',
 		BASE: 'BASE',
-		CANT_BUILD: 'CANT_BUILD',
 		BOUNDARY: 'BOUNDARY',
 	},
 
