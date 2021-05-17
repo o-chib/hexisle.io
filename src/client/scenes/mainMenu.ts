@@ -5,7 +5,7 @@ import { Constant } from './../../shared/constants';
 export default class MainMenu extends Phaser.Scene {
 	public static Name = 'MainMenu';
 	private socket: SocketIOClient.Socket;
-	private playerName: string | undefined = '';
+	private playerName = '';
 	private gameid: string | undefined = '';
 	private inputBox;
 	private nextUpdateTime: number;
@@ -54,8 +54,7 @@ export default class MainMenu extends Phaser.Scene {
 			.setDepth(1);
 		menuContainer.add(this.inputBox);
 		const submitKey = this.input.keyboard.addKey(
-			Phaser.Input.Keyboard.KeyCodes.ENTER,
-			false
+			Phaser.Input.Keyboard.KeyCodes.ENTER
 		);
 
 		// Buttons in a Container
@@ -169,7 +168,6 @@ export default class MainMenu extends Phaser.Scene {
 		this.gameid = this.inputBox.getChildByName('dropdownList').value;
 
 		if (this.gameid == '') this.gameid = undefined;
-		if (this.playerName == '') this.playerName = undefined;
 
 		this.socket.emit(
 			Constant.MESSAGE.JOIN_GAME,

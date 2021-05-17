@@ -34,17 +34,8 @@ allGames.newGame();
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
 websocket.on('connection', function (socket: SocketIO.Socket) {
-	socket.on(Constant.MESSAGE.JOIN_GAME, (name?: string, gameID?: string) => {
-		if (!name) name = 'Aliem';
-
-		if (filter.isProfane(name)) {
-			socket.emit(
-				Constant.MESSAGE.JOIN_GAME_FAIL,
-				'Please use a different name'
-			);
-		}
-
-		if (allGames.addPlayerToGame(socket, name, gameID))
+	socket.on(Constant.MESSAGE.JOIN_GAME, (name = 'Aliem', gameID?: string) => {
+		if (allGames.addPlayerToGame(socket, filter.clean(name), gameID))
 			socket.emit(Constant.MESSAGE.JOIN_GAME_SUCCESS);
 		else
 			socket.emit(
