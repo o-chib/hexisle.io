@@ -1,6 +1,6 @@
 import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
-import IndestructibleObj from './objects/indestructibleObj';
+import { Resource } from './objects/resource';
 
 export class MapResources {
 	private readonly INITIAL_RESOURCES: number;
@@ -99,26 +99,5 @@ export class MapResources {
 
 	private decrementUpdateTimer(timePassed: number): void {
 		this.updateTimer -= timePassed;
-	}
-}
-
-export class Resource extends IndestructibleObj {
-	public dropAmount: number;
-	public type: string;
-
-	constructor(id: string, xPos: number, yPos: number, type: string) {
-		super(id, xPos, yPos, Constant.TEAM.NONE);
-		this.dropAmount = Constant.RESOURCE.DROP_AMOUNT[type];
-		this.type = type;
-	}
-
-	serializeForUpdate(): any {
-		return {
-			id: this.id,
-			xPos: this.xPos,
-			yPos: this.yPos,
-			dropAmount: this.dropAmount,
-			type: this.type,
-		};
 	}
 }

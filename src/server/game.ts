@@ -12,9 +12,10 @@ import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './objects/territory';
-import { MapResources, Resource } from './mapResources';
+import { MapResources } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
+import { Resource } from './objects/resource';
 
 export default class Game {
 	hexTileMap: HexTiles;
