@@ -16,6 +16,9 @@ import { MapResources, Resource } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
 
+import PerformanceMonoitor from './performance';
+import { performance } from 'perf_hooks';
+
 export default class Game {
 	hexTileMap: HexTiles;
 	collision: CollisionDetection;
@@ -35,10 +38,12 @@ export default class Game {
 	previousUpdateTimestamp: number;
 	endGameTimestamp: number;
 	gameTimeRemaining: number;
-	performanceSample = 0;
+
+	perfMonitor: PerformanceMonoitor;
 
 	constructor(gameOverCallback: () => any) {
 		this.gameOverCallback = gameOverCallback;
+		this.perfMonitor = new PerformanceMonoitor();
 
 		this.endGameTimestamp = Date.now() + Constant.TIMING.GAME_TIME_LIMIT;
 		this.players = new Map();
@@ -79,62 +84,51 @@ export default class Game {
 	}
 
 	update() {
-		console.time('Total');
+		//console.time('Total');
+		const startTime = performance.now();
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (this.performanceSample <= 0) {
-			this.updatePerformanceStats(timePassed);
-			this.performanceSample = 20;
-		} else {
-			this.performanceSample--;
-		}
-
-		console.time('Bullets');
+		//console.time('Bullets');
 		this.updateBullets(currentTimestamp, timePassed);
-		console.timeEnd('Bullets');
+		//console.timeEnd('Bullets');
 
-		console.time('Territories');
+		//console.time('Territories');
 		this.updateTerritories();
-		console.timeEnd('Territories');
+		//console.timeEnd('Territories');
 
-		console.time('Walls');
+		//console.time('Walls');
 		this.updateWalls();
-		console.timeEnd('Walls');
+		//console.timeEnd('Walls');
 
-		console.time('Turrets');
+		//console.time('Turrets');
 		this.updateTurrets(timePassed);
-		console.timeEnd('Turrets');
+		//console.timeEnd('Turrets');
 
-		console.time('Bases');
+		//console.time('Bases');
 		this.updateBases();
-		console.timeEnd('Bases');
+		//console.timeEnd('Bases');
 
-		console.time('Players');
+		//console.time('Players');
 		this.updatePlayers(currentTimestamp, timePassed);
-		console.timeEnd('Players');
+		//console.timeEnd('Players');
 
-		console.time('Resources');
+		//console.time('Resources');
 		this.updateMapResources(timePassed);
-		console.timeEnd('Resources');
+		//console.timeEnd('Resources');
 
-		console.time('Game Over');
+		//console.time('Game Over');
 		if (this.isGameOver()) this.endGame();
-		console.timeEnd('Game Over');
+		//console.timeEnd('Game Over');
 
-		console.time('Send Updates');
+		//console.time('Send Updates');
 		this.sendStateToPlayers();
-		console.timeEnd('Send Updates');
+		//console.timeEnd('Send Updates');
 
-		console.timeEnd('Total');
-		console.log('');
-	}
+		//console.timeEnd('Total');
+		//console.log('');
 
-	private async updatePerformanceStats(timePassed: number) {
-		process.stdout.cursorTo(0);
-		process.stdout.write(
-			'Update: ' + Math.round(1000 / timePassed) + 'fps'
-		);
+		this.perfMonitor.update(performance.now() - startTime);
 	}
 
 	calculateTimePassed(): [number, number] {
