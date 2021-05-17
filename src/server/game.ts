@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import Player from './objects/player';
-import Teams from './objects/teams';
+import Teams from './teams';
 import Bullet from './objects/bullet';
 import Wall from './objects/wall';
 import Turret from './objects/turret';
