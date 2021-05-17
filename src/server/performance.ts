@@ -1,16 +1,28 @@
+import { performance } from 'perf_hooks';
+
 export default class PerformanceMonoitor {
 	public avg = 0;
 	public max = -1;
 	public min = Number.MAX_VALUE;
 	public count = 0;
 	private performanceSample = 0;
+	private startTime: number;
+	private updateFlag = false;
 
-	public update(timePassed: number) {
+	public start() {
 		if (this.performanceSample <= 0) {
-			this.updatePerformanceStats(timePassed);
 			this.performanceSample = 20;
+			this.startTime = performance.now();
+			this.updateFlag = true;
 		} else {
 			this.performanceSample--;
+		}
+	}
+
+	public stop() {
+		if (this.updateFlag) {
+			this.updatePerformanceStats(performance.now() - this.startTime);
+			this.updateFlag = false;
 		}
 	}
 

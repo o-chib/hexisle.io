@@ -17,7 +17,6 @@ import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
 
 import PerformanceMonoitor from './performance';
-import { performance } from 'perf_hooks';
 
 export default class Game {
 	hexTileMap: HexTiles;
@@ -85,7 +84,6 @@ export default class Game {
 
 	update() {
 		//console.time('Total');
-		const startTime = performance.now();
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
@@ -102,7 +100,9 @@ export default class Game {
 		//console.timeEnd('Walls');
 
 		//console.time('Turrets');
+		this.perfMonitor.start();
 		this.updateTurrets(timePassed);
+		this.perfMonitor.stop();
 		//console.timeEnd('Turrets');
 
 		//console.time('Bases');
@@ -127,8 +127,6 @@ export default class Game {
 
 		//console.timeEnd('Total');
 		//console.log('');
-
-		this.perfMonitor.update(performance.now() - startTime);
 	}
 
 	calculateTimePassed(): [number, number] {
