@@ -63,5 +63,4 @@ function checkServerStatus()
     };
     document.body.removeChild(img)
     img.src = "https://play.hexisle.io/assets/help.png";
-    // img.src = "https://raw.githubusercontent.com/o-chib/teamIO-project/main/public/assets/base_red.png?token=AHYXK3SYAE26AUBRMPZR3HTAVBMDS";
 }
