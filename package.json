@@ -6,8 +6,12 @@
   "license": "",
   "main": "build/server/server.js",
   "scripts": {
+    "prestart": "npm run build-prod",
+    "start": "npm run sudoserver",
     "website": "npm run build && npm run server",
-    "server": "sudo node build/server/server.js",
+    "server": "node build/server/server.js",
+    "sudowebsite": "npm run build && npm run sudoserver",
+    "sudoserver": "sudo node build/server/server.js",
     "build": "concurrently npm:build-server npm:build-client",
     "build-prod": "concurrently npm:build-server npm:build-prod-client",
     "build-server": "tsc --build tsconfig.build-server.json",
