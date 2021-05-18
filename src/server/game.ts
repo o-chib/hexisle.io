@@ -443,7 +443,7 @@ export default class Game {
 			// 		Constant.RADIUS.VIEW
 			// 	)
 			// )
-			
+
 			// Let player have information about all bases at all times
 			nearbyBases.push(aBase);
 		}

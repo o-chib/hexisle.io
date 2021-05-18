@@ -1,10 +1,10 @@
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
+import Healthbar from './Healthbar';
 
 // Text Structure
-const info_format = `Health:	%1
-Resources:	%2`;
+const info_format = `%1`;
 const timer_format = `%1:%2`;
 const debug_format = `cursor:
 xPos/yPos:%1/%2
@@ -23,11 +23,11 @@ export default class HUDScene extends Phaser.Scene {
 	// Quit Button
 	private quitButton: Phaser.GameObjects.Image;
 
-	private healthbar_blue: Phaser.GameObjects.Image;
-	private x_blue: number;
+	private healthbar_player: Healthbar;
+	private healthbar_team_red: Healthbar;
+	private healthbar_team_blue: Healthbar;
 
-	private healthbar_red: Phaser.GameObjects.Image;
-	private x_red: number;
+	private ResourcesCounter: Phaser.GameObjects.Container;
 
 	constructor() {
 		super('HUDScene');
@@ -35,19 +35,74 @@ export default class HUDScene extends Phaser.Scene {
 
 	create(): void {
 		Utilities.LogSceneMethodEntry('HUDScene', 'create');
-		//this.scene.setVisible(false
 
-		this.createHealthBar();
+		// Healthbars
+		this.healthbar_player = new Healthbar();
+		this.healthbar_team_red = new Healthbar();
+		this.healthbar_team_blue = new Healthbar();
+
+		this.healthbar_player.createHealthBar(
+			this.scene.get(HUDScene.Name),
+			'heart_icon',
+			'healthbar_green',
+			{
+				top: 'top+50',
+				left: 'left+20',
+			}
+		);
+		// Have all team bars be on top of each other in one corner
+		this.healthbar_team_red.createHealthBar(
+			this.scene.get(HUDScene.Name),
+			'flag_icon_red',
+			'healthbar_red',
+			{
+				bottom: 'bottom-130',
+				left: 'left+20',
+			}
+		);
+		this.healthbar_team_blue.createHealthBar(
+			this.scene.get(HUDScene.Name),
+			'flag_icon_blue',
+			'healthbar_blue',
+			{
+				bottom: 'bottom-50',
+				left: 'left+20',
+			}
+		);
+
+		// // Flip the oppsosing bar and position to the other corner of map
+		// this.healthbar_team_red.createHealthBar(this.scene.get(HUDScene.Name),'flag_icon_red','healthbar_red',{
+		// 	bottom:'bottom-50',
+		// 	right:'right-20'
+		// });
+		// this.healthbar_team_red.flipEntireHealthBar();
+
+		this.healthbar_player.scaleEntireHealthBar(0.4);
+		this.healthbar_team_red.scaleEntireHealthBar(0.4);
+		this.healthbar_team_blue.scaleEntireHealthBar(0.4);
+		this.healthbar_team_red.scaleHealthBarLength(1.8);
+		this.healthbar_team_blue.scaleHealthBarLength(1.8);
 
 		// HUD: Left
-		this.infoText = this.add.text(0, 0, '', {
-			font: '48px Arial',
-			stroke: '#000000',
-			strokeThickness: 5,
-		});
-		new Anchor(this.infoText, {
-			left: 'left+10',
-			top: 'top+10',
+		this.ResourcesCounter = this.add.container(0, 0);
+		const resourcesIcon = this.add
+			.image(0, 0, 'coin_icon')
+			.setOrigin(0, 0.5);
+		this.infoText = this.add
+			.text(0, 0, '', {
+				font: '48px Arial',
+				stroke: '#000000',
+				strokeThickness: 5,
+			})
+			.setOrigin(0, 0.5)
+			.setScale(2);
+		this.infoText.setX(resourcesIcon.displayWidth + 5);
+
+		this.ResourcesCounter.add([resourcesIcon, this.infoText]);
+		this.ResourcesCounter.setScale(0.4);
+		new Anchor(this.ResourcesCounter, {
+			left: 'left+20',
+			top: 'top+130',
 		});
 
 		// HUD: Center
@@ -128,94 +183,22 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);
 
 		this.mainSceneObj.events.on(
-			'updateHealthBar',
-			this.updateHealthBar,
+			'updateTeamHealthBar',
+			this.updateTeamHealthBar,
 			this
 		);
 	}
 
-	private createHealthBar() {
-		for (let i = 0; i < Constant.TEAM_COUNT; ++i) {
-			let healthbar_shadow: Phaser.GameObjects.Image;
-			let healthbar_outline: Phaser.GameObjects.Image;
-
-			let centerString = 'center';
-			const bottomString = 'bottom-20';
-
-			switch (i) {
-				case Constant.TEAM.BLUE:
-					centerString += '+155';
-					healthbar_shadow = this.add.image(0, 0, 'healthbar_shadow');
-					this.healthbar_blue = this.add.image(
-						0,
-						0,
-						'healthbar_blue'
-					);
-					healthbar_outline = this.add.image(
-						0,
-						0,
-						'healthbar_outline'
-					);
-
-					const config_blue = {
-						centerX: centerString,
-						bottom: bottomString,
-					};
-
-					new Anchor(healthbar_shadow, config_blue);
-					new Anchor(this.healthbar_blue, config_blue);
-					new Anchor(healthbar_outline, config_blue);
-
-					this.x_blue = this.healthbar_blue.x;
-
-					break;
-
-				case Constant.TEAM.RED:
-					centerString += '-155';
-
-					healthbar_shadow = this.add.image(0, 0, 'healthbar_shadow');
-					this.healthbar_red = this.add.image(0, 0, 'healthbar_red');
-					healthbar_outline = this.add.image(
-						0,
-						0,
-						'healthbar_outline'
-					);
-
-					const config_red = {
-						centerX: centerString,
-						bottom: bottomString,
-					};
-
-					new Anchor(healthbar_shadow, config_red);
-					new Anchor(this.healthbar_red, config_red);
-					new Anchor(healthbar_outline, config_red);
-
-					this.x_red = this.healthbar_red.x;
-					break;
-			}
-		}
-	}
-
-	private updateHealthBar(teamNumber: number, healthPercent: number): void {
-		let offset: number;
+	private updateTeamHealthBar(
+		teamNumber: number,
+		healthPercent: number
+	): void {
 		switch (teamNumber) {
 			case Constant.TEAM.BLUE:
-				this.healthbar_blue.setScale(healthPercent, 1);
-				offset =
-					this.x_blue -
-					(this.healthbar_blue.width -
-						this.healthbar_blue.displayWidth) /
-						2;
-				this.healthbar_blue.setX(offset);
+				this.healthbar_team_blue.updateHealthBar(healthPercent);
 				break;
 			case Constant.TEAM.RED:
-				this.healthbar_red.setScale(healthPercent, 1);
-				offset =
-					this.x_red +
-					(this.healthbar_red.width -
-						this.healthbar_red.displayWidth) /
-						2;
-				this.healthbar_red.setX(offset);
+				this.healthbar_team_red.updateHealthBar(healthPercent);
 				break;
 		}
 	}
@@ -228,11 +211,15 @@ export default class HUDScene extends Phaser.Scene {
 			playerHealth = currentPlayer.hp;
 		}
 
+		this.healthbar_player.updateHealthBar(
+			playerHealth / Constant.HP.PLAYER
+		);
+
 		const playerText = Phaser.Utils.String.Format(info_format, [
-			playerHealth,
 			currentPlayer.resources,
 		]);
 		this.infoText?.setText(playerText);
+		// this.infoText?.setVisible(false);
 
 		if (time < 0) time = 0;
 		const dateTime = new Date(time);
