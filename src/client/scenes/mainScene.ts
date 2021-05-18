@@ -3,7 +3,6 @@ import mainMenu from './mainMenu';
 import HUDScene from './HUDScene';
 import HelpOverlayScene from './helpOverlayScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
-
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 
@@ -196,10 +195,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializeGame(update: any): void {
-		const { player, tileMap } = update;
+		const { player } = update;
 		if (player == null) return;
 
-		this.createTileMap(tileMap);
 		this.setCamera();
 		this.initializePlayer(player);
 	}
@@ -218,10 +216,6 @@ export default class MainScene extends Phaser.Scene {
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
 		this.cameras.main.setZoom(0.75);
 		this.cameras.main.setBackgroundColor('#00376F');
-	}
-
-	private createTileMap(tileMap: any) {
-		this.hexTiles.tileMap = tileMap;
 	}
 
 	// Animation control
@@ -311,6 +305,11 @@ export default class MainScene extends Phaser.Scene {
 			});
 
 			// Update anims internal isPlaying/isPaused variables, and loaded anim.
+			structureSprite.anims.play(structureTextureName + '_destroying');
+			structureSprite.anims.pause();
+		} else if (
+			structureSprite.anims.exists(structureTextureName + '_destroying')
+		) {
 			structureSprite.anims.play(structureTextureName + '_destroying');
 			structureSprite.anims.pause();
 		}
@@ -480,7 +479,7 @@ export default class MainScene extends Phaser.Scene {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
 
 		//  Local Animation control
-		if (currentPlayer.health > 0) {
+		if (currentPlayer.hp > 0) {
 			this.alive = true;
 			this.myPlayerSprite.setVisible(true);
 
@@ -490,7 +489,7 @@ export default class MainScene extends Phaser.Scene {
 				currentPlayer.xVel,
 				currentPlayer.yVel
 			);
-		} else if (currentPlayer.health <= 0) {
+		} else if (currentPlayer.hp <= 0) {
 			this.alive = false;
 			this.handleDeathAnimation(
 				this.myPlayerSprite,
@@ -506,7 +505,7 @@ export default class MainScene extends Phaser.Scene {
 			this.bulletSprites,
 			'bullet',
 			(newBullet, newBulletLiteral) => {
-				if (newBulletLiteral.teamNumber == 1)
+				if (newBulletLiteral.teamNumber == Constant.TEAM.BLUE)
 					newBullet.setTexture('bulletblue');
 				return newBullet;
 			}
@@ -533,7 +532,7 @@ export default class MainScene extends Phaser.Scene {
 					newPlayer.setTexture(playerTexture).setDepth(1000);
 
 				// Opponent Animation Control
-				if (playerLiteral.health > 0) {
+				if (playerLiteral.hp > 0) {
 					newPlayer.setVisible(true);
 					newPlayer = this.handleWalkAnimation(
 						newPlayer,
@@ -542,7 +541,7 @@ export default class MainScene extends Phaser.Scene {
 						playerLiteral.yVel
 					);
 				}
-				if (playerLiteral.health <= 0) {
+				if (playerLiteral.hp <= 0) {
 					this.handleDeathAnimation(newPlayer, playerTexture);
 				}
 
@@ -562,6 +561,8 @@ export default class MainScene extends Phaser.Scene {
 					wallTexture = 'wall_red';
 				else if (newWallLiteral.teamNumber == Constant.TEAM.BLUE)
 					wallTexture = 'wall_blue';
+				else if (newWallLiteral.teamNumber == Constant.TEAM.NONE)
+					wallTexture = 'wall_neutral';
 
 				if (newWall.texture.key != wallTexture) {
 					newWall.setTexture(wallTexture);
@@ -591,6 +592,8 @@ export default class MainScene extends Phaser.Scene {
 					turretGunTexture = 'turret_base_red';
 				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.BLUE)
 					turretGunTexture = 'turret_base_blue';
+				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.NONE)
+					turretGunTexture = 'turret_base_neutral';
 
 				if (newTurretBase.texture.key != turretGunTexture) {
 					newTurretBase.setTexture(turretGunTexture);
