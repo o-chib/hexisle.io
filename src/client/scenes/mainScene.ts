@@ -1,5 +1,7 @@
 import gameOver from './gameOver';
 import mainMenu from './mainMenu';
+import HUDScene from './HUDScene';
+import HelpOverlayScene from './helpOverlayScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 
 import { Constant } from './../../shared/constants';
@@ -53,7 +55,9 @@ export default class MainScene extends Phaser.Scene {
 	create(): void {
 		Utilities.LogSceneMethodEntry('MainScene', 'create');
 
-		this.scene.launch('HUDScene');
+		this.scene.launch(HUDScene.Name);
+		this.scene.launch(HelpOverlayScene.Name);
+
 		this.game.canvas.oncontextmenu = function (e) {
 			e.preventDefault();
 		};
@@ -61,6 +65,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.socket.emit(Constant.MESSAGE.START_GAME);
 		this.events.emit('startHUD');
+		this.events.emit('showUI');
 	}
 
 	update(): void {
@@ -105,6 +110,7 @@ export default class MainScene extends Phaser.Scene {
 			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
 			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
 			debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
+			toggleHelp: Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH,
 		});
 	}
 
@@ -428,6 +434,8 @@ export default class MainScene extends Phaser.Scene {
 		} else if (this.actionKeys.debugInfo.isDown) {
 			if (this.debugMode) this.events.emit('clearDebugInfo');
 			this.debugMode = !this.debugMode;
+		} else if (this.actionKeys.toggleHelp.isDown) {
+			this.events.emit('toggleHelpUI');
 		}
 	}
 
@@ -619,7 +627,6 @@ export default class MainScene extends Phaser.Scene {
 					turretGunTexture,
 					healthPercent
 				);
-
 				newTurretGun.setRotation(newTurretLiteralGun.direction);
 
 				return newTurretGun;
@@ -785,6 +792,7 @@ export default class MainScene extends Phaser.Scene {
 		this.deregisterInputListeners();
 		this.cameras.resetAll();
 		this.events.emit('stopHUD');
+		this.events.emit('stopUI');
 		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
 	}
 
