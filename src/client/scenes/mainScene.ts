@@ -17,6 +17,7 @@ export default class MainScene extends Phaser.Scene {
 	private turretBaseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -45,6 +46,7 @@ export default class MainScene extends Phaser.Scene {
 		this.turretBaseSprites = new Map();
 		this.turretGunSprites = new Map();
 		this.campfireSprites = new Map();
+		this.campfireRingSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
 		this.resourceSprites = new Map();
@@ -332,7 +334,7 @@ export default class MainScene extends Phaser.Scene {
 		campfireSprite: Phaser.GameObjects.Sprite,
 		teamNumber: number
 	) {
-		campfireSprite.setDepth(0);
+		campfireSprite.setDepth(1);
 
 		if (!campfireSprite.anims.get('campfire_lit')) {
 			campfireSprite.anims.create({
@@ -374,6 +376,24 @@ export default class MainScene extends Phaser.Scene {
 				campfireSprite.anims.play('campfire_unlit', true);
 			}
 		}
+	}
+	private handleCampfireCaptureAnimation(
+		campfireRingSprite: Phaser.GameObjects.Sprite,
+		captureProgress: number
+	) {
+		campfireRingSprite.setDepth(0);
+
+		if (!campfireRingSprite.anims.get('campfire_ring_loader_capturing')) {
+			campfireRingSprite.anims.create({
+				key: 'campfire_ring_loader_capturing',
+				frames: this.anims.generateFrameNames('campfire_ring_loader'),
+			});
+			campfireRingSprite.anims.startAnimation(
+				'campfire_ring_loader_capturing'
+			);
+			campfireRingSprite.anims.pause();
+		}
+		campfireRingSprite.anims.setProgress(captureProgress / 100);
 	}
 
 	calculateDirection() {
@@ -638,6 +658,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateCampfires(campfires: any) {
+		// handle campfire animation
 		this.updateMapOfObjects(
 			campfires,
 			this.campfireSprites,
@@ -648,6 +669,19 @@ export default class MainScene extends Phaser.Scene {
 					newCampfireLiteral.teamNumber
 				);
 				return newCampfire;
+			}
+		);
+		// Handle capturing animation
+		this.updateMapOfObjects(
+			campfires,
+			this.campfireRingSprites,
+			'campfire_ring_loader',
+			(newRingSprite, newCampfireLiteral) => {
+				this.handleCampfireCaptureAnimation(
+					newRingSprite,
+					newCampfireLiteral.captureProgress
+				);
+				return newRingSprite;
 			}
 		);
 	}
@@ -806,6 +840,7 @@ export default class MainScene extends Phaser.Scene {
 		this.clearMapOfObjects(this.turretBaseSprites);
 		this.clearMapOfObjects(this.turretGunSprites);
 		this.clearMapOfObjects(this.campfireSprites);
+		this.clearMapOfObjects(this.campfireRingSprites);
 		this.clearMapOfObjects(this.baseSprites);
 		this.clearMapOfObjects(this.territorySprites);
 		this.clearMapOfObjects(this.resourceSprites);
