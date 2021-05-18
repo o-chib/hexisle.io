@@ -71,15 +71,15 @@ export const Constant = Object.freeze({
 		RESOURCE_RARITY: [0.6, 0.3, 0.1],
 
 		RESOURCE_NAME: {
-			0: 'BLUE',
-			1: 'GREEN',
-			2: 'WHITE',
+			0: 'SMALL',
+			1: 'MEDIUM',
+			2: 'LARGE',
 		},
 
 		DROP_AMOUNT: {
-			BLUE: 1,
-			GREEN: 2,
-			WHITE: 5,
+			SMALL: 1,
+			MEDIUM: 2,
+			LARGE: 5,
 		},
 	},
 
