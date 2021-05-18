@@ -1,7 +1,7 @@
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
-import Healthbar from './Healthbar';
+import ProgressBar from './ProgressBar';
 
 // Text Structure
 const info_format = `%1`;
@@ -21,11 +21,11 @@ export default class HUDScene extends Phaser.Scene {
 	// Quit Button
 	private quitButton: Phaser.GameObjects.Image;
 
-	private healthbar_player: Healthbar;
-	private healthbar_team_red: Healthbar;
-	private healthbar_team_blue: Healthbar;
+	private healthbar_player: ProgressBar;
+	private healthbar_team_red: ProgressBar;
+	private healthbar_team_blue: ProgressBar;
 
-	private ResourcesCounter: Healthbar;
+	private ResourcesCounter: ProgressBar;
 
 	constructor() {
 		super('HUDScene');
@@ -34,12 +34,12 @@ export default class HUDScene extends Phaser.Scene {
 	create(): void {
 		Utilities.LogSceneMethodEntry('HUDScene', 'create');
 
-		// Healthbars
-		this.healthbar_player = new Healthbar();
-		this.healthbar_team_red = new Healthbar();
-		this.healthbar_team_blue = new Healthbar();
+		// ProgressBars
+		this.healthbar_player = new ProgressBar();
+		this.healthbar_team_red = new ProgressBar();
+		this.healthbar_team_blue = new ProgressBar();
 
-		this.healthbar_player.createHealthBar(
+		this.healthbar_player.createBar(
 			this.scene.get(HUDScene.Name),
 			'heart_icon',
 			'healthbar_green',
@@ -49,7 +49,7 @@ export default class HUDScene extends Phaser.Scene {
 			}
 		);
 		// Have all team bars be on top of each other in one corner
-		this.healthbar_team_red.createHealthBar(
+		this.healthbar_team_red.createBar(
 			this.scene.get(HUDScene.Name),
 			'flag_icon_red',
 			'healthbar_red',
@@ -58,7 +58,7 @@ export default class HUDScene extends Phaser.Scene {
 				left: 'left+20',
 			}
 		);
-		this.healthbar_team_blue.createHealthBar(
+		this.healthbar_team_blue.createBar(
 			this.scene.get(HUDScene.Name),
 			'flag_icon_blue',
 			'healthbar_blue',
@@ -74,16 +74,16 @@ export default class HUDScene extends Phaser.Scene {
 		// 	right:'right-20'
 		// });
 
-		this.healthbar_player.scaleEntireHealthBar(0.4);
-		this.healthbar_team_red.scaleEntireHealthBar(0.4);
-		this.healthbar_team_blue.scaleEntireHealthBar(0.4);
-		this.healthbar_team_red.scaleHealthBarLength(1.8);
-		this.healthbar_team_blue.scaleHealthBarLength(1.8);
-		// this.healthbar_team_red.flipEntireHealthBar();
+		this.healthbar_player.scaleEntireBar(0.4);
+		this.healthbar_team_red.scaleEntireBar(0.4);
+		this.healthbar_team_blue.scaleEntireBar(0.4);
+		this.healthbar_team_red.scaleBarLength(1.8);
+		this.healthbar_team_blue.scaleBarLength(1.8);
+		// this.healthbar_team_red.flipEntireBar();
 
 		// Resources
-		this.ResourcesCounter = new Healthbar();
-		this.ResourcesCounter.createHealthBar(
+		this.ResourcesCounter = new ProgressBar();
+		this.ResourcesCounter.createBar(
 			this.scene.get(HUDScene.Name),
 			'coin_icon',
 			'healthbar_back',
@@ -92,8 +92,8 @@ export default class HUDScene extends Phaser.Scene {
 				top: 'top+130',
 			}
 		);
-		this.ResourcesCounter.scaleEntireHealthBar(0.4);
-		this.ResourcesCounter.scaleHealthBarLength(0.3);
+		this.ResourcesCounter.scaleEntireBar(0.4);
+		this.ResourcesCounter.scaleBarLength(0.3);
 
 		// HUD: Center
 		this.gameTimeText = this.add.text(0, 0, '', {
@@ -185,10 +185,10 @@ export default class HUDScene extends Phaser.Scene {
 	): void {
 		switch (teamNumber) {
 			case Constant.TEAM.BLUE:
-				this.healthbar_team_blue.updateHealthBar(healthPercent);
+				this.healthbar_team_blue.updateBar(healthPercent);
 				break;
 			case Constant.TEAM.RED:
-				this.healthbar_team_red.updateHealthBar(healthPercent);
+				this.healthbar_team_red.updateBar(healthPercent);
 				break;
 		}
 	}
@@ -201,9 +201,7 @@ export default class HUDScene extends Phaser.Scene {
 			playerHealth = currentPlayer.hp;
 		}
 
-		this.healthbar_player.updateHealthBar(
-			playerHealth / Constant.HP.PLAYER
-		);
+		this.healthbar_player.updateBar(playerHealth / Constant.HP.PLAYER);
 		this.ResourcesCounter.updateCustomNumberText(currentPlayer.resources);
 
 		if (time < 0) time = 0;
