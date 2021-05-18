@@ -90,7 +90,8 @@ export default class HUDScene extends Phaser.Scene {
 			{
 				left: 'left+20',
 				top: 'top+130',
-			});
+			}
+		);
 		this.ResourcesCounter.scaleEntireHealthBar(0.4);
 		this.ResourcesCounter.scaleHealthBarLength(0.3);
 

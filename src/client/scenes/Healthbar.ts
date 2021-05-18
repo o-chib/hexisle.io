@@ -59,18 +59,20 @@ export default class Healthbar {
 			})
 			.setOrigin(1, 0.5);
 		// Align the text to the other end of colored healthbar
-		this.infoText.setX(this.healthbar.x + (this.healthbar.displayWidth * 0.95));
+		this.infoText.setX(
+			this.healthbar.x + this.healthbar.displayWidth * 0.95
+		);
 		this.healthbar_container.add(this.infoText);
 
 		this.position_config = position_config;
 
 		new Anchor(this.healthbar_ui_container, this.position_config);
 	}
-	public updateText(){
+	public updateText() {
 		this.infoText.text = (this.healthbar.scaleX * 100).toFixed(0);
 	}
-	public updateCustomNumberText(num : number){
-		this.infoText.text = (num).toFixed(0);
+	public updateCustomNumberText(num: number) {
+		this.infoText.text = num.toFixed(0);
 	}
 
 	public updateHealthBar(healthPercent: number): void {
@@ -80,9 +82,7 @@ export default class Healthbar {
 
 	public scaleHealthBarLength(scalePercent: number): void {
 		this.healthbar_container.scaleX *= scalePercent;
-		// Re-Align the text to the other end of colored healthbar
-		this.infoText.setX(this.healthbar.x + (this.healthbar.displayWidth * 0.95));
-
+		this.AlignTextToBar();
 		// undo change on Text
 		this.infoText.scaleX /= scalePercent;
 	}
@@ -94,13 +94,19 @@ export default class Healthbar {
 
 		// undo change on Text
 		this.infoText.scaleX *= -1;
-		this.infoText.originX = this.infoText.originX==0 ? 1 : 0;
+		this.infoText.originX = this.infoText.originX == 0 ? 1 : 0;
 	}
 	public flipEntireHealthBar(): void {
 		this.healthbar_ui_container.scaleX *= -1;
 
 		// undo change on Text
 		this.infoText.scaleX *= -1;
-		this.infoText.originX = this.infoText.originX==0 ? 1 : 0;
+		this.infoText.originX = this.infoText.originX == 0 ? 1 : 0;
+	}
+	private AlignTextToBar(): void {
+		// Re-Align the text to the other end of colored healthbar
+		this.infoText.setX(
+			this.healthbar.x + this.healthbar.displayWidth * 0.95
+		);
 	}
 }
