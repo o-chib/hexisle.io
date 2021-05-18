@@ -99,20 +99,26 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializeKeys(): void {
-		this.moveKeys = <KeySet>this.input.keyboard.addKeys({
-			up: Phaser.Input.Keyboard.KeyCodes.W,
-			down: Phaser.Input.Keyboard.KeyCodes.S,
-			left: Phaser.Input.Keyboard.KeyCodes.A,
-			right: Phaser.Input.Keyboard.KeyCodes.D,
-		});
+		this.moveKeys = <KeySet>this.input.keyboard.addKeys(
+			{
+				up: Phaser.Input.Keyboard.KeyCodes.W,
+				down: Phaser.Input.Keyboard.KeyCodes.S,
+				left: Phaser.Input.Keyboard.KeyCodes.A,
+				right: Phaser.Input.Keyboard.KeyCodes.D,
+			},
+			false
+		);
 
-		this.actionKeys = <KeySet>this.input.keyboard.addKeys({
-			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
-			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
-			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
-			debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
-			toggleHelp: Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH,
-		});
+		this.actionKeys = <KeySet>this.input.keyboard.addKeys(
+			{
+				buildWall: Phaser.Input.Keyboard.KeyCodes.E,
+				buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
+				demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
+				debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
+				toggleHelp: Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH,
+			},
+			false
+		);
 	}
 
 	private registerListeners(): void {
