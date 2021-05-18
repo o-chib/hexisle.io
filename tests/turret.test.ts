@@ -1,4 +1,4 @@
-import Turret from '../src/shared/turret';
+import Turret from '../src/server/objects/turret';
 import { Constant } from '../src/shared/constants';
 import { Tile, Point } from '../src/shared/hexTiles';
 
@@ -50,13 +50,13 @@ describe('Turret', () => {
 
 	it('shot: should be reloading', () => {
 		turret.resetReloadTimer();
-		expect(turret.reloadTimer).toEqual(Turret.TURRET_RELOAD_TIME);
+		expect(turret.reloadTimer).toEqual(Turret.RELOAD_TIME);
 	});
 
 	it('reloading after a shot: timer decrements', () => {
-		turret.reloadTimer = Turret.TURRET_RELOAD_TIME;
+		turret.reloadTimer = Turret.RELOAD_TIME;
 		turret.reload(10);
-		expect(turret.reloadTimer).toEqual(Turret.TURRET_RELOAD_TIME - 10);
+		expect(turret.reloadTimer).toEqual(Turret.RELOAD_TIME - 10);
 	});
 
 	it('at 0 hp: is not alive', () => {
