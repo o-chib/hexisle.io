@@ -14,8 +14,6 @@ export default class HUDScene extends Phaser.Scene {
 	public static Name = 'HUDScene';
 	private mainSceneObj: any;
 
-	// Text/Scoring
-	private infoText?: Phaser.GameObjects.Text;
 	// Game timer
 	private gameTimeText?: Phaser.GameObjects.Text;
 	// Debug Info
@@ -27,7 +25,7 @@ export default class HUDScene extends Phaser.Scene {
 	private healthbar_team_red: Healthbar;
 	private healthbar_team_blue: Healthbar;
 
-	private ResourcesCounter: Phaser.GameObjects.Container;
+	private ResourcesCounter: Healthbar;
 
 	constructor() {
 		super('HUDScene');
@@ -75,35 +73,26 @@ export default class HUDScene extends Phaser.Scene {
 		// 	bottom:'bottom-50',
 		// 	right:'right-20'
 		// });
-		// this.healthbar_team_red.flipEntireHealthBar();
 
 		this.healthbar_player.scaleEntireHealthBar(0.4);
 		this.healthbar_team_red.scaleEntireHealthBar(0.4);
 		this.healthbar_team_blue.scaleEntireHealthBar(0.4);
 		this.healthbar_team_red.scaleHealthBarLength(1.8);
 		this.healthbar_team_blue.scaleHealthBarLength(1.8);
+		// this.healthbar_team_red.flipEntireHealthBar();
 
-		// HUD: Left
-		this.ResourcesCounter = this.add.container(0, 0);
-		const resourcesIcon = this.add
-			.image(0, 0, 'coin_icon')
-			.setOrigin(0, 0.5);
-		this.infoText = this.add
-			.text(0, 0, '', {
-				font: '48px Arial',
-				stroke: '#000000',
-				strokeThickness: 5,
-			})
-			.setOrigin(0, 0.5)
-			.setScale(2);
-		this.infoText.setX(resourcesIcon.displayWidth + 5);
-
-		this.ResourcesCounter.add([resourcesIcon, this.infoText]);
-		this.ResourcesCounter.setScale(0.4);
-		new Anchor(this.ResourcesCounter, {
-			left: 'left+20',
-			top: 'top+130',
-		});
+		// Resources
+		this.ResourcesCounter = new Healthbar();
+		this.ResourcesCounter.createHealthBar(
+			this.scene.get(HUDScene.Name),
+			'coin_icon',
+			'healthbar_back',
+			{
+				left: 'left+20',
+				top: 'top+130',
+			});
+		this.ResourcesCounter.scaleEntireHealthBar(0.4);
+		this.ResourcesCounter.scaleHealthBarLength(0.3);
 
 		// HUD: Center
 		this.gameTimeText = this.add.text(0, 0, '', {
@@ -214,12 +203,7 @@ export default class HUDScene extends Phaser.Scene {
 		this.healthbar_player.updateHealthBar(
 			playerHealth / Constant.HP.PLAYER
 		);
-
-		const playerText = Phaser.Utils.String.Format(info_format, [
-			currentPlayer.resources,
-		]);
-		this.infoText?.setText(playerText);
-		// this.infoText?.setVisible(false);
+		this.ResourcesCounter.updateCustomNumberText(currentPlayer.resources);
 
 		if (time < 0) time = 0;
 		const dateTime = new Date(time);
@@ -254,7 +238,6 @@ export default class HUDScene extends Phaser.Scene {
 	}
 
 	private startHUD(): void {
-		this.infoText?.setText('');
 		this.gameTimeText?.setText('');
 		this.scene.setVisible(true);
 	}

@@ -7,7 +7,7 @@ export default class Healthbar {
 	private healthbar: Phaser.GameObjects.Image;
 	private healthbar_icon: Phaser.GameObjects.Image;
 	private position_config: any;
-	private x: number;
+	private infoText: Phaser.GameObjects.Text;
 
 	constructor() {
 		return;
@@ -51,38 +51,56 @@ export default class Healthbar {
 		this.healthbar_ui_container.add(this.healthbar_container);
 		this.healthbar_ui_container.add(this.healthbar_icon);
 
-		// this.healthbar_ui_container.setScale(0.5);
-		// this.healthbar_container.setScale(2,1);
+		this.infoText = scene.add
+			.text(0, 0, '', {
+				font: '48px Arial',
+				stroke: '#000000',
+				strokeThickness: 5,
+			})
+			.setOrigin(1, 0.5);
+		// Align the text to the other end of colored healthbar
+		this.infoText.setX(this.healthbar.x + (this.healthbar.displayWidth * 0.95));
+		this.healthbar_container.add(this.infoText);
 
 		this.position_config = position_config;
-		new Anchor(this.healthbar_ui_container, this.position_config);
 
-		// this.healthbar_icon.setVisible(false);
+		new Anchor(this.healthbar_ui_container, this.position_config);
+	}
+	public updateText(){
+		this.infoText.text = (this.healthbar.scaleX * 100).toFixed(0);
+	}
+	public updateCustomNumberText(num : number){
+		this.infoText.text = (num).toFixed(0);
 	}
 
 	public updateHealthBar(healthPercent: number): void {
 		this.healthbar.setScale(healthPercent, 1);
+		this.updateText();
 	}
 
 	public scaleHealthBarLength(scalePercent: number): void {
-		this.healthbar_container.setScale(
-			scalePercent,
-			this.healthbar_container.scaleY
-		);
+		this.healthbar_container.scaleX *= scalePercent;
+		// Re-Align the text to the other end of colored healthbar
+		this.infoText.setX(this.healthbar.x + (this.healthbar.displayWidth * 0.95));
+
+		// undo change on Text
+		this.infoText.scaleX /= scalePercent;
 	}
 	public scaleEntireHealthBar(scalePercent: number): void {
-		this.healthbar_ui_container.setScale(scalePercent);
+		this.healthbar_ui_container.scale *= scalePercent;
 	}
 	public flipHealthBarOnly(): void {
-		this.healthbar_container.setScale(
-			this.healthbar_container.scaleX * -1,
-			this.healthbar_container.scaleY
-		);
+		this.healthbar_container.scaleX *= -1;
+
+		// undo change on Text
+		this.infoText.scaleX *= -1;
+		this.infoText.originX = this.infoText.originX==0 ? 1 : 0;
 	}
 	public flipEntireHealthBar(): void {
-		this.healthbar_ui_container.setScale(
-			this.healthbar_ui_container.scaleX * -1,
-			this.healthbar_ui_container.scaleY
-		);
+		this.healthbar_ui_container.scaleX *= -1;
+
+		// undo change on Text
+		this.infoText.scaleX *= -1;
+		this.infoText.originX = this.infoText.originX==0 ? 1 : 0;
 	}
 }
