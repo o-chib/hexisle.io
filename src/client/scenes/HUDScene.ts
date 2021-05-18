@@ -119,6 +119,10 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj = this.scene.get('MainScene');
 
 		//  Listen for events from it
+		this.mainSceneObj.events.off('startHUD');
+		this.mainSceneObj.events.off('updateHUD');
+		this.mainSceneObj.events.off('stopHUD');
+
 		this.mainSceneObj.events.on('startHUD', this.startHUD, this);
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
 		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);
@@ -218,10 +222,10 @@ export default class HUDScene extends Phaser.Scene {
 
 	private updateText(currentPlayer: any, time: number): void {
 		let playerHealth: number;
-		if (currentPlayer.health < 0) {
+		if (currentPlayer.hp < 0) {
 			playerHealth = 0;
 		} else {
-			playerHealth = currentPlayer.health;
+			playerHealth = currentPlayer.hp;
 		}
 
 		const playerText = Phaser.Utils.String.Format(info_format, [

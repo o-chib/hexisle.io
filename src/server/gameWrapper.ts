@@ -5,6 +5,7 @@ import { OffsetPoint } from '../shared/hexTiles';
 
 export default class GameWrapper {
 	private readonly MAX_PLAYERS = Constant.MAX_PLAYERS;
+
 	private game: Game;
 	private collectionGameOverCallback: (id: string) => void;
 	public id: string;
