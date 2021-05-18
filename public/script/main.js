@@ -1,4 +1,5 @@
 'use strict'
+
 const playButton = document.getElementById("playNow");
 playButton.onclick = playNow;
 
@@ -20,6 +21,7 @@ function setGameStatus(status) {
         // playButton.setAttribute('disabled', 'true');
     }
 
+    // Enable Tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -48,20 +50,31 @@ function githubWikiRedirect() {
 
 //  Server Online Check
 // -----------------------------------------------
-
-checkServerStatus();
 function checkServerStatus()
 {
+    if(playButton.firstElementChild) {
+        playButton.firstElementChild.remove();
+    }
+
+    let imgLoaded = 0;
     let img = document.body.appendChild(document.createElement("img"));
+    img.src = "https://play.hexisle.io/assets/help.png";
+    // img.src = "https://raw.githubusercontent.com/o-chib/teamIO-project/main/public/favicon.ico?token=AHYXK3SB3335CLIKSZM3ZEDAVQ5RU";
+
     img.onload = function()
     {
+        imgLoaded = 1;
         setGameStatus("OK");
+        document.body.removeChild(img);
     };
-    img.onerror = function()
-    {
-        setGameStatus("ERROR");
-    };
-    document.body.removeChild(img)
-    img.src = "https://play.hexisle.io/assets/help.png";
-    //img.src = "https://raw.githubusercontent.com/o-chib/teamIO-project/main/public/favicon.ico?token=AHYXK3SB3335CLIKSZM3ZEDAVQ5RU";
+
+    setTimeout(function() {
+        if(imgLoaded == 0) {
+            img.removeAttribute('src');
+            setGameStatus("ERROR");
+            document.body.removeChild(img)
+        }
+    }, 1000);
 }
+checkServerStatus();
+setInterval(checkServerStatus, 60*1000);
