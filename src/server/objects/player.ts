@@ -102,6 +102,7 @@ export default class Player extends DestructibleObj {
 		this.hp = 100;
 		this.resources = 0;
 	}
+
 	public canShoot(): boolean {
 		return this.reloadTimer <= 0;
 	}

@@ -634,7 +634,6 @@ export default class Game {
 	playerShootBullet(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
-		//this.shootBullet(player, direction);
 		player.shootBullet(direction);
 	}
 
