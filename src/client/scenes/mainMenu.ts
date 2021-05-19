@@ -32,22 +32,26 @@ export default class MainMenu extends Phaser.Scene {
 		const renderHeight = this.game.renderer.height;
 
 		// Background image
-		var bg = this.add.image(0,0, 'lobby_bg').setOrigin(0.5).setDepth(0).setScale(0.75);
-		var circle = new Phaser.Geom.Circle(0, 0, 200);
-		Phaser.Actions.PlaceOnCircle([bg], circle,Phaser.Math.DegToRad(-180));
-		const tweenAngleToRotateBy = 0.02;
-		var tween = this.tweens.add({
-			targets: circle,
-	        radius: 200,
-	        ease: 'Quintic.easeInOut',
-	        duration: 1500,
-	        yoyo: true,
-	        repeat: -1,
-	        onUpdate: function ()
-	        {
-	           //Phaser.Actions.RotateAroundDistance([bg], { x: 400, y: 300 }, tweenAngleToRotateBy, 200);
-	        }
-		});
+		const bg = this.add
+			.image(0, 0, 'lobby_bg')
+			.setOrigin(0)
+			.setDepth(0)
+			.setScale(0.75);
+		// var circle = new Phaser.Geom.Circle(0, 0, 200);
+		// Phaser.Actions.PlaceOnCircle([bg], circle,Phaser.Math.DegToRad(-180));
+		// const tweenAngleToRotateBy = 0.02;
+		// var tween = this.tweens.add({
+		// 	targets: circle,
+		//     radius: 200,
+		//     ease: 'Quintic.easeInOut',
+		//     duration: 1500,
+		//     yoyo: true,
+		//     repeat: -1,
+		//     onUpdate: function ()
+		//     {
+		//        //Phaser.Actions.RotateAroundDistance([bg], { x: 400, y: 300 }, tweenAngleToRotateBy, 200);
+		//     }
+		// });
 
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);
@@ -64,11 +68,17 @@ export default class MainMenu extends Phaser.Scene {
 		);
 
 		// Menu Buttons from form
-		const playButton = document.getElementById('playButton') as HTMLLinkElement;
-		const optionButton = document.getElementById('optionButton') as HTMLLinkElement;
-		const helpButton = document.getElementById('helpButton') as HTMLLinkElement;
+		const playButton = document.getElementById(
+			'playButton'
+		) as HTMLLinkElement;
+		const optionButton = document.getElementById(
+			'optionButton'
+		) as HTMLLinkElement;
+		const helpButton = document.getElementById(
+			'helpButton'
+		) as HTMLLinkElement;
 
- 		// Help Panel
+		// Help Panel
 		const helpMenu = this.add
 			.image(renderWidth / 2, renderHeight / 2, 'help_menu')
 			.setDepth(2)
@@ -80,20 +90,31 @@ export default class MainMenu extends Phaser.Scene {
 		});
 
 		playButton.addEventListener('click', () => this.joinGame());
-		playButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(playButton));
-		playButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(playButton));
+		playButton.addEventListener('mouseover', () =>
+			FormUtilities.setButtonTextureOnMouseIn(playButton)
+		);
+		playButton.addEventListener('mouseout', () =>
+			FormUtilities.setButtonTextureOnMouseOut(playButton)
+		);
 
 		optionButton.addEventListener('click', () => this.loadOptions());
-		optionButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(optionButton));
-		optionButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(optionButton));
+		optionButton.addEventListener('mouseover', () =>
+			FormUtilities.setButtonTextureOnMouseIn(optionButton)
+		);
+		optionButton.addEventListener('mouseout', () =>
+			FormUtilities.setButtonTextureOnMouseOut(optionButton)
+		);
 
 		helpButton.addEventListener('click', () => {
 			menuContainer.setVisible(false);
 			helpMenu.setVisible(true);
 		});
-		helpButton.addEventListener('mouseover', () => FormUtilities.setButtonTextureOnMouseIn(helpButton));
-		helpButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(helpButton));
-
+		helpButton.addEventListener('mouseover', () =>
+			FormUtilities.setButtonTextureOnMouseIn(helpButton)
+		);
+		helpButton.addEventListener('mouseout', () =>
+			FormUtilities.setButtonTextureOnMouseOut(helpButton)
+		);
 
 		helpMenu.setInteractive();
 		helpMenu.on(
@@ -105,8 +126,6 @@ export default class MainMenu extends Phaser.Scene {
 			this
 		);
 	}
-
-
 
 	private askForUpdatedGameList() {
 		this.socket.emit(Constant.MESSAGE.ASK_GAME_LIST);
@@ -148,6 +167,17 @@ export default class MainMenu extends Phaser.Scene {
 			dropdownList.removeChild(dropdownList.firstChild);
 		}
 	}
+	private showErrorMessage(message: string): void {
+		const errorMessageHolder = document.getElementById(
+			'invalid-message-holder'
+		);
+		const errorMessage = document.getElementById('error-message');
+		if (!errorMessageHolder) return;
+		if (!errorMessage) return;
+
+		errorMessageHolder.setAttribute('style', 'display:flex');
+		errorMessage.innerText = message;
+	}
 
 	private joinGame(): void {
 		this.playerName = this.inputBox.getChildByName('name').value;
@@ -182,8 +212,7 @@ export default class MainMenu extends Phaser.Scene {
 
 	private failedToJoinGame(message: string) {
 		this.socket.off(Constant.MESSAGE.JOIN_GAME_SUCCESS);
-		console.log(message);
-		//TODO make error message fancier
+		this.showErrorMessage(message);
 	}
 
 	private loadOptions(): void {

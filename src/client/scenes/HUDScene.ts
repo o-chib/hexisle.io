@@ -106,7 +106,6 @@ export default class HUDScene extends Phaser.Scene {
 			this.quitButton.setTexture('quit_button_unpressed');
 		});
 
-
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
 

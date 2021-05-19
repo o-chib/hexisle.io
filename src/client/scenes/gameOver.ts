@@ -9,7 +9,6 @@ export default class gameOver extends Phaser.Scene {
 	private endState;
 	private messageBox;
 
-
 	constructor() {
 		super('gameOver');
 	}
@@ -39,8 +38,8 @@ export default class gameOver extends Phaser.Scene {
 		menuContainer.add(this.messageBox);
 
 		// Message
-		var textMessage = "";
-		
+		let textMessage = '';
+
 		textMessage +=
 			this.endState.winner == Constant.TEAM.BLUE ? 'Blue' : 'Red';
 		textMessage += ' team wins!';
@@ -52,14 +51,17 @@ export default class gameOver extends Phaser.Scene {
 		MessageArea.innerText = textMessage;
 
 		// Interactions
-		const returnButton = document.getElementById('returnButton') as HTMLLinkElement;
+		const returnButton = document.getElementById(
+			'returnButton'
+		) as HTMLLinkElement;
 		returnButton.addEventListener('click', () => this.loadMainMenu());
 
 		returnButton.addEventListener('mouseover', () => {
-			FormUtilities.setButtonTextureOnMouseIn(returnButton)
+			FormUtilities.setButtonTextureOnMouseIn(returnButton);
 		});
-		returnButton.addEventListener('mouseout', () => FormUtilities.setButtonTextureOnMouseOut(returnButton));
-
+		returnButton.addEventListener('mouseout', () =>
+			FormUtilities.setButtonTextureOnMouseOut(returnButton)
+		);
 
 		this.time.addEvent({
 			// Run after ten seconds.
