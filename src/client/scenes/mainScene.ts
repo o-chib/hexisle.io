@@ -385,6 +385,7 @@ export default class MainScene extends Phaser.Scene {
 			}
 		}
 	}
+
 	private handleCampfireCaptureAnimation(
 		campfireRingSprite: Phaser.GameObjects.Sprite,
 		captureProgress: number
