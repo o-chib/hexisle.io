@@ -102,22 +102,6 @@ export default class Player extends DestructibleObj {
 		this.hp = 100;
 		this.resources = 0;
 	}
-
-	public serializeForUpdate() {
-		return {
-			id: this.id,
-			xPos: this.xPos,
-			yPos: this.yPos,
-			teamNumber: this.teamNumber,
-			hp: this.hp,
-			name: this.name,
-			resources: this.resources,
-			xVel: this.xVel,
-			yVel: this.yVel,
-			direction: this.direction,
-		};
-	}
-
 	public canShoot(): boolean {
 		return this.reloadTimer <= 0;
 	}
@@ -134,5 +118,20 @@ export default class Player extends DestructibleObj {
 
 	public reload(timePassed: number): void {
 		if (this.reloadTimer > 0) this.reloadTimer -= timePassed;
+	}
+
+	public serializeForUpdate() {
+		return {
+			id: this.id,
+			xPos: this.xPos,
+			yPos: this.yPos,
+			teamNumber: this.teamNumber,
+			hp: this.hp,
+			name: this.name,
+			resources: this.resources,
+			xVel: this.xVel,
+			yVel: this.yVel,
+			direction: this.direction,
+		};
 	}
 }
