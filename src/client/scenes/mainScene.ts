@@ -25,9 +25,9 @@ export default class MainScene extends Phaser.Scene {
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
-	private alive = false;
 	private hexTiles: HexTiles;
-	private debugMode = false;
+	private alive: boolean;
+	private debugMode: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -51,6 +51,8 @@ export default class MainScene extends Phaser.Scene {
 		this.territorySprites = new Map();
 		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
+		this.alive = false;
+		this.debugMode= false;
 	}
 
 	create(): void {
