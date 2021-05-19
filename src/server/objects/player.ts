@@ -4,19 +4,18 @@ import Collision from '../collision';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
+	public static readonly RELOAD_TIME = 0.1 * 1000;
 	private static readonly SPEED = 600;
-
-	private static readonly RELOAD_TIME = 0.1 * 1000;
-	private reloadTimer = 0;
-	private gameShootBullet: (turret: any, direction: number) => void;
 
 	public socket: SocketIOClient.Socket;
 	public name: string;
 	public resources: number;
+	public reloadTimer: number;
 	private xVel: number;
 	private yVel: number;
 	private direction: number;
 	private lastUpdateTime: number;
+	private gameShootBullet: (turret: any, direction: number) => void;
 
 	constructor(
 		socket: SocketIOClient.Socket,
@@ -30,6 +29,7 @@ export default class Player extends DestructibleObj {
 		this.resources = 0;
 		this.xVel = 0;
 		this.yVel = 0;
+		this.reloadTimer = 0;
 		this.direction = 0;
 		this.lastUpdateTime = Date.now();
 		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
