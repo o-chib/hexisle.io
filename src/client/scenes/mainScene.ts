@@ -93,7 +93,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private generatePlayerSprite(): void {
-		this.myPlayerSprite = new ClientGameObject(this, 0, 0, 'player_red');
+		this.myPlayerSprite = new ClientGameObject(this);
 		this.myPlayerSprite.setDepth(1000);
 		this.myPlayerSprite.setVisible(false);
 		this.myPlayerSprite.setScale(1);
