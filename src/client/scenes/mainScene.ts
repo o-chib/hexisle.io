@@ -5,6 +5,7 @@ import HelpOverlayScene from './helpOverlayScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
+import { ClientGameObject } from '../clientGameObject';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
@@ -92,7 +93,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private generatePlayerSprite(): void {
-		this.myPlayerSprite = this.add.sprite(0, 0, 'player_red');
+		this.myPlayerSprite = new ClientGameObject(this, 0, 0, 'player_red');
 		this.myPlayerSprite.setDepth(1000);
 		this.myPlayerSprite.setVisible(false);
 		this.myPlayerSprite.setScale(1);
