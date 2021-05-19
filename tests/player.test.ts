@@ -5,26 +5,36 @@ import { Constant } from '../src/shared/constants';
 describe('Player', () => {
 	let player: Player;
 	beforeEach(() => {
-		var socket = SocketIOClient.connect('http://localhost', {port: '80'});
+		const socket = SocketIOClient.connect('http://localhost', {
+			port: '80',
+		});
 		player = new Player(socket, 0);
 	});
 
 	it('can afford wall and turret', () => {
 		player.resources = Constant.COST.TURRET;
 		expect(player.canAffordStructure(Constant.BUILDING.WALL)).toEqual(true);
-		expect(player.canAffordStructure(Constant.BUILDING.TURRET)).toEqual(true);
+		expect(player.canAffordStructure(Constant.BUILDING.TURRET)).toEqual(
+			true
+		);
 	});
 
 	it('cannot afford turret, can afford wall', () => {
 		player.resources = Constant.COST.WALL;
 		expect(player.canAffordStructure(Constant.BUILDING.WALL)).toEqual(true);
-		expect(player.canAffordStructure(Constant.BUILDING.TURRET)).toEqual(false);
+		expect(player.canAffordStructure(Constant.BUILDING.TURRET)).toEqual(
+			false
+		);
 	});
 
 	it('cannot affort either wall or turret', () => {
 		player.resources = Constant.COST.WALL - 1;
-		expect(player.canAffordStructure(Constant.BUILDING.WALL)).toEqual(false);
-		expect(player.canAffordStructure(Constant.BUILDING.TURRET)).toEqual(false);
+		expect(player.canAffordStructure(Constant.BUILDING.WALL)).toEqual(
+			false
+		);
+		expect(player.canAffordStructure(Constant.BUILDING.TURRET)).toEqual(
+			false
+		);
 	});
 
 	it('buy wall: has proper amount of resources', () => {
@@ -32,7 +42,7 @@ describe('Player', () => {
 		player.buyStructure(Constant.BUILDING.WALL);
 		expect(player.resources).toEqual(0);
 	});
-	
+
 	it('buy turret: has proper amount of resources', () => {
 		player.resources = Constant.COST.TURRET;
 		player.buyStructure(Constant.BUILDING.TURRET);
@@ -41,13 +51,17 @@ describe('Player', () => {
 
 	it('refund wall: has proper amount of resources', () => {
 		player.refundStructure(Constant.BUILDING.WALL);
-		let expectedResources: number = Math.ceil(Constant.COST.WALL * Constant.COST.BUILDING_REFUND_MULTIPLIER);
+		const expectedResources: number = Math.ceil(
+			Constant.COST.WALL * Constant.COST.BUILDING_REFUND_MULTIPLIER
+		);
 		expect(player.resources).toEqual(expectedResources);
 	});
 
 	it('refund turret: has proper amount of resources', () => {
 		player.refundStructure(Constant.BUILDING.TURRET);
-		let expectedResources: number = Math.ceil(Constant.COST.TURRET * Constant.COST.BUILDING_REFUND_MULTIPLIER);
+		const expectedResources: number = Math.ceil(
+			Constant.COST.TURRET * Constant.COST.BUILDING_REFUND_MULTIPLIER
+		);
 		expect(player.resources).toEqual(expectedResources);
 	});
 

@@ -25,9 +25,9 @@ export default class MainScene extends Phaser.Scene {
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
-	private alive: boolean = false;
+	private alive = false;
 	private hexTiles: HexTiles;
-	private debugMode: boolean = false;
+	private debugMode = false;
 
 	constructor() {
 		super('MainScene');
