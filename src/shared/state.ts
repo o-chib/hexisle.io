@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Player from './player';
+import Player from '../server/objects/player';
 import { Tile } from './../shared/hexTiles';
 
 //TODO use this somewhere

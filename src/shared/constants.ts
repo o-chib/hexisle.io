@@ -12,6 +12,25 @@ export const Constant = Object.freeze({
 		BUILDING_REFUND_MULTIPLIER: 0.5,
 	},
 
+	HP: {
+		PLAYER: 100,
+		BASE: 1000,
+		WALL: 100,
+		TURRET: 150,
+	},
+
+	INCOME: {
+		UPDATE_RATE: 5 * 1000,
+		INCOME_PER_CAMP: 1,
+	},
+
+	GAME_TIMING: {
+		UPDATE_RATE: 1000 / 60,
+		CHECK_END: 1000 / 60,
+		END_SCREEN: 5 * 1000,
+		TIME_LIMIT: 5 * (60 * 1000),
+	},
+
 	RADIUS: {
 		HEX: 75,
 		PLAYER: 50,
@@ -31,19 +50,12 @@ export const Constant = Object.freeze({
 			WALL: 75 * 0.75,
 			TURRET: 75 * 0.75,
 			BASE: 200 * 0.75,
-			CAMP: 75,
+			CAMP: 75 * 1.5,
 		},
 
 		RANGE: {
 			TURRET: 750,
 		},
-	},
-
-	HP: {
-		PLAYER: 100,
-		BASE: 1000,
-		WALL: 100,
-		TURRET: 150,
 	},
 
 	RESOURCE: {
@@ -59,39 +71,16 @@ export const Constant = Object.freeze({
 		RESOURCE_RARITY: [0.6, 0.3, 0.1],
 
 		RESOURCE_NAME: {
-			0: 'BLUE',
-			1: 'GREEN',
-			2: 'WHITE',
+			0: 'SMALL',
+			1: 'MEDIUM',
+			2: 'LARGE',
 		},
 
 		DROP_AMOUNT: {
-			BLUE: 1,
-			GREEN: 2,
-			WHITE: 5,
+			SMALL: 1,
+			MEDIUM: 2,
+			LARGE: 5,
 		},
-	},
-
-	INCOME: {
-		UPDATE_RATE: 5 * 1000,
-		INCOME_PER_CAMP: 1,
-	},
-
-	TEAM: {
-		NONE: -1,
-		RED: 0,
-		BLUE: 1,
-	},
-
-	DIRECTION: {
-		E: 0,
-		NE: 0.25 * Math.PI,
-		N: 0.5 * Math.PI,
-		NW: 0.75 * Math.PI,
-		W: Math.PI,
-		SW: 1.25 * Math.PI,
-		S: 1.5 * Math.PI,
-		SE: 1.75 * Math.PI,
-		INVALID: 10,
 	},
 
 	BUILDING: {
@@ -101,7 +90,6 @@ export const Constant = Object.freeze({
 		TURRET: 'TURRET',
 		CAMP: 'CAMP',
 		BASE: 'BASE',
-		CANT_BUILD: 'CANT_BUILD',
 		BOUNDARY: 'BOUNDARY',
 	},
 
@@ -125,9 +113,21 @@ export const Constant = Object.freeze({
 		UPDATE_NAME: 'NEW NAME',
 	},
 
-	TIMING: {
-		SERVER_GAME_UPDATE: 1000 / 60,
-		GAME_END_SCREEN: 5 * 1000,
-		GAME_TIME_LIMIT: 15 * (60 * 1000),
+	TEAM: {
+		NONE: -1,
+		RED: 0,
+		BLUE: 1,
+	},
+
+	DIRECTION: {
+		E: 0,
+		NE: 0.25 * Math.PI,
+		N: 0.5 * Math.PI,
+		NW: 0.75 * Math.PI,
+		W: Math.PI,
+		SW: 1.25 * Math.PI,
+		S: 1.5 * Math.PI,
+		SE: 1.75 * Math.PI,
+		INVALID: 10,
 	},
 });

@@ -1,5 +1,6 @@
 import { Point } from '../shared/hexTiles';
 import { Constant } from '../shared/constants';
+import { Resource } from './objects/resource';
 
 export class MapResources {
 	private readonly INITIAL_RESOURCES: number;
@@ -98,31 +99,5 @@ export class MapResources {
 
 	private decrementUpdateTimer(timePassed: number): void {
 		this.updateTimer -= timePassed;
-	}
-}
-
-export class Resource {
-	public id: string;
-	public xPos: number;
-	public yPos: number;
-	public dropAmount: number;
-	public type: string;
-
-	constructor(id: string, xPos: number, yPos: number, type: string) {
-		this.id = id;
-		this.xPos = xPos;
-		this.yPos = yPos;
-		this.type = type;
-		this.dropAmount = Constant.RESOURCE.DROP_AMOUNT[type];
-	}
-
-	serializeForUpdate(): any {
-		return {
-			id: this.id,
-			xPos: this.xPos,
-			yPos: this.yPos,
-			dropAmount: this.dropAmount,
-			type: this.type,
-		};
 	}
 }
