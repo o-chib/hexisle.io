@@ -92,12 +92,12 @@ export default class HUDScene extends Phaser.Scene {
 		});
 
 		this.muteButton = this.add
-			.image(0, 0, 'sound_on_button')
+			.image(0, 0, '')
 			.setDepth(99)
 			.setDisplayOrigin(0.5, 0.5)
-			.setScale(0.35);
+			.setScale(0.7);
 		new Anchor(this.muteButton, {
-			right: 'right-90',
+			right: 'right-140',
 			top: 'top+10',
 		});
 		this.setToggleMuteButtonIcon();
@@ -107,7 +107,7 @@ export default class HUDScene extends Phaser.Scene {
 		this.quitButton.on('pointerdown', this.quitCurrentGame.bind(this));
 
 		this.muteButton.setInteractive();
-		this.muteButton.on('pointerdown', this.toggleMuteButton.bind(this, this));
+		this.muteButton.on('pointerdown', this.toggleMuteButton.bind(this, this.game));
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
@@ -187,9 +187,11 @@ export default class HUDScene extends Phaser.Scene {
 	 * Toggles mute for all game sounds
 	 * @param scene the scene this call is coming from
 	 */
-	private toggleMuteButton(scene: Phaser.Scene): void {
-		Utilities.toggleMute(scene);
+	private toggleMuteButton(): void {
+		Utilities.toggleMute(this.sound);
 		this.setToggleMuteButtonIcon();
+		console.log("post icon update", this.sound.mute);
+		console.log("___ end toggle ___");
 	}
 
 	/**
@@ -198,8 +200,11 @@ export default class HUDScene extends Phaser.Scene {
 	private setToggleMuteButtonIcon(): void {
 		if (this.sound.mute) {
 			this.muteButton?.setTexture('sound_off_button');
+			console.log(this.sound.mute, "icon off");
 		} else {
 			this.muteButton?.setTexture('sound_on_button');
+			console.log(this.sound.mute, "icon on");
 		}
+		console.log("--- end set icon ---");
 	}
 }

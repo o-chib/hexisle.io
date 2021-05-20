@@ -16,7 +16,13 @@ export default class Utilities {
 		this.Log('Entered ' + sceneName + ' ' + method + '()');
 	}
 
-	public static toggleMute(scene: Phaser.Scene): void {
-		scene.sound.mute = !scene.sound.mute;
+	/**
+	 * Toggles muting all sounds in the game
+	 * @param scene the scene to get the sound manager from
+	 */
+	public static toggleMute(sound: Phaser.Sound.BaseSoundManager): void {
+		console.log("pre toggle", sound.mute);
+		sound.mute = !sound.mute;
+		console.log("post toggle", sound.mute);
 	}
 }

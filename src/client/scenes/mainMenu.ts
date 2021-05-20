@@ -24,7 +24,9 @@ export default class MainMenu extends Phaser.Scene {
 		);
 
 		// Background Music
-		this.mainMenuMusic = this.sound.add('mainMenuMusic', {volume: 0.03, loop: true});
+		if (!this.sound.get('mainMenuMusic')) {
+			this.mainMenuMusic = this.sound.add('mainMenuMusic', {volume: 0.1, loop: true});
+		}
 		this.mainMenuMusic.play();
 	}
 
@@ -195,7 +197,7 @@ export default class MainMenu extends Phaser.Scene {
 	private loadMainScene() {
 		this.socket.off(Constant.MESSAGE.JOIN_GAME_FAIL);
 
-		this.sound.removeAll();
+		this.sound.stopByKey('mainMenuMusic');
 
 		this.scene.start(mainScene.Name, {
 			socket: this.socket,
@@ -209,6 +211,6 @@ export default class MainMenu extends Phaser.Scene {
 	}
 
 	private loadOptions(): void {
-		Utilities.toggleMute(this);
+		Utilities.toggleMute(this.sound);
 	}
 }
