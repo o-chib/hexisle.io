@@ -40,6 +40,7 @@ export default class Game {
 	gameTimeRemaining: number;
 
 	perfMonitor: PerformanceMonoitor;
+	counter = 0;
 
 	constructor(gameOverCallback: () => any) {
 		this.perfMonitor = new PerformanceMonoitor();
@@ -83,50 +84,60 @@ export default class Game {
 	}
 
 	update() {
-		//console.time('Total');
+		let deb = false;
+		if ( this.counter == 20) {
+			this.counter = 0;
+			deb = true;
+		} else {
+			this.counter++;
+		}
+
+		if (deb) console.time('Total');
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		//console.time('Bullets');
+		if (deb) console.time('Bullets');
 		this.updateBullets(currentTimestamp, timePassed);
-		//console.timeEnd('Bullets');
+		if (deb) console.timeEnd('Bullets');
 
-		//console.time('Territories');
+		if (deb) console.time('Territories');
 		this.updateTerritories();
-		//console.timeEnd('Territories');
+		if (deb) console.timeEnd('Territories');
 
-		//console.time('Walls');
+		if (deb) console.time('Walls');
 		this.updateWalls();
-		//console.timeEnd('Walls');
+		if (deb) console.timeEnd('Walls');
 
-		//console.time('Turrets');
-		this.perfMonitor.start();
+		if (deb) console.time('Turrets');
 		this.updateTurrets(timePassed);
-		this.perfMonitor.stop();
-		//console.timeEnd('Turrets');
+		if (deb) console.timeEnd('Turrets');
 
-		//console.time('Bases');
+		if (deb) console.time('Bases');
 		this.updateBases();
-		//console.timeEnd('Bases');
+		if (deb) console.timeEnd('Bases');
 
-		//console.time('Players');
+		if (deb) console.time('Players');
 		this.updatePlayers(currentTimestamp, timePassed);
-		//console.timeEnd('Players');
+		if (deb) console.timeEnd('Players');
 
-		//console.time('Resources');
+		if (deb) console.time('Resources');
 		this.updateMapResources(timePassed);
-		//console.timeEnd('Resources');
+		if (deb) console.timeEnd('Resources');
 
-		//console.time('Game Over');
+		if (deb) console.time('Game Over');
 		if (this.isGameOver()) this.endGame();
-		//console.timeEnd('Game Over');
+		if (deb) console.timeEnd('Game Over');
 
-		//console.time('Send Updates');
+		if (deb) console.time('Send Updates');
+		this.perfMonitor.start();
 		this.sendStateToPlayers();
-		//console.timeEnd('Send Updates');
+		this.perfMonitor.stop();
+		if (deb) console.timeEnd('Send Updates');
 
-		//console.timeEnd('Total');
-		//console.log('');
+		if (deb) console.timeEnd('Total');
+		if (deb && timePassed > 17) console.log('WARN: ', timePassed, 'ms');
+
+		if (deb) console.log('');
 	}
 
 	calculateTimePassed(): [number, number] {

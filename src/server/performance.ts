@@ -34,10 +34,10 @@ export default class PerformanceMonoitor {
 
 		process.stdout.cursorTo(0, 0);
 
-		process.stdout.write(`
-Now: ${timePassed.toFixed(3)} ms
+		process.stdout.write(`Now: ${timePassed.toFixed(3)} ms
 Min: ${this.min.toFixed(3)} ms
 Max: ${this.max.toFixed(3)} ms
-Avg: ${this.avg.toFixed(3)} ms`);
+Avg: ${this.avg.toFixed(3)} ms
+`);
 	}
 }
