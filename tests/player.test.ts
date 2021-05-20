@@ -65,7 +65,11 @@ describe('Player', () => {
 		expect(player.resources).toEqual(expectedResources);
 	});
 
-	it('reloadTimer at 0 (init): can shoot', () => {
+	it('init: cannot shoot', () => {
+		expect(player.canShoot()).toEqual(false);
+	});
+
+	it('reloadTimer at 0: can shoot', () => {
 		expect(player.canShoot()).toEqual(true);
 	});
 

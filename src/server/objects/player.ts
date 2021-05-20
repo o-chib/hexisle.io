@@ -29,7 +29,7 @@ export default class Player extends DestructibleObj {
 		this.resources = 0;
 		this.xVel = 0;
 		this.yVel = 0;
-		this.reloadTimer = 0;
+		this.reloadTimer = Player.RELOAD_TIME;
 		this.direction = 0;
 		this.lastUpdateTime = Date.now();
 		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
