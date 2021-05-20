@@ -266,6 +266,14 @@ export default class Preloader extends Phaser.Scene {
 			'../assets/help_button_pressed.png'
 		);
 		this.load.image('help_popup', '../assets/help_popup.png');
+		this.load.image(
+			'sound_on_button',
+			'../assets/sound_on_button.png'
+		);
+		this.load.image(
+			'sound_off_button',
+			'../assets/sound_off_button.png'
+		);
 	}
 
 	/**
