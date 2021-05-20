@@ -18,7 +18,13 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 
 	constructor(
 		scene: Phaser.Scene,
-		type: new () => ObjType,
+		type: new (
+			scene: Phaser.Scene,
+			x?: number,
+			y?: number,
+			texture?: string | Phaser.Textures.Texture,
+			frame?: string | number | undefined
+		) => ObjType,
 		initPoolSize: number
 	) {
 		this.scene = scene;
