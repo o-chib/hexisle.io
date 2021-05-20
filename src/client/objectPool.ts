@@ -57,6 +57,8 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 
 		this.activeObj.set(id, newObj);
 		this.activeCount++;
+		newObj.setActive(true);
+		newObj.setVisible(true);
 
 		return newObj;
 	}
