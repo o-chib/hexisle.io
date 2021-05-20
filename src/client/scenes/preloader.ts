@@ -22,10 +22,12 @@ export default class Preloader extends Phaser.Scene {
 		this.preloadBases();
 		this.preloadWalls();
 		this.preloadTurrets();
+		this.preloadBullets();
+		this.preloadResources();
+		this.preloadChunks();
+		this.preloadCampfires();
 		this.preloadLobby();
-		this.preloadMainGame();
 		this.preloadGameOver();
-		this.preloadStaticImgs();
 		this.preloadUI();
 		this.preloadSounds();
 	}
@@ -119,14 +121,18 @@ export default class Preloader extends Phaser.Scene {
 	 * Preloads player assets
 	 */
 	private preloadPlayers(): void {
-		this.load.spritesheet('player_red', '../assets/player_red.png', {
+		this.load.spritesheet('player_red', '../assets/player/player_red.png', {
 			frameWidth: 94,
 			frameHeight: 120,
 		});
-		this.load.spritesheet('player_blue', '../assets/player_blue.png', {
-			frameWidth: 94,
-			frameHeight: 120,
-		});
+		this.load.spritesheet(
+			'player_blue',
+			'../assets/player/player_blue.png',
+			{
+				frameWidth: 94,
+				frameHeight: 120,
+			}
+		);
 	}
 
 	/**
@@ -134,11 +140,11 @@ export default class Preloader extends Phaser.Scene {
 	 */
 	private preloadBases(): void {
 		// Team Bases
-		this.load.spritesheet('base_red', '../assets/base_red.png', {
+		this.load.spritesheet('base_red', '../assets/base/base_red.png', {
 			frameWidth: 385,
 			frameHeight: 400,
 		});
-		this.load.spritesheet('base_blue', '../assets/base_blue.png', {
+		this.load.spritesheet('base_blue', '../assets/base/base_blue.png', {
 			frameWidth: 385,
 			frameHeight: 400,
 		});
@@ -148,15 +154,19 @@ export default class Preloader extends Phaser.Scene {
 	 * Preloads wall assets
 	 */
 	private preloadWalls(): void {
-		this.load.spritesheet('wall_neutral', '../assets/wall_neutral.png', {
+		this.load.spritesheet(
+			'wall_neutral',
+			'../assets/wall/wall_neutral.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
+		this.load.spritesheet('wall_red', '../assets/wall/wall_red.png', {
 			frameWidth: 154,
 			frameHeight: 134,
 		});
-		this.load.spritesheet('wall_red', '../assets/wall_red.png', {
-			frameWidth: 154,
-			frameHeight: 134,
-		});
-		this.load.spritesheet('wall_blue', '../assets/wall_blue.png', {
+		this.load.spritesheet('wall_blue', '../assets/wall/wall_blue.png', {
 			frameWidth: 154,
 			frameHeight: 134,
 		});
@@ -168,7 +178,7 @@ export default class Preloader extends Phaser.Scene {
 	private preloadTurrets(): void {
 		this.load.spritesheet(
 			'turret_base_neutral',
-			'../assets/turret_base_neutral.png',
+			'../assets/turret/turret_base_neutral.png',
 			{
 				frameWidth: 154,
 				frameHeight: 134,
@@ -176,7 +186,7 @@ export default class Preloader extends Phaser.Scene {
 		);
 		this.load.spritesheet(
 			'turret_base_red',
-			'../assets/turret_base_red.png',
+			'../assets/turret/turret_base_red.png',
 			{
 				frameWidth: 154,
 				frameHeight: 134,
@@ -184,7 +194,7 @@ export default class Preloader extends Phaser.Scene {
 		);
 		this.load.spritesheet(
 			'turret_base_blue',
-			'../assets/turret_base_blue.png',
+			'../assets/turret/turret_base_blue.png',
 			{
 				frameWidth: 154,
 				frameHeight: 134,
@@ -192,19 +202,19 @@ export default class Preloader extends Phaser.Scene {
 		);
 		this.load.spritesheet(
 			'turret_shooter',
-			'../assets/turret_shooter.png',
+			'../assets/turret/turret_shooter.png',
 			{
 				frameWidth: 154,
 				frameHeight: 134,
 			}
 		);
-		this.load.spritesheet('campfire', '../assets/campfire.png', {
+		this.load.spritesheet('campfire', '../assets/campfire/campfire.png', {
 			frameWidth: 246,
 			frameHeight: 255,
 		});
 		this.load.spritesheet(
 			'campfire_ring_loader',
-			'../assets/campfire_loader.png',
+			'../assets/campfire/campfire_loader.png',
 			{
 				frameWidth: 155,
 				frameHeight: 135,
@@ -213,62 +223,77 @@ export default class Preloader extends Phaser.Scene {
 	}
 
 	/**
-	 * Preloads lobby assets
+	 * Preloads bullet assets
 	 */
-	private preloadLobby(): void {
-		this.load.image('lobby_bg', '../assets/lobby_bg.png');
-		this.load.image('lobby_logo', '../assets/lobby_logo.png');
-		this.load.image('lobby_play', '../assets/lobby_play.png');
-		this.load.image('lobby_options', '../assets/lobby_options.png');
-		this.load.image('lobby_help', '../assets/lobby_help.png');
-		this.load.image('help_menu', '../assets/help.png');
-		this.load.html('form', '../supportfiles/form.html');
+	private preloadBullets(): void {
+		this.load.image('bullet_red', '../assets/bullet_red.png');
+		this.load.image('bullet_blue', '../assets/bullet_blue.png');
 	}
 
 	/**
-	 * Preloads main game assets
+	 * Preloads resource assets
 	 */
-	private preloadMainGame(): void {
-		this.load.image('quitButton', '../assets/quitButton.png');
-	}
-
-	/**
-	 * Preloads game over assets
-	 */
-	private preloadGameOver(): void {
-		this.load.image('playAgain', '../assets/gameover_playagain.png');
-	}
-
-	/**
-	 * Preloads static images
-	 */
-	private preloadStaticImgs(): void {
-		this.load.image('bullet', '../assets/bullet.png');
-		this.load.image('bulletblue', '../assets/bulletblue.png');
-		this.load.image('campfire_lit', '../assets/campfire_lit.png');
+	private preloadResources(): void {
 		this.load.image('resSmall', '../assets/resourceSmall.png');
 		this.load.image('resMedium', '../assets/resourceMedium.png');
 		this.load.image('resLarge', '../assets/resourceLarge.png');
+	}
+
+	/**
+	 * Preloads chunk assets
+	 */
+	private preloadChunks(): void {
 		this.load.image('grass_chunk', '../assets/chunk.png');
 		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
 		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
 	}
 
 	/**
+	 * Preloads campfire assets
+	 */
+	private preloadCampfires(): void {
+		this.load.image('campfire_lit', '../assets/campfire_lit.png');
+	}
+
+	/**
+	 * Preloads lobby assets
+	 */
+	private preloadLobby(): void {
+		this.load.image('lobby_bg', '../assets/lobby/lobby_bg.png');
+		this.load.image('lobby_logo', '../assets/lobby/lobby_logo.png');
+		this.load.image('lobby_play', '../assets/lobby/lobby_play.png');
+		this.load.image('lobby_options', '../assets/lobby/lobby_options.png');
+		this.load.image('lobby_help', '../assets/lobby/lobby_help.png');
+		this.load.image('help_menu', '../assets/lobby/help.png');
+		this.load.html('form', '../supportfiles/form.html');
+	}
+
+	/**
+	 * Preloads game over assets
+	 */
+	private preloadGameOver(): void {
+		this.load.image('playAgain', '../assets/gameover/playagain.png');
+	}
+
+	/**
 	 * Preloads UI assets
 	 */
 	private preloadUI(): void {
+		this.load.image('quitButton', '../assets/ui/quitButton.png');
 		this.load.image(
 			'help_button_unpressed',
-			'../assets/help_button_unpressed.png'
+			'../assets/ui/help_button_unpressed.png'
 		);
 		this.load.image(
 			'help_button_pressed',
-			'../assets/help_button_pressed.png'
+			'../assets/ui/help_button_pressed.png'
 		);
-		this.load.image('help_popup', '../assets/help_popup.png');
-		this.load.image('sound_on_button', '../assets/sound_on_button.png');
-		this.load.image('sound_off_button', '../assets/sound_off_button.png');
+		this.load.image('help_popup', '../assets/ui/help_popup.png');
+		this.load.image('sound_on_button', '../assets/ui/sound_on_button.png');
+		this.load.image(
+			'sound_off_button',
+			'../assets/ui/sound_off_button.png'
+		);
 	}
 
 	/**
