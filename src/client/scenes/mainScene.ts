@@ -52,7 +52,7 @@ export default class MainScene extends Phaser.Scene {
 		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
 		this.alive = false;
-		this.debugMode= false;
+		this.debugMode = false;
 	}
 
 	create(): void {
