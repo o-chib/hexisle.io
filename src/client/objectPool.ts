@@ -54,4 +54,17 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 
 		return newObj;
 	}
+
+	public remove(id: string): void {
+		if (this.activeObj.has(id)) throw new Error('Object not in pool');
+
+		const deadObj = this.activeObj.get(id)!;
+		deadObj.setActive(false);
+		deadObj.setVisible(false);
+		this.activeObj.delete(id);
+		this.activeCount--;
+
+		this.reserveObj.push(deadObj);
+		this.reserveCount++;
+	}
 }
