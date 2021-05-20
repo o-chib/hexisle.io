@@ -39,6 +39,10 @@ export default class Preloader extends Phaser.Scene {
 		});
 
 		// Walls
+		this.load.spritesheet('wall_neutral', '../assets/wall_neutral.png', {
+			frameWidth: 154,
+			frameHeight: 134,
+		});
 		this.load.spritesheet('wall_red', '../assets/wall_red.png', {
 			frameWidth: 154,
 			frameHeight: 134,
@@ -49,6 +53,14 @@ export default class Preloader extends Phaser.Scene {
 		});
 
 		// Turrets
+		this.load.spritesheet(
+			'turret_base_neutral',
+			'../assets/turret_base_neutral.png',
+			{
+				frameWidth: 154,
+				frameHeight: 134,
+			}
+		);
 		this.load.spritesheet(
 			'turret_base_red',
 			'../assets/turret_base_red.png',
@@ -73,7 +85,18 @@ export default class Preloader extends Phaser.Scene {
 				frameHeight: 134,
 			}
 		);
-
+		this.load.spritesheet('campfire', '../assets/campfire.png', {
+			frameWidth: 246,
+			frameHeight: 255,
+		});
+		this.load.spritesheet(
+			'campfire_ring_loader',
+			'../assets/campfire_loader.png',
+			{
+				frameWidth: 155,
+				frameHeight: 135,
+			}
+		);
 		// Lobby
 		this.load.image('lobby_bg', '../assets/lobby_bg.png');
 		this.load.image('lobby_logo', '../assets/lobby_logo.png');
@@ -92,7 +115,6 @@ export default class Preloader extends Phaser.Scene {
 		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
 		this.load.image('bulletblue', '../assets/bulletblue.png');
-		this.load.image('campfire_unlit', '../assets/campfire_unlit.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
 		this.load.image('resSmall', '../assets/resourceSmall.png');
 		this.load.image('resMedium', '../assets/resourceMedium.png');
@@ -100,6 +122,17 @@ export default class Preloader extends Phaser.Scene {
 		this.load.image('grass_chunk', '../assets/chunk.png');
 		this.load.image('grass_chunk_red', '../assets/chunk_red.png');
 		this.load.image('grass_chunk_blue', '../assets/chunk_blue.png');
+
+		// UI
+		this.load.image(
+			'help_button_unpressed',
+			'../assets/help_button_unpressed.png'
+		);
+		this.load.image(
+			'help_button_pressed',
+			'../assets/help_button_pressed.png'
+		);
+		this.load.image('help_popup', '../assets/help_popup.png');
 	}
 
 	public create(): void {

@@ -1,13 +1,14 @@
-import Player from './../shared/player';
-import Bullet from './../shared/bullet';
-import Wall from '../shared/wall';
-import Turret from '../shared/turret';
-import Campfire from '../shared/campfire';
-import Base from '../shared/base';
+import Player from './objects/player';
+import Bullet from './objects/bullet';
+import Wall from './objects/wall';
+import Turret from './objects/turret';
+import Campfire from './objects/campfire';
+import Base from './objects/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';
-import { MapResources, Resource } from './mapResources';
+import { MapResources } from './mapResources';
+import { Resource } from './objects/resource';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
@@ -56,7 +57,7 @@ export default class CollisionDetection {
 		bullets: Set<Bullet>,
 		mapResources: MapResources
 	): void {
-		if (player.health <= 0) {
+		if (!player.isAlive()) {
 			return;
 		}
 
@@ -83,7 +84,7 @@ export default class CollisionDetection {
 					Constant.RADIUS.COLLISION.BULLET
 				)
 			) {
-				player.health -= 10;
+				player.hp -= Bullet.DAMAGE;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
@@ -145,7 +146,7 @@ export default class CollisionDetection {
 					Constant.RADIUS.COLLISION.BULLET
 				)
 			) {
-				building.hp -= 10;
+				building.hp -= Bullet.DAMAGE;
 				bullets.delete(result.payload);
 				this.quadtree.deleteFromQuadtree(
 					new CollisionObject(
@@ -177,7 +178,6 @@ export default class CollisionDetection {
 		);
 
 		for (const result of results) {
-			// TODO replace Point with some better invisible collider when refactoring
 			if (
 				this.isStructure(result.payload) &&
 				this.doCirclesCollide(

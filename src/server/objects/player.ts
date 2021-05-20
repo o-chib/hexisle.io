@@ -1,67 +1,55 @@
-import { Constant } from '../shared/constants';
-import Collision from './../server/collision';
+import { Constant } from '../../shared/constants';
+import { Point } from '../../shared/hexTiles';
+import Collision from '../collision';
+import DestructibleObj from './destructibleObj';
 
-export default class Player {
-	private PLAYER_SPEED = 600;
-	lastUpdateTime: number;
+export default class Player extends DestructibleObj {
+	private static readonly SPEED = 600;
+	private static readonly RELOAD_TIME = 0.5 * 1000;
 
-	id: string;
-	teamNumber: number;
-	xPos: number;
-	yPos: number;
+	public socket: SocketIOClient.Socket;
+	public name: string;
+	public resources: number;
 	private xVel: number;
 	private yVel: number;
 	private direction: number;
-	name: string;
-
-	// Score tracking & player stats
-	health: number;
-	score: number;
-	resources: number;
-
-	socket: SocketIOClient.Socket;
+	private lastUpdateTime: number;
 
 	constructor(socket: SocketIOClient.Socket, teamNumber: number, name = '') {
-		this.id = socket.id;
-		//this.xPos = 0;
-		//this.yPos = 0;
+		super(socket.id, 0, 0, teamNumber, Constant.HP.PLAYER);
+		this.socket = socket;
+		this.name = name;
+		this.resources = 0;
 		this.xVel = 0;
 		this.yVel = 0;
 		this.direction = 0;
-		this.teamNumber = teamNumber;
-		this.score = 0;
-		this.health = Constant.HP.PLAYER;
-		//this.healthRegen = 1;
-		this.socket = socket;
-		this.resources = 0;
 		this.lastUpdateTime = Date.now();
-		this.name = name;
 	}
 
-	updateResource(resourceValue: number) {
+	public updateResource(resourceValue: number) {
 		this.resources += resourceValue;
 	}
 
-	updateDirection(newDirection: number): void {
+	public updateDirection(newDirection: number): void {
 		this.direction = newDirection;
 	}
 
-	updateVelocity(direction: number): void {
+	public updateVelocity(direction: number): void {
 		if (direction == null) {
 			this.xVel = 0;
 			this.yVel = 0;
 		} else {
-			this.xVel = this.PLAYER_SPEED * Math.cos(direction);
-			this.yVel = this.PLAYER_SPEED * Math.sin(direction);
+			this.xVel = Player.SPEED * Math.cos(direction);
+			this.yVel = Player.SPEED * Math.sin(direction);
 		}
 	}
 
-	setNoVelocity(): void {
+	public setNoVelocity(): void {
 		this.xVel = 0;
 		this.yVel = 0;
 	}
 
-	updatePosition(presentTime: number, collision: Collision): void {
+	public updatePosition(presentTime: number, collision: Collision): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		const newX = this.xPos + timePassed * this.xVel;
 		const newY = this.yPos - timePassed * this.yVel;
@@ -81,37 +69,43 @@ export default class Player {
 		this.lastUpdateTime = presentTime;
 	}
 
-	canAffordStructure(building: string) {
+	public canAffordStructure(building: string) {
 		const cost: number = Constant.COST[building];
 		if (this.resources < cost) return false;
 		return true;
 	}
 
-	buyStructure(building: string): void {
+	public buyStructure(building: string): void {
 		const cost: number = Constant.COST[building];
 		this.updateResource(-cost);
 	}
 
-	refundStructure(building: string): void {
+	public refundStructure(building: string): void {
 		const cost: number = Constant.COST[building];
 		this.updateResource(
 			Math.ceil(cost * Constant.COST.BUILDING_REFUND_MULTIPLIER)
 		);
 	}
 
-	serializeForUpdate() {
+	public respawn(respawnPoint: Point) {
+		this.xPos = respawnPoint.xPos;
+		this.yPos = respawnPoint.yPos;
+		this.hp = 100;
+		this.resources = 0;
+	}
+
+	public serializeForUpdate() {
 		return {
 			id: this.id,
 			xPos: this.xPos,
 			yPos: this.yPos,
-			name: this.name,
-			direction: this.direction,
-			health: this.health,
-			resources: this.resources,
-			score: this.score,
 			teamNumber: this.teamNumber,
+			hp: this.hp,
+			name: this.name,
+			resources: this.resources,
 			xVel: this.xVel,
 			yVel: this.yVel,
+			direction: this.direction,
 		};
 	}
 }
