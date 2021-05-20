@@ -1,6 +1,6 @@
 import { ClientGameObject } from './objects/clientGameObject';
 
-export default class ObjectPool<ObjType extends ClientGameObject> {
+export default class ObjectPool {
 	private scene: Phaser.Scene;
 	private objConstructor: new (
 		scene: Phaser.Scene,
@@ -8,12 +8,12 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 		y?: number,
 		texture?: string | Phaser.Textures.Texture,
 		frame?: string | number | undefined
-	) => ObjType;
+	) => ClientGameObject;
 
-	private activeObj: Map<string, ObjType>;
+	private activeObj: Map<string, ClientGameObject>;
 	private activeCount: number;
 
-	private reserveObj: Array<ObjType>;
+	private reserveObj: Array<ClientGameObject>;
 	private reserveCount: number;
 
 	private currentDirtyBit = false;
@@ -26,17 +26,17 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 			y?: number,
 			texture?: string | Phaser.Textures.Texture,
 			frame?: string | number | undefined
-		) => ObjType,
+		) => ClientGameObject,
 		initPoolSize: number
 	) {
 		this.scene = scene;
 		this.objConstructor = type;
 
 		this.activeCount = 0;
-		this.activeObj = new Map<string, ObjType>();
+		this.activeObj = new Map<string, ClientGameObject>();
 
 		this.reserveCount = 0;
-		this.reserveObj = new Array<ObjType>();
+		this.reserveObj = new Array<ClientGameObject>();
 
 		for (let i = 0; i < initPoolSize; i++) this.increaseReserveSize();
 	}

@@ -16,7 +16,7 @@ export default class MainScene extends Phaser.Scene {
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private wallSprites: ObjectPool<ClientGameObject>;
+	private wallSprites: ObjectPool;
 	private turretBaseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -45,7 +45,7 @@ export default class MainScene extends Phaser.Scene {
 		this.hexTiles = new HexTiles();
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
-		this.wallSprites = new ObjectPool<ClientWall>(this, ClientWall, 10);
+		this.wallSprites = new ObjectPool(this, ClientWall, 10);
 		this.turretBaseSprites = new Map();
 		this.turretGunSprites = new Map();
 		this.campfireSprites = new Map();
@@ -782,10 +782,7 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	private updateGamePool(
-		arrayOfNewObjStates: any[],
-		objectPool: ObjectPool<ClientGameObject>
-	) {
+	private updateGamePool(arrayOfNewObjStates: any[], objectPool: ObjectPool) {
 		arrayOfNewObjStates.forEach((obj) => {
 			objectPool.get(obj.id).update(obj);
 		});
