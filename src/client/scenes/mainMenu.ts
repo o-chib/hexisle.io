@@ -26,7 +26,7 @@ export default class MainMenu extends Phaser.Scene {
 		// Background Music
 		if (!this.sound.get('menuMusic')) {
 			this.menuMusic = this.sound.add('menuMusic', {
-				volume: 0.07,
+				volume: 0.03,
 				loop: true,
 			});
 		}
