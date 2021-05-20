@@ -70,6 +70,7 @@ describe('Player', () => {
 	});
 
 	it('reloadTimer at 0: can shoot', () => {
+		player.reloadTimer = 0;
 		expect(player.canShoot()).toEqual(true);
 	});
 
