@@ -8,12 +8,12 @@ export default class ObjectPool {
 		y?: number,
 		texture?: string | Phaser.Textures.Texture,
 		frame?: string | number | undefined
-	) => ClientGameObject;
+	) => IPoolObject;
 
-	private activeObj: Map<string, ClientGameObject>;
+	private activeObj: Map<string, IPoolObject>;
 	private activeCount: number;
 
-	private reserveObj: Array<ClientGameObject>;
+	private reserveObj: Array<IPoolObject>;
 	private reserveCount: number;
 
 	private currentDirtyBit = false;
@@ -33,10 +33,10 @@ export default class ObjectPool {
 		this.objConstructor = type;
 
 		this.activeCount = 0;
-		this.activeObj = new Map<string, ClientGameObject>();
+		this.activeObj = new Map<string, IPoolObject>();
 
 		this.reserveCount = 0;
-		this.reserveObj = new Array<ClientGameObject>();
+		this.reserveObj = new Array<IPoolObject>();
 
 		for (let i = 0; i < initPoolSize; i++) this.increaseReserveSize();
 	}
@@ -49,7 +49,7 @@ export default class ObjectPool {
 		newObj.setVisible(false);
 	}
 
-	public get(id: string): ClientGameObject {
+	public get(id: string): IPoolObject {
 		if (this.activeObj.has(id)) {
 			const obj = this.activeObj.get(id)!;
 			obj.dirtyBit = this.currentDirtyBit;
@@ -84,7 +84,7 @@ export default class ObjectPool {
 	}
 
 	public clean(): void {
-		this.activeObj.forEach((obj: ClientGameObject, key: string) => {
+		this.activeObj.forEach((obj: IPoolObject, key: string) => {
 			if (obj.dirtyBit != this.currentDirtyBit) this.remove(key);
 		});
 

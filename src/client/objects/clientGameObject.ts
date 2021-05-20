@@ -1,4 +1,6 @@
-export abstract class ClientGameObject extends Phaser.GameObjects.Sprite {
+export abstract class ClientGameObject
+	extends Phaser.GameObjects.Sprite
+	implements IPoolObject {
 	public dirtyBit: boolean;
 
 	constructor(
