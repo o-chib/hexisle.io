@@ -14,6 +14,7 @@ export default class gameOver extends Phaser.Scene {
 	init(data): void {
 		this.socket = data.socket;
 		this.endState = data.endState;
+		this.sound.get('menuMusic').play();
 	}
 
 	create(): void {

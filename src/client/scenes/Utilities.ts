@@ -21,8 +21,6 @@ export default class Utilities {
 	 * @param scene the scene to get the sound manager from
 	 */
 	public static toggleMute(sound: Phaser.Sound.BaseSoundManager): void {
-		console.log("pre toggle", sound.mute);
 		sound.mute = !sound.mute;
-		console.log("post toggle", sound.mute);
 	}
 }

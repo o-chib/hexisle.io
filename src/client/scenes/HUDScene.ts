@@ -184,14 +184,11 @@ export default class HUDScene extends Phaser.Scene {
 	}
 
 	/**
-	 * Toggles mute for all game sounds
-	 * @param scene the scene this call is coming from
+	 * Action when pressing the sound button, toggles mute for all game sounds
 	 */
 	private toggleMuteButton(): void {
 		Utilities.toggleMute(this.sound);
 		this.setToggleMuteButtonIcon();
-		console.log("post icon update", this.sound.mute);
-		console.log("___ end toggle ___");
 	}
 
 	/**
@@ -200,11 +197,8 @@ export default class HUDScene extends Phaser.Scene {
 	private setToggleMuteButtonIcon(): void {
 		if (this.sound.mute) {
 			this.muteButton?.setTexture('sound_off_button');
-			console.log(this.sound.mute, "icon off");
 		} else {
 			this.muteButton?.setTexture('sound_on_button');
-			console.log(this.sound.mute, "icon on");
 		}
-		console.log("--- end set icon ---");
 	}
 }

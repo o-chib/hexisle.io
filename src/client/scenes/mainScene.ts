@@ -126,7 +126,7 @@ export default class MainScene extends Phaser.Scene {
 
 	private initializeSounds(): void {
 		if (!this.sound.get('backgroundMusic')) {
-			this.backgroundMusic = this.sound.add('backgroundMusic', {volume: 0.1, loop: true})
+			this.backgroundMusic = this.sound.add('backgroundMusic', {volume: 0.07, loop: true})
 		}
 	}
 
@@ -844,7 +844,7 @@ export default class MainScene extends Phaser.Scene {
 		this.emptyAllObjects();
 		this.deregisterInputListeners();
 		this.cameras.resetAll();
-		this.sound.pauseAll();
+		this.backgroundMusic.pause();
 		this.events.emit('stopHUD');
 		this.events.emit('stopUI');
 		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
