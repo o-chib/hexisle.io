@@ -5,7 +5,6 @@ import HelpOverlayScene from './helpOverlayScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
-import { ClientGameObject } from '../objects/clientGameObject';
 import ObjectPool from '../objectPool';
 import { ClientWall } from '../objects/clientWall';
 
