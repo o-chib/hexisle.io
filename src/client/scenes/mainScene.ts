@@ -5,8 +5,9 @@ import HelpOverlayScene from './helpOverlayScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
-import { ClientGameObject } from '../clientGameObject';
+import { ClientGameObject } from '../objects/clientGameObject';
 import ObjectPool from '../objectPool';
+import { ClientWall } from '../objects/clientWall';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
@@ -44,11 +45,7 @@ export default class MainScene extends Phaser.Scene {
 		this.hexTiles = new HexTiles();
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
-		this.wallSprites = new ObjectPool<ClientGameObject>(
-			this,
-			ClientGameObject,
-			10
-		);
+		this.wallSprites = new ObjectPool<ClientWall>(this, ClientWall, 10);
 		this.turretBaseSprites = new Map();
 		this.turretGunSprites = new Map();
 		this.campfireSprites = new Map();
@@ -583,32 +580,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateWalls(walls: any) {
-		this.updateGamePool(
-			walls,
-			this.wallSprites,
-			(newWall, newWallLiteral) => {
-				let wallTexture = '';
-				if (newWallLiteral.teamNumber == Constant.TEAM.RED)
-					wallTexture = 'wall_red';
-				else if (newWallLiteral.teamNumber == Constant.TEAM.BLUE)
-					wallTexture = 'wall_blue';
-				else if (newWallLiteral.teamNumber == Constant.TEAM.NONE)
-					wallTexture = 'wall_neutral';
-
-				if (newWall.texture.key != wallTexture) {
-					newWall.setTexture(wallTexture);
-				}
-
-				const healthPercent = newWallLiteral.hp / Constant.HP.WALL;
-				newWall = this.handleDamageAnimation(
-					newWall,
-					wallTexture,
-					healthPercent
-				);
-
-				return newWall;
-			}
-		);
+		this.updateGamePool(walls, this.wallSprites);
 	}
 
 	private updateTurrets(turrets: any) {
@@ -812,14 +784,10 @@ export default class MainScene extends Phaser.Scene {
 
 	private updateGamePool(
 		arrayOfNewObjStates: any[],
-		objectPool: ObjectPool<ClientGameObject>,
-		callback: (arg0: any, arg1: any) => any
+		objectPool: ObjectPool<ClientGameObject>
 	) {
 		arrayOfNewObjStates.forEach((obj) => {
-			const newObj = objectPool.get(obj.id);
-			newObj.setPosition(obj.xPos, obj.yPos);
-
-			callback(newObj, obj);
+			objectPool.get(obj.id).update(obj);
 		});
 
 		objectPool.clean();
