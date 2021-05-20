@@ -25,7 +25,7 @@ export default class gameOver extends Phaser.Scene {
 		const renderHeight = this.game.renderer.height;
 
 		// Background image
-		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
+		const bg = this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);

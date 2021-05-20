@@ -30,28 +30,8 @@ export default class MainMenu extends Phaser.Scene {
 
 		const renderWidth = this.game.renderer.width;
 		const renderHeight = this.game.renderer.height;
-
 		// Background image
-		const bg = this.add
-			.image(0, 0, 'lobby_bg')
-			.setOrigin(0)
-			.setDepth(0)
-			.setScale(0.75);
-		// var circle = new Phaser.Geom.Circle(0, 0, 200);
-		// Phaser.Actions.PlaceOnCircle([bg], circle,Phaser.Math.DegToRad(-180));
-		// const tweenAngleToRotateBy = 0.02;
-		// var tween = this.tweens.add({
-		// 	targets: circle,
-		//     radius: 200,
-		//     ease: 'Quintic.easeInOut',
-		//     duration: 1500,
-		//     yoyo: true,
-		//     repeat: -1,
-		//     onUpdate: function ()
-		//     {
-		//        //Phaser.Actions.RotateAroundDistance([bg], { x: 400, y: 300 }, tweenAngleToRotateBy, 200);
-		//     }
-		// });
+		const bg = this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);
