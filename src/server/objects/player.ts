@@ -19,7 +19,7 @@ export default class Player extends DestructibleObj {
 		super(socket.id, 0, 0, teamNumber, Constant.HP.PLAYER);
 		this.socket = socket;
 		this.name = name;
-		this.resources = 0;
+		this.resources = 800;
 		this.xVel = 0;
 		this.yVel = 0;
 		this.direction = 0;

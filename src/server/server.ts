@@ -22,7 +22,7 @@ const server = http.createServer(app).listen(port, () => {
 });
 
 const restartGame = () => {
-	allGames.newGame();
+	//allGames.newGame();
 };
 
 // Start the game

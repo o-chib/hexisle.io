@@ -25,10 +25,10 @@ export const Constant = Object.freeze({
 	},
 
 	GAME_TIMING: {
-		UPDATE_RATE: 1000 / 60,
+		UPDATE_RATE: 1000 / 30,
 		CHECK_END: 1000 / 60,
 		END_SCREEN: 5 * 1000,
-		TIME_LIMIT: 5 * (60 * 1000),
+		TIME_LIMIT: 15 * (60 * 1000),
 	},
 
 	RADIUS: {

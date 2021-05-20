@@ -105,7 +105,9 @@ export default class Game {
 		if (deb) console.timeEnd('Territories');
 
 		if (deb) console.time('Walls');
+		this.perfMonitor.start();
 		this.updateWalls();
+		this.perfMonitor.stop();
 		if (deb) console.timeEnd('Walls');
 
 		if (deb) console.time('Turrets');
@@ -129,9 +131,7 @@ export default class Game {
 		if (deb) console.timeEnd('Game Over');
 
 		if (deb) console.time('Send Updates');
-		this.perfMonitor.start();
 		this.sendStateToPlayers();
-		this.perfMonitor.stop();
 		if (deb) console.timeEnd('Send Updates');
 
 		if (deb) console.timeEnd('Total');
