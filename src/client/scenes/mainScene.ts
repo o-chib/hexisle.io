@@ -10,6 +10,7 @@ type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
+	private backgroundMusic: Phaser.Sound.BaseSound;
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -36,6 +37,7 @@ export default class MainScene extends Phaser.Scene {
 	init(data): void {
 		this.socket = data.socket;
 
+		this.initializeSounds();
 		this.initializeKeys();
 		this.generatePlayerSprite();
 
@@ -51,6 +53,7 @@ export default class MainScene extends Phaser.Scene {
 		this.territorySprites = new Map();
 		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
+
 	}
 
 	create(): void {
@@ -119,6 +122,10 @@ export default class MainScene extends Phaser.Scene {
 			},
 			false
 		);
+	}
+
+	private initializeSounds(): void {
+		this.backgroundMusic = this.sound.add('backgroundMusic', {volume: 0.03, loop: true})
 	}
 
 	private registerListeners(): void {
@@ -208,6 +215,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.setCamera();
 		this.initializePlayer(player);
+		this.backgroundMusic.play();
 	}
 
 	private initializePlayer(player: any): void {
@@ -834,6 +842,7 @@ export default class MainScene extends Phaser.Scene {
 		this.emptyAllObjects();
 		this.deregisterInputListeners();
 		this.cameras.resetAll();
+		this.sound.removeAll();
 		this.events.emit('stopHUD');
 		this.events.emit('stopUI');
 		this.socket.off(Constant.MESSAGE.GAME_UPDATE);

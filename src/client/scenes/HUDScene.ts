@@ -12,15 +12,11 @@ hexQ/hexR:%3/%4`;
 export default class HUDScene extends Phaser.Scene {
 	public static Name = 'HUDScene';
 	private mainSceneObj: any;
-
-	// Text/Scoring
 	private infoText?: Phaser.GameObjects.Text;
-	// Game timer
 	private gameTimeText?: Phaser.GameObjects.Text;
-	// Debug Info
 	private debugInfoText?: Phaser.GameObjects.Text;
-	// Quit Button
 	private quitButton?: Phaser.GameObjects.Image;
+	private muteButton?: Phaser.GameObjects.Image;d
 
 	constructor() {
 		super('HUDScene');
@@ -90,15 +86,27 @@ export default class HUDScene extends Phaser.Scene {
 			.setDepth(99)
 			.setDisplayOrigin(0.5, 0.5)
 			.setScale(0.35);
-
 		new Anchor(this.quitButton, {
 			right: 'right-10',
 			top: 'top+10',
 		});
 
-		// Set quitButton Interaction
+		this.muteButton = this.add
+			.image(0, 0, 'quitButton')
+			.setDepth(99)
+			.setDisplayOrigin(0.5, 0.5)
+			.setScale(0.35);
+		new Anchor(this.muteButton, {
+			right: 'right-90',
+			top: 'top+10',
+		});
+
+		// Set button Interaction
 		this.quitButton.setInteractive();
 		this.quitButton.on('pointerdown', this.quitCurrentGame.bind(this));
+
+		this.muteButton.setInteractive();
+		this.muteButton.on('pointerdown', this.toggleSounds.bind(this));
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
@@ -172,5 +180,9 @@ export default class HUDScene extends Phaser.Scene {
 
 	private quitCurrentGame(): void {
 		this.events.emit('leaveGame');
+	}
+
+	private toggleSounds(): void {
+		this.mainSceneObj.sound.setMute(!this.mainSceneObj.sound.mute);
 	}
 }
