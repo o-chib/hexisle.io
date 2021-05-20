@@ -1,4 +1,6 @@
 export class ClientGameObject extends Phaser.GameObjects.Sprite {
+	public dirtyBit: boolean;
+
 	constructor(
 		scene: Phaser.Scene,
 		x = 0,

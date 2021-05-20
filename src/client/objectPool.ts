@@ -16,6 +16,8 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 	private reserveObj: Array<ObjType>;
 	private reserveCount: number;
 
+	private currentDirtyBit = false;
+
 	constructor(
 		scene: Phaser.Scene,
 		type: new (
@@ -48,7 +50,11 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 	}
 
 	public get(id: string): ClientGameObject {
-		if (this.activeObj.has(id)) return this.activeObj.get(id)!;
+		if (this.activeObj.has(id)) {
+			const obj = this.activeObj.get(id)!;
+			obj.dirtyBit = this.currentDirtyBit;
+			return obj;
+		}
 
 		if (this.reserveCount == 0) this.increaseReserveSize();
 
@@ -59,12 +65,13 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 		this.activeCount++;
 		newObj.setActive(true);
 		newObj.setVisible(true);
+		newObj.dirtyBit = this.currentDirtyBit;
 
 		return newObj;
 	}
 
 	public remove(id: string): void {
-		if (this.activeObj.has(id)) throw new Error('Object not in pool');
+		if (!this.activeObj.has(id)) throw new Error('Object not in pool');
 
 		const deadObj = this.activeObj.get(id)!;
 		deadObj.setActive(false);
@@ -74,5 +81,13 @@ export default class ObjectPool<ObjType extends ClientGameObject> {
 
 		this.reserveObj.push(deadObj);
 		this.reserveCount++;
+	}
+
+	public clean(): void {
+		this.activeObj.forEach((obj: ClientGameObject, key: string) => {
+			if (obj.dirtyBit != this.currentDirtyBit) this.remove(key);
+		});
+
+		this.currentDirtyBit = !this.currentDirtyBit;
 	}
 }
