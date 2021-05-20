@@ -181,8 +181,4 @@ export default class HUDScene extends Phaser.Scene {
 	private quitCurrentGame(): void {
 		this.events.emit('leaveGame');
 	}
-
-	private toggleSounds(): void {
-		this.mainSceneObj.sound.setMute(!this.mainSceneObj.sound.mute);
-	}
 }

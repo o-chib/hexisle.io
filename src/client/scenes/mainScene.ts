@@ -10,7 +10,6 @@ type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private backgroundMusic: Phaser.Sound.BaseSound;
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -25,6 +24,7 @@ export default class MainScene extends Phaser.Scene {
 	private deadObjects: Set<unknown>;
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
+	private backgroundMusic: Phaser.Sound.BaseSound;
 	private socket: SocketIOClient.Socket;
 	private alive = false;
 	private hexTiles: HexTiles;
@@ -37,7 +37,6 @@ export default class MainScene extends Phaser.Scene {
 	init(data): void {
 		this.socket = data.socket;
 
-		this.initializeSounds();
 		this.initializeKeys();
 		this.generatePlayerSprite();
 
@@ -54,6 +53,7 @@ export default class MainScene extends Phaser.Scene {
 		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
 
+		this.initializeSounds();
 	}
 
 	create(): void {

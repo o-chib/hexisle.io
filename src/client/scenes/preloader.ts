@@ -272,6 +272,7 @@ export default class Preloader extends Phaser.Scene {
 	 * Preloads sounds
 	 */
 	private preloadSounds(): void {
+		this.load.audio('mainMenuMusic', '../sounds/mainMenuMusic.mp3');
 		this.load.audio('backgroundMusic', '../sounds/backgroundMusic.mp3');
 	}
 }

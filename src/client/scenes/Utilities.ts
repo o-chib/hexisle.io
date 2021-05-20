@@ -15,4 +15,8 @@ export default class Utilities {
 	public static LogSceneMethodEntry(sceneName: string, method: string): void {
 		this.Log('Entered ' + sceneName + ' ' + method + '()');
 	}
+
+	public static toggleMute(scene: Phaser.Scene): void {
+		scene.sound.mute = !scene.sound.mute;
+	}
 }

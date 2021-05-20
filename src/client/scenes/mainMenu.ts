@@ -8,6 +8,7 @@ export default class MainMenu extends Phaser.Scene {
 	private playerName: string | undefined = '';
 	private gameid: string | undefined = '';
 	private inputBox;
+	private mainMenuMusic: Phaser.Sound.BaseSound;
 	private nextUpdateTime: number;
 
 	constructor() {
@@ -21,6 +22,10 @@ export default class MainMenu extends Phaser.Scene {
 			Constant.MESSAGE.GIVE_GAME_LIST,
 			this.initializeLobbyList.bind(this)
 		);
+
+		// Background Music
+		this.mainMenuMusic = this.sound.add('mainMenuMusic', {volume: 0.03, loop: true});
+		this.mainMenuMusic.play();
 	}
 
 	public create(): void {
@@ -190,6 +195,8 @@ export default class MainMenu extends Phaser.Scene {
 	private loadMainScene() {
 		this.socket.off(Constant.MESSAGE.JOIN_GAME_FAIL);
 
+		this.sound.removeAll();
+
 		this.scene.start(mainScene.Name, {
 			socket: this.socket,
 		});
@@ -202,6 +209,6 @@ export default class MainMenu extends Phaser.Scene {
 	}
 
 	private loadOptions(): void {
-		//TODO remove options?
+		Utilities.toggleMute(this);
 	}
 }
