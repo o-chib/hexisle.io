@@ -12,7 +12,7 @@ type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayerSprite: ClientGameObject;
+	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private wallSprites: ObjectPool<ClientGameObject>;
@@ -98,7 +98,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private generatePlayerSprite(): void {
-		this.myPlayerSprite = new ClientGameObject(this);
+		this.myPlayerSprite = this.add.sprite(0, 0, '');
 		this.myPlayerSprite.setDepth(1000);
 		this.myPlayerSprite.setVisible(false);
 		this.myPlayerSprite.setScale(1);
@@ -822,7 +822,7 @@ export default class MainScene extends Phaser.Scene {
 			callback(newObj, obj);
 		});
 
-
+		objectPool.clean();
 	}
 
 	private gameOver(endState: any): void {
