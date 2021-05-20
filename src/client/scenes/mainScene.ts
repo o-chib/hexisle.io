@@ -542,10 +542,10 @@ export default class MainScene extends Phaser.Scene {
 		this.updateMapOfObjects(
 			bullets,
 			this.bulletSprites,
-			'bullet',
+			'bullet_red',
 			(newBullet, newBulletLiteral) => {
 				if (newBulletLiteral.teamNumber == Constant.TEAM.BLUE)
-					newBullet.setTexture('bulletblue');
+					newBullet.setTexture('bullet_blue');
 				newBullet.setDepth(2);
 				return newBullet;
 			}
