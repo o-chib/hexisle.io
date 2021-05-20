@@ -6,15 +6,16 @@ import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 import { ClientGameObject } from '../clientGameObject';
+import ObjectPool from '../objectPool';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayerSprite: Phaser.GameObjects.Sprite;
+	private myPlayerSprite: ClientGameObject;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private wallSprites: ObjectPool<ClientGameObject>;
 	private turretBaseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -43,7 +44,11 @@ export default class MainScene extends Phaser.Scene {
 		this.hexTiles = new HexTiles();
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
-		this.wallSprites = new Map();
+		this.wallSprites = new ObjectPool<ClientGameObject>(
+			this,
+			ClientGameObject,
+			10
+		);
 		this.turretBaseSprites = new Map();
 		this.turretGunSprites = new Map();
 		this.campfireSprites = new Map();
@@ -578,10 +583,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateWalls(walls: any) {
-		this.updateMapOfObjects(
+		this.updateGamePool(
 			walls,
 			this.wallSprites,
-			'',
 			(newWall, newWallLiteral) => {
 				let wallTexture = '';
 				if (newWallLiteral.teamNumber == Constant.TEAM.RED)
@@ -806,11 +810,19 @@ export default class MainScene extends Phaser.Scene {
 		}
 	}
 
-	private clearMapOfObjects(objects: Map<string, Phaser.GameObjects.Sprite>) {
-		for (const anOldKey of objects.keys()) {
-			objects.get(anOldKey)?.destroy();
-			objects.delete(anOldKey);
-		}
+	private updateGamePool(
+		arrayOfNewObjStates: any[],
+		objectPool: ObjectPool<ClientGameObject>,
+		callback: (arg0: any, arg1: any) => any
+	) {
+		arrayOfNewObjStates.forEach((obj) => {
+			const newObj = objectPool.get(obj.id);
+			newObj.setPosition(obj.xPos, obj.yPos);
+
+			callback(newObj, obj);
+		});
+
+
 	}
 
 	private gameOver(endState: any): void {
@@ -832,25 +844,10 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private endGame(): void {
-		this.emptyAllObjects();
 		this.deregisterInputListeners();
 		this.cameras.resetAll();
 		this.events.emit('stopHUD');
 		this.events.emit('stopUI');
 		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
-	}
-
-	private emptyAllObjects(): void {
-		this.clearMapOfObjects(this.otherPlayerSprites);
-		this.clearMapOfObjects(this.bulletSprites);
-		this.clearMapOfObjects(this.wallSprites);
-		this.clearMapOfObjects(this.turretBaseSprites);
-		this.clearMapOfObjects(this.turretGunSprites);
-		this.clearMapOfObjects(this.campfireSprites);
-		this.clearMapOfObjects(this.campfireRingSprites);
-		this.clearMapOfObjects(this.baseSprites);
-		this.clearMapOfObjects(this.territorySprites);
-		this.clearMapOfObjects(this.resourceSprites);
-		this.deadObjects.clear();
 	}
 }
