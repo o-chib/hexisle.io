@@ -16,7 +16,8 @@ export default class HUDScene extends Phaser.Scene {
 	private gameTimeText?: Phaser.GameObjects.Text;
 	private debugInfoText?: Phaser.GameObjects.Text;
 	private quitButton?: Phaser.GameObjects.Image;
-	private muteButton?: Phaser.GameObjects.Image;d
+	private muteButton?: Phaser.GameObjects.Image;
+	d;
 
 	constructor() {
 		super('HUDScene');
@@ -107,7 +108,10 @@ export default class HUDScene extends Phaser.Scene {
 		this.quitButton.on('pointerdown', this.quitCurrentGame.bind(this));
 
 		this.muteButton.setInteractive();
-		this.muteButton.on('pointerdown', this.toggleMuteButton.bind(this, this.game));
+		this.muteButton.on(
+			'pointerdown',
+			this.toggleMuteButton.bind(this, this.game)
+		);
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');

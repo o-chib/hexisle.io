@@ -45,7 +45,7 @@ export default class Preloader extends Phaser.Scene {
 	/**
 	 * Adds a progress bar to the display, showing the percentage of assets loaded and their name.
 	 */
-	 private addProgressBar(): void {
+	private addProgressBar(): void {
 		const width = this.cameras.main.width;
 		const height = this.cameras.main.height;
 		/** Customizable. This text color will be used around the progress bar. */
@@ -132,7 +132,8 @@ export default class Preloader extends Phaser.Scene {
 	/**
 	 * Preloads base assets
 	 */
-	private preloadBases(): void {// Team Bases
+	private preloadBases(): void {
+		// Team Bases
 		this.load.spritesheet('base_red', '../assets/base_red.png', {
 			frameWidth: 385,
 			frameHeight: 400,
@@ -266,14 +267,8 @@ export default class Preloader extends Phaser.Scene {
 			'../assets/help_button_pressed.png'
 		);
 		this.load.image('help_popup', '../assets/help_popup.png');
-		this.load.image(
-			'sound_on_button',
-			'../assets/sound_on_button.png'
-		);
-		this.load.image(
-			'sound_off_button',
-			'../assets/sound_off_button.png'
-		);
+		this.load.image('sound_on_button', '../assets/sound_on_button.png');
+		this.load.image('sound_off_button', '../assets/sound_off_button.png');
 	}
 
 	/**
