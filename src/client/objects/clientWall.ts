@@ -1,7 +1,7 @@
 import { Constant } from '../../shared/constants';
-import { ClientGameObject } from './clientGameObject';
+import { ClientStructure } from './clientStructure';
 
-export class ClientWall extends ClientGameObject {
+export class ClientWall extends ClientStructure {
 	public update(newWallLiteral: any) {
 		this.setPosition(newWallLiteral.xPos, newWallLiteral.yPos);
 
@@ -13,9 +13,7 @@ export class ClientWall extends ClientGameObject {
 		else if (newWallLiteral.teamNumber == Constant.TEAM.NONE)
 			wallTexture = 'wall_neutral';
 
-		if (this.texture.key != wallTexture) {
-			this.setTexture(wallTexture);
-		}
+		if (this.texture.key != wallTexture) this.setTexture(wallTexture);
 
 		const healthPercent = newWallLiteral.hp / Constant.HP.WALL;
 		this.handleDamageAnimation(wallTexture, healthPercent);
