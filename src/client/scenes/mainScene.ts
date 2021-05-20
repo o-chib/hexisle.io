@@ -546,6 +546,7 @@ export default class MainScene extends Phaser.Scene {
 			(newBullet, newBulletLiteral) => {
 				if (newBulletLiteral.teamNumber == Constant.TEAM.BLUE)
 					newBullet.setTexture('bulletblue');
+					newBullet.setDepth(2);
 				return newBullet;
 			}
 		);
