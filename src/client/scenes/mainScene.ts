@@ -24,7 +24,6 @@ export default class MainScene extends Phaser.Scene {
 	private wallSprites: ObjectPool;
 	private turretSprites: ObjectPool;
 	private campfireSprites: ObjectPool;
-	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: ObjectPool;
 	private territorySprites: ObjectPool;
 	private resourceSprites: ObjectPool;
