@@ -18,14 +18,14 @@ type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayerSprite: ClientPlayer;
-	private otherPlayerSprites: ObjectPool;
-	private bulletSprites: ObjectPool;
-	private wallSprites: ObjectPool;
-	private turretSprites: ObjectPool;
-	private campfireSprites: ObjectPool;
-	private baseSprites: ObjectPool;
-	private resourceSprites: ObjectPool;
+	private myPlayer: ClientPlayer;
+	private otherPlayers: ObjectPool;
+	private bullets: ObjectPool;
+	private walls: ObjectPool;
+	private turrets: ObjectPool;
+	private campfires: ObjectPool;
+	private bases: ObjectPool;
+	private resources: ObjectPool;
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
@@ -34,24 +34,24 @@ export default class MainScene extends Phaser.Scene {
 	private debugMode = false;
 
 	constructor() {
-		super('MainScene');
+		super(MainScene.Name);
 	}
 
 	init(data): void {
 		this.socket = data.socket;
 
 		this.initializeKeys();
-		this.myPlayerSprite = new ClientPlayer(this);
-		this.myPlayerSprite.die();
+		this.myPlayer = new ClientPlayer(this);
+		this.myPlayer.die();
 
 		this.hexTiles = new HexTiles();
-		this.otherPlayerSprites = new ObjectPool(this, ClientPlayer, 4);
-		this.bulletSprites = new ObjectPool(this, ClientBullet, 10);
-		this.wallSprites = new ObjectPool(this, ClientWall, 10);
-		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
-		this.campfireSprites = new ObjectPool(this, ClientCampfire, 5);
-		this.baseSprites = new ObjectPool(this, ClientBase, 2);
-		this.resourceSprites = new ObjectPool(this, ClientResource, 10);
+		this.otherPlayers = new ObjectPool(this, ClientPlayer, 4);
+		this.bullets = new ObjectPool(this, ClientBullet, 10);
+		this.walls = new ObjectPool(this, ClientWall, 10);
+		this.turrets = new ObjectPool(this, ClientTurret, 10);
+		this.campfires = new ObjectPool(this, ClientCampfire, 5);
+		this.bases = new ObjectPool(this, ClientBase, 2);
+		this.resources = new ObjectPool(this, ClientResource, 10);
 	}
 
 	create(): void {
@@ -175,7 +175,7 @@ export default class MainScene extends Phaser.Scene {
 
 	private updateDirection() {
 		if (!this.alive) {
-			this.myPlayerSprite.setRotation(0);
+			this.myPlayer.setRotation(0);
 			this.socket.emit(Constant.MESSAGE.ROTATE, 0);
 			return;
 		}
@@ -183,13 +183,13 @@ export default class MainScene extends Phaser.Scene {
 		const direction =
 			this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
 
-		this.myPlayerSprite.setRotation(direction);
+		this.myPlayer.setRotation(direction);
 		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
 	}
 
 	private getMouseDirection(pointer: any): any {
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-		const playerPos = this.myPlayerSprite.getPosition();
+		const playerPos = this.myPlayer.getPosition();
 
 		return Math.atan2(gamePos.y - playerPos.y, gamePos.x - playerPos.x);
 	}
@@ -203,12 +203,12 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializePlayer(player: any): void {
-		this.myPlayerSprite.init(player);
+		this.myPlayer.init(player);
 		this.alive = true;
 	}
 
 	private setCamera(): void {
-		this.cameras.main.startFollow(this.myPlayerSprite.playerSprite, true);
+		this.cameras.main.startFollow(this.myPlayer.playerSprite, true);
 		this.cameras.main.setZoom(0.75);
 		this.cameras.main.setBackgroundColor('#00376F');
 	}
@@ -292,26 +292,26 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updatePlayer(currentPlayer);
 
-		this.updateGamePool(otherPlayers, this.otherPlayerSprites);
+		this.updateGamePool(otherPlayers, this.otherPlayers);
 
-		this.updateGamePool(bullets, this.bulletSprites);
+		this.updateGamePool(bullets, this.bullets);
 
-		this.updateGamePool(walls, this.wallSprites);
+		this.updateGamePool(walls, this.walls);
 
-		this.updateGamePool(turrets, this.turretSprites);
+		this.updateGamePool(turrets, this.turrets);
 
-		this.updateGamePool(campfires, this.campfireSprites);
+		this.updateGamePool(campfires, this.campfires);
 
-		this.updateGamePool(bases, this.baseSprites);
+		this.updateGamePool(bases, this.bases);
 
-		this.updateGamePool(resources, this.resourceSprites);
+		this.updateGamePool(resources, this.resources);
 
 		this.events.emit('updateHUD', currentPlayer, time);
 	}
 
 	private updatePlayer(currentPlayer: any) {
 		this.alive = currentPlayer.hp > 0;
-		this.myPlayerSprite.update(currentPlayer);
+		this.myPlayer.update(currentPlayer);
 	}
 
 	private updateGamePool(arrayOfNewObjStates: any[], objectPool: ObjectPool) {
