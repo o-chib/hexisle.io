@@ -9,6 +9,7 @@ import ObjectPool from '../objectPool';
 import { ClientWall } from '../objects/clientWall';
 import { ClientTurret } from '../objects/clientTurret';
 import { ClientBullet } from '../objects/clientBullet';
+import { ClientResource } from '../objects/clientResource';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
@@ -23,7 +24,7 @@ export default class MainScene extends Phaser.Scene {
 	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
-	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private resourceSprites: ObjectPool;
 	private deadObjects: Set<unknown>;
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
@@ -51,7 +52,7 @@ export default class MainScene extends Phaser.Scene {
 		this.campfireRingSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
-		this.resourceSprites = new Map();
+		this.resourceSprites = new ObjectPool(this, ClientResource, 10);
 		this.deadObjects = new Set();
 	}
 
@@ -498,7 +499,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateTerritories(territories);
 
-		this.updateResources(resources);
+		this.updateGamePool(resources, this.resourceSprites);
 
 		this.events.emit('updateHUD', currentPlayer, time);
 	}
@@ -643,34 +644,6 @@ export default class MainScene extends Phaser.Scene {
 				changedTilesNewTile.setDepth(-1000);
 
 				return changedTilesNewTile;
-			}
-		);
-	}
-
-	private updateResources(resources: any) {
-		this.updateMapOfObjects(
-			resources,
-			this.resourceSprites,
-			'',
-			(newResource, newResourceLiteral) => {
-				if (
-					newResourceLiteral.type ==
-					Constant.RESOURCE.RESOURCE_NAME[0]
-				) {
-					newResource.setTexture('resSmall');
-				} else if (
-					newResourceLiteral.type ==
-					Constant.RESOURCE.RESOURCE_NAME[1]
-				) {
-					newResource.setTexture('resMedium');
-				} else if (
-					newResourceLiteral.type ==
-					Constant.RESOURCE.RESOURCE_NAME[2]
-				) {
-					newResource.setTexture('resLarge');
-				}
-				newResource.setVisible(true);
-				return newResource;
 			}
 		);
 	}
