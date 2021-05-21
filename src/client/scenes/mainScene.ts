@@ -584,33 +584,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateTurrets(turrets: any) {
-		// update the turret's base
 		this.updateGamePool(turrets, this.turretBaseSprites);
-
-		// update the turret's gun
-		this.updateMapOfObjects(
-			turrets,
-			this.turretGunSprites,
-			'',
-			(newTurretGun, newTurretLiteralGun) => {
-				const turretGunTexture = 'turret_shooter';
-
-				if (newTurretGun.texture.key != turretGunTexture) {
-					newTurretGun.setTexture(turretGunTexture);
-				}
-
-				const healthPercent =
-					newTurretLiteralGun.hp / Constant.HP.TURRET;
-				newTurretGun = this.handleDamageAnimation(
-					newTurretGun,
-					turretGunTexture,
-					healthPercent
-				);
-				newTurretGun.setRotation(newTurretLiteralGun.direction);
-
-				return newTurretGun;
-			}
-		);
 	}
 
 	private updateCampfires(campfires: any) {

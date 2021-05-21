@@ -9,6 +9,7 @@ export class ClientTurret extends ClientGameObjectConstainer {
 		this.children.push(new ClientTurretBase(scene));
 	}
 }
+
 class ClientTurretBase extends ClientStructure {
 	public update(newTurretBaseLiteral: any) {
 		let turretGunTexture = '';
@@ -28,19 +29,17 @@ class ClientTurretBase extends ClientStructure {
 }
 
 class ClientTurretGun extends ClientStructure {
-	public init(newTurretLiteralGun: any) {
-		this.setPosition(newTurretLiteralGun.xPos, newTurretLiteralGun.yPos);
+	public init(newLiteral: any) {
+		this.setAlive(true);
+		this.setPosition(newLiteral.xPos, newLiteral.yPos);
+
+		this.setDepth(this.depth + 1);
+		this.setTexture('turret_shooter');
 	}
 
 	public update(newTurretLiteralGun: any) {
-		const turretGunTexture = 'turret_shooter';
-
-		if (this.texture.key != turretGunTexture) {
-			this.setTexture(turretGunTexture);
-		}
-
 		const healthPercent = newTurretLiteralGun.hp / Constant.HP.TURRET;
-		this.handleDamageAnimation(turretGunTexture, healthPercent);
+		this.handleDamageAnimation('turret_shooter', healthPercent);
 		this.setRotation(newTurretLiteralGun.direction);
 	}
 }
