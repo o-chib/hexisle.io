@@ -30,7 +30,7 @@ class ClientTurretBase extends ClientStructure {
 
 class ClientTurretGun extends ClientStructure {
 	public create() {
-		this.setDepth(this.depth + 1);
+		this.setDepth(1);
 		this.setTexture('turret_shooter');
 	}
 

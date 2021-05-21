@@ -12,6 +12,7 @@ import { ClientBullet } from '../objects/clientBullet';
 import { ClientResource } from '../objects/clientResource';
 import { ClientBase } from '../objects/clientBase';
 import { ClientTerritory } from '../objects/clientTerritory';
+import { ClientCampfire } from '../objects/clientCampfire';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
@@ -22,7 +23,7 @@ export default class MainScene extends Phaser.Scene {
 	private bulletSprites: ObjectPool;
 	private wallSprites: ObjectPool;
 	private turretSprites: ObjectPool;
-	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private campfireSprites: ObjectPool;
 	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: ObjectPool;
 	private territorySprites: ObjectPool;
@@ -50,7 +51,7 @@ export default class MainScene extends Phaser.Scene {
 		this.bulletSprites = new ObjectPool(this, ClientBullet, 10);
 		this.wallSprites = new ObjectPool(this, ClientWall, 10);
 		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
-		this.campfireSprites = new Map();
+		this.campfireSprites = new ObjectPool(this, ClientCampfire, 5);
 		this.campfireRingSprites = new Map();
 		this.baseSprites = new ObjectPool(this, ClientBase, 2);
 		this.territorySprites = new ObjectPool(this, ClientTerritory, 10);
@@ -300,53 +301,6 @@ export default class MainScene extends Phaser.Scene {
 		return player;
 	}
 
-	private handleCampfireAnimation(
-		campfireSprite: Phaser.GameObjects.Sprite,
-		teamNumber: number
-	) {
-		campfireSprite.setDepth(1);
-
-		if (!campfireSprite.anims.get('campfire_lit')) {
-			campfireSprite.anims.create({
-				key: 'campfire_lit',
-				frames: this.anims.generateFrameNames('campfire', {
-					start: 1,
-					end: 4,
-				}),
-				frameRate: 5,
-				repeat: -1,
-			});
-		}
-		if (!campfireSprite.anims.get('campfire_unlit')) {
-			campfireSprite.anims.create({
-				key: 'campfire_unlit',
-				frames: this.anims.generateFrameNames('campfire', {
-					start: 0,
-					end: 0,
-				}),
-				frameRate: 1,
-				repeat: -1,
-			});
-		}
-
-		if (teamNumber != Constant.TEAM.NONE) {
-			if (
-				campfireSprite.anims.getName() == 'campfire_unlit' ||
-				campfireSprite.anims.getName() == ''
-			) {
-				campfireSprite.anims.stop();
-				campfireSprite.anims.play('campfire_lit', true);
-			}
-		} else {
-			if (
-				campfireSprite.anims.getName() == 'campfire_lit' ||
-				campfireSprite.anims.getName() == ''
-			) {
-				campfireSprite.anims.stop();
-				campfireSprite.anims.play('campfire_unlit', true);
-			}
-		}
-	}
 	private handleCampfireCaptureAnimation(
 		campfireRingSprite: Phaser.GameObjects.Sprite,
 		captureProgress: number
@@ -528,18 +482,8 @@ export default class MainScene extends Phaser.Scene {
 
 	private updateCampfires(campfires: any) {
 		// handle campfire animation
-		this.updateMapOfObjects(
-			campfires,
-			this.campfireSprites,
-			'campfire',
-			(newCampfire, newCampfireLiteral) => {
-				this.handleCampfireAnimation(
-					newCampfire,
-					newCampfireLiteral.teamNumber
-				);
-				return newCampfire;
-			}
-		);
+		this.updateGamePool(campfires, this.campfireSprites);
+
 		// Handle capturing animation
 		this.updateMapOfObjects(
 			campfires,
