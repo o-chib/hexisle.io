@@ -289,13 +289,12 @@ export default class CollisionDetection {
 		// }
 	}
 
+	/**
+	 * Returns whether or not an object is a structure
+	 * @param object 
+	 * @returns true if the object extends a structure, false otherwise
+	 */
 	private isStructure(object: any) {
-		// return Object.getPrototypeOf(object) instanceof Structure;
-		return (
-			object instanceof Wall ||
-			object instanceof BoundaryWall ||
-			object instanceof Turret ||
-			object instanceof Base
-		);
+		return Object.getPrototypeOf(object) instanceof Structure;
 	}
 }
