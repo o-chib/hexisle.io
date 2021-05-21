@@ -3,9 +3,23 @@ import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectContainer } from './clientGameObjectContainer';
 
 export class ClientPlayer extends ClientGameObjectContainer {
+	public playerSprite: ClientPlayerSprite;
+
 	constructor(scene: Phaser.Scene) {
 		super();
-		this.children.push(new ClientPlayerSprite(scene));
+		this.playerSprite = new ClientPlayerSprite(scene);
+		this.children.push(this.playerSprite);
+	}
+
+	public setRotation(direction: number) {
+		this.playerSprite.setRotation(direction);
+	}
+
+	public getPosition() {
+		return {
+			x: this.playerSprite.x,
+			y: this.playerSprite.y,
+		};
 	}
 }
 

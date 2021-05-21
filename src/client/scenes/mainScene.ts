@@ -18,7 +18,7 @@ type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayerSprite: Phaser.GameObjects.Sprite;
+	private myPlayerSprite: ClientPlayer;
 	private otherPlayerSprites: ObjectPool;
 	private bulletSprites: ObjectPool;
 	private wallSprites: ObjectPool;
@@ -41,7 +41,8 @@ export default class MainScene extends Phaser.Scene {
 		this.socket = data.socket;
 
 		this.initializeKeys();
-		this.generatePlayerSprite();
+		this.myPlayerSprite = new ClientPlayer(this);
+		this.myPlayerSprite.die();
 
 		this.hexTiles = new HexTiles();
 		this.otherPlayerSprites = new ObjectPool(this, ClientPlayer, 4);
@@ -89,13 +90,6 @@ export default class MainScene extends Phaser.Scene {
 			coord.q,
 			coord.r
 		);
-	}
-
-	private generatePlayerSprite(): void {
-		this.myPlayerSprite = this.add.sprite(0, 0, '');
-		this.myPlayerSprite.setDepth(1000);
-		this.myPlayerSprite.setVisible(false);
-		this.myPlayerSprite.setScale(1);
 	}
 
 	private initializeKeys(): void {
@@ -195,11 +189,9 @@ export default class MainScene extends Phaser.Scene {
 
 	private getMouseDirection(pointer: any): any {
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+		const playerPos = this.myPlayerSprite.getPosition();
 
-		return Math.atan2(
-			gamePos.y - this.myPlayerSprite.y,
-			gamePos.x - this.myPlayerSprite.x
-		);
+		return Math.atan2(gamePos.y - playerPos.y, gamePos.x - playerPos.x);
 	}
 
 	private initializeGame(update: any): void {
@@ -211,88 +203,14 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializePlayer(player: any): void {
-		// Change this when more than 2 teams
-		if (player.teamNumber == Constant.TEAM.RED)
-			this.myPlayerSprite.setTexture('player_red');
-		else if (player.teamNumber == Constant.TEAM.BLUE)
-			this.myPlayerSprite.setTexture('player_blue');
-
+		this.myPlayerSprite.init(player);
 		this.alive = true;
 	}
 
 	private setCamera(): void {
-		this.cameras.main.startFollow(this.myPlayerSprite, true);
+		this.cameras.main.startFollow(this.myPlayerSprite.playerSprite, true);
 		this.cameras.main.setZoom(0.75);
 		this.cameras.main.setBackgroundColor('#00376F');
-	}
-
-	// Animation control
-	private handleWalkAnimation(
-		player: Phaser.GameObjects.Sprite,
-		playerTextureName: string,
-		xVel: number,
-		yVel: number
-	) {
-		// Create local animation on each sprite if it doesn't exist
-		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
-		if (!player.anims.get(playerTextureName + '_walk')) {
-			player.anims.create({
-				key: playerTextureName + '_walk',
-				frames: this.anims.generateFrameNames(playerTextureName, {
-					start: 0,
-					end: 3,
-				}),
-				frameRate: 8,
-				repeat: -1,
-			});
-			player.anims.play(playerTextureName + '_walk');
-			player.anims.pause();
-		}
-
-		if (player.anims.currentAnim.key != playerTextureName + '_walk') {
-			// Update anims internal isPlaying/isPaused variables, and loaded anim.
-			player.anims.stop();
-			player.anims.play(playerTextureName + '_walk');
-			player.anims.pause();
-		}
-
-		// Use overall player velocity to continue animation
-		if (xVel != 0 || yVel != 0) {
-			if (player.anims.isPaused) {
-				player.anims.resume();
-			}
-		} else {
-			if (player.anims.isPlaying) {
-				player.anims.pause();
-			}
-		}
-
-		return player;
-	}
-
-	private handleDeathAnimation(
-		player: Phaser.GameObjects.Sprite,
-		playerTextureName: string
-	) {
-		player.setRotation(0);
-		// Create local animation on each sprite if it doesn't exist
-		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
-		if (!player.anims.get(playerTextureName + '_death')) {
-			player.anims.create({
-				key: playerTextureName + '_death',
-				frames: this.anims.generateFrameNames(playerTextureName, {
-					start: 4,
-					end: 12,
-				}),
-				frameRate: 8,
-				hideOnComplete: true,
-			});
-		}
-		if (player.anims.currentAnim.key == playerTextureName + '_walk') {
-			player.anims.stop();
-			player.anims.play(playerTextureName + '_death', true);
-		}
-		return player;
 	}
 
 	calculateDirection() {
@@ -392,26 +310,8 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updatePlayer(currentPlayer: any) {
-		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-
-		//  Local Animation control
-		if (currentPlayer.hp > 0) {
-			this.alive = true;
-			this.myPlayerSprite.setVisible(true);
-
-			this.myPlayerSprite = this.handleWalkAnimation(
-				this.myPlayerSprite,
-				this.myPlayerSprite.texture.key,
-				currentPlayer.xVel,
-				currentPlayer.yVel
-			);
-		} else if (currentPlayer.hp <= 0) {
-			this.alive = false;
-			this.handleDeathAnimation(
-				this.myPlayerSprite,
-				this.myPlayerSprite.texture.key
-			);
-		}
+		this.alive = currentPlayer.hp > 0;
+		this.myPlayerSprite.update(currentPlayer);
 	}
 
 	private updateGamePool(arrayOfNewObjStates: any[], objectPool: ObjectPool) {
