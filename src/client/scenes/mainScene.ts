@@ -8,6 +8,7 @@ import Utilities from './Utilities';
 import ObjectPool from '../objectPool';
 import { ClientWall } from '../objects/clientWall';
 import { ClientTurret } from '../objects/clientTurret';
+import { ClientBullet } from '../objects/clientBullet';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
@@ -15,7 +16,7 @@ export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private bulletSprites: ObjectPool;
 	private wallSprites: ObjectPool;
 	private turretSprites: ObjectPool;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -43,7 +44,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.hexTiles = new HexTiles();
 		this.otherPlayerSprites = new Map();
-		this.bulletSprites = new Map();
+		this.bulletSprites = new ObjectPool(this, ClientBullet, 10);
 		this.wallSprites = new ObjectPool(this, ClientWall, 10);
 		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
 		this.campfireSprites = new Map();
@@ -527,16 +528,7 @@ export default class MainScene extends Phaser.Scene {
 
 	//TODO may not be necessary for bullets
 	private updateBullets(bullets: any) {
-		this.updateMapOfObjects(
-			bullets,
-			this.bulletSprites,
-			'bullet',
-			(newBullet, newBulletLiteral) => {
-				if (newBulletLiteral.teamNumber == Constant.TEAM.BLUE)
-					newBullet.setTexture('bulletblue');
-				return newBullet;
-			}
-		);
+		this.updateGamePool(bullets, this.bulletSprites);
 	}
 
 	private updateOpponents(otherPlayers: any) {
