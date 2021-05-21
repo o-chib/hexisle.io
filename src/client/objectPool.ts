@@ -1,4 +1,4 @@
-import { ClientGameObject } from './objects/clientGameObject';
+import { IPoolObject } from './iPoolObject';
 
 export default class ObjectPool {
 	private scene: Phaser.Scene;

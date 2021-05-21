@@ -1,4 +1,4 @@
-interface IPoolObject {
+export interface IPoolObject {
 	dirtyBit: boolean;
 
 	// For operations that need to be done on each update

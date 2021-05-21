@@ -1,3 +1,5 @@
+import { IPoolObject } from '../iPoolObject';
+
 export abstract class ClientGameObject
 	extends Phaser.GameObjects.Sprite
 	implements IPoolObject {
