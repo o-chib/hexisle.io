@@ -1,4 +1,5 @@
 import { Constant } from '../../shared/constants';
+import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectConstainer } from './clientGameObjectContainer';
 import { ClientStructure } from './clientStructure';
 
@@ -6,10 +7,11 @@ export class ClientCampfire extends ClientGameObjectConstainer {
 	constructor(scene: Phaser.Scene) {
 		super();
 		this.children.push(new ClientCampfireSprite(scene));
+		this.children.push(new ClientCampfireRing(scene));
 	}
 }
 
-class ClientCampfireSprite extends ClientStructure {
+class ClientCampfireSprite extends ClientGameObject {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public create(_campfireLiteral: any) {
 		this.setTexture('campfire');
@@ -63,5 +65,28 @@ class ClientCampfireSprite extends ClientStructure {
 				this.anims.play('campfire_unlit', true);
 			}
 		}
+	}
+}
+
+class ClientCampfireRing extends ClientGameObject {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public create(_campfireLiteral: any) {
+		this.setTexture('campfire_ring_loader');
+	}
+
+	public update(newCampfireLiteral: any) {
+		this.handleCampfireCaptureAnimation(newCampfireLiteral.captureProgress);
+	}
+
+	private handleCampfireCaptureAnimation(captureProgress: number) {
+		if (!this.anims.get('campfire_ring_loader_capturing')) {
+			this.anims.create({
+				key: 'campfire_ring_loader_capturing',
+				frames: this.anims.generateFrameNames('campfire_ring_loader'),
+			});
+			this.anims.startAnimation('campfire_ring_loader_capturing');
+			this.anims.pause();
+		}
+		this.anims.setProgress(captureProgress / 100);
 	}
 }

@@ -301,25 +301,6 @@ export default class MainScene extends Phaser.Scene {
 		return player;
 	}
 
-	private handleCampfireCaptureAnimation(
-		campfireRingSprite: Phaser.GameObjects.Sprite,
-		captureProgress: number
-	) {
-		campfireRingSprite.setDepth(0);
-
-		if (!campfireRingSprite.anims.get('campfire_ring_loader_capturing')) {
-			campfireRingSprite.anims.create({
-				key: 'campfire_ring_loader_capturing',
-				frames: this.anims.generateFrameNames('campfire_ring_loader'),
-			});
-			campfireRingSprite.anims.startAnimation(
-				'campfire_ring_loader_capturing'
-			);
-			campfireRingSprite.anims.pause();
-		}
-		campfireRingSprite.anims.setProgress(captureProgress / 100);
-	}
-
 	calculateDirection() {
 		let direction = NaN;
 		if (this.moveKeys.left.isDown && !this.moveKeys.right.isDown) {
@@ -408,7 +389,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateGamePool(turrets, this.turretSprites);
 
-		this.updateCampfires(campfires);
+		this.updateGamePool(campfires, this.campfireSprites);
 
 		this.updateGamePool(bases, this.baseSprites);
 
@@ -476,25 +457,6 @@ export default class MainScene extends Phaser.Scene {
 				}
 
 				return newPlayer;
-			}
-		);
-	}
-
-	private updateCampfires(campfires: any) {
-		// handle campfire animation
-		this.updateGamePool(campfires, this.campfireSprites);
-
-		// Handle capturing animation
-		this.updateMapOfObjects(
-			campfires,
-			this.campfireRingSprites,
-			'campfire_ring_loader',
-			(newRingSprite, newCampfireLiteral) => {
-				this.handleCampfireCaptureAnimation(
-					newRingSprite,
-					newCampfireLiteral.captureProgress
-				);
-				return newRingSprite;
 			}
 		);
 	}
