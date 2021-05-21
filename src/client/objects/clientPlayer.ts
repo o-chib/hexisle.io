@@ -1,4 +1,3 @@
-import { Scene } from 'phaser';
 import { Constant } from '../../shared/constants';
 import { IPoolObject } from '../iPoolObject';
 import { ClientGameObject } from './clientGameObject';
