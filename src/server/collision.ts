@@ -6,7 +6,6 @@ import Campfire from './objects/campfire';
 import Base from './objects/base';
 import { Quadtree, Rect, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
-import { Point } from '../shared/hexTiles';
 import { MapResources } from './mapResources';
 import { Resource } from './objects/resource';
 import BoundaryWall from './objects/boundaryWall';
@@ -19,6 +18,10 @@ export default class CollisionDetection {
 		this.quadtree = new Quadtree();
 	}
 
+	/**
+	 * Checks around a campfire for players and updates the campfire's capture state accordingly
+	 * @param campfire the campfire to check
+	 */
 	public campfirePlayerCollision(campfire: Campfire): void {
 		// Get everything touching the campfires collider
 		const results: CollisionObject[] = [];
@@ -46,6 +49,13 @@ export default class CollisionDetection {
 		campfire.updateCaptureState(playerCount);
 	}
 
+	/**
+	 * Checks if a player is colliding with any bullets, lowers health of the player/increases resources and removes the bullet/resource if needed 
+	 * @param player the player to check
+	 * @param bullets the list of bullets to check against the player
+	 * @param mapResources the object that holds all the map's resources
+	 * @returns returns early if the player is no longer alive
+	 */
 	public playerBulletResourceCollision(
 		player: Player,
 		bullets: Set<Bullet>,
@@ -90,6 +100,11 @@ export default class CollisionDetection {
 		});
 	}
 
+	/**
+	 * Checks if a building is colliding with any bullets, lowers health of the structure and removes the bullet if needed
+	 * @param building the building to check
+	 * @param bullets the list of bullets to check around the building
+	 */
 	public buildingBulletCollision(building: any, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
 		const col_radius = this.getCollisionRadius(building);
@@ -113,6 +128,13 @@ export default class CollisionDetection {
 		});
 	}
 
+	/**
+	 * Checks if a certain object collides with a structure
+	 * @param xPos the xPos of the object
+	 * @param yPos the yPos of the object
+	 * @param objectRadius the radius of the object 
+	 * @returns boolean
+	 */
 	public doesObjCollideWithStructure(
 		xPos: number,
 		yPos: number,
@@ -136,6 +158,13 @@ export default class CollisionDetection {
 		return false;
 	}
 
+	/**
+	 * Checks if a certain object collides with a player
+	 * @param xPos the xPos of the object
+	 * @param yPos the yPos of the object
+	 * @param objectRadius the radius of the object 
+	 * @returns boolean
+	 */
 	public doesObjCollideWithPlayers(
 		xPos: number,
 		yPos: number,
@@ -158,6 +187,12 @@ export default class CollisionDetection {
 		return false;
 	}
 
+	/**
+	 * Finds the radian direction of the closest enemy player to the object
+	 * @param object the object to look around
+	 * @param objectRange the radius around the object to search
+	 * @returns number
+	 */
 	public findDirectionOfClosestEnemy(object: any, objectRange: number): number {
 		// Get everything in range
 		const results: CollisionObject[] = [];
@@ -201,6 +236,14 @@ export default class CollisionDetection {
 		return closestEnemyDirection;
 	}
 
+	/**
+	 * Checks whether two objects' circle radii collide
+	 * @param object1 first object
+	 * @param radius1 radius of the first object
+	 * @param object2 second object
+	 * @param radius2 radius of the second object
+	 * @returns boolean
+	 */
 	public doCirclesCollide(
 		object1: any,
 		radius1: number,
@@ -218,6 +261,11 @@ export default class CollisionDetection {
 		}
 	}
 
+	/**
+	 * Inserts an object in the quadtree
+	 * @param object the object to insert
+	 * @param radius the radius of the object
+	 */
 	public insertCollider(object: any, radius: number): void {
 		this.quadtree.insertIntoQuadtree(
 			new CollisionObject(
@@ -230,6 +278,11 @@ export default class CollisionDetection {
 		);
 	}
 
+	/**
+	 * Deletes an object in the quadtree
+	 * @param object the object to delete
+	 * @param radius the radius of the object
+	 */
 	public deleteCollider(object: any, radius: number): void {
 		this.quadtree.deleteFromQuadtree(
 			new CollisionObject(
@@ -242,6 +295,11 @@ export default class CollisionDetection {
 		);
 	}
 
+	/**
+	 * Updates an object in the quadtree with its new position
+	 * @param object the object to update
+	 * @param radius the radius of the object
+	 */
 	public updateCollider(object: any, radius: number): void {
 		this.quadtree.updateInQuadtree(
 			new CollisionObject(
@@ -254,6 +312,12 @@ export default class CollisionDetection {
 		);
 	}
 
+	/**
+	 * Takes the object and its radius and puts anything that may collide with it into results
+	 * @param object the object to search around
+	 * @param radius the radius of the object
+	 * @param results the list to put potential collision objects into
+	 */
 	private searchCollisions(object: any, radius: number, results: CollisionObject[]) {
 		this.quadtree.searchQuadtree(
 			new Rect(
@@ -266,6 +330,11 @@ export default class CollisionDetection {
 		);
 	}
 
+	/**
+	 * Returns the collision radius of an object
+	 * @param object the object to check
+	 * @returns number
+	 */
 	private getCollisionRadius(object: any): number {
 		if (object instanceof Wall || object instanceof BoundaryWall) {
 			return Constant.RADIUS.COLLISION.WALL;
@@ -291,8 +360,8 @@ export default class CollisionDetection {
 
 	/**
 	 * Returns whether or not an object is a structure
-	 * @param object 
-	 * @returns true if the object extends a structure, false otherwise
+	 * @param object the object to check
+	 * @returns boolean
 	 */
 	private isStructure(object: any) {
 		return Object.getPrototypeOf(object) instanceof Structure;
