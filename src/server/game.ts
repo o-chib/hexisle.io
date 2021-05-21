@@ -493,6 +493,9 @@ export default class Game {
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
 		const nearbyBases: Base[] = this.createBaseUpdate(player);
 		const nearbyResources: Resource[] = this.createResourceUpdate(player);
+		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
+			player
+		);
 
 		return {
 			time: this.gameTimeRemaining,
@@ -503,6 +506,7 @@ export default class Game {
 			turrets: nearbyTurrets.map((p) => p.serializeForUpdate()),
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
 			bases: nearbyBases.map((p) => p.serializeForUpdate()),
+			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
 			resources: nearbyResources.map((p) => p.serializeForUpdate()),
 		};
 	}
