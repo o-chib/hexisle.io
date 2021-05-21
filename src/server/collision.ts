@@ -71,7 +71,6 @@ export default class CollisionDetection {
 		results.forEach((result) => {
 			if (
 				result.payload instanceof Bullet &&
-				result.payload.id == result.payload.id &&
 				result.payload.teamNumber != player.teamNumber &&
 				this.doCirclesCollide(
 					player,
@@ -112,7 +111,6 @@ export default class CollisionDetection {
 		results.forEach((result) => {
 			if (
 				result.payload instanceof Bullet &&
-				result.payload.id == result.payload.id &&
 				result.payload.teamNumber != building.teamNumber &&
 				this.doCirclesCollide(
 					building,
