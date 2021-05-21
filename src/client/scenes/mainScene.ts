@@ -10,6 +10,7 @@ import { ClientWall } from '../objects/clientWall';
 import { ClientTurret } from '../objects/clientTurret';
 import { ClientBullet } from '../objects/clientBullet';
 import { ClientResource } from '../objects/clientResource';
+import { ClientBase } from '../objects/clientBase';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
@@ -22,7 +23,7 @@ export default class MainScene extends Phaser.Scene {
 	private turretSprites: ObjectPool;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private baseSprites: ObjectPool;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 	private resourceSprites: ObjectPool;
 	private deadObjects: Set<unknown>;
@@ -50,7 +51,7 @@ export default class MainScene extends Phaser.Scene {
 		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
 		this.campfireSprites = new Map();
 		this.campfireRingSprites = new Map();
-		this.baseSprites = new Map();
+		this.baseSprites = new ObjectPool(this, ClientBase, 10);
 		this.territorySprites = new Map();
 		this.resourceSprites = new ObjectPool(this, ClientResource, 10);
 		this.deadObjects = new Set();
@@ -495,7 +496,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateCampfires(campfires);
 
-		this.updateBases(bases);
+		this.updateGamePool(bases, this.baseSprites);
 
 		this.updateTerritories(territories);
 
@@ -590,35 +591,6 @@ export default class MainScene extends Phaser.Scene {
 					newCampfireLiteral.captureProgress
 				);
 				return newRingSprite;
-			}
-		);
-	}
-
-	private updateBases(bases: any) {
-		this.updateMapOfObjects(
-			bases,
-			this.baseSprites,
-			'',
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			(newBase, newBaseLiteral) => {
-				let baseTexture = '';
-				if (newBaseLiteral.teamNumber == Constant.TEAM.RED)
-					baseTexture = 'base_red';
-				else if (newBaseLiteral.teamNumber == Constant.TEAM.BLUE)
-					baseTexture = 'base_blue';
-
-				if (newBase.texture.key != baseTexture) {
-					newBase.setTexture(baseTexture);
-				}
-
-				const healthPercent = newBaseLiteral.hp / Constant.HP.BASE;
-				newBase = this.handleDamageAnimation(
-					newBase,
-					baseTexture,
-					healthPercent
-				);
-
-				return newBase;
 			}
 		);
 	}
