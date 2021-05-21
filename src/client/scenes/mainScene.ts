@@ -7,6 +7,7 @@ import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 import ObjectPool from '../objectPool';
 import { ClientWall } from '../objects/clientWall';
+import { ClientTurret } from '../objects/clientTurret';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
@@ -16,7 +17,7 @@ export default class MainScene extends Phaser.Scene {
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private wallSprites: ObjectPool;
-	private turretBaseSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private turretBaseSprites: ObjectPool;
 	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -45,7 +46,7 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new ObjectPool(this, ClientWall, 10);
-		this.turretBaseSprites = new Map();
+		this.turretBaseSprites = new ObjectPool(this, ClientTurret, 10);
 		this.turretGunSprites = new Map();
 		this.campfireSprites = new Map();
 		this.campfireRingSprites = new Map();
@@ -584,34 +585,7 @@ export default class MainScene extends Phaser.Scene {
 
 	private updateTurrets(turrets: any) {
 		// update the turret's base
-		this.updateMapOfObjects(
-			turrets,
-			this.turretBaseSprites,
-			'',
-			(newTurretBase, newTurretBaseLiteral) => {
-				let turretGunTexture = '';
-				if (newTurretBaseLiteral.teamNumber == Constant.TEAM.RED)
-					turretGunTexture = 'turret_base_red';
-				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.BLUE)
-					turretGunTexture = 'turret_base_blue';
-				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.NONE)
-					turretGunTexture = 'turret_base_neutral';
-
-				if (newTurretBase.texture.key != turretGunTexture) {
-					newTurretBase.setTexture(turretGunTexture);
-				}
-
-				const healthPercent =
-					newTurretBaseLiteral.hp / Constant.HP.TURRET;
-				newTurretBase = this.handleDamageAnimation(
-					newTurretBase,
-					turretGunTexture,
-					healthPercent
-				);
-
-				return newTurretBase;
-			}
-		);
+		this.updateGamePool(turrets, this.turretBaseSprites);
 
 		// update the turret's gun
 		this.updateMapOfObjects(
