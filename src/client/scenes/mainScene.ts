@@ -11,6 +11,7 @@ import { ClientTurret } from '../objects/clientTurret';
 import { ClientBullet } from '../objects/clientBullet';
 import { ClientResource } from '../objects/clientResource';
 import { ClientBase } from '../objects/clientBase';
+import { ClientTerritory } from '../objects/clientTerritory';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
@@ -24,7 +25,7 @@ export default class MainScene extends Phaser.Scene {
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: ObjectPool;
-	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
+	private territorySprites: ObjectPool;
 	private resourceSprites: ObjectPool;
 	private deadObjects: Set<unknown>;
 	private moveKeys: KeySet;
@@ -51,8 +52,8 @@ export default class MainScene extends Phaser.Scene {
 		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
 		this.campfireSprites = new Map();
 		this.campfireRingSprites = new Map();
-		this.baseSprites = new ObjectPool(this, ClientBase, 10);
-		this.territorySprites = new Map();
+		this.baseSprites = new ObjectPool(this, ClientBase, 2);
+		this.territorySprites = new ObjectPool(this, ClientTerritory, 10);
 		this.resourceSprites = new ObjectPool(this, ClientResource, 10);
 		this.deadObjects = new Set();
 	}
@@ -498,7 +499,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updateGamePool(bases, this.baseSprites);
 
-		this.updateTerritories(territories);
+		this.updateGamePool(territories, this.territorySprites);
 
 		this.updateGamePool(resources, this.resourceSprites);
 
@@ -591,31 +592,6 @@ export default class MainScene extends Phaser.Scene {
 					newCampfireLiteral.captureProgress
 				);
 				return newRingSprite;
-			}
-		);
-	}
-
-	private updateTerritories(territories: any) {
-		this.updateMapOfObjects(
-			territories,
-			this.territorySprites,
-			'grass_chunk',
-			(changedTilesNewTile, changedTilesCurrentTile) => {
-				if (changedTilesCurrentTile.teamNumber == Constant.TEAM.RED) {
-					changedTilesNewTile.setTexture('grass_chunk_red');
-				} else if (
-					changedTilesCurrentTile.teamNumber == Constant.TEAM.BLUE
-				) {
-					changedTilesNewTile.setTexture('grass_chunk_blue');
-				} else if (
-					changedTilesCurrentTile.teamNumber == Constant.TEAM.NONE
-				) {
-					changedTilesNewTile.setTexture('grass_chunk');
-				}
-
-				changedTilesNewTile.setDepth(-1000);
-
-				return changedTilesNewTile;
 			}
 		);
 	}
