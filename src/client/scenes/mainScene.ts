@@ -174,11 +174,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateDirection() {
-		if (!this.alive) {
-			this.myPlayer.setRotation(0);
-			this.socket.emit(Constant.MESSAGE.ROTATE, 0);
-			return;
-		}
+		if (!this.alive) return;
 
 		const direction =
 			this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
@@ -213,7 +209,7 @@ export default class MainScene extends Phaser.Scene {
 		this.cameras.main.setBackgroundColor('#00376F');
 	}
 
-	calculateDirection() {
+	private calculateDirection() {
 		let direction = NaN;
 		if (this.moveKeys.left.isDown && !this.moveKeys.right.isDown) {
 			if (this.moveKeys.up.isDown && !this.moveKeys.down.isDown)
