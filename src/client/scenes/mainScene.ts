@@ -484,13 +484,13 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updatePlayer(currentPlayer);
 
-		this.updateBullets(bullets);
-
 		this.updateOpponents(otherPlayers);
 
-		this.updateWalls(walls);
+		this.updateGamePool(bullets, this.bulletSprites);
 
-		this.updateTurrets(turrets);
+		this.updateGamePool(walls, this.wallSprites);
+
+		this.updateGamePool(turrets, this.turretSprites);
 
 		this.updateCampfires(campfires);
 
@@ -524,11 +524,6 @@ export default class MainScene extends Phaser.Scene {
 				this.myPlayerSprite.texture.key
 			);
 		}
-	}
-
-	//TODO may not be necessary for bullets
-	private updateBullets(bullets: any) {
-		this.updateGamePool(bullets, this.bulletSprites);
 	}
 
 	private updateOpponents(otherPlayers: any) {
@@ -567,14 +562,6 @@ export default class MainScene extends Phaser.Scene {
 				return newPlayer;
 			}
 		);
-	}
-
-	private updateWalls(walls: any) {
-		this.updateGamePool(walls, this.wallSprites);
-	}
-
-	private updateTurrets(turrets: any) {
-		this.updateGamePool(turrets, this.turretSprites);
 	}
 
 	private updateCampfires(campfires: any) {
