@@ -12,20 +12,20 @@ import { ClientBullet } from '../objects/clientBullet';
 import { ClientResource } from '../objects/clientResource';
 import { ClientBase } from '../objects/clientBase';
 import { ClientCampfire } from '../objects/clientCampfire';
+import { ClientPlayer } from '../objects/clientPlayer';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
 	private myPlayerSprite: Phaser.GameObjects.Sprite;
-	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private otherPlayerSprites: ObjectPool;
 	private bulletSprites: ObjectPool;
 	private wallSprites: ObjectPool;
 	private turretSprites: ObjectPool;
 	private campfireSprites: ObjectPool;
 	private baseSprites: ObjectPool;
 	private resourceSprites: ObjectPool;
-	private deadObjects: Set<unknown>;
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
@@ -44,14 +44,13 @@ export default class MainScene extends Phaser.Scene {
 		this.generatePlayerSprite();
 
 		this.hexTiles = new HexTiles();
-		this.otherPlayerSprites = new Map();
+		this.otherPlayerSprites = new ObjectPool(this, ClientPlayer, 4);
 		this.bulletSprites = new ObjectPool(this, ClientBullet, 10);
 		this.wallSprites = new ObjectPool(this, ClientWall, 10);
 		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
 		this.campfireSprites = new ObjectPool(this, ClientCampfire, 5);
 		this.baseSprites = new ObjectPool(this, ClientBase, 2);
 		this.resourceSprites = new ObjectPool(this, ClientResource, 10);
-		this.deadObjects = new Set();
 	}
 
 	create(): void {
@@ -375,7 +374,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.updatePlayer(currentPlayer);
 
-		this.updateOpponents(otherPlayers);
+		this.updateGamePool(otherPlayers, this.otherPlayerSprites);
 
 		this.updateGamePool(bullets, this.bulletSprites);
 
@@ -412,75 +411,6 @@ export default class MainScene extends Phaser.Scene {
 				this.myPlayerSprite,
 				this.myPlayerSprite.texture.key
 			);
-		}
-	}
-
-	private updateOpponents(otherPlayers: any) {
-		this.updateMapOfObjects(
-			otherPlayers,
-			this.otherPlayerSprites,
-			'',
-			(newPlayer, playerLiteral) => {
-				newPlayer.setRotation(playerLiteral.direction);
-
-				// Set Walk/Standing textures based on team
-				let playerTexture = '';
-				if (playerLiteral.teamNumber == Constant.TEAM.RED)
-					playerTexture = 'player_red';
-				else if (playerLiteral.teamNumber == Constant.TEAM.BLUE)
-					playerTexture = 'player_blue';
-
-				if (newPlayer.texture.key != playerTexture)
-					//TODO faster lookup somehow? check null?
-					newPlayer.setTexture(playerTexture).setDepth(1000);
-
-				// Opponent Animation Control
-				if (playerLiteral.hp > 0) {
-					newPlayer.setVisible(true);
-					newPlayer = this.handleWalkAnimation(
-						newPlayer,
-						playerTexture,
-						playerLiteral.xVel,
-						playerLiteral.yVel
-					);
-				}
-				if (playerLiteral.hp <= 0) {
-					this.handleDeathAnimation(newPlayer, playerTexture);
-				}
-
-				return newPlayer;
-			}
-		);
-	}
-
-	private updateMapOfObjects(
-		currentObjects: any,
-		oldObjects: Map<string, any>,
-		sprite: string,
-		callback: (arg0: any, arg1: any) => any
-	) {
-		this.deadObjects.clear();
-
-		currentObjects.forEach((obj) => {
-			let newObj;
-
-			if (oldObjects.has(obj.id)) {
-				newObj = oldObjects.get(obj.id);
-				newObj.setPosition(obj.xPos, obj.yPos);
-			} else {
-				newObj = this.add.sprite(obj.xPos, obj.yPos, sprite);
-				oldObjects.set(obj.id, newObj);
-			}
-
-			this.deadObjects.add(obj.id);
-			callback(newObj, obj);
-		});
-
-		for (const anOldKey of oldObjects.keys()) {
-			if (this.deadObjects.has(anOldKey)) continue;
-
-			oldObjects.get(anOldKey)?.destroy();
-			oldObjects.delete(anOldKey);
 		}
 	}
 
