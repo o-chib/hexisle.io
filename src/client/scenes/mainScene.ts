@@ -17,8 +17,7 @@ export default class MainScene extends Phaser.Scene {
 	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private wallSprites: ObjectPool;
-	private turretBaseSprites: ObjectPool;
-	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private turretSprites: ObjectPool;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -46,8 +45,7 @@ export default class MainScene extends Phaser.Scene {
 		this.otherPlayerSprites = new Map();
 		this.bulletSprites = new Map();
 		this.wallSprites = new ObjectPool(this, ClientWall, 10);
-		this.turretBaseSprites = new ObjectPool(this, ClientTurret, 10);
-		this.turretGunSprites = new Map();
+		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
 		this.campfireSprites = new Map();
 		this.campfireRingSprites = new Map();
 		this.baseSprites = new Map();
@@ -584,7 +582,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateTurrets(turrets: any) {
-		this.updateGamePool(turrets, this.turretBaseSprites);
+		this.updateGamePool(turrets, this.turretSprites);
 	}
 
 	private updateCampfires(campfires: any) {
