@@ -861,11 +861,6 @@ export default class Game {
 				boundaryWall,
 				Constant.RADIUS.COLLISION.WALL
 			);
-			// this.collision.insertCollider(
-			// 	this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
-			// 		.cartesian_coord,
-			// 	Constant.RADIUS.COLLISION.WALL
-			// );
 		}
 	}
 
