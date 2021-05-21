@@ -1,6 +1,6 @@
 import { IPoolObject } from '../iPoolObject';
 
-export abstract class ClientGameObjectConstainer implements IPoolObject {
+export abstract class ClientGameObjectContainer implements IPoolObject {
 	public dirtyBit: boolean;
 	protected children: IPoolObject[];
 

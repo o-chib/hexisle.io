@@ -1,9 +1,9 @@
 import { Constant } from '../../shared/constants';
-import { ClientGameObjectConstainer } from './clientGameObjectContainer';
+import { ClientGameObjectContainer } from './clientGameObjectContainer';
 import { ClientStructure } from './clientStructure';
 import { ClientTerritory } from './clientTerritory';
 
-export class ClientBase extends ClientGameObjectConstainer {
+export class ClientBase extends ClientGameObjectContainer {
 	constructor(scene: Phaser.Scene) {
 		super();
 		this.children.push(new ClientBaseSprite(scene));

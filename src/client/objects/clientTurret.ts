@@ -1,8 +1,8 @@
 import { Constant } from '../../shared/constants';
-import { ClientGameObjectConstainer } from './clientGameObjectContainer';
+import { ClientGameObjectContainer } from './clientGameObjectContainer';
 import { ClientStructure } from './clientStructure';
 
-export class ClientTurret extends ClientGameObjectConstainer {
+export class ClientTurret extends ClientGameObjectContainer {
 	constructor(scene: Phaser.Scene) {
 		super();
 		this.children.push(new ClientTurretGun(scene));
