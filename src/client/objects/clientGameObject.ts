@@ -21,6 +21,7 @@ export abstract class ClientGameObject
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public init(objLiteral: any): void {
 		this.setAlive(true);
+		this.setPosition(objLiteral.xPos, objLiteral.yPos);
 		if (this.create) this.create(objLiteral);
 	}
 
