@@ -420,7 +420,7 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aCampfire,
-					Constant.RADIUS.CAMP,
+					Constant.RADIUS.TERRITORY,
 					player,
 					Constant.RADIUS.VIEW
 				)
@@ -438,7 +438,7 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aBase,
-					Constant.RADIUS.BASE,
+					Constant.RADIUS.TERRITORY,
 					player,
 					Constant.RADIUS.VIEW
 				)
