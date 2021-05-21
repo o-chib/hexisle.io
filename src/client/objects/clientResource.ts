@@ -3,10 +3,7 @@ import { ClientGameObject } from './clientGameObject';
 
 export class ClientResource extends ClientGameObject {
 	public create(newResourceLiteral: any) {
-		this.setDepth(this.depth + 10);
-		this.setVisible(true);
 		let resourceTexture = '';
-		console.log('pop')
 
 		if (newResourceLiteral.type == Constant.RESOURCE.RESOURCE_NAME[0]) {
 			resourceTexture = 'resSmall';
