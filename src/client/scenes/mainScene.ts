@@ -300,47 +300,6 @@ export default class MainScene extends Phaser.Scene {
 		return player;
 	}
 
-	private handleDamageAnimation(
-		structureSprite: Phaser.GameObjects.Sprite,
-		structureTextureName: string,
-		healthPercent: number
-	) {
-		// Every structure (Wall/Turret/Base) has 4 states or frames.
-		// Create local animation and load by playing and pausing the animation.
-		// Sets the required frame based on health %
-
-		if (!structureSprite.anims.get(structureTextureName + '_destroying')) {
-			structureSprite.anims.create({
-				key: structureTextureName + '_destroying',
-				frames: this.anims.generateFrameNames(structureTextureName),
-				frameRate: 1,
-				repeat: -1,
-			});
-
-			// Update anims internal isPlaying/isPaused variables, and loaded anim.
-			structureSprite.anims.play(structureTextureName + '_destroying');
-			structureSprite.anims.pause();
-		} else if (
-			structureSprite.anims.exists(structureTextureName + '_destroying')
-		) {
-			structureSprite.anims.play(structureTextureName + '_destroying');
-			structureSprite.anims.pause();
-		}
-
-		// Use overall player health to continue animation
-		if (healthPercent >= 0.75) {
-			structureSprite.anims.setProgress(0);
-		} else if (healthPercent >= 0.5) {
-			structureSprite.anims.setProgress(1 / 3);
-		} else if (healthPercent >= 0.25) {
-			structureSprite.anims.setProgress(2 / 3);
-		} else if (healthPercent > 0.0) {
-			structureSprite.anims.setProgress(1);
-		}
-
-		return structureSprite;
-	}
-
 	private handleCampfireAnimation(
 		campfireSprite: Phaser.GameObjects.Sprite,
 		teamNumber: number
