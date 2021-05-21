@@ -2,13 +2,7 @@ import { ClientGameObject } from './objects/clientGameObject';
 
 export default class ObjectPool {
 	private scene: Phaser.Scene;
-	private objConstructor: new (
-		scene: Phaser.Scene,
-		x?: number,
-		y?: number,
-		texture?: string | Phaser.Textures.Texture,
-		frame?: string | number | undefined
-	) => IPoolObject;
+	private objConstructor: new (scene: Phaser.Scene) => IPoolObject;
 
 	private activeObj: Map<string, IPoolObject>;
 	private activeCount: number;
@@ -20,13 +14,7 @@ export default class ObjectPool {
 
 	constructor(
 		scene: Phaser.Scene,
-		type: new (
-			scene: Phaser.Scene,
-			x?: number,
-			y?: number,
-			texture?: string | Phaser.Textures.Texture,
-			frame?: string | number | undefined
-		) => ClientGameObject,
+		type: new (scene: Phaser.Scene) => IPoolObject,
 		initPoolSize: number
 	) {
 		this.scene = scene;
@@ -45,11 +33,10 @@ export default class ObjectPool {
 		const newObj = new this.objConstructor(this.scene);
 		this.reserveCount++;
 		this.reserveObj.push(newObj);
-		newObj.setActive(false);
-		newObj.setVisible(false);
+		newObj.die();
 	}
 
-	public get(id: string): IPoolObject {
+	public get(id: string, state: any): IPoolObject {
 		if (this.activeObj.has(id)) {
 			const obj = this.activeObj.get(id)!;
 			obj.dirtyBit = this.currentDirtyBit;
@@ -63,8 +50,7 @@ export default class ObjectPool {
 
 		this.activeObj.set(id, newObj);
 		this.activeCount++;
-		newObj.setActive(true);
-		newObj.setVisible(true);
+		newObj.init(state);
 		newObj.dirtyBit = this.currentDirtyBit;
 
 		return newObj;
@@ -74,8 +60,7 @@ export default class ObjectPool {
 		if (!this.activeObj.has(id)) throw new Error('Object not in pool');
 
 		const deadObj = this.activeObj.get(id)!;
-		deadObj.setActive(false);
-		deadObj.setVisible(false);
+		deadObj.die();
 		this.activeObj.delete(id);
 		this.activeCount--;
 

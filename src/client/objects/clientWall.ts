@@ -3,8 +3,6 @@ import { ClientStructure } from './clientStructure';
 
 export class ClientWall extends ClientStructure {
 	public update(newWallLiteral: any) {
-		this.setPosition(newWallLiteral.xPos, newWallLiteral.yPos);
-
 		let wallTexture = '';
 		if (newWallLiteral.teamNumber == Constant.TEAM.RED)
 			wallTexture = 'wall_red';

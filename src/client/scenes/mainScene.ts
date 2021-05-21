@@ -757,7 +757,7 @@ export default class MainScene extends Phaser.Scene {
 
 	private updateGamePool(arrayOfNewObjStates: any[], objectPool: ObjectPool) {
 		arrayOfNewObjStates.forEach((obj) => {
-			objectPool.get(obj.id).update(obj);
+			objectPool.get(obj.id, obj).update(obj);
 		});
 
 		objectPool.clean();

@@ -1,6 +1,11 @@
 import { ClientGameObject } from './clientGameObject';
 
 export abstract class ClientStructure extends ClientGameObject {
+	public init(newLiteral: any) {
+		this.setAlive(true);
+		this.setPosition(newLiteral.xPos, newLiteral.yPos);
+	}
+
 	protected handleDamageAnimation(
 		structureTextureName: string,
 		healthPercent: number

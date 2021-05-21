@@ -14,5 +14,18 @@ export abstract class ClientGameObject
 		scene.add.existing(this);
 	}
 
-	public abstract update(objectState: any);
+	public abstract update(objectState: any): void;
+
+	public init(objLiteral: any): void {
+		this.setAlive(true);
+	}
+
+	public die(): void {
+		this.setAlive(false);
+	}
+
+	protected setAlive(status: boolean) {
+		this.setActive(status);
+		this.setVisible(status);
+	}
 }
