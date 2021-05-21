@@ -16,6 +16,7 @@ import { MapResources } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
 import { Resource } from './objects/resource';
+import BoundaryWall from './objects/boundaryWall';
 
 export default class Game {
 	hexTileMap: HexTiles;
@@ -80,8 +81,8 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (timePassed > 24)
-			console.log('WARNING : Update took ', timePassed, 'ms');
+		// if (timePassed > 24)
+		// 	console.log('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -852,11 +853,19 @@ export default class Game {
 
 	generateBoundaryColliders(): void {
 		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
-			this.collision.insertCollider(
+			const boundaryWall = new BoundaryWall(
+				this.idGenerator.newID(),
 				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
-					.cartesian_coord,
+			);
+			this.collision.insertCollider(
+				boundaryWall,
 				Constant.RADIUS.COLLISION.WALL
 			);
+			// this.collision.insertCollider(
+			// 	this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
+			// 		.cartesian_coord,
+			// 	Constant.RADIUS.COLLISION.WALL
+			// );
 		}
 	}
 

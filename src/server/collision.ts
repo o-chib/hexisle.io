@@ -9,6 +9,8 @@ import { Constant } from '../shared/constants';
 import { Point } from '../shared/hexTiles';
 import { MapResources } from './mapResources';
 import { Resource } from './objects/resource';
+import BoundaryWall from './objects/boundaryWall';
+import Structure from './objects/structure';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
@@ -265,7 +267,7 @@ export default class CollisionDetection {
 	}
 
 	private getCollisionRadius(object: any): number {
-		if (object instanceof Wall || object instanceof Point) {
+		if (object instanceof Wall || object instanceof BoundaryWall) {
 			return Constant.RADIUS.COLLISION.WALL;
 		} else if (object instanceof Turret) {
 			return Constant.RADIUS.COLLISION.TURRET;
@@ -288,10 +290,10 @@ export default class CollisionDetection {
 	}
 
 	private isStructure(object: any) {
-		//TODO should be handled internally
+		// return Object.getPrototypeOf(object) instanceof Structure;
 		return (
 			object instanceof Wall ||
-			object instanceof Point ||
+			object instanceof BoundaryWall ||
 			object instanceof Turret ||
 			object instanceof Base
 		);
