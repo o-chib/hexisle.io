@@ -1,4 +1,6 @@
+import { Scene } from 'phaser';
 import { Constant } from '../../shared/constants';
+import { IPoolObject } from '../iPoolObject';
 import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectContainer } from './clientGameObjectContainer';
 
@@ -9,6 +11,7 @@ export class ClientPlayer extends ClientGameObjectContainer {
 		super();
 		this.playerSprite = new ClientPlayerSprite(scene);
 		this.children.push(this.playerSprite);
+		this.children.push(new ClientPlayerName(scene));
 	}
 
 	public setRotation(direction: number) {
@@ -112,5 +115,38 @@ class ClientPlayerSprite extends ClientGameObject {
 			this.anims.play(playerTextureName + '_death', true);
 		}
 		return this;
+	}
+}
+
+class ClientPlayerName extends Phaser.GameObjects.Text implements IPoolObject {
+	public dirtyBit: boolean;
+
+	constructor(scene: Phaser.Scene) {
+		super(scene, 0, 0, '', {
+			font: '48px Arial',
+			stroke: '#000000',
+			strokeThickness: 5,
+		});
+		scene.add.existing(this);
+		this.setDepth(100000);
+	}
+
+	public update(objectState: any): void {
+		this.setPosition(objectState.xPos, objectState.yPos);
+	}
+
+	public init(objLiteral: any): void {
+		this.setAlive(true);
+		this.setText(objLiteral.name);
+		console.log(objLiteral.name);
+	}
+
+	public die(): void {
+		this.setAlive(false);
+	}
+
+	protected setAlive(status: boolean) {
+		this.setActive(status);
+		this.setVisible(status);
 	}
 }
