@@ -52,7 +52,7 @@ export default class CollisionDetection {
 	/**
 	 * Checks if a player is colliding with any bullets, lowers health of the player/increases resources and removes the bullet/resource if needed 
 	 * @param player the player to check
-	 * @param bullets the list of bullets to check against the player
+	 * @param bullets the list of bullets so we can remove them if needed
 	 * @param mapResources the object that holds all the map's resources
 	 * @returns returns early if the player is no longer alive
 	 */
@@ -103,7 +103,7 @@ export default class CollisionDetection {
 	/**
 	 * Checks if a building is colliding with any bullets, lowers health of the structure and removes the bullet if needed
 	 * @param building the building to check
-	 * @param bullets the list of bullets to check around the building
+	 * @param bullets the list of bullets so we can remove them if needed
 	 */
 	public buildingBulletCollision(building: any, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
