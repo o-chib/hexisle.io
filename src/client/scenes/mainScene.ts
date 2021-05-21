@@ -176,14 +176,14 @@ export default class MainScene extends Phaser.Scene {
 	private updateDirection() {
 		if (!this.alive) return;
 
-		const direction =
-			this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
+		const direction = this.getMouseDirection() - Math.PI * 0.5;
 
 		this.myPlayer.setRotation(direction);
 		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
 	}
 
-	private getMouseDirection(pointer: any): any {
+	private getMouseDirection(): any {
+		const pointer = this.input.mousePointer;
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 		const playerPos = this.myPlayer.getPosition();
 
