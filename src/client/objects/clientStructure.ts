@@ -4,6 +4,7 @@ export abstract class ClientStructure extends ClientGameObject {
 	public init(newLiteral: any) {
 		this.setAlive(true);
 		this.setPosition(newLiteral.xPos, newLiteral.yPos);
+		if (this.create) this.create(newLiteral);
 	}
 
 	protected handleDamageAnimation(

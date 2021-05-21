@@ -21,6 +21,7 @@ export abstract class ClientGameObject
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public init(objLiteral: any): void {
 		this.setAlive(true);
+		if (this.create) this.create(objLiteral);
 	}
 
 	public die(): void {
@@ -31,4 +32,9 @@ export abstract class ClientGameObject
 		this.setActive(status);
 		this.setVisible(status);
 	}
+}
+
+export interface ClientGameObject {
+	// Optional function that will run additional operations after initializing the object
+	create?(objLiteral: any): void;
 }
