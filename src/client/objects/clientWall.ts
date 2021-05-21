@@ -14,6 +14,6 @@ export class ClientWall extends ClientStructure {
 		if (this.texture.key != wallTexture) this.setTexture(wallTexture);
 
 		const healthPercent = newWallLiteral.hp / Constant.HP.WALL;
-		this.handleDamageAnimation(wallTexture, healthPercent);
+		this.handleDamageAnimation(healthPercent);
 	}
 }

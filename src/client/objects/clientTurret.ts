@@ -24,7 +24,7 @@ class ClientTurretBase extends ClientStructure {
 			this.setTexture(turretGunTexture);
 
 		const healthPercent = newTurretBaseLiteral.hp / Constant.HP.TURRET;
-		this.handleDamageAnimation(turretGunTexture, healthPercent);
+		this.handleDamageAnimation(healthPercent);
 	}
 }
 
@@ -36,7 +36,7 @@ class ClientTurretGun extends ClientStructure {
 
 	public update(newTurretLiteralGun: any) {
 		const healthPercent = newTurretLiteralGun.hp / Constant.HP.TURRET;
-		this.handleDamageAnimation('turret_shooter', healthPercent);
+		this.handleDamageAnimation(healthPercent);
 		this.setRotation(newTurretLiteralGun.direction);
 	}
 }

@@ -1,13 +1,12 @@
 import { ClientGameObject } from './clientGameObject';
 
 export abstract class ClientStructure extends ClientGameObject {
-	protected handleDamageAnimation(
-		structureTextureName: string,
-		healthPercent: number
-	): void {
+	protected handleDamageAnimation(healthPercent: number): void {
 		// Every structure (Wall/Turret/Base) has 4 states or frames.
 		// Create local animation and load by playing and pausing the animation.
 		// Sets the required frame based on health %
+
+		const structureTextureName = this.texture.key;
 
 		if (!this.anims.get(structureTextureName + '_destroying')) {
 			this.anims.create({
