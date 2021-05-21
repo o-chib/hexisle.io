@@ -51,7 +51,6 @@ export default class MainScene extends Phaser.Scene {
 		this.wallSprites = new ObjectPool(this, ClientWall, 10);
 		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
 		this.campfireSprites = new ObjectPool(this, ClientCampfire, 5);
-		this.campfireRingSprites = new Map();
 		this.baseSprites = new ObjectPool(this, ClientBase, 2);
 		this.territorySprites = new ObjectPool(this, ClientTerritory, 10);
 		this.resourceSprites = new ObjectPool(this, ClientResource, 10);
