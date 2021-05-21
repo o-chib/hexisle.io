@@ -18,6 +18,7 @@ export abstract class ClientGameObject
 
 	public abstract update(objectState: any): void;
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public init(objLiteral: any): void {
 		this.setAlive(true);
 	}
