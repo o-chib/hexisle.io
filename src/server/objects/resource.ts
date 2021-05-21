@@ -2,6 +2,8 @@ import { Constant } from '../../shared/constants';
 import IndestructibleObj from './indestructibleObj';
 
 export class Resource extends IndestructibleObj {
+	public static readonly COLLISION_RADIUS = Constant.RADIUS.RESOURCE;
+
 	public dropAmount: number;
 	public type: string;
 

@@ -1,6 +1,8 @@
+import { Constant } from '../../shared/constants';
 import IndestructibleObj from './indestructibleObj';
 
 export default class Bullet extends IndestructibleObj {
+	public static readonly COLLISION_RADIUS = Constant.RADIUS.COLLISION.BULLET;
 	public static readonly DAMAGE = 10;
 	public static readonly SPEED = 1;
 	private static readonly LIFELENGTH = 1 * 1000;

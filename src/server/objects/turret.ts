@@ -3,6 +3,7 @@ import { Constant } from '../../shared/constants';
 import { Tile } from '../../shared/hexTiles';
 
 export default class Turret extends Structure {
+	public static readonly COLLISION_RADIUS = Constant.RADIUS.COLLISION.TURRET;
 	public static readonly RELOAD_TIME = 1 * 1000;
 
 	public direction: number;
@@ -16,7 +17,6 @@ export default class Turret extends Structure {
 		gameShootBulletMethod?: (turret: any, direction: number) => void
 	) {
 		super(id, Constant.HP.TURRET, tile);
-		this.tile = tile;
 		this.direction = 0;
 		this.reloadTimer = 0;
 		this.hasTarget = false;
