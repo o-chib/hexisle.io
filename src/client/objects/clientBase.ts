@@ -1,7 +1,17 @@
 import { Constant } from '../../shared/constants';
+import { ClientGameObjectConstainer } from './clientGameObjectContainer';
 import { ClientStructure } from './clientStructure';
+import { ClientTerritory } from './clientTerritory';
 
-export class ClientBase extends ClientStructure {
+export class ClientBase extends ClientGameObjectConstainer {
+	constructor(scene: Phaser.Scene) {
+		super();
+		this.children.push(new ClientBaseSprite(scene));
+		this.children.push(new ClientTerritory(scene));
+	}
+}
+
+class ClientBaseSprite extends ClientStructure {
 	public create(newBaseLiteral: any) {
 		let baseTexture = '';
 		if (newBaseLiteral.teamNumber == Constant.TEAM.RED)

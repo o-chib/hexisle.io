@@ -1,13 +1,14 @@
 import { Constant } from '../../shared/constants';
 import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectConstainer } from './clientGameObjectContainer';
-import { ClientStructure } from './clientStructure';
+import { ClientTerritory } from './clientTerritory';
 
 export class ClientCampfire extends ClientGameObjectConstainer {
 	constructor(scene: Phaser.Scene) {
 		super();
 		this.children.push(new ClientCampfireSprite(scene));
 		this.children.push(new ClientCampfireRing(scene));
+		this.children.push(new ClientTerritory(scene));
 	}
 }
 

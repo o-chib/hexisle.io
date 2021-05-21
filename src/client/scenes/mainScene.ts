@@ -11,7 +11,6 @@ import { ClientTurret } from '../objects/clientTurret';
 import { ClientBullet } from '../objects/clientBullet';
 import { ClientResource } from '../objects/clientResource';
 import { ClientBase } from '../objects/clientBase';
-import { ClientTerritory } from '../objects/clientTerritory';
 import { ClientCampfire } from '../objects/clientCampfire';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
@@ -25,7 +24,6 @@ export default class MainScene extends Phaser.Scene {
 	private turretSprites: ObjectPool;
 	private campfireSprites: ObjectPool;
 	private baseSprites: ObjectPool;
-	private territorySprites: ObjectPool;
 	private resourceSprites: ObjectPool;
 	private deadObjects: Set<unknown>;
 	private moveKeys: KeySet;
@@ -52,7 +50,6 @@ export default class MainScene extends Phaser.Scene {
 		this.turretSprites = new ObjectPool(this, ClientTurret, 10);
 		this.campfireSprites = new ObjectPool(this, ClientCampfire, 5);
 		this.baseSprites = new ObjectPool(this, ClientBase, 2);
-		this.territorySprites = new ObjectPool(this, ClientTerritory, 10);
 		this.resourceSprites = new ObjectPool(this, ClientResource, 10);
 		this.deadObjects = new Set();
 	}
@@ -372,7 +369,6 @@ export default class MainScene extends Phaser.Scene {
 			turrets,
 			campfires,
 			bases,
-			territories,
 			resources,
 		} = update;
 		if (currentPlayer == null) return;
@@ -390,8 +386,6 @@ export default class MainScene extends Phaser.Scene {
 		this.updateGamePool(campfires, this.campfireSprites);
 
 		this.updateGamePool(bases, this.baseSprites);
-
-		this.updateGamePool(territories, this.territorySprites);
 
 		this.updateGamePool(resources, this.resourceSprites);
 
