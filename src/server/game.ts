@@ -81,12 +81,10 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		// if (timePassed > 24)
-		// 	console.log('WARNING : Update took ', timePassed, 'ms');
+		if (timePassed > 40)
+			console.log('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
-
-		this.updateTerritories();
 
 		this.updateWalls();
 
@@ -95,6 +93,8 @@ export default class Game {
 		this.updateBases();
 
 		this.updatePlayers(currentTimestamp, timePassed);
+
+		this.updateTerritories();
 
 		this.updateMapResources(timePassed);
 
@@ -128,6 +128,8 @@ export default class Game {
 				aBullet,
 				Constant.RADIUS.COLLISION.BULLET
 			);
+
+			this.collision.bulletCollision(aBullet, this.bullets);
 		}
 	}
 
@@ -160,6 +162,10 @@ export default class Game {
 					if (!tempTile.isInBounds()) continue;
 					tempTile.changeTeamNumber(aCampfire.teamNumber);
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
+					this.addTurret(this.hexTileMap.tileMap[pt.q][pt.r]);
+					this.players.forEach((player) => {
+						this.respawnPlayer(player);
+					})
 				}
 
 				// Update team num of territory
@@ -188,7 +194,6 @@ export default class Game {
 
 	updateWalls() {
 		for (const aWall of this.walls.values()) {
-			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
 				this.removeWall(aWall);
 			}
@@ -197,7 +202,6 @@ export default class Game {
 
 	updateTurrets(timePassed: number) {
 		for (const aTurret of this.turrets.values()) {
-			this.collision.buildingBulletCollision(aTurret, this.bullets);
 			if (!aTurret.isAlive()) {
 				this.removeTurret(aTurret);
 				continue;
@@ -217,7 +221,6 @@ export default class Game {
 
 	updateBases() {
 		for (const aBase of this.bases) {
-			this.collision.buildingBulletCollision(aBase, this.bullets);
 			if (!aBase.isAlive()) {
 				this.collision.deleteCollider(
 					aBase,
@@ -243,9 +246,23 @@ export default class Game {
 			timePassed
 		);
 		for (const aPlayer of this.players.values()) {
-			this.updatePlayerPosition(currentTimestamp, aPlayer);
-			if (aPlayer.isAlive() && givePassiveIncome) {
-				this.passiveIncome.updatePlayerResources(aPlayer);
+			if (aPlayer.hp == 0) {
+				// Give time for player to play death animation
+				// Only call timeout once
+				this.collision.deleteCollider(
+					aPlayer,
+					Constant.RADIUS.COLLISION.PLAYER
+				);
+				aPlayer.hp = -1;
+				aPlayer.setNoVelocity();
+				setTimeout(() => {
+					this.respawnPlayer(aPlayer);
+				}, 3000);
+			} else if (aPlayer.isAlive()) {
+				this.updatePlayerPosition(currentTimestamp, aPlayer);
+				if (givePassiveIncome) {
+					this.passiveIncome.updatePlayerResources(aPlayer);
+				}
 			}
 		}
 	}
@@ -321,24 +338,7 @@ export default class Game {
 
 	updatePlayerPosition(currentTimestamp: number, player: Player): void {
 		player.updatePosition(currentTimestamp, this.collision);
-		this.collision.playerBulletResourceCollision(
-			player,
-			this.bullets,
-			this.mapResources
-		);
-		if (player.hp == 0) {
-			// Give time for player to play death animation
-			// Only call timeout once
-			this.collision.deleteCollider(
-				player,
-				Constant.RADIUS.COLLISION.PLAYER
-			);
-			player.hp = -1;
-			player.setNoVelocity();
-			setTimeout(() => {
-				this.respawnPlayer(player);
-			}, 3000);
-		}
+		this.collision.playerResourceCollision(player, this.mapResources);
 	}
 
 	createPlayerUpdate(player: Player) {

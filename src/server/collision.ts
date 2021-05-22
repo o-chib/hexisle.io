@@ -49,16 +49,58 @@ export default class CollisionDetection {
 		campfire.updateCaptureState(playerCount);
 	}
 
-	/**
-	 * Checks if a player is colliding with any bullets, lowers health of the player/increases resources and removes the bullet/resource if needed 
-	 * @param player the player to check
-	 * @param bullets the list of bullets so we can remove them if needed
-	 * @param mapResources the object that holds all the map's resources
-	 * @returns returns early if the player is no longer alive
-	 */
-	public playerBulletResourceCollision(
+	bulletCollision(bullet: Bullet, bullets: Set<Bullet>): void {
+		const results: CollisionObject[] = [];
+		this.searchCollisions(bullet, Constant.RADIUS.COLLISION.BULLET, results);
+		results.forEach((result) => {
+			if (!this.bulletPlayerCollision(result.payload, bullet, bullets)) {
+				this.bulletStructureCollision(result.payload, bullet, bullets);
+			}
+		});
+	}
+
+	private bulletPlayerCollision(payload: any, bullet: Bullet, bullets: Set<Bullet>): boolean {
+		if (
+			payload instanceof Player &&
+			payload.teamNumber != bullet.teamNumber &&
+			payload.hp > 0 &&
+			this.doCirclesCollide(
+				payload,
+				Constant.RADIUS.COLLISION.PLAYER,
+				bullet,
+				Constant.RADIUS.COLLISION.BULLET
+			)
+		) {
+			payload.hp -= Bullet.DAMAGE;
+			bullets.delete(bullet);
+			this.deleteCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
+			return true;
+		}
+		return false;
+	}
+
+	private bulletStructureCollision(payload: any, bullet: Bullet, bullets: Set<Bullet>): boolean {
+		if (
+			this.isStructure(payload) && 
+			bullet.teamNumber != payload.teamNumber &&
+			payload.hp > 0 &&
+			this.doCirclesCollide(
+				payload,
+				this.getCollisionRadius(payload),
+				bullet,
+				Constant.RADIUS.COLLISION.BULLET
+			)
+		) {
+			payload.hp -= Bullet.DAMAGE;
+			bullets.delete(bullet);
+			this.deleteCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
+			return true;
+		}
+		return false;
+	}
+
+	public playerResourceCollision(
 		player: Player,
-		bullets: Set<Bullet>,
 		mapResources: MapResources
 	): void {
 		if (!player.isAlive()) {
@@ -70,19 +112,6 @@ export default class CollisionDetection {
 
 		results.forEach((result) => {
 			if (
-				result.payload instanceof Bullet &&
-				result.payload.teamNumber != player.teamNumber &&
-				this.doCirclesCollide(
-					player,
-					Constant.RADIUS.COLLISION.PLAYER,
-					result.payload,
-					Constant.RADIUS.COLLISION.BULLET
-				)
-			) {
-				player.hp -= Bullet.DAMAGE;
-				bullets.delete(result.payload);
-				this.deleteCollider(result.payload, Constant.RADIUS.COLLISION.BULLET);
-			} else if (
 				result.payload instanceof Resource &&
 				result.payload.dropAmount > 0 &&
 				this.doCirclesCollide(
@@ -95,33 +124,6 @@ export default class CollisionDetection {
 				player.updateResource(result.payload.dropAmount);
 				mapResources.deleteResource(result.payload);
 				this.deleteCollider(result.payload, Constant.RADIUS.RESOURCE);
-			}
-		});
-	}
-
-	/**
-	 * Checks if a building is colliding with any bullets, lowers health of the structure and removes the bullet if needed
-	 * @param building the building to check
-	 * @param bullets the list of bullets so we can remove them if needed
-	 */
-	public buildingBulletCollision(building: any, bullets: Set<Bullet>): void {
-		const results: CollisionObject[] = [];
-		const col_radius = this.getCollisionRadius(building);
-		this.searchCollisions(building, col_radius, results);
-		results.forEach((result) => {
-			if (
-				result.payload instanceof Bullet &&
-				result.payload.teamNumber != building.teamNumber &&
-				this.doCirclesCollide(
-					building,
-					col_radius,
-					result.payload,
-					Constant.RADIUS.COLLISION.BULLET
-				)
-			) {
-				building.hp -= Bullet.DAMAGE;
-				bullets.delete(result.payload);
-				this.deleteCollider(result.payload, Constant.RADIUS.COLLISION.BULLET);
 			}
 		});
 	}
