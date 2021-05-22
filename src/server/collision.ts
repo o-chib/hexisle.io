@@ -49,16 +49,30 @@ export default class CollisionDetection {
 		campfire.updateCaptureState(playerCount);
 	}
 
+	/**
+	 * Checks for a bullet collision, lowers hp and removes the bullet from bullets if necessary
+	 * @param bullet the bullet to check for collisions against
+	 * @param bullets the list of all game bullets
+	 */
 	bulletCollision(bullet: Bullet, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
 		this.searchCollisions(bullet, Constant.RADIUS.COLLISION.BULLET, results);
 		results.forEach((result) => {
+
+			// if statement for making sure bullets hit either a player or structure, not both
 			if (!this.bulletPlayerCollision(result.payload, bullet, bullets)) {
 				this.bulletStructureCollision(result.payload, bullet, bullets);
 			}
 		});
 	}
 
+	/**
+	 * Checks if a bullet collides with an enemy player, lowers hp and removes the bullet from bullets if necessary
+	 * @param payload the potential player that the bullet it colliding with
+	 * @param bullet the bullet that is colliding
+	 * @param bullets the list of all game bullets
+	 * @returns boolean representing if the bullet collided/was removed
+	 */
 	private bulletPlayerCollision(payload: any, bullet: Bullet, bullets: Set<Bullet>): boolean {
 		if (
 			payload instanceof Player &&
@@ -79,6 +93,13 @@ export default class CollisionDetection {
 		return false;
 	}
 
+	/**
+	 * Checks if a bullet collides with an enemy player, lowers hp and removes the bullet from bullets if necessary
+	 * @param payload the potential structure that the bullet it colliding with
+	 * @param bullet the bullet that is colliding
+	 * @param bullets the list of all game bullets
+	 * @returns boolean representing if the bullet collided/was removed
+	 */
 	private bulletStructureCollision(payload: any, bullet: Bullet, bullets: Set<Bullet>): boolean {
 		if (
 			this.isStructure(payload) && 
@@ -99,6 +120,12 @@ export default class CollisionDetection {
 		return false;
 	}
 
+	/**
+	 * Checks if a player collides with a map resource, increments resources and removes the resource if necessary
+	 * @param player the player to check for resource collisions
+	 * @param mapResources the mapResources class to interface with resources
+	 * @returns early if the player is not alive
+	 */
 	public playerResourceCollision(
 		player: Player,
 		mapResources: MapResources
