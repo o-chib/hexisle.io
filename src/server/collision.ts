@@ -58,7 +58,7 @@ export default class CollisionDetection {
 	 * @param bullet the bullet to check for collisions against
 	 * @param bullets the list of all game bullets
 	 */
-	bulletCollision(bullet: Bullet, bullets: Set<Bullet>): void {
+	public bulletCollision(bullet: Bullet, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
 		this.searchCollisions(
 			bullet,
