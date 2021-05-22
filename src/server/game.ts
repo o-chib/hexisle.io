@@ -81,7 +81,7 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (timePassed > 40)
+		if (timePassed > 24)
 			console.log('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
@@ -113,8 +113,6 @@ export default class Game {
 
 	updateBullets(currentTimestamp, timePassed) {
 		for (const aBullet of this.bullets) {
-			aBullet.updatePosition(timePassed);
-
 			if (aBullet.isExpired(currentTimestamp)) {
 				this.collision.deleteCollider(
 					aBullet,
@@ -124,11 +122,7 @@ export default class Game {
 				continue;
 			}
 
-			this.collision.updateCollider(
-				aBullet,
-				Constant.RADIUS.COLLISION.BULLET
-			);
-
+			aBullet.updatePosition(timePassed, this.collision);
 			this.collision.bulletCollision(aBullet, this.bullets);
 		}
 	}
@@ -571,8 +565,6 @@ export default class Game {
 		const player: Player = this.getPlayer(socket.id)!;
 
 		player.updateVelocity(direction);
-		player.updatePosition(Date.now(), this.collision);
-		this.collision.updateCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 	}
 
 	rotatePlayer(socket: SocketIO.Socket, direction: number): void {
