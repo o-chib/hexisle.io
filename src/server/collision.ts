@@ -74,69 +74,6 @@ export default class CollisionDetection {
 	}
 
 	/**
-	 * Checks if a bullet collides with an enemy player, lowers hp and removes the bullet from bullets if necessary
-	 * @param payload the potential player that the bullet it colliding with
-	 * @param bullet the bullet that is colliding
-	 * @param bullets the list of all game bullets
-	 * @returns boolean representing if the bullet collided/was removed
-	 */
-	private bulletPlayerCollision(
-		payload: any,
-		bullet: Bullet,
-		bullets: Set<Bullet>
-	): boolean {
-		if (
-			payload instanceof Player &&
-			payload.teamNumber != bullet.teamNumber &&
-			payload.hp > 0 &&
-			this.doCirclesCollide(
-				payload,
-				Constant.RADIUS.COLLISION.PLAYER,
-				bullet,
-				Constant.RADIUS.COLLISION.BULLET
-			)
-		) {
-			payload.hp -= Bullet.DAMAGE;
-			bullets.delete(bullet);
-			this.deleteCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Checks if a bullet collides with an enemy player, lowers hp and removes the bullet from bullets if necessary
-	 * @param payload the potential structure that the bullet it colliding with
-	 * @param bullet the bullet that is colliding
-	 * @param bullets the list of all game bullets
-	 * @returns boolean representing if the bullet collided/was removed
-	 */
-	private bulletStructureCollision(
-		payload: any,
-		bullet: Bullet,
-		bullets: Set<Bullet>
-	): boolean {
-		if (
-			this.isStructure(payload) &&
-			!(payload instanceof BoundaryWall) &&
-			bullet.teamNumber != payload.teamNumber &&
-			payload.hp > 0 &&
-			this.doCirclesCollide(
-				payload,
-				this.getCollisionRadius(payload),
-				bullet,
-				Constant.RADIUS.COLLISION.BULLET
-			)
-		) {
-			payload.hp -= Bullet.DAMAGE;
-			bullets.delete(bullet);
-			this.deleteCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Checks if a player collides with a map resource, increments resources and removes the resource if necessary
 	 * @param player the player to check for resource collisions
 	 * @param mapResources the mapResources class to interface with resources
@@ -368,6 +305,69 @@ export default class CollisionDetection {
 				object
 			)
 		);
+	}
+
+	/**
+	 * Checks if a bullet collides with an enemy player, lowers hp and removes the bullet from bullets if necessary
+	 * @param payload the potential player that the bullet it colliding with
+	 * @param bullet the bullet that is colliding
+	 * @param bullets the list of all game bullets
+	 * @returns boolean representing if the bullet collided/was removed
+	 */
+	private bulletPlayerCollision(
+		payload: any,
+		bullet: Bullet,
+		bullets: Set<Bullet>
+	): boolean {
+		if (
+			payload instanceof Player &&
+			payload.teamNumber != bullet.teamNumber &&
+			payload.hp > 0 &&
+			this.doCirclesCollide(
+				payload,
+				Constant.RADIUS.COLLISION.PLAYER,
+				bullet,
+				Constant.RADIUS.COLLISION.BULLET
+			)
+		) {
+			payload.hp -= Bullet.DAMAGE;
+			bullets.delete(bullet);
+			this.deleteCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if a bullet collides with an enemy player, lowers hp and removes the bullet from bullets if necessary
+	 * @param payload the potential structure that the bullet it colliding with
+	 * @param bullet the bullet that is colliding
+	 * @param bullets the list of all game bullets
+	 * @returns boolean representing if the bullet collided/was removed
+	 */
+	private bulletStructureCollision(
+		payload: any,
+		bullet: Bullet,
+		bullets: Set<Bullet>
+	): boolean {
+		if (
+			this.isStructure(payload) &&
+			!(payload instanceof BoundaryWall) &&
+			bullet.teamNumber != payload.teamNumber &&
+			payload.hp > 0 &&
+			this.doCirclesCollide(
+				payload,
+				this.getCollisionRadius(payload),
+				bullet,
+				Constant.RADIUS.COLLISION.BULLET
+			)
+		) {
+			payload.hp -= Bullet.DAMAGE;
+			bullets.delete(bullet);
+			this.deleteCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
+			return true;
+		}
+		return false;
 	}
 
 	/**
