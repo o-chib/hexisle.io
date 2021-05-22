@@ -8,6 +8,7 @@ export class Quadtree {
 	private MAX_DEPTH: number;
 	private topLevelNode: QuadtreeNode;
 	private topLevelNodeBox: Rect;
+	private searchSubbox: Rect;
 
 	constructor() {
 		this.SPLIT = Constant.QUADTREE.SPLIT; // originally(with overlapping) = 0.6;
@@ -19,6 +20,7 @@ export class Quadtree {
 			Constant.MAP_HEIGHT,
 			0
 		);
+		this.searchSubbox = new Rect();
 	}
 
 	/**
@@ -238,38 +240,30 @@ export class Quadtree {
 				results.push(obj);
 			});
 
+		const searchBox = nodebox.getCopy();
+
 		// intersects UPPER LEFT
 		if (box.l < splitRight && box.t < splitBottom && node.kids[0]) {
-			const subbox = new Rect(
-				nodebox.l,
-				splitRight,
-				splitBottom,
-				nodebox.t
-			);
-			this.search(node.kids[0], subbox, box, results);
+			this.searchSubbox.update(searchBox.l, splitRight, splitBottom, searchBox.t);
+			this.search(node.kids[0], this.searchSubbox, box, results);
 
 			// intersects UPPER RIGHT
 		}
 		if (box.r > splitLeft && box.t < splitBottom && node.kids[1]) {
-			const subbox = new Rect(
-				splitLeft,
-				nodebox.r,
-				splitBottom,
-				nodebox.t
-			);
-			this.search(node.kids[1], subbox, box, results);
+			this.searchSubbox.update(splitLeft, searchBox.r, splitBottom, searchBox.t);
+			this.search(node.kids[1], this.searchSubbox, box, results);
 
 			// intersects LOWER LEFT
 		}
 		if (box.l < splitRight && box.b < splitTop && node.kids[2]) {
-			const subbox = new Rect(nodebox.l, splitRight, nodebox.b, splitTop);
-			this.search(node.kids[2], subbox, box, results);
+			this.searchSubbox.update(searchBox.l, splitRight, searchBox.b, splitTop);
+			this.search(node.kids[2], this.searchSubbox, box, results);
 
 			// intersects LOWER RIGHT
 		}
 		if (box.r > splitLeft && box.b < splitTop && node.kids[3]) {
-			const subbox = new Rect(splitLeft, nodebox.r, nodebox.b, splitTop);
-			this.search(node.kids[3], subbox, box, results);
+			this.searchSubbox.update(splitLeft, searchBox.r, searchBox.b, splitTop);
+			this.search(node.kids[3], this.searchSubbox, box, results);
 		}
 	}
 }
