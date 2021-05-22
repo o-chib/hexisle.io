@@ -156,10 +156,6 @@ export default class Game {
 					if (!tempTile.isInBounds()) continue;
 					tempTile.changeTeamNumber(aCampfire.teamNumber);
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
-					this.addTurret(this.hexTileMap.tileMap[pt.q][pt.r]);
-					this.players.forEach((player) => {
-						this.respawnPlayer(player);
-					})
 				}
 
 				// Update team num of territory
