@@ -50,27 +50,12 @@ export default class gameOver extends Phaser.Scene {
 
 		// Message
 		let textMessage = '';
-		// const message = this.add.text(
-		// 	renderWidth / 2 - 200,
-		// 	renderHeight * 0.5 - 120,
-		// 	'Game Over, ',
-		// 	{
-		// 		font: '36px Arial',
-		// 		align: 'left',
-		// 		stroke: '#000000',
-		// 		strokeThickness: 5,
-		// 	}
-		// );
-		// message.text +=
-		// 	this.endState.winner == Constant.TEAM.BLUE ? 'Blue' : 'Red';
-		// message.text += ' team wins!';
-		// message.text += '\n' + this.endState.message;
+
 		textMessage +=
 			this.endState.winner == Constant.TEAM.BLUE ? 'Blue' : 'Red';
 		textMessage += ' team wins!';
 		textMessage += '\n' + this.endState.message;
 
-		//message.setVisible(false);
 
 		const MessageArea = document.getElementById('message') as HTMLElement;
 		MessageArea.innerText = textMessage;

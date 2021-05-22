@@ -59,12 +59,15 @@ export default class ProgressBar {
 
 		new Anchor(this.bar_ui_container, this.position_config);
 	}
+
 	public updateText() {
 		this.infoText.text = (this.bar.scaleX * 100).toFixed(0);
 	}
+
 	public updateCustomNumberText(num: number) {
 		this.infoText.text = num.toFixed(0);
 	}
+
 	public updateCustomStringText(str: string) {
 		this.infoText.text = str;
 	}
@@ -80,9 +83,11 @@ export default class ProgressBar {
 		// undo change on Text
 		this.infoText.scaleX /= scalePercent;
 	}
+
 	public scaleEntireBar(scalePercent: number): void {
 		this.bar_ui_container.scale *= scalePercent;
 	}
+
 	public flipBarOnly(): void {
 		this.bar_container.scaleX *= -1;
 
@@ -90,6 +95,7 @@ export default class ProgressBar {
 		this.infoText.scaleX *= -1;
 		this.infoText.originX = this.infoText.originX == 0 ? 1 : 0;
 	}
+
 	public flipEntireBar(): void {
 		this.bar_ui_container.scaleX *= -1;
 
@@ -97,14 +103,16 @@ export default class ProgressBar {
 		this.infoText.scaleX *= -1;
 		this.infoText.originX = this.infoText.originX == 0 ? 1 : 0;
 	}
-	public enableIcon(isEnabled: boolean): void {
+
+	public enableIcon(isEnabled: boolean): void{
 		this.bar_icon.setVisible(isEnabled);
 		// Offset Bar itself from the Icon
-		if (isEnabled) {
+		if(isEnabled){
 			const icon_width = this.bar_icon.displayWidth;
 			const bar_offset = (2 * icon_width) / 3;
 			this.bar_container.setX(bar_offset);
-		} else {
+		}
+		else{
 			this.bar_container.setX(0);
 		}
 	}
