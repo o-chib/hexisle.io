@@ -26,7 +26,6 @@ export default class HUDScene extends Phaser.Scene {
 	private healthbar_team_blue: ProgressBar;
 
 	private ResourcesCounter: ProgressBar;
-	private GameTimeCounter: ProgressBar;
 
 	constructor() {
 		super('HUDScene');
@@ -95,22 +94,6 @@ export default class HUDScene extends Phaser.Scene {
 		);
 		this.ResourcesCounter.scaleEntireBar(0.4);
 		this.ResourcesCounter.scaleBarLength(0.3);
-
-		// Resources
-		this.GameTimeCounter = new ProgressBar();
-		this.GameTimeCounter.createBar(
-			this.scene.get(HUDScene.Name),
-			'',
-			'healthbar_back',
-			{
-				centerX: 'center',
-				top: 'top+50',
-			}
-		);
-		this.GameTimeCounter.enableIcon(false);
-		this.GameTimeCounter.alignTextToBarCenter();
-		this.GameTimeCounter.scaleEntireBar(0.4);
-		this.GameTimeCounter.scaleBarLength(0.3);
 
 		// HUD: Center
 		this.gameTimeText = this.add.text(0, 0, '', {
@@ -230,8 +213,7 @@ export default class HUDScene extends Phaser.Scene {
 			this.addLeadingZeros(minutes),
 			this.addLeadingZeros(seconds),
 		]);
-		// this.gameTimeText?.setText(gameTimeText);
-		this.GameTimeCounter.updateCustomStringText(gameTimeText);
+		this.gameTimeText?.setText(gameTimeText);
 	}
 
 	private updateDebugInfo(xPos, yPos, hexQ, hexR): void {
