@@ -30,7 +30,9 @@ export default class MainMenu extends Phaser.Scene {
 				loop: true,
 			});
 		}
-		this.menuMusic.play();
+		if (!this.menuMusic.isPlaying) {
+			this.menuMusic.play();
+		}
 	}
 
 	public create(): void {
