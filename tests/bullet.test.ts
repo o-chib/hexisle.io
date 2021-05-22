@@ -4,6 +4,7 @@ import { Constant } from '../src/shared/constants';
 
 describe('Bullet', () => {
 	const collision = new CollisionDetection();
+
 	it('should move at right speed', () => {
 		const x = 1;
 		const y = 1;
