@@ -25,7 +25,11 @@ export default class CollisionDetection {
 	public campfirePlayerCollision(campfire: Campfire): void {
 		// Get everything touching the campfires collider
 		const results: CollisionObject[] = [];
-		this.searchCollisions(campfire, Constant.RADIUS.COLLISION.WALL, results);
+		this.searchCollisions(
+			campfire,
+			Constant.RADIUS.COLLISION.WALL,
+			results
+		);
 
 		const playerCount: number[] = [];
 		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
@@ -56,9 +60,12 @@ export default class CollisionDetection {
 	 */
 	bulletCollision(bullet: Bullet, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
-		this.searchCollisions(bullet, Constant.RADIUS.COLLISION.BULLET, results);
+		this.searchCollisions(
+			bullet,
+			Constant.RADIUS.COLLISION.BULLET,
+			results
+		);
 		results.forEach((result) => {
-
 			// if statement for making sure bullets hit either a player or structure, not both
 			if (!this.bulletPlayerCollision(result.payload, bullet, bullets)) {
 				this.bulletStructureCollision(result.payload, bullet, bullets);
@@ -73,7 +80,11 @@ export default class CollisionDetection {
 	 * @param bullets the list of all game bullets
 	 * @returns boolean representing if the bullet collided/was removed
 	 */
-	private bulletPlayerCollision(payload: any, bullet: Bullet, bullets: Set<Bullet>): boolean {
+	private bulletPlayerCollision(
+		payload: any,
+		bullet: Bullet,
+		bullets: Set<Bullet>
+	): boolean {
 		if (
 			payload instanceof Player &&
 			payload.teamNumber != bullet.teamNumber &&
@@ -100,9 +111,13 @@ export default class CollisionDetection {
 	 * @param bullets the list of all game bullets
 	 * @returns boolean representing if the bullet collided/was removed
 	 */
-	private bulletStructureCollision(payload: any, bullet: Bullet, bullets: Set<Bullet>): boolean {
+	private bulletStructureCollision(
+		payload: any,
+		bullet: Bullet,
+		bullets: Set<Bullet>
+	): boolean {
 		if (
-			this.isStructure(payload) && 
+			this.isStructure(payload) &&
 			!(payload instanceof BoundaryWall) &&
 			bullet.teamNumber != payload.teamNumber &&
 			payload.hp > 0 &&
@@ -136,7 +151,11 @@ export default class CollisionDetection {
 		}
 
 		const results: CollisionObject[] = [];
-		this.searchCollisions(player, Constant.RADIUS.COLLISION.PLAYER, results);
+		this.searchCollisions(
+			player,
+			Constant.RADIUS.COLLISION.PLAYER,
+			results
+		);
 
 		results.forEach((result) => {
 			if (
@@ -160,7 +179,7 @@ export default class CollisionDetection {
 	 * Checks if a certain object collides with a structure
 	 * @param xPos the xPos of the object
 	 * @param yPos the yPos of the object
-	 * @param objectRadius the radius of the object 
+	 * @param objectRadius the radius of the object
 	 * @returns boolean
 	 */
 	public doesObjCollideWithStructure(
@@ -169,7 +188,11 @@ export default class CollisionDetection {
 		objectRadius: number
 	): boolean {
 		const results: CollisionObject[] = [];
-		this.searchCollisions({ xPos: xPos, yPos: yPos }, objectRadius, results);
+		this.searchCollisions(
+			{ xPos: xPos, yPos: yPos },
+			objectRadius,
+			results
+		);
 
 		for (const result of results) {
 			if (
@@ -190,7 +213,7 @@ export default class CollisionDetection {
 	 * Checks if a certain object collides with a player
 	 * @param xPos the xPos of the object
 	 * @param yPos the yPos of the object
-	 * @param objectRadius the radius of the object 
+	 * @param objectRadius the radius of the object
 	 * @returns boolean
 	 */
 	public doesObjCollideWithPlayers(
@@ -199,7 +222,11 @@ export default class CollisionDetection {
 		objectRadius: number
 	): boolean {
 		const results: CollisionObject[] = [];
-		this.searchCollisions({ xPos: xPos, yPos: yPos }, objectRadius, results);
+		this.searchCollisions(
+			{ xPos: xPos, yPos: yPos },
+			objectRadius,
+			results
+		);
 		for (const result of results) {
 			if (
 				result.payload instanceof Player &&
@@ -221,7 +248,10 @@ export default class CollisionDetection {
 	 * @param objectRange the radius around the object to search
 	 * @returns number
 	 */
-	public findDirectionOfClosestEnemy(object: any, objectRange: number): number {
+	public findDirectionOfClosestEnemy(
+		object: any,
+		objectRange: number
+	): number {
 		// Get everything in range
 		const results: CollisionObject[] = [];
 		this.searchCollisions(object, objectRange, results);
@@ -346,7 +376,11 @@ export default class CollisionDetection {
 	 * @param radius the radius of the object
 	 * @param results the list to put potential collision objects into
 	 */
-	private searchCollisions(object: any, radius: number, results: CollisionObject[]) {
+	private searchCollisions(
+		object: any,
+		radius: number,
+		results: CollisionObject[]
+	) {
 		this.quadtree.searchQuadtree(
 			new Rect(
 				object.xPos - radius,

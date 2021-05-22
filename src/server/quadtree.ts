@@ -72,7 +72,12 @@ export class Quadtree {
 	 * @param results the list of collision objects we found that may collide
 	 */
 	public searchQuadtree(box: Rect, results: CollisionObject[]): void {
-		this.search(this.topLevelNode, this.topLevelNodeBox.getCopy(), box, results);
+		this.search(
+			this.topLevelNode,
+			this.topLevelNodeBox.getCopy(),
+			box,
+			results
+		);
 	}
 
 	/**
@@ -244,25 +249,45 @@ export class Quadtree {
 
 		// intersects UPPER LEFT
 		if (box.l < splitRight && box.t < splitBottom && node.kids[0]) {
-			this.searchSubbox.update(searchBox.l, splitRight, splitBottom, searchBox.t);
+			this.searchSubbox.update(
+				searchBox.l,
+				splitRight,
+				splitBottom,
+				searchBox.t
+			);
 			this.search(node.kids[0], this.searchSubbox, box, results);
 
 			// intersects UPPER RIGHT
 		}
 		if (box.r > splitLeft && box.t < splitBottom && node.kids[1]) {
-			this.searchSubbox.update(splitLeft, searchBox.r, splitBottom, searchBox.t);
+			this.searchSubbox.update(
+				splitLeft,
+				searchBox.r,
+				splitBottom,
+				searchBox.t
+			);
 			this.search(node.kids[1], this.searchSubbox, box, results);
 
 			// intersects LOWER LEFT
 		}
 		if (box.l < splitRight && box.b < splitTop && node.kids[2]) {
-			this.searchSubbox.update(searchBox.l, splitRight, searchBox.b, splitTop);
+			this.searchSubbox.update(
+				searchBox.l,
+				splitRight,
+				searchBox.b,
+				splitTop
+			);
 			this.search(node.kids[2], this.searchSubbox, box, results);
 
 			// intersects LOWER RIGHT
 		}
 		if (box.r > splitLeft && box.b < splitTop && node.kids[3]) {
-			this.searchSubbox.update(splitLeft, searchBox.r, searchBox.b, splitTop);
+			this.searchSubbox.update(
+				splitLeft,
+				searchBox.r,
+				searchBox.b,
+				splitTop
+			);
 			this.search(node.kids[3], this.searchSubbox, box, results);
 		}
 	}
@@ -274,7 +299,7 @@ export class Rect {
 	public b: number;
 	public t: number;
 
-	constructor(l: number = 0, r: number = 0, b: number = 0, t: number = 0) {
+	constructor(l = 0, r = 0, b = 0, t = 0) {
 		this.l = l;
 		this.r = r;
 		this.b = b;
