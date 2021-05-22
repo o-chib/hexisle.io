@@ -103,6 +103,7 @@ export default class CollisionDetection {
 	private bulletStructureCollision(payload: any, bullet: Bullet, bullets: Set<Bullet>): boolean {
 		if (
 			this.isStructure(payload) && 
+			!(payload instanceof BoundaryWall) &&
 			bullet.teamNumber != payload.teamNumber &&
 			payload.hp > 0 &&
 			this.doCirclesCollide(
