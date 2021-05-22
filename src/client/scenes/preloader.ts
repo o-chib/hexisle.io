@@ -123,6 +123,7 @@ export default class Preloader extends Phaser.Scene {
 		// Icons
 		this.load.image('heart_icon', '../assets/heart_icon.png');
 		this.load.image('coin_icon', '../assets/coin_icon.png');
+		this.load.image('timer_icon', '../assets/timer_icon.png');
 		this.load.image('flag_icon_red', '../assets/flag_icon_red.png');
 		this.load.image('flag_icon_blue', '../assets/flag_icon_blue.png');
 

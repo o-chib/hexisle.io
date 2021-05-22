@@ -14,8 +14,6 @@ export default class HUDScene extends Phaser.Scene {
 	public static Name = 'HUDScene';
 	private mainSceneObj: any;
 
-	// Game timer
-	private gameTimeText?: Phaser.GameObjects.Text;
 	// Debug Info
 	private debugInfoText?: Phaser.GameObjects.Text;
 	// Quit Button
@@ -26,6 +24,7 @@ export default class HUDScene extends Phaser.Scene {
 	private healthbar_team_blue: ProgressBar;
 
 	private ResourcesCounter: ProgressBar;
+	private GameTimeCounter: ProgressBar;
 
 	constructor() {
 		super('HUDScene');
@@ -68,18 +67,11 @@ export default class HUDScene extends Phaser.Scene {
 			}
 		);
 
-		// // Flip the oppsosing bar and position to the other corner of map
-		// this.healthbar_team_red.createHealthBar(this.scene.get(HUDScene.Name),'flag_icon_red','healthbar_red',{
-		// 	bottom:'bottom-50',
-		// 	right:'right-20'
-		// });
-
 		this.healthbar_player.scaleEntireBar(0.4);
 		this.healthbar_team_red.scaleEntireBar(0.4);
 		this.healthbar_team_blue.scaleEntireBar(0.4);
 		this.healthbar_team_red.scaleBarLength(1.8);
 		this.healthbar_team_blue.scaleBarLength(1.8);
-		// this.healthbar_team_red.flipEntireBar();
 
 		// Resources
 		this.ResourcesCounter = new ProgressBar();
@@ -95,17 +87,19 @@ export default class HUDScene extends Phaser.Scene {
 		this.ResourcesCounter.scaleEntireBar(0.4);
 		this.ResourcesCounter.scaleBarLength(0.3);
 
-		// HUD: Center
-		this.gameTimeText = this.add.text(0, 0, '', {
-			font: '48px Arial',
-			align: 'center',
-			stroke: '#000000',
-			strokeThickness: 5,
-		});
-		new Anchor(this.gameTimeText, {
-			centerX: 'center',
-			top: 'top+10',
-		});
+		// Game Timer
+		this.GameTimeCounter = new ProgressBar();
+		this.GameTimeCounter.createBar(
+			this.scene.get(HUDScene.Name),
+			'timer_icon',
+			'healthbar_back',
+			{
+				centerX: 'center',
+				top: 'top+50',
+			}
+		);
+		this.GameTimeCounter.scaleEntireBar(0.5);
+		this.GameTimeCounter.scaleBarLength(0.35);
 
 		this.debugInfoText = this.add.text(0, 0, '', {
 			font: '48px Arial',
@@ -213,10 +207,10 @@ export default class HUDScene extends Phaser.Scene {
 			this.addLeadingZeros(minutes),
 			this.addLeadingZeros(seconds),
 		]);
-		this.gameTimeText?.setText(gameTimeText);
+		this.GameTimeCounter.updateCustomStringText(gameTimeText);
 	}
 
-	private updateDebugInfo(xPos, yPos, hexQ, hexR): void {
+	private updateDebugInfo(xPos: number, yPos: number, hexQ: any, hexR: any): void {
 		const debugInfoText = Phaser.Utils.String.Format(debug_format, [
 			Math.round(xPos * 100) / 100,
 			Math.round(yPos * 100) / 100,
@@ -237,7 +231,6 @@ export default class HUDScene extends Phaser.Scene {
 	}
 
 	private startHUD(): void {
-		this.gameTimeText?.setText('');
 		this.scene.setVisible(true);
 	}
 

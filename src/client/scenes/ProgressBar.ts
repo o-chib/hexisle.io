@@ -38,10 +38,7 @@ export default class ProgressBar {
 		this.bar_container.add(this.bar_back);
 		this.bar_container.add(this.bar);
 
-		// Offset Bar itself from the Icon
-		const icon_width = this.bar_icon.displayWidth;
-		const bar_offset = (2 * icon_width) / 3;
-		this.bar_container.setX(this.bar_container.x + bar_offset);
+		this.enableIcon(true);
 
 		// Wrap the Bar and Icon
 		this.bar_ui_container.add(this.bar_container);
@@ -68,6 +65,9 @@ export default class ProgressBar {
 	public updateCustomNumberText(num: number) {
 		this.infoText.text = num.toFixed(0);
 	}
+	public updateCustomStringText(str: string) {
+		this.infoText.text = str;
+	}
 
 	public updateBar(healthPercent: number): void {
 		this.bar.setScale(healthPercent, 1);
@@ -76,7 +76,7 @@ export default class ProgressBar {
 
 	public scaleBarLength(scalePercent: number): void {
 		this.bar_container.scaleX *= scalePercent;
-		this.AlignTextToBar();
+		this.alignTextToBarEnd();
 		// undo change on Text
 		this.infoText.scaleX /= scalePercent;
 	}
@@ -97,8 +97,22 @@ export default class ProgressBar {
 		this.infoText.scaleX *= -1;
 		this.infoText.originX = this.infoText.originX == 0 ? 1 : 0;
 	}
-	private AlignTextToBar(): void {
+	public enableIcon(isEnabled: boolean): void{
+		this.bar_icon.setVisible(isEnabled);
+		// Offset Bar itself from the Icon
+		if(isEnabled){
+			const icon_width = this.bar_icon.displayWidth;
+			const bar_offset = (2 * icon_width) / 3;
+			this.bar_container.setX(bar_offset);
+		}
+		else{
+			this.bar_container.setX(0);
+		}
+	}
+
+	public alignTextToBarEnd(): void {
 		// Re-Align the text to the other end of colored bar
+		this.infoText.originX = 1;
 		this.infoText.setX(this.bar.x + this.bar.displayWidth * 0.95);
 	}
 }
