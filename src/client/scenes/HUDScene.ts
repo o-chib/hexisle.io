@@ -210,7 +210,12 @@ export default class HUDScene extends Phaser.Scene {
 		this.GameTimeCounter.updateCustomStringText(gameTimeText);
 	}
 
-	private updateDebugInfo(xPos: number, yPos: number, hexQ: any, hexR: any): void {
+	private updateDebugInfo(
+		xPos: number,
+		yPos: number,
+		hexQ: any,
+		hexR: any
+	): void {
 		const debugInfoText = Phaser.Utils.String.Format(debug_format, [
 			Math.round(xPos * 100) / 100,
 			Math.round(yPos * 100) / 100,
