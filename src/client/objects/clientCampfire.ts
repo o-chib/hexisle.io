@@ -16,7 +16,7 @@ class ClientCampfireSprite extends ClientGameObject {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public create(_campfireLiteral: any) {
 		this.setTexture('campfire');
-		this.setDepth(1);
+		this.setDepth(Constant.SPRITE_DEPTH.CAMP);
 	}
 
 	public update(campfireLiteral: any) {

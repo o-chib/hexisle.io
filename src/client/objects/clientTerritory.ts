@@ -4,7 +4,7 @@ import { ClientGameObject } from './clientGameObject';
 export class ClientTerritory extends ClientGameObject {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public create(_newBaseLiteral: any) {
-		this.setDepth(-1);
+		this.setDepth(Constant.SPRITE_DEPTH.TERRITORY);
 	}
 
 	public update(territoryLiteral: any) {

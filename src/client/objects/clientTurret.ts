@@ -12,6 +12,8 @@ export class ClientTurret extends ClientGameObjectContainer {
 
 class ClientTurretBase extends ClientStructure {
 	public update(newTurretBaseLiteral: any) {
+		this.setDepth(Constant.SPRITE_DEPTH.TURRET_BASE);
+
 		let turretGunTexture = '';
 		if (newTurretBaseLiteral.teamNumber == Constant.TEAM.RED)
 			turretGunTexture = 'turret_base_red';
@@ -30,7 +32,7 @@ class ClientTurretBase extends ClientStructure {
 
 class ClientTurretGun extends ClientStructure {
 	public create() {
-		this.setDepth(1);
+		this.setDepth(Constant.SPRITE_DEPTH.TURRET_GUN);
 		this.setTexture('turret_shooter');
 	}
 

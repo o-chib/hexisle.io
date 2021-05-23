@@ -25,6 +25,8 @@ export class ClientPlayer extends ClientGameObjectContainer {
 
 class ClientPlayerSprite extends ClientGameObject {
 	public create(playerLiteral: any) {
+		this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
+
 		let playerTexture = '';
 		if (playerLiteral.teamNumber == Constant.TEAM.RED)
 			playerTexture = 'player_red';
