@@ -105,6 +105,7 @@ export default class HUDScene extends Phaser.Scene {
 		);
 		this.GameTimeCounter.scaleEntireBar(0.5);
 		this.GameTimeCounter.scaleBarLength(0.35);
+		this.GameTimeCounter.centerContainer();
 
 		this.debugInfoText = this.add.text(0, 0, '', {
 			font: '48px Arial',

@@ -134,4 +134,11 @@ export default class ProgressBar {
 		}
 		this.infoText.setX(this.bar.x + this.bar.displayWidth * proportion);
 	}
+	public centerContainer() {
+		const width = this.bar_back.displayWidth * this.bar_container.scaleX;
+		const centerText: string = 'center-' + (width / 2).toFixed(0);
+
+		this.position_config.centerX = centerText;
+		new Anchor(this.bar_ui_container, this.position_config);
+	}
 }
