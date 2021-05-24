@@ -17,13 +17,14 @@ export default class ProgressBar {
 		scene: Phaser.Scene,
 		icon_name: string,
 		bar_color_name: string,
+		bar_backing_name: string,
 		position_config: any
 	) {
 		this.bar_container = scene.add.container(0, 0);
 		this.bar_ui_container = scene.add.container(0, 0);
 
 		this.bar_back = scene.add
-			.image(0, 0, 'healthbar_back')
+			.image(0, 0, bar_backing_name)
 			.setOrigin(0, 0.5);
 		this.bar = scene.add.image(0, 0, bar_color_name).setOrigin(0, 0.5);
 		this.bar_icon = scene.add.image(0, 0, icon_name).setOrigin(0, 0.5);
@@ -86,6 +87,7 @@ export default class ProgressBar {
 
 	public scaleEntireBar(scalePercent: number): void {
 		this.bar_ui_container.scale *= scalePercent;
+		this.alignTextToBarEnd();
 	}
 
 	public flipBarOnly(): void {
@@ -119,6 +121,17 @@ export default class ProgressBar {
 	public alignTextToBarEnd(): void {
 		// Re-Align the text to the other end of colored bar
 		this.infoText.originX = 1;
-		this.infoText.setX(this.bar.x + this.bar.displayWidth * 0.95);
+		let proportion = 1;
+		if (this.bar_container.scaleX < 0.5) {
+			// Small Size
+			proportion = 0.85;
+		} else if (this.bar_container.scaleX > 1) {
+			// Large Size
+			proportion = 0.98;
+		} else {
+			// Medium Size
+			proportion = 0.95;
+		}
+		this.infoText.setX(this.bar.x + this.bar.displayWidth * proportion);
 	}
 }

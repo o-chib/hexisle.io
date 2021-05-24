@@ -42,6 +42,7 @@ export default class HUDScene extends Phaser.Scene {
 			this.scene.get(HUDScene.Name),
 			'heart_icon',
 			'healthbar_green',
+			'bar_backing_medium',
 			{
 				top: 'top+50',
 				left: 'left+20',
@@ -52,6 +53,7 @@ export default class HUDScene extends Phaser.Scene {
 			this.scene.get(HUDScene.Name),
 			'flag_icon_red',
 			'healthbar_red',
+			'bar_backing_thin',
 			{
 				bottom: 'bottom-130',
 				left: 'left+20',
@@ -61,6 +63,7 @@ export default class HUDScene extends Phaser.Scene {
 			this.scene.get(HUDScene.Name),
 			'flag_icon_blue',
 			'healthbar_blue',
+			'bar_backing_thin',
 			{
 				bottom: 'bottom-50',
 				left: 'left+20',
@@ -78,7 +81,8 @@ export default class HUDScene extends Phaser.Scene {
 		this.ResourcesCounter.createBar(
 			this.scene.get(HUDScene.Name),
 			'coin_icon',
-			'healthbar_back',
+			'bar_backing_thick',
+			'bar_backing_thick',
 			{
 				left: 'left+20',
 				top: 'top+130',
@@ -92,7 +96,8 @@ export default class HUDScene extends Phaser.Scene {
 		this.GameTimeCounter.createBar(
 			this.scene.get(HUDScene.Name),
 			'timer_icon',
-			'healthbar_back',
+			'bar_backing_thick',
+			'bar_backing_thick',
 			{
 				centerX: 'center',
 				top: 'top+50',
