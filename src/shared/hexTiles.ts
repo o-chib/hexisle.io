@@ -1,4 +1,5 @@
 import { Constant } from '../shared/constants';
+import Structure from '../server/objects/structure';
 
 export class HexTiles {
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
@@ -10,10 +11,10 @@ export class HexTiles {
 	public baseCoords: OffsetPoint[];
 	public boundaryCoords: OffsetPoint[];
 
-	constructor() {
-		this.hexSize = 75;
+	constructor(mapHeight: number = Constant.MAP_HEIGHT) {
+		this.hexSize = Constant.RADIUS.HEX;
 		this.campRadius = Constant.RADIUS.CAMP_HEXES;
-		this.mapHeight = Constant.MAP_HEIGHT;
+		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();
 		this.campfiresInHalfWidth = this.getNumCampfiresInMapRadius();
 		this.baseCoords = [];
@@ -41,7 +42,7 @@ export class HexTiles {
 
 			// for each row
 			for (let row = 0; row < 2 * this.hexRadius + 1; row++) {
-				this.tileMap[col][row] = new Tile();
+				this.tileMap[col][row] = new Tile(Constant.BUILDING.NONE, -1);
 				this.tileMap[col][row].offset_coord = new OffsetPoint(col, row);
 				this.tileMap[col][row].cartesian_coord = this.offsetToCartesian(
 					this.tileMap[col][row].offset_coord
@@ -189,6 +190,23 @@ export class HexTiles {
 		return true;
 	}
 
+	checkIfValidEmptyPointOnGrid(point: Point): boolean {
+		const hexCoord: OffsetPoint = this.cartesianToOffset(point);
+
+		if (!this.checkIfValidHex(hexCoord)) return false;
+
+		if (
+			this.tileMap[hexCoord.q][hexCoord.r].building !=
+				Constant.BUILDING.NONE ||
+			this.tileMap[hexCoord.q][hexCoord.r].teamNumber !=
+				Constant.TEAM.NONE
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
 	getCampfireRadiusPoints(
 		centerPoint: OffsetPoint,
 		radius: number
@@ -332,13 +350,13 @@ export class HexTiles {
 		// returns the offset odd-q coordinate of the hex it's in
 
 		// account for the half a hex to the bottom right we're pushing the map
-		point.xPos = point.xPos - this.hexSize;
-		point.yPos = point.yPos - this.hexSize;
+		let xPos: number = point.xPos;
+		let yPos: number = point.yPos;
+		xPos = xPos - this.hexSize;
+		yPos = yPos - this.hexSize;
 
 		// make the offset coord into a cube format
-		let cube: number[] = this.pixelToCube(
-			new Point(point.xPos, point.yPos)
-		);
+		let cube: number[] = this.pixelToCube(new Point(xPos, yPos));
 
 		// round the cube
 		cube = this.roundCube(cube);
@@ -594,32 +612,50 @@ export class HexTiles {
 export class Tile {
 	public offset_coord: OffsetPoint;
 	public cartesian_coord: Point;
-	public team: number;
+	public teamNumber: number;
 	public building: string;
-	public buildingId: string;
+	private buildingObj: Structure | null;
 
-	constructor(building = Constant.BUILDING.NONE, team = -1) {
+	constructor(
+		building: string = Constant.BUILDING.NONE,
+		teamNumber = Constant.TEAM.NONE
+	) {
+		this.teamNumber = teamNumber;
 		this.building = building;
-		this.team = team;
+		this.buildingObj = null;
 	}
 
-	hasNoBuilding(): boolean {
-		return this.building == Constant.BUILDING.NONE;
+	public getBuildingId(): string {
+		return this.buildingObj!.id;
 	}
 
-	removeBuilding(): void {
+	public hasNoBuilding(): boolean {
+		return this.building == Constant.BUILDING.NONE && !this.buildingObj;
+	}
+
+	public setBuilding(buildingType: string, buildingObj: Structure): void {
+		this.building = buildingType;
+		this.buildingObj = buildingObj;
+	}
+
+	public removeBuilding(): void {
 		this.building = Constant.BUILDING.NONE;
-		this.buildingId = '';
+		this.buildingObj = null;
 	}
 
-	isInBounds(): boolean {
+	public changeTeamNumber(teamNumber: number) {
+		this.teamNumber = teamNumber;
+		if (this.buildingObj) this.buildingObj.teamNumber = teamNumber;
+	}
+
+	public isInBounds(): boolean {
 		return (
 			this.building != Constant.BUILDING.OUT_OF_BOUNDS &&
 			this.building != Constant.BUILDING.BOUNDARY
 		);
 	}
 
-	serializeForUpdate(): any {
+	public serializeForUpdate(): any {
 		return {
 			id: this.building,
 			xPos: this.cartesian_coord.xPos,

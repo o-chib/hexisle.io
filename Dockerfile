@@ -12,8 +12,8 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 80
 
 RUN npm run build
 
-CMD [ "node", "server-bundle.js" ]
+CMD [ "node", "build/server/server.js" ]

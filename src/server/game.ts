@@ -1,20 +1,29 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import Player from './../shared/player';
-import Teams from '../shared/teams';
-import Bullet from './../shared/bullet';
-import Wall from './../shared/wall';
-import Turret from '../shared/turret';
-import Campfire from './../shared/campfire';
-import Base from './../shared/base';
+import Player from './objects/player';
+import Teams from './teams';
+import Bullet from './objects/bullet';
+import Wall from './objects/wall';
+import Turret from './objects/turret';
+import Campfire from './objects/campfire';
+import Base from './objects/base';
 import CollisionDetection from './collision';
 import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
-import Territory from './../shared/territory';
+import Territory from './objects/territory';
+import { MapResources } from './mapResources';
+import { PassiveIncome } from './passiveIncome';
+import * as SocketIO from 'socket.io';
+import { Resource } from './objects/resource';
 
 export default class Game {
+	hexTileMap: HexTiles;
+	collision: CollisionDetection;
 	teams: Teams;
+	mapResources: MapResources;
+	passiveIncome: PassiveIncome;
+	idGenerator: IDgenerator;
 	players: Map<string, Player>;
 	bullets: Set<Bullet>;
 	walls: Map<string, Wall>;
@@ -22,21 +31,13 @@ export default class Game {
 	campfires: Set<Campfire>;
 	bases: Set<Base>;
 	territories: Set<Territory>;
-	hexTileMap: HexTiles;
-	idGenerator: IDgenerator;
-	changedTiles: Tile[];
-	collision: CollisionDetection;
 	gameInterval: NodeJS.Timeout;
-	resourceInterval: NodeJS.Timeout;
 	gameOverCallback: () => void;
-	previousUpdateTimestamp: any;
+	previousUpdateTimestamp: number;
 	endGameTimestamp: number;
 	gameTimeRemaining: number;
 
-	constructor(gameOverCallback) {
-		this.gameOverCallback = gameOverCallback;
-
-		this.endGameTimestamp = Date.now() + Constant.TIMING.GAME_TIME_LIMIT;
+	constructor(gameOverCallback: () => any) {
 		this.players = new Map();
 		this.bullets = new Set();
 		this.walls = new Map();
@@ -50,7 +51,7 @@ export default class Game {
 		this.hexTileMap = new HexTiles();
 		this.hexTileMap.generateMap();
 
-		this.teams = new Teams(2, this.hexTileMap.baseCoords);
+		this.teams = new Teams(Constant.TEAM_COUNT, this.hexTileMap.baseCoords);
 
 		this.collision = new CollisionDetection();
 		this.generateBoundaryColliders();
@@ -59,20 +60,28 @@ export default class Game {
 		this.addBaseTerritories();
 		this.initBases();
 
+		this.mapResources = new MapResources(this.addResource.bind(this));
+		this.mapResources.addInitialResources();
+
+		this.passiveIncome = new PassiveIncome(this.teams);
+
+		this.gameOverCallback = gameOverCallback;
+		this.endGameTimestamp = Date.now() + Constant.GAME_TIMING.TIME_LIMIT;
+		this.gameTimeRemaining = Constant.GAME_TIMING.TIME_LIMIT;
+
 		this.previousUpdateTimestamp = Date.now();
 		this.gameInterval = setInterval(
 			this.update.bind(this),
-			Constant.TIMING.SERVER_GAME_UPDATE
-		);
-		this.resourceInterval = setInterval(
-			this.updatePlayerResource.bind(this),
-			Constant.INCOME.UPDATE_RATE
+			Constant.GAME_TIMING.UPDATE_RATE
 		);
 	}
 
 	update() {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
+
+		if (timePassed > 24)
+			console.log('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -84,7 +93,9 @@ export default class Game {
 
 		this.updateBases();
 
-		this.updatePlayers(currentTimestamp);
+		this.updatePlayers(currentTimestamp, timePassed);
+
+		this.updateMapResources(timePassed);
 
 		if (this.isGameOver()) this.endGame();
 
@@ -97,15 +108,6 @@ export default class Game {
 		this.previousUpdateTimestamp = currentTimestamp;
 
 		return [currentTimestamp, timePassed];
-	}
-
-	updatePlayerResource() {
-		for (const aPlayer of this.players.values()) {
-			const newResourceValue: number =
-				this.teams.getTeam(aPlayer.teamNumber).numCapturedCamps *
-				Constant.INCOME.INCOME_PER_CAMP;
-			aPlayer.updateResource(newResourceValue);
-		}
 	}
 
 	updateBullets(currentTimestamp, timePassed) {
@@ -135,6 +137,7 @@ export default class Game {
 			this.collision.campfirePlayerCollision(aCampfire);
 
 			if (aCampfire.captureProgress == 100) {
+				const prevCampTeam: number = aCampfire.teamNumber;
 				aCampfire.checkForCapture();
 				const isCaptured = aCampfire.isCaptured;
 				const points = aCampfire.territoryPoints;
@@ -144,23 +147,17 @@ export default class Game {
 						.numCapturedCamps++;
 				} else {
 					// If uncaptured, updated numCapturedCamps
-					this.teams.getTeam(aCampfire.capturingTeam)
-						.numCapturedCamps--;
+					this.teams.getTeam(prevCampTeam).numCapturedCamps--;
 				}
 
 				aCampfire.resetProgress();
 
 				// Update the TileMap structure
 				for (const pt of points) {
-					if (!this.hexTileMap.checkIfValidHex(pt)) {
-						continue;
-					}
+					if (!this.hexTileMap.checkIfValidHex(pt)) continue;
 					const tempTile = this.hexTileMap.tileMap[pt.q][pt.r];
-					if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
-						continue;
-					}
-
-					tempTile.team = aCampfire.teamNumber;
+					if (!tempTile.isInBounds()) continue;
+					tempTile.changeTeamNumber(aCampfire.teamNumber);
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 				}
 
@@ -176,6 +173,7 @@ export default class Game {
 						break;
 					}
 				}
+
 				const tempTerritory = new Territory(
 					stringID,
 					xPosition,
@@ -204,13 +202,15 @@ export default class Game {
 				continue;
 			}
 
-			aTurret.aimAndFireIfPossible(
-				this.collision.findDirectionOfClosestEnemy(
-					aTurret,
-					Constant.RADIUS.RANGE.TURRET
-				),
-				timePassed
-			);
+			if (aTurret.teamNumber != Constant.TEAM.NONE) {
+				aTurret.aimAndFireIfPossible(
+					this.collision.findDirectionOfClosestEnemy(
+						aTurret,
+						Constant.RADIUS.RANGE.TURRET
+					),
+					timePassed
+				);
+			}
 		}
 	}
 
@@ -237,11 +237,24 @@ export default class Game {
 		}
 	}
 
-	updatePlayers(currentTimestamp) {
-		this.updatePlayerPosition(currentTimestamp);
+	updatePlayers(currentTimestamp: number, timePassed: number) {
+		const givePassiveIncome: boolean = this.passiveIncome.givePassiveIncomeIfPossible(
+			timePassed
+		);
+		for (const aPlayer of this.players.values()) {
+			aPlayer.reload(timePassed);
+			this.updatePlayerPosition(currentTimestamp, aPlayer);
+			if (aPlayer.isAlive() && givePassiveIncome) {
+				this.passiveIncome.updatePlayerResources(aPlayer);
+			}
+		}
 	}
 
-	sendStateToPlayers() {
+	updateMapResources(timePassed: number): void {
+		this.mapResources.updateMapResourcesIfPossible(timePassed);
+	}
+
+	sendStateToPlayers(): void {
 		// Send updates to player
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
@@ -266,7 +279,7 @@ export default class Game {
 			);
 		}
 		this.stopAllIntervals();
-		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
+		this.gameOverCallback();
 	}
 
 	createGameEndRecap() {
@@ -289,7 +302,6 @@ export default class Game {
 		} else {
 			if (redCamps > blueCamps) winner = Constant.TEAM.RED;
 			else if (redCamps < blueCamps) winner = Constant.TEAM.BLUE;
-
 			message = 'Time Up!';
 		}
 
@@ -305,26 +317,27 @@ export default class Game {
 
 	stopAllIntervals(): void {
 		clearInterval(this.gameInterval);
-		clearInterval(this.resourceInterval);
 	}
 
-	updatePlayerPosition(currentTimestamp) {
-		for (const aPlayer of this.players.values()) {
-			aPlayer.updatePosition(currentTimestamp, this.collision);
-			this.collision.playerBulletCollision(aPlayer, this.bullets);
-			if (aPlayer.health == 0) {
-				// Give time for player to play death animation
-				// Only call timeout once
-				this.collision.deleteCollider(
-					aPlayer,
-					Constant.RADIUS.COLLISION.PLAYER
-				);
-				aPlayer.health = -1;
-				aPlayer.setNoVelocity();
-				setTimeout(() => {
-					this.respawnPlayer(aPlayer);
-				}, 3000);
-			}
+	updatePlayerPosition(currentTimestamp: number, player: Player): void {
+		player.updatePosition(currentTimestamp, this.collision);
+		this.collision.playerBulletResourceCollision(
+			player,
+			this.bullets,
+			this.mapResources
+		);
+		if (player.hp == 0) {
+			// Give time for player to play death animation
+			// Only call timeout once
+			this.collision.deleteCollider(
+				player,
+				Constant.RADIUS.COLLISION.PLAYER
+			);
+			player.hp = -1;
+			player.setNoVelocity();
+			setTimeout(() => {
+				this.respawnPlayer(player);
+			}, 3000);
 		}
 	}
 
@@ -455,6 +468,24 @@ export default class Game {
 		return nearbyTerritories;
 	}
 
+	createResourceUpdate(player: Player): Resource[] {
+		const nearbyResources: Resource[] = [];
+
+		for (const aResource of this.mapResources.resources) {
+			if (
+				this.collision.doCirclesCollide(
+					aResource,
+					Constant.RADIUS.RESOURCE,
+					player,
+					Constant.RADIUS.VIEW
+				)
+			)
+				nearbyResources.push(aResource);
+		}
+
+		return nearbyResources;
+	}
+
 	createUpdate(player: Player) {
 		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
 		const nearbyBullets: Bullet[] = this.createBulletUpdate(player);
@@ -465,6 +496,7 @@ export default class Game {
 		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
 			player
 		);
+		const nearbyResources: Resource[] = this.createResourceUpdate(player);
 
 		return {
 			time: this.gameTimeRemaining,
@@ -476,27 +508,32 @@ export default class Game {
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
 			bases: nearbyBases.map((p) => p.serializeForUpdate()),
 			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
+			resources: nearbyResources.map((p) => p.serializeForUpdate()),
 		};
 	}
 
 	initiateGame(newPlayer, socket) {
 		const initObject = {
 			player: newPlayer.serializeForUpdate(),
-			tileMap: this.hexTileMap.tileMap,
 		};
 
 		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
 	}
 
-	generateNewPlayer(socket) {
+	generateNewPlayer(socket, name: string) {
 		const team: number = this.teams.addNewPlayer(socket.id);
-		const newPlayer = new Player(socket, 0, 0, team);
+		const newPlayer = new Player(
+			socket,
+			team,
+			name,
+			this.shootBullet.bind(this)
+		);
 		this.players.set(socket.id, newPlayer);
 		return newPlayer;
 	}
 
-	addPlayer(socket: SocketIOClient.Socket) {
-		const newPlayer = this.generateNewPlayer(socket);
+	addPlayer(socket: SocketIO.Socket, name = '') {
+		const newPlayer = this.generateNewPlayer(socket, name);
 
 		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
 		newPlayer.xPos = respawnPoint.xPos;
@@ -510,7 +547,7 @@ export default class Game {
 		this.initiateGame(newPlayer, socket);
 	}
 
-	removePlayer(socket: SocketIOClient.Socket) {
+	removePlayer(socket: SocketIO.Socket) {
 		if (!this.players.has(socket.id)) return;
 
 		const player: Player = this.getPlayer(socket.id);
@@ -524,11 +561,7 @@ export default class Game {
 
 	respawnPlayer(player: Player) {
 		const respawnPoint: Point = this.getRespawnPoint(player.teamNumber);
-
-		player.health = 100;
-		player.xPos = respawnPoint.xPos;
-		player.yPos = respawnPoint.yPos;
-
+		player.respawn(respawnPoint);
 		this.collision.insertCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 	}
 
@@ -538,7 +571,7 @@ export default class Game {
 		return this.hexTileMap.offsetToCartesian(coords[index]);
 	}
 
-	movePlayer(socket: SocketIOClient.Socket, direction: number) {
+	movePlayer(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 
@@ -547,11 +580,43 @@ export default class Game {
 		this.collision.updateCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 	}
 
-	rotatePlayer(socket: SocketIOClient.Socket, direction: number): void {
+	rotatePlayer(socket: SocketIO.Socket, direction: number): void {
 		if (!this.players.has(socket.id)) return;
 		const player = this.getPlayer(socket.id);
 
 		player?.updateDirection(direction);
+	}
+
+	addResource(): void {
+		const randomPoint = this.getRandomEmptyPointOnMap();
+		if (!randomPoint) return;
+
+		const newResource: Resource = this.mapResources.generateResource(
+			this.idGenerator.newID(),
+			randomPoint
+		);
+
+		this.collision.insertCollider(newResource, Constant.RADIUS.RESOURCE);
+	}
+
+	getRandomEmptyPointOnMap(): Point | null {
+		let loopLimit = Constant.RANDOM_LOOP_LIMIT;
+		let point: Point;
+
+		do {
+			if (loopLimit <= 0) return null;
+			point = this.getRandomMapPoint();
+			loopLimit--;
+		} while (!this.hexTileMap.checkIfValidEmptyPointOnGrid(point));
+
+		return point;
+	}
+
+	getRandomMapPoint(): Point {
+		return new Point(
+			Math.random() * Constant.MAP_WIDTH,
+			Math.random() * Constant.MAP_HEIGHT
+		);
 	}
 
 	shootBullet(object: any, direction: number): void {
@@ -566,17 +631,17 @@ export default class Game {
 		this.collision.insertCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
 	}
 
-	playerShootBullet(socket: SocketIOClient.Socket, direction: number) {
+	playerShootBullet(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
-		this.shootBullet(player, direction);
+		player.shootBullet(direction);
 	}
 
 	canBuildStructure(player: Player, tile: Tile, building: string): boolean {
 		const collisionRadius = Constant.RADIUS.COLLISION[building];
 		if (
 			!tile.hasNoBuilding() ||
-			tile.team != player.teamNumber ||
+			tile.teamNumber != player.teamNumber ||
 			this.collision.doesObjCollideWithPlayers(
 				tile.cartesian_coord.xPos,
 				tile.cartesian_coord.yPos,
@@ -591,7 +656,7 @@ export default class Game {
 	}
 
 	buildStructure(
-		socket: SocketIOClient.Socket,
+		socket: SocketIO.Socket,
 		coord: OffsetPoint,
 		building: string
 	): void {
@@ -615,16 +680,8 @@ export default class Game {
 	}
 
 	addWall(tile: Tile): void {
-		const wall: Wall = new Wall(
-			this.idGenerator.newID(),
-			tile.cartesian_coord.xPos,
-			tile.cartesian_coord.yPos,
-			tile.team,
-			tile
-		);
+		const wall: Wall = new Wall(this.idGenerator.newID(), tile);
 		this.walls.set(wall.id, wall);
-		tile.building = Constant.BUILDING.WALL;
-		tile.buildingId = wall.id;
 		this.collision.insertCollider(wall, Constant.RADIUS.COLLISION.WALL);
 	}
 
@@ -635,8 +692,6 @@ export default class Game {
 			this.shootBullet.bind(this)
 		);
 		this.turrets.set(turret.id, turret);
-		tile.building = Constant.BUILDING.TURRET;
-		tile.buildingId = turret.id;
 		this.collision.insertCollider(turret, Constant.RADIUS.COLLISION.TURRET);
 	}
 
@@ -645,14 +700,14 @@ export default class Game {
 			tile.hasNoBuilding() ||
 			(tile.building != Constant.BUILDING.WALL &&
 				tile.building != Constant.BUILDING.TURRET) ||
-			tile.team != player.teamNumber
+			tile.teamNumber != player.teamNumber
 		)
 			return false;
 
 		return true;
 	}
 
-	demolishStructure(socket: SocketIOClient.Socket, coord: OffsetPoint): void {
+	demolishStructure(socket: SocketIO.Socket, coord: OffsetPoint): void {
 		if (
 			!this.players.has(socket.id) ||
 			!this.hexTileMap.checkIfValidHex(coord)
@@ -666,9 +721,9 @@ export default class Game {
 
 		player.refundStructure(tile.building);
 		if (tile.building == Constant.BUILDING.WALL) {
-			this.removeWall(this.walls.get(tile.buildingId)!);
+			this.removeWall(this.walls.get(tile.getBuildingId())!);
 		} else if (tile.building == Constant.BUILDING.TURRET) {
-			this.removeTurret(this.turrets.get(tile.buildingId)!);
+			this.removeTurret(this.turrets.get(tile.getBuildingId())!);
 		}
 	}
 
@@ -730,21 +785,13 @@ export default class Game {
 	}
 
 	buildBase(teamNum: number, coord: OffsetPoint): void {
-		if (!this.hexTileMap.checkIfValidHex(coord)) {
-			return;
-		}
+		if (!this.hexTileMap.checkIfValidHex(coord))
+			throw new Error('Base is not on a valid hex.');
 
 		const tile: Tile = this.hexTileMap.tileMap[coord.q][coord.r];
-		tile.team = teamNum;
-		tile.building = Constant.BUILDING.BASE;
+		tile.teamNumber = teamNum;
 
-		const base: Base = new Base(
-			this.idGenerator.newID(),
-			tile.cartesian_coord.xPos,
-			tile.cartesian_coord.yPos,
-			teamNum,
-			tile
-		);
+		const base: Base = new Base(this.idGenerator.newID(), tile);
 
 		this.bases.add(base);
 		this.collision.insertCollider(base, Constant.RADIUS.COLLISION.BASE);
@@ -756,8 +803,10 @@ export default class Game {
 		// make it so you cant build on and around the base
 		for (let i = 0; i <= 2; i++) {
 			this.hexTileMap.getHexRingPoints(tile, i).forEach((coord) => {
-				this.hexTileMap.tileMap[coord.q][coord.r].building =
-					Constant.BUILDING.CANT_BUILD;
+				this.hexTileMap.tileMap[coord.q][coord.r].setBuilding(
+					base.getBuildingType(),
+					base
+				);
 			});
 		}
 	}
@@ -774,7 +823,7 @@ export default class Game {
 			if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
 				continue;
 			}
-			tempTile.team = teamNumber;
+			tempTile.teamNumber = teamNumber;
 			this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
 		}
 	}
