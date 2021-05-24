@@ -2,7 +2,8 @@ import { IPoolObject } from '../iPoolObject';
 
 export abstract class ClientGameObject
 	extends Phaser.GameObjects.Sprite
-	implements IPoolObject {
+	implements IPoolObject
+{
 	public dirtyBit: boolean;
 
 	constructor(
