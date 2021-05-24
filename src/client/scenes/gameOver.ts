@@ -65,7 +65,7 @@ export default class gameOver extends Phaser.Scene {
 
 		this.time.addEvent({
 			// Run after ten seconds.
-			delay: 5000,
+			delay: Constant.GAME_TIMING.END_SCREEN,
 			callback: this.loadMainMenu,
 			callbackScope: this,
 			loop: false,
