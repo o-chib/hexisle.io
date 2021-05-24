@@ -31,7 +31,7 @@ export default class MainMenu extends Phaser.Scene {
 		const renderWidth = this.game.renderer.width;
 		const renderHeight = this.game.renderer.height;
 		// Background image
-		const bg = this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
+		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);
