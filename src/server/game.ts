@@ -270,11 +270,9 @@ export default class Game {
 	}
 
 	endGame(): void {
+		const gameOverMessage = this.createGameEndRecap();
 		for (const aPlayer of this.players.values()) {
-			aPlayer.socket.emit(
-				Constant.MESSAGE.GAME_END,
-				this.createGameEndRecap()
-			);
+			aPlayer.socket.emit(Constant.MESSAGE.GAME_END, gameOverMessage);
 		}
 		this.stopAllIntervals();
 		this.gameOverCallback();
@@ -525,6 +523,8 @@ export default class Game {
 	}
 
 	addPlayer(socket: SocketIO.Socket, name = '') {
+		if (this.players.has(socket.id)) return;
+
 		const newPlayer = this.generateNewPlayer(socket, name);
 
 		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
