@@ -73,6 +73,7 @@ class ClientCampfireRing extends ClientGameObject {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public create(_campfireLiteral: any) {
 		this.setTexture('campfire_ring_loader');
+		this.setDepth(Constant.SPRITE_DEPTH.CAMP_RING);
 	}
 
 	public update(newCampfireLiteral: any) {
