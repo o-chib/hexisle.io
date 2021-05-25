@@ -137,6 +137,15 @@ export default class MainScene extends Phaser.Scene {
 			.events.once('leaveGame', this.leaveGame.bind(this));
 	}
 
+	private deregisterSocketListeners(): void {
+		this.socket.off(Constant.MESSAGE.INITIALIZE);
+
+		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
+
+		this.socket.off(Constant.MESSAGE.GAME_END);
+		this.scene.get('HUDScene').events.off('leaveGame');
+	}
+
 	private registerInputListeners(): void {
 		this.input.on('pointerdown', (pointer) => {
 			if (!this.alive) return;
@@ -165,6 +174,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private deregisterInputListeners(): void {
+		this.input.off('pointerdown');
 		for (const key in this.moveKeys) {
 			this.moveKeys[key].removeAllListeners();
 		}
@@ -338,9 +348,9 @@ export default class MainScene extends Phaser.Scene {
 
 	private endGame(): void {
 		this.deregisterInputListeners();
+		this.deregisterSocketListeners();
 		this.cameras.resetAll();
 		this.events.emit('stopHUD');
 		this.events.emit('stopUI');
-		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
 	}
 }

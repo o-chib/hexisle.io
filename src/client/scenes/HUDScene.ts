@@ -11,7 +11,7 @@ hexQ/hexR:%3/%4`;
 
 export default class HUDScene extends Phaser.Scene {
 	public static Name = 'HUDScene';
-	private mainSceneObj: any;
+	private mainSceneObj: Phaser.Scene;
 
 	// Text/Scoring
 	private infoText?: Phaser.GameObjects.Text;
@@ -98,7 +98,7 @@ export default class HUDScene extends Phaser.Scene {
 
 		// Set quitButton Interaction
 		this.quitButton.setInteractive();
-		this.quitButton.on('pointerdown', this.quitCurrentGame.bind(this));
+		this.quitButton.once('pointerdown', this.quitCurrentGame.bind(this));
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
@@ -108,9 +108,9 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj.events.off('updateHUD');
 		this.mainSceneObj.events.off('stopHUD');
 
-		this.mainSceneObj.events.on('startHUD', this.startHUD, this);
+		this.mainSceneObj.events.once('startHUD', this.startHUD, this);
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
-		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);
+		this.mainSceneObj.events.once('stopHUD', this.stopHUD, this);
 	}
 
 	private updateText(currentPlayer: any, time: number): void {
