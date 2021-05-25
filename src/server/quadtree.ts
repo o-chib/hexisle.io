@@ -43,7 +43,7 @@ export class Quadtree {
 	}
 
 	/**
-	 * game interface into inserting an object into the quadtree
+	 * interface into inserting an object into the quadtree
 	 * @param obj the object we are inserting
 	 */
 	public insertIntoQuadtree(obj: CollisionObject): void {
@@ -51,7 +51,7 @@ export class Quadtree {
 	}
 
 	/**
-	 * game interface into deleting an object from the quadtree
+	 * interface into deleting an object from the quadtree
 	 * @param obj the object we are deleting
 	 */
 	public deleteFromQuadtree(obj: CollisionObject): void {
@@ -59,7 +59,7 @@ export class Quadtree {
 	}
 
 	/**
-	 * game interface into updating an object in the quadtree
+	 * interface into updating an object in the quadtree
 	 * @param obj the object we are updating
 	 */
 	public updateInQuadtree(obj: CollisionObject): void {
@@ -67,7 +67,7 @@ export class Quadtree {
 	}
 
 	/**
-	 * game interface into searching for collisions for an object
+	 * interface into searching for collisions for an object
 	 * @param box the rectangular box of the object we are searching for
 	 * @param results the list of collision objects we found that may collide
 	 */
