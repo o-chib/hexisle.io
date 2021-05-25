@@ -4,26 +4,35 @@ import Collision from '../collision';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
+	public static readonly RELOAD_TIME = 0.1 * 1000;
 	private static readonly SPEED = 600;
-	private static readonly RELOAD_TIME = 0.5 * 1000;
 
 	public socket: SocketIOClient.Socket;
 	public name: string;
 	public resources: number;
+	public reloadTimer: number;
 	private xVel: number;
 	private yVel: number;
 	private direction: number;
 	private lastUpdateTime: number;
+	private gameShootBullet: (turret: any, direction: number) => void;
 
-	constructor(socket: SocketIOClient.Socket, teamNumber: number, name = '') {
+	constructor(
+		socket: SocketIOClient.Socket,
+		teamNumber: number,
+		name = '',
+		gameShootBulletMethod?: (turret: any, direction: number) => void
+	) {
 		super(socket.id, 0, 0, teamNumber, Constant.HP.PLAYER);
 		this.socket = socket;
 		this.name = name;
 		this.resources = 0;
 		this.xVel = 0;
 		this.yVel = 0;
+		this.reloadTimer = Player.RELOAD_TIME;
 		this.direction = 0;
 		this.lastUpdateTime = Date.now();
+		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
 	}
 
 	public updateResource(resourceValue: number) {
@@ -92,6 +101,24 @@ export default class Player extends DestructibleObj {
 		this.yPos = respawnPoint.yPos;
 		this.hp = 100;
 		this.resources = 0;
+	}
+
+	public canShoot(): boolean {
+		return this.reloadTimer <= 0;
+	}
+
+	public shootBullet(direction: number) {
+		if (!this.canShoot()) return;
+		this.gameShootBullet(this, direction);
+		this.resetReloadTimer();
+	}
+
+	public resetReloadTimer(): void {
+		this.reloadTimer = Player.RELOAD_TIME;
+	}
+
+	public reload(timePassed: number): void {
+		if (this.reloadTimer > 0) this.reloadTimer -= timePassed;
 	}
 
 	public serializeForUpdate() {
