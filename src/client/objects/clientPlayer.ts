@@ -119,26 +119,34 @@ class ClientPlayerSprite extends ClientGameObject {
 
 class ClientPlayerName extends Phaser.GameObjects.Text implements IPoolObject {
 	public dirtyBit: boolean;
+	private namePixelLength: number; // Store pixel length of player name
 
 	constructor(scene: Phaser.Scene) {
 		super(scene, 0, 0, '', {
-			font: '48px Arial',
+			font: '36px Arial',
 			stroke: '#000000',
 			strokeThickness: 5,
 		});
 		scene.add.existing(this);
-		this.setDepth(100000);
+		this.setDepth(100000);		
 	}
 
 	public update(objectState: any): void {
-		this.setPosition(objectState.xPos, objectState.yPos);
+		this.setPosition(objectState.xPos - (this.namePixelLength/2), objectState.yPos - 110);
+		console.log(this.namePixelLength);
 	}
 
 	public init(objLiteral: any): void {
 		this.setAlive(true);
 		this.setText(objLiteral.name);
-		console.log(objLiteral.name);
+
+		// Calculate pixel length of player name
+		let context = document.createElement("canvas").getContext("2d");
+		context!.font = "36px Arial";
+		let width = context!.measureText(objLiteral.name).width;
+		this.namePixelLength = width;
 	}
+
 
 	public die(): void {
 		this.setAlive(false);

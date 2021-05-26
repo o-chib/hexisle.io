@@ -168,6 +168,7 @@ export default class MainMenu extends Phaser.Scene {
 		this.playerName = this.inputBox.getChildByName('name').value;
 		this.gameid = this.inputBox.getChildByName('dropdownList').value;
 
+		if (this.playerName!.length > 15) return;
 		if (this.gameid == '') this.gameid = undefined;
 		if (this.playerName == '') this.playerName = undefined;
 
