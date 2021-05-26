@@ -54,7 +54,7 @@ export default class Player extends DestructibleObj {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		const newX = this.xPos + timePassed * this.xVel;
 		const newY = this.yPos - timePassed * this.yVel;
-		if (!(this.xVel == 0) && !(this.yVel == 0)) {
+		if (!(this.xVel == 0 && this.yVel == 0)) {
 			if (
 				!collision.doesObjCollideWithStructure(
 					newX,
