@@ -249,6 +249,7 @@ export default class Game {
 					this.respawnPlayer(aPlayer);
 				}, 3000);
 			} else if (aPlayer.isAlive()) {
+				aPlayer.reload(timePassed);
 				this.updatePlayerPosition(currentTimestamp, aPlayer);
 				if (givePassiveIncome) {
 					this.passiveIncome.updatePlayerResources(aPlayer);
@@ -512,7 +513,12 @@ export default class Game {
 
 	generateNewPlayer(socket, name: string) {
 		const team: number = this.teams.addNewPlayer(socket.id);
-		const newPlayer = new Player(socket, team, name);
+		const newPlayer = new Player(
+			socket,
+			team,
+			name,
+			this.shootBullet.bind(this)
+		);
 		this.players.set(socket.id, newPlayer);
 		return newPlayer;
 	}
@@ -617,7 +623,7 @@ export default class Game {
 	playerShootBullet(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
-		this.shootBullet(player, direction);
+		player.shootBullet(direction);
 	}
 
 	canBuildStructure(player: Player, tile: Tile, building: string): boolean {
