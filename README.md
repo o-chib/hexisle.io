@@ -1,11 +1,20 @@
-![Logo](https://i.imgur.com/cjIpMcl.png)
+<p align="center">
+    <img src="https://i.imgur.com/cjIpMcl.png" />
+</p>
+<p align="center">
+    <img src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000?" target="_blank" />
+    <a href="https://github.com/o-chib/hexisle.io/wiki">
+        <img alt="" src="https://img.shields.io/badge/documentation-here-brightgreen.svg?" target="_blank" />
+    </a>
+    <a href="https://docs.google.com/document/d/1YHrR4WNBf9_-gPamyvvTtFYI9yxm49cz7WaIZMAzbWY/edit?usp=sharing">
+        <img alt="" src="https://img.shields.io/badge/userguide-here-brightgreen.svg?" target="_blank" />
+    </a>
+    <a href="https://github.com/o-chib/hexisle.io/blob/main/LICENSE">
+        <img alt="" src="https://img.shields.io/badge/license-MIT-yellow.svg?" target="_blank" />
+    </a>
+</p>
 
-[![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000?)](https://github.com/o-chib/hexisle.io/tree/main) [![Documentation](https://img.shields.io/badge/documentation-here-brightgreen.svg?)](https://github.com/o-chib/hexisle.io/wiki) [![User Guide](https://img.shields.io/badge/userguide-here-brightgreen.svg?)](https://docs.google.com/document/d/1YHrR4WNBf9_-gPamyvvTtFYI9yxm49cz7WaIZMAzbWY/edit?usp=sharing) [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/o-chib/hexisle.io/blob/main/LICENSE)
-
-    
-# HexIsle.io
-
-Hexisle.io is a browser-enabled multiplayer arena match game where players are divided into teams and have to defend their base from being destroyed. This game requires taking risks to explore your surroundings and try to take down other bases, while simultaneously testing your skills at dodging the bullet hell other players will unleash when they see you.
+> Hexisle.io is a browser-enabled multiplayer arena match game where players are divided into teams and have to defend their base from being destroyed. This game requires taking risks to explore your surroundings and try to take down other bases, while simultaneously testing your skills at dodging the bullet hell other players will unleash when they see you.
 
 ## Installation 
 
@@ -118,11 +127,13 @@ Please adhere to this project's `MIT` license.
 
 [Github Wiki](https://github.com/o-chib/hexisle.io/wiki)
 
+[User Guide](https://docs.google.com/document/d/1YHrR4WNBf9_-gPamyvvTtFYI9yxm49cz7WaIZMAzbWY/edit?usp=sharing)
+
 ## License
 
-[MIT](https://github.com/o-chib/hexisle.io/blob/main/LICENSE)
-
+Copyright © 2021 [Ajay Bhungal](https://github.com/Ajay925), [Alex Dunn](https://github.com/adunn27), [Karan Gupta](https://github.com/kargupta28), [Oorjit Chib](https://github.com/o-chib).<br />
+This project is [MIT](https://github.com/o-chib/hexisle.io/blob/main/LICENSE) licensed.
   
 ## Feedback
 
-If you have any feedback, please reach out to us using `issues`.
+If you have any feedback, please reach out to us using [issues page](https://github.com/kefranabg/readme-md-generator/issues).
