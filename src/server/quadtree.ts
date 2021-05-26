@@ -1,5 +1,8 @@
 import { Constant } from '../shared/constants';
-import { CollisionObjectPool, PoolCollisionObject } from './CollisionObjectPool';
+import {
+	CollisionObjectPool,
+	PoolCollisionObject,
+} from './CollisionObjectPool';
 
 export class Quadtree {
 	// The ratio of child to parent width. Higher numbers will push payload further down
@@ -213,7 +216,10 @@ export class Quadtree {
 			const index: number = this.topLevelNode.collisionObjects.findIndex(
 				(o) => o.data.payload.id === pObj.data.payload.id
 			);
-			const removedPObj = this.topLevelNode.collisionObjects.splice(index, 1);
+			const removedPObj = this.topLevelNode.collisionObjects.splice(
+				index,
+				1
+			);
 			removedPObj.forEach((element) => {
 				this.cObjPool.releaseElement(element);
 			});
@@ -373,7 +379,7 @@ export class CollisionObject extends Rect {
 	/**
 	 * Resets an existing collision object to represent nothing
 	 */
-	 public resetData(): void {
+	public resetData(): void {
 		this.l = 0;
 		this.r = 0;
 		this.b = 0;

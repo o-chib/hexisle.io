@@ -159,7 +159,7 @@ export default class Game {
 					this.addTurret(this.hexTileMap.tileMap[pt.q][pt.r]);
 					this.players.forEach((player) => {
 						this.respawnPlayer(player);
-					})
+					});
 				}
 
 				// Update team num of territory
