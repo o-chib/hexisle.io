@@ -28,7 +28,7 @@ export const Constant = Object.freeze({
 		UPDATE_RATE: 1000 / 60,
 		CHECK_END: 1000 / 60,
 		END_SCREEN: 5 * 1000,
-		TIME_LIMIT: 30 * (60 * 1000),
+		TIME_LIMIT: 5 * (60 * 1000),
 	},
 
 	RADIUS: {
@@ -133,6 +133,6 @@ export const Constant = Object.freeze({
 
 	QUADTREE: {
 		SPLIT: 0.5,
-		MAX_DEPTH: 16,
+		MAX_DEPTH: 24,
 	},
 });
