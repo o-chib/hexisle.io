@@ -72,7 +72,10 @@ export default class Player extends DestructibleObj {
 			) {
 				this.xPos = newX;
 				this.yPos = newY;
-				collision.updateCollider(this, Constant.RADIUS.COLLISION.PLAYER);
+				collision.updateCollider(
+					this,
+					Constant.RADIUS.COLLISION.PLAYER
+				);
 			} else {
 				this.xVel = 0;
 				this.yVel = 0;
