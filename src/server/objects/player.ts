@@ -4,7 +4,6 @@ import Collision from '../collision';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
-	public static readonly COLLISION_RADIUS = Constant.RADIUS.COLLISION.PLAYER;
 	private static readonly SPEED = 600;
 	private static readonly RELOAD_TIME = 0.5 * 1000;
 

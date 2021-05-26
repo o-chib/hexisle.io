@@ -410,14 +410,6 @@ export default class CollisionDetection {
 			return Constant.RADIUS.COLLISION.BULLET;
 		}
 		throw new Error('Invalid Object.');
-
-		// console.log(object.constructor.prototype);
-		// console.log(Object.getPrototypeOf(object));
-		// try {
-		// 	return Object.getPrototypeOf(object).COLLISION_RADIUS;
-		// } catch {
-		// 	throw new Error('Invalid Object, has no collision radius: ' + object.prototype);
-		// }
 	}
 
 	/**

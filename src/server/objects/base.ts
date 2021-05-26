@@ -3,8 +3,6 @@ import { Tile } from '../../shared/hexTiles';
 import Structure from './structure';
 
 export default class Base extends Structure {
-	public static readonly COLLISION_RADIUS = Constant.RADIUS.COLLISION.BASE;
-
 	constructor(id: string, tile: Tile) {
 		super(id, Constant.HP.BASE, tile);
 	}

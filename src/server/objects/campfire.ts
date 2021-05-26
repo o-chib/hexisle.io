@@ -3,8 +3,6 @@ import { OffsetPoint } from '../../shared/hexTiles';
 import IndestructibleObj from './indestructibleObj';
 
 export default class Campfire extends IndestructibleObj {
-	public static readonly COLLISION_RADIUS = Constant.RADIUS.COLLISION.CAMP;
-
 	public territoryPoints: OffsetPoint[];
 	public captureProgress: number; // Variable Progress Bar (0-100)
 	public isCaptured: boolean;
