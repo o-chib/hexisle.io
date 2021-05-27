@@ -1,7 +1,8 @@
 import gameOver from './gameOver';
 import mainMenu from './mainMenu';
+import HUDScene from './HUDScene';
+import HelpOverlayScene from './helpOverlayScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
-
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 
@@ -16,6 +17,7 @@ export default class MainScene extends Phaser.Scene {
 	private turretBaseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
+	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
 	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
 	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
@@ -23,9 +25,9 @@ export default class MainScene extends Phaser.Scene {
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
-	private alive = false;
 	private hexTiles: HexTiles;
-	private debugMode = false;
+	private alive: boolean;
+	private debugMode: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -44,16 +46,21 @@ export default class MainScene extends Phaser.Scene {
 		this.turretBaseSprites = new Map();
 		this.turretGunSprites = new Map();
 		this.campfireSprites = new Map();
+		this.campfireRingSprites = new Map();
 		this.baseSprites = new Map();
 		this.territorySprites = new Map();
 		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
+		this.alive = false;
+		this.debugMode = false;
 	}
 
 	create(): void {
 		Utilities.LogSceneMethodEntry('MainScene', 'create');
 
-		this.scene.launch('HUDScene');
+		this.scene.launch(HUDScene.Name);
+		this.scene.launch(HelpOverlayScene.Name);
+
 		this.game.canvas.oncontextmenu = function (e) {
 			e.preventDefault();
 		};
@@ -61,10 +68,12 @@ export default class MainScene extends Phaser.Scene {
 
 		this.socket.emit(Constant.MESSAGE.START_GAME);
 		this.events.emit('startHUD');
+		this.events.emit('showUI');
 	}
 
 	update(): void {
 		this.updateDirection();
+		this.shootIfMouseDown();
 		if (this.debugMode) this.updateDebugInfo();
 	}
 
@@ -93,19 +102,26 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializeKeys(): void {
-		this.moveKeys = <KeySet>this.input.keyboard.addKeys({
-			up: Phaser.Input.Keyboard.KeyCodes.W,
-			down: Phaser.Input.Keyboard.KeyCodes.S,
-			left: Phaser.Input.Keyboard.KeyCodes.A,
-			right: Phaser.Input.Keyboard.KeyCodes.D,
-		});
+		this.moveKeys = <KeySet>this.input.keyboard.addKeys(
+			{
+				up: Phaser.Input.Keyboard.KeyCodes.W,
+				down: Phaser.Input.Keyboard.KeyCodes.S,
+				left: Phaser.Input.Keyboard.KeyCodes.A,
+				right: Phaser.Input.Keyboard.KeyCodes.D,
+			},
+			false
+		);
 
-		this.actionKeys = <KeySet>this.input.keyboard.addKeys({
-			buildWall: Phaser.Input.Keyboard.KeyCodes.E,
-			buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
-			demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
-			debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
-		});
+		this.actionKeys = <KeySet>this.input.keyboard.addKeys(
+			{
+				buildWall: Phaser.Input.Keyboard.KeyCodes.E,
+				buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
+				demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
+				debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
+				toggleHelp: Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH,
+			},
+			false
+		);
 	}
 
 	private registerListeners(): void {
@@ -131,13 +147,6 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private registerInputListeners(): void {
-		this.input.on('pointerdown', (pointer) => {
-			if (!this.alive) return;
-			const direction = this.getMouseDirection(pointer);
-
-			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
-		});
-
 		for (const key in this.moveKeys) {
 			this.moveKeys[key].addListener(
 				'down',
@@ -180,6 +189,12 @@ export default class MainScene extends Phaser.Scene {
 		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
 	}
 
+	private shootIfMouseDown(): void {
+		if (!this.alive || !this.input.activePointer.isDown) return;
+		const direction = this.getMouseDirection(this.input.activePointer);
+		this.socket.emit(Constant.MESSAGE.SHOOT, direction);
+	}
+
 	private getMouseDirection(pointer: any): any {
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 
@@ -190,10 +205,9 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializeGame(update: any): void {
-		const { player, tileMap } = update;
+		const { player } = update;
 		if (player == null) return;
 
-		this.createTileMap(tileMap);
 		this.setCamera();
 		this.initializePlayer(player);
 	}
@@ -212,10 +226,6 @@ export default class MainScene extends Phaser.Scene {
 		this.cameras.main.startFollow(this.myPlayerSprite, true);
 		this.cameras.main.setZoom(0.75);
 		this.cameras.main.setBackgroundColor('#00376F');
-	}
-
-	private createTileMap(tileMap: any) {
-		this.hexTiles.tileMap = tileMap;
 	}
 
 	// Animation control
@@ -307,6 +317,11 @@ export default class MainScene extends Phaser.Scene {
 			// Update anims internal isPlaying/isPaused variables, and loaded anim.
 			structureSprite.anims.play(structureTextureName + '_destroying');
 			structureSprite.anims.pause();
+		} else if (
+			structureSprite.anims.exists(structureTextureName + '_destroying')
+		) {
+			structureSprite.anims.play(structureTextureName + '_destroying');
+			structureSprite.anims.pause();
 		}
 
 		// Use overall player health to continue animation
@@ -321,6 +336,73 @@ export default class MainScene extends Phaser.Scene {
 		}
 
 		return structureSprite;
+	}
+
+	private handleCampfireAnimation(
+		campfireSprite: Phaser.GameObjects.Sprite,
+		teamNumber: number
+	) {
+		campfireSprite.setDepth(1);
+
+		if (!campfireSprite.anims.get('campfire_lit')) {
+			campfireSprite.anims.create({
+				key: 'campfire_lit',
+				frames: this.anims.generateFrameNames('campfire', {
+					start: 1,
+					end: 4,
+				}),
+				frameRate: 5,
+				repeat: -1,
+			});
+		}
+		if (!campfireSprite.anims.get('campfire_unlit')) {
+			campfireSprite.anims.create({
+				key: 'campfire_unlit',
+				frames: this.anims.generateFrameNames('campfire', {
+					start: 0,
+					end: 0,
+				}),
+				frameRate: 1,
+				repeat: -1,
+			});
+		}
+
+		if (teamNumber != Constant.TEAM.NONE) {
+			if (
+				campfireSprite.anims.getName() == 'campfire_unlit' ||
+				campfireSprite.anims.getName() == ''
+			) {
+				campfireSprite.anims.stop();
+				campfireSprite.anims.play('campfire_lit', true);
+			}
+		} else {
+			if (
+				campfireSprite.anims.getName() == 'campfire_lit' ||
+				campfireSprite.anims.getName() == ''
+			) {
+				campfireSprite.anims.stop();
+				campfireSprite.anims.play('campfire_unlit', true);
+			}
+		}
+	}
+
+	private handleCampfireCaptureAnimation(
+		campfireRingSprite: Phaser.GameObjects.Sprite,
+		captureProgress: number
+	) {
+		campfireRingSprite.setDepth(0);
+
+		if (!campfireRingSprite.anims.get('campfire_ring_loader_capturing')) {
+			campfireRingSprite.anims.create({
+				key: 'campfire_ring_loader_capturing',
+				frames: this.anims.generateFrameNames('campfire_ring_loader'),
+			});
+			campfireRingSprite.anims.startAnimation(
+				'campfire_ring_loader_capturing'
+			);
+			campfireRingSprite.anims.pause();
+		}
+		campfireRingSprite.anims.setProgress(captureProgress / 100);
 	}
 
 	calculateDirection() {
@@ -380,6 +462,8 @@ export default class MainScene extends Phaser.Scene {
 		} else if (this.actionKeys.debugInfo.isDown) {
 			if (this.debugMode) this.events.emit('clearDebugInfo');
 			this.debugMode = !this.debugMode;
+		} else if (this.actionKeys.toggleHelp.isDown) {
+			this.events.emit('toggleHelpUI');
 		}
 	}
 
@@ -424,7 +508,7 @@ export default class MainScene extends Phaser.Scene {
 		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
 
 		//  Local Animation control
-		if (currentPlayer.health > 0) {
+		if (currentPlayer.hp > 0) {
 			this.alive = true;
 			this.myPlayerSprite.setVisible(true);
 
@@ -434,7 +518,7 @@ export default class MainScene extends Phaser.Scene {
 				currentPlayer.xVel,
 				currentPlayer.yVel
 			);
-		} else if (currentPlayer.health <= 0) {
+		} else if (currentPlayer.hp <= 0) {
 			this.alive = false;
 			this.handleDeathAnimation(
 				this.myPlayerSprite,
@@ -450,7 +534,7 @@ export default class MainScene extends Phaser.Scene {
 			this.bulletSprites,
 			'bullet',
 			(newBullet, newBulletLiteral) => {
-				if (newBulletLiteral.teamNumber == 1)
+				if (newBulletLiteral.teamNumber == Constant.TEAM.BLUE)
 					newBullet.setTexture('bulletblue');
 				return newBullet;
 			}
@@ -477,7 +561,7 @@ export default class MainScene extends Phaser.Scene {
 					newPlayer.setTexture(playerTexture).setDepth(1000);
 
 				// Opponent Animation Control
-				if (playerLiteral.health > 0) {
+				if (playerLiteral.hp > 0) {
 					newPlayer.setVisible(true);
 					newPlayer = this.handleWalkAnimation(
 						newPlayer,
@@ -486,7 +570,7 @@ export default class MainScene extends Phaser.Scene {
 						playerLiteral.yVel
 					);
 				}
-				if (playerLiteral.health <= 0) {
+				if (playerLiteral.hp <= 0) {
 					this.handleDeathAnimation(newPlayer, playerTexture);
 				}
 
@@ -506,6 +590,8 @@ export default class MainScene extends Phaser.Scene {
 					wallTexture = 'wall_red';
 				else if (newWallLiteral.teamNumber == Constant.TEAM.BLUE)
 					wallTexture = 'wall_blue';
+				else if (newWallLiteral.teamNumber == Constant.TEAM.NONE)
+					wallTexture = 'wall_neutral';
 
 				if (newWall.texture.key != wallTexture) {
 					newWall.setTexture(wallTexture);
@@ -535,6 +621,8 @@ export default class MainScene extends Phaser.Scene {
 					turretGunTexture = 'turret_base_red';
 				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.BLUE)
 					turretGunTexture = 'turret_base_blue';
+				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.NONE)
+					turretGunTexture = 'turret_base_neutral';
 
 				if (newTurretBase.texture.key != turretGunTexture) {
 					newTurretBase.setTexture(turretGunTexture);
@@ -571,7 +659,6 @@ export default class MainScene extends Phaser.Scene {
 					turretGunTexture,
 					healthPercent
 				);
-
 				newTurretGun.setRotation(newTurretLiteralGun.direction);
 
 				return newTurretGun;
@@ -580,15 +667,30 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateCampfires(campfires: any) {
+		// handle campfire animation
 		this.updateMapOfObjects(
 			campfires,
 			this.campfireSprites,
-			'campfire_unlit',
+			'campfire',
 			(newCampfire, newCampfireLiteral) => {
-				if (newCampfireLiteral.teamNumber != Constant.TEAM.NONE)
-					newCampfire.setTexture('campfire_lit').setDepth(0);
-				else newCampfire.setTexture('campfire_unlit').setDepth(0);
+				this.handleCampfireAnimation(
+					newCampfire,
+					newCampfireLiteral.teamNumber
+				);
 				return newCampfire;
+			}
+		);
+		// Handle capturing animation
+		this.updateMapOfObjects(
+			campfires,
+			this.campfireRingSprites,
+			'campfire_ring_loader',
+			(newRingSprite, newCampfireLiteral) => {
+				this.handleCampfireCaptureAnimation(
+					newRingSprite,
+					newCampfireLiteral.captureProgress
+				);
+				return newRingSprite;
 			}
 		);
 	}
@@ -657,17 +759,17 @@ export default class MainScene extends Phaser.Scene {
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[0]
 				) {
-					newResource.setTexture('blueRes');
+					newResource.setTexture('resSmall');
 				} else if (
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[1]
 				) {
-					newResource.setTexture('greenRes');
+					newResource.setTexture('resMedium');
 				} else if (
 					newResourceLiteral.type ==
 					Constant.RESOURCE.RESOURCE_NAME[2]
 				) {
-					newResource.setTexture('whiteRes');
+					newResource.setTexture('resLarge');
 				}
 				newResource.setVisible(true);
 				return newResource;
@@ -736,6 +838,7 @@ export default class MainScene extends Phaser.Scene {
 		this.deregisterInputListeners();
 		this.cameras.resetAll();
 		this.events.emit('stopHUD');
+		this.events.emit('stopUI');
 		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
 	}
 
@@ -746,6 +849,7 @@ export default class MainScene extends Phaser.Scene {
 		this.clearMapOfObjects(this.turretBaseSprites);
 		this.clearMapOfObjects(this.turretGunSprites);
 		this.clearMapOfObjects(this.campfireSprites);
+		this.clearMapOfObjects(this.campfireRingSprites);
 		this.clearMapOfObjects(this.baseSprites);
 		this.clearMapOfObjects(this.territorySprites);
 		this.clearMapOfObjects(this.resourceSprites);
