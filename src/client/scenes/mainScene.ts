@@ -5,23 +5,27 @@ import HelpOverlayScene from './helpOverlayScene';
 import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
+import ObjectPool from '../objectPool';
+import { ClientWall } from '../objects/clientWall';
+import { ClientTurret } from '../objects/clientTurret';
+import { ClientBullet } from '../objects/clientBullet';
+import { ClientResource } from '../objects/clientResource';
+import { ClientBase } from '../objects/clientBase';
+import { ClientCampfire } from '../objects/clientCampfire';
+import { ClientPlayer } from '../objects/clientPlayer';
 
 type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayerSprite: Phaser.GameObjects.Sprite;
-	private otherPlayerSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private bulletSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private wallSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private turretBaseSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private turretGunSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private campfireSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private campfireRingSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private baseSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private territorySprites: Map<string, Phaser.GameObjects.Sprite>;
-	private resourceSprites: Map<string, Phaser.GameObjects.Sprite>;
-	private deadObjects: Set<unknown>;
+	private myPlayer: ClientPlayer;
+	private otherPlayers: ObjectPool;
+	private bullets: ObjectPool;
+	private walls: ObjectPool;
+	private turrets: ObjectPool;
+	private campfires: ObjectPool;
+	private bases: ObjectPool;
+	private resources: ObjectPool;
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
@@ -30,27 +34,24 @@ export default class MainScene extends Phaser.Scene {
 	private debugMode: boolean;
 
 	constructor() {
-		super('MainScene');
+		super(MainScene.Name);
 	}
 
 	init(data): void {
 		this.socket = data.socket;
 
 		this.initializeKeys();
-		this.generatePlayerSprite();
+		this.myPlayer = new ClientPlayer(this);
+		this.myPlayer.die();
 
 		this.hexTiles = new HexTiles();
-		this.otherPlayerSprites = new Map();
-		this.bulletSprites = new Map();
-		this.wallSprites = new Map();
-		this.turretBaseSprites = new Map();
-		this.turretGunSprites = new Map();
-		this.campfireSprites = new Map();
-		this.campfireRingSprites = new Map();
-		this.baseSprites = new Map();
-		this.territorySprites = new Map();
-		this.resourceSprites = new Map();
-		this.deadObjects = new Set();
+		this.otherPlayers = new ObjectPool(this, ClientPlayer, 4);
+		this.bullets = new ObjectPool(this, ClientBullet, 10);
+		this.walls = new ObjectPool(this, ClientWall, 10);
+		this.turrets = new ObjectPool(this, ClientTurret, 10);
+		this.campfires = new ObjectPool(this, ClientCampfire, 5);
+		this.bases = new ObjectPool(this, ClientBase, 2);
+		this.resources = new ObjectPool(this, ClientResource, 10);
 		this.alive = false;
 		this.debugMode = false;
 	}
@@ -92,13 +93,6 @@ export default class MainScene extends Phaser.Scene {
 			coord.q,
 			coord.r
 		);
-	}
-
-	private generatePlayerSprite(): void {
-		this.myPlayerSprite = this.add.sprite(0, 0, 'player_red');
-		this.myPlayerSprite.setDepth(1000);
-		this.myPlayerSprite.setVisible(false);
-		this.myPlayerSprite.setScale(1);
 	}
 
 	private initializeKeys(): void {
@@ -146,6 +140,15 @@ export default class MainScene extends Phaser.Scene {
 			.events.once('leaveGame', this.leaveGame.bind(this));
 	}
 
+	private deregisterSocketListeners(): void {
+		this.socket.off(Constant.MESSAGE.INITIALIZE);
+
+		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
+
+		this.socket.off(Constant.MESSAGE.GAME_END);
+		this.scene.get('HUDScene').events.off('leaveGame');
+	}
+
 	private registerInputListeners(): void {
 		for (const key in this.moveKeys) {
 			this.moveKeys[key].addListener(
@@ -167,6 +170,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private deregisterInputListeners(): void {
+		this.input.off('pointerdown');
 		for (const key in this.moveKeys) {
 			this.moveKeys[key].removeAllListeners();
 		}
@@ -176,16 +180,11 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private updateDirection() {
-		if (!this.alive) {
-			this.myPlayerSprite.setRotation(0);
-			this.socket.emit(Constant.MESSAGE.ROTATE, 0);
-			return;
-		}
+		if (!this.alive) return;
 
-		const direction =
-			this.getMouseDirection(this.input.mousePointer) - Math.PI * 0.5;
+		const direction = this.getMouseDirection() - Math.PI * 0.5;
 
-		this.myPlayerSprite.setRotation(direction);
+		this.myPlayer.setRotation(direction);
 		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
 	}
 
@@ -195,13 +194,12 @@ export default class MainScene extends Phaser.Scene {
 		this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 	}
 
-	private getMouseDirection(pointer: any): any {
+	private getMouseDirection(pointer?: Phaser.Input.Pointer): any {
+		if (!pointer) pointer = this.input.mousePointer;
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+		const playerPos = this.myPlayer.getPosition();
 
-		return Math.atan2(
-			gamePos.y - this.myPlayerSprite.y,
-			gamePos.x - this.myPlayerSprite.x
-		);
+		return Math.atan2(gamePos.y - playerPos.y, gamePos.x - playerPos.x);
 	}
 
 	private initializeGame(update: any): void {
@@ -213,199 +211,17 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private initializePlayer(player: any): void {
-		// Change this when more than 2 teams
-		if (player.teamNumber == Constant.TEAM.RED)
-			this.myPlayerSprite.setTexture('player_red');
-		else if (player.teamNumber == Constant.TEAM.BLUE)
-			this.myPlayerSprite.setTexture('player_blue');
-
+		this.myPlayer.init(player);
 		this.alive = true;
 	}
 
 	private setCamera(): void {
-		this.cameras.main.startFollow(this.myPlayerSprite, true);
+		this.cameras.main.startFollow(this.myPlayer.playerSprite, true);
 		this.cameras.main.setZoom(0.75);
 		this.cameras.main.setBackgroundColor('#00376F');
 	}
 
-	// Animation control
-	private handleWalkAnimation(
-		player: Phaser.GameObjects.Sprite,
-		playerTextureName: string,
-		xVel: number,
-		yVel: number
-	) {
-		// Create local animation on each sprite if it doesn't exist
-		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
-		if (!player.anims.get(playerTextureName + '_walk')) {
-			player.anims.create({
-				key: playerTextureName + '_walk',
-				frames: this.anims.generateFrameNames(playerTextureName, {
-					start: 0,
-					end: 3,
-				}),
-				frameRate: 8,
-				repeat: -1,
-			});
-			player.anims.play(playerTextureName + '_walk');
-			player.anims.pause();
-		}
-
-		if (player.anims.currentAnim.key != playerTextureName + '_walk') {
-			// Update anims internal isPlaying/isPaused variables, and loaded anim.
-			player.anims.stop();
-			player.anims.play(playerTextureName + '_walk');
-			player.anims.pause();
-		}
-
-		// Use overall player velocity to continue animation
-		if (xVel != 0 || yVel != 0) {
-			if (player.anims.isPaused) {
-				player.anims.resume();
-			}
-		} else {
-			if (player.anims.isPlaying) {
-				player.anims.pause();
-			}
-		}
-
-		return player;
-	}
-
-	private handleDeathAnimation(
-		player: Phaser.GameObjects.Sprite,
-		playerTextureName: string
-	) {
-		player.setRotation(0);
-		// Create local animation on each sprite if it doesn't exist
-		// player texture name refers to 'player_red', 'player_blue', etc which is the loaded spritesheet key
-		if (!player.anims.get(playerTextureName + '_death')) {
-			player.anims.create({
-				key: playerTextureName + '_death',
-				frames: this.anims.generateFrameNames(playerTextureName, {
-					start: 4,
-					end: 12,
-				}),
-				frameRate: 8,
-				hideOnComplete: true,
-			});
-		}
-		if (player.anims.currentAnim.key == playerTextureName + '_walk') {
-			player.anims.stop();
-			player.anims.play(playerTextureName + '_death', true);
-		}
-		return player;
-	}
-
-	private handleDamageAnimation(
-		structureSprite: Phaser.GameObjects.Sprite,
-		structureTextureName: string,
-		healthPercent: number
-	) {
-		// Every structure (Wall/Turret/Base) has 4 states or frames.
-		// Create local animation and load by playing and pausing the animation.
-		// Sets the required frame based on health %
-
-		if (!structureSprite.anims.get(structureTextureName + '_destroying')) {
-			structureSprite.anims.create({
-				key: structureTextureName + '_destroying',
-				frames: this.anims.generateFrameNames(structureTextureName),
-				frameRate: 1,
-				repeat: -1,
-			});
-
-			// Update anims internal isPlaying/isPaused variables, and loaded anim.
-			structureSprite.anims.play(structureTextureName + '_destroying');
-			structureSprite.anims.pause();
-		} else if (
-			structureSprite.anims.exists(structureTextureName + '_destroying')
-		) {
-			structureSprite.anims.play(structureTextureName + '_destroying');
-			structureSprite.anims.pause();
-		}
-
-		// Use overall player health to continue animation
-		if (healthPercent >= 0.75) {
-			structureSprite.anims.setProgress(0);
-		} else if (healthPercent >= 0.5) {
-			structureSprite.anims.setProgress(1 / 3);
-		} else if (healthPercent >= 0.25) {
-			structureSprite.anims.setProgress(2 / 3);
-		} else if (healthPercent > 0.0) {
-			structureSprite.anims.setProgress(1);
-		}
-
-		return structureSprite;
-	}
-
-	private handleCampfireAnimation(
-		campfireSprite: Phaser.GameObjects.Sprite,
-		teamNumber: number
-	) {
-		campfireSprite.setDepth(1);
-
-		if (!campfireSprite.anims.get('campfire_lit')) {
-			campfireSprite.anims.create({
-				key: 'campfire_lit',
-				frames: this.anims.generateFrameNames('campfire', {
-					start: 1,
-					end: 4,
-				}),
-				frameRate: 5,
-				repeat: -1,
-			});
-		}
-		if (!campfireSprite.anims.get('campfire_unlit')) {
-			campfireSprite.anims.create({
-				key: 'campfire_unlit',
-				frames: this.anims.generateFrameNames('campfire', {
-					start: 0,
-					end: 0,
-				}),
-				frameRate: 1,
-				repeat: -1,
-			});
-		}
-
-		if (teamNumber != Constant.TEAM.NONE) {
-			if (
-				campfireSprite.anims.getName() == 'campfire_unlit' ||
-				campfireSprite.anims.getName() == ''
-			) {
-				campfireSprite.anims.stop();
-				campfireSprite.anims.play('campfire_lit', true);
-			}
-		} else {
-			if (
-				campfireSprite.anims.getName() == 'campfire_lit' ||
-				campfireSprite.anims.getName() == ''
-			) {
-				campfireSprite.anims.stop();
-				campfireSprite.anims.play('campfire_unlit', true);
-			}
-		}
-	}
-
-	private handleCampfireCaptureAnimation(
-		campfireRingSprite: Phaser.GameObjects.Sprite,
-		captureProgress: number
-	) {
-		campfireRingSprite.setDepth(0);
-
-		if (!campfireRingSprite.anims.get('campfire_ring_loader_capturing')) {
-			campfireRingSprite.anims.create({
-				key: 'campfire_ring_loader_capturing',
-				frames: this.anims.generateFrameNames('campfire_ring_loader'),
-			});
-			campfireRingSprite.anims.startAnimation(
-				'campfire_ring_loader_capturing'
-			);
-			campfireRingSprite.anims.pause();
-		}
-		campfireRingSprite.anims.setProgress(captureProgress / 100);
-	}
-
-	calculateDirection() {
+	private calculateDirection() {
 		let direction = NaN;
 		if (this.moveKeys.left.isDown && !this.moveKeys.right.isDown) {
 			if (this.moveKeys.up.isDown && !this.moveKeys.down.isDown)
@@ -478,341 +294,40 @@ export default class MainScene extends Phaser.Scene {
 			turrets,
 			campfires,
 			bases,
-			territories,
 			resources,
 		} = update;
 		if (currentPlayer == null) return;
 
 		this.updatePlayer(currentPlayer);
 
-		this.updateBullets(bullets);
+		this.updateGamePool(otherPlayers, this.otherPlayers);
 
-		this.updateOpponents(otherPlayers);
+		this.updateGamePool(bullets, this.bullets);
 
-		this.updateWalls(walls);
+		this.updateGamePool(walls, this.walls);
 
-		this.updateTurrets(turrets);
+		this.updateGamePool(turrets, this.turrets);
 
-		this.updateCampfires(campfires);
+		this.updateGamePool(campfires, this.campfires);
 
-		this.updateBases(bases);
+		this.updateGamePool(bases, this.bases);
 
-		this.updateTerritories(territories);
-
-		this.updateResources(resources);
+		this.updateGamePool(resources, this.resources);
 
 		this.events.emit('updateHUD', currentPlayer, time);
 	}
 
 	private updatePlayer(currentPlayer: any) {
-		this.myPlayerSprite.setPosition(currentPlayer.xPos, currentPlayer.yPos);
-
-		//  Local Animation control
-		if (currentPlayer.hp > 0) {
-			this.alive = true;
-			this.myPlayerSprite.setVisible(true);
-
-			this.myPlayerSprite = this.handleWalkAnimation(
-				this.myPlayerSprite,
-				this.myPlayerSprite.texture.key,
-				currentPlayer.xVel,
-				currentPlayer.yVel
-			);
-		} else if (currentPlayer.hp <= 0) {
-			this.alive = false;
-			this.handleDeathAnimation(
-				this.myPlayerSprite,
-				this.myPlayerSprite.texture.key
-			);
-		}
+		this.alive = currentPlayer.hp > 0;
+		this.myPlayer.update(currentPlayer);
 	}
 
-	//TODO may not be necessary for bullets
-	private updateBullets(bullets: any) {
-		this.updateMapOfObjects(
-			bullets,
-			this.bulletSprites,
-			'bullet',
-			(newBullet, newBulletLiteral) => {
-				if (newBulletLiteral.teamNumber == Constant.TEAM.BLUE)
-					newBullet.setTexture('bulletblue');
-				return newBullet;
-			}
-		);
-	}
-
-	private updateOpponents(otherPlayers: any) {
-		this.updateMapOfObjects(
-			otherPlayers,
-			this.otherPlayerSprites,
-			'',
-			(newPlayer, playerLiteral) => {
-				newPlayer.setRotation(playerLiteral.direction);
-
-				// Set Walk/Standing textures based on team
-				let playerTexture = '';
-				if (playerLiteral.teamNumber == Constant.TEAM.RED)
-					playerTexture = 'player_red';
-				else if (playerLiteral.teamNumber == Constant.TEAM.BLUE)
-					playerTexture = 'player_blue';
-
-				if (newPlayer.texture.key != playerTexture)
-					//TODO faster lookup somehow? check null?
-					newPlayer.setTexture(playerTexture).setDepth(1000);
-
-				// Opponent Animation Control
-				if (playerLiteral.hp > 0) {
-					newPlayer.setVisible(true);
-					newPlayer = this.handleWalkAnimation(
-						newPlayer,
-						playerTexture,
-						playerLiteral.xVel,
-						playerLiteral.yVel
-					);
-				}
-				if (playerLiteral.hp <= 0) {
-					this.handleDeathAnimation(newPlayer, playerTexture);
-				}
-
-				return newPlayer;
-			}
-		);
-	}
-
-	private updateWalls(walls: any) {
-		this.updateMapOfObjects(
-			walls,
-			this.wallSprites,
-			'',
-			(newWall, newWallLiteral) => {
-				let wallTexture = '';
-				if (newWallLiteral.teamNumber == Constant.TEAM.RED)
-					wallTexture = 'wall_red';
-				else if (newWallLiteral.teamNumber == Constant.TEAM.BLUE)
-					wallTexture = 'wall_blue';
-				else if (newWallLiteral.teamNumber == Constant.TEAM.NONE)
-					wallTexture = 'wall_neutral';
-
-				if (newWall.texture.key != wallTexture) {
-					newWall.setTexture(wallTexture);
-				}
-
-				const healthPercent = newWallLiteral.hp / Constant.HP.WALL;
-				newWall = this.handleDamageAnimation(
-					newWall,
-					wallTexture,
-					healthPercent
-				);
-
-				return newWall;
-			}
-		);
-	}
-
-	private updateTurrets(turrets: any) {
-		// update the turret's base
-		this.updateMapOfObjects(
-			turrets,
-			this.turretBaseSprites,
-			'',
-			(newTurretBase, newTurretBaseLiteral) => {
-				let turretGunTexture = '';
-				if (newTurretBaseLiteral.teamNumber == Constant.TEAM.RED)
-					turretGunTexture = 'turret_base_red';
-				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.BLUE)
-					turretGunTexture = 'turret_base_blue';
-				else if (newTurretBaseLiteral.teamNumber == Constant.TEAM.NONE)
-					turretGunTexture = 'turret_base_neutral';
-
-				if (newTurretBase.texture.key != turretGunTexture) {
-					newTurretBase.setTexture(turretGunTexture);
-				}
-
-				const healthPercent =
-					newTurretBaseLiteral.hp / Constant.HP.TURRET;
-				newTurretBase = this.handleDamageAnimation(
-					newTurretBase,
-					turretGunTexture,
-					healthPercent
-				);
-
-				return newTurretBase;
-			}
-		);
-
-		// update the turret's gun
-		this.updateMapOfObjects(
-			turrets,
-			this.turretGunSprites,
-			'',
-			(newTurretGun, newTurretLiteralGun) => {
-				const turretGunTexture = 'turret_shooter';
-
-				if (newTurretGun.texture.key != turretGunTexture) {
-					newTurretGun.setTexture(turretGunTexture);
-				}
-
-				const healthPercent =
-					newTurretLiteralGun.hp / Constant.HP.TURRET;
-				newTurretGun = this.handleDamageAnimation(
-					newTurretGun,
-					turretGunTexture,
-					healthPercent
-				);
-				newTurretGun.setRotation(newTurretLiteralGun.direction);
-
-				return newTurretGun;
-			}
-		);
-	}
-
-	private updateCampfires(campfires: any) {
-		// handle campfire animation
-		this.updateMapOfObjects(
-			campfires,
-			this.campfireSprites,
-			'campfire',
-			(newCampfire, newCampfireLiteral) => {
-				this.handleCampfireAnimation(
-					newCampfire,
-					newCampfireLiteral.teamNumber
-				);
-				return newCampfire;
-			}
-		);
-		// Handle capturing animation
-		this.updateMapOfObjects(
-			campfires,
-			this.campfireRingSprites,
-			'campfire_ring_loader',
-			(newRingSprite, newCampfireLiteral) => {
-				this.handleCampfireCaptureAnimation(
-					newRingSprite,
-					newCampfireLiteral.captureProgress
-				);
-				return newRingSprite;
-			}
-		);
-	}
-
-	private updateBases(bases: any) {
-		this.updateMapOfObjects(
-			bases,
-			this.baseSprites,
-			'',
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			(newBase, newBaseLiteral) => {
-				let baseTexture = '';
-				if (newBaseLiteral.teamNumber == Constant.TEAM.RED)
-					baseTexture = 'base_red';
-				else if (newBaseLiteral.teamNumber == Constant.TEAM.BLUE)
-					baseTexture = 'base_blue';
-
-				if (newBase.texture.key != baseTexture) {
-					newBase.setTexture(baseTexture);
-				}
-
-				const healthPercent = newBaseLiteral.hp / Constant.HP.BASE;
-				newBase = this.handleDamageAnimation(
-					newBase,
-					baseTexture,
-					healthPercent
-				);
-
-				return newBase;
-			}
-		);
-	}
-
-	private updateTerritories(territories: any) {
-		this.updateMapOfObjects(
-			territories,
-			this.territorySprites,
-			'grass_chunk',
-			(changedTilesNewTile, changedTilesCurrentTile) => {
-				if (changedTilesCurrentTile.teamNumber == Constant.TEAM.RED) {
-					changedTilesNewTile.setTexture('grass_chunk_red');
-				} else if (
-					changedTilesCurrentTile.teamNumber == Constant.TEAM.BLUE
-				) {
-					changedTilesNewTile.setTexture('grass_chunk_blue');
-				} else if (
-					changedTilesCurrentTile.teamNumber == Constant.TEAM.NONE
-				) {
-					changedTilesNewTile.setTexture('grass_chunk');
-				}
-
-				changedTilesNewTile.setDepth(-1000);
-
-				return changedTilesNewTile;
-			}
-		);
-	}
-
-	private updateResources(resources: any) {
-		this.updateMapOfObjects(
-			resources,
-			this.resourceSprites,
-			'',
-			(newResource, newResourceLiteral) => {
-				if (
-					newResourceLiteral.type ==
-					Constant.RESOURCE.RESOURCE_NAME[0]
-				) {
-					newResource.setTexture('resSmall');
-				} else if (
-					newResourceLiteral.type ==
-					Constant.RESOURCE.RESOURCE_NAME[1]
-				) {
-					newResource.setTexture('resMedium');
-				} else if (
-					newResourceLiteral.type ==
-					Constant.RESOURCE.RESOURCE_NAME[2]
-				) {
-					newResource.setTexture('resLarge');
-				}
-				newResource.setVisible(true);
-				return newResource;
-			}
-		);
-	}
-
-	private updateMapOfObjects(
-		currentObjects: any,
-		oldObjects: Map<string, any>,
-		sprite: string,
-		callback: (arg0: any, arg1: any) => any
-	) {
-		this.deadObjects.clear();
-
-		currentObjects.forEach((obj) => {
-			let newObj;
-
-			if (oldObjects.has(obj.id)) {
-				newObj = oldObjects.get(obj.id);
-				newObj.setPosition(obj.xPos, obj.yPos);
-			} else {
-				newObj = this.add.sprite(obj.xPos, obj.yPos, sprite);
-				oldObjects.set(obj.id, newObj);
-			}
-
-			this.deadObjects.add(obj.id);
-			callback(newObj, obj);
+	private updateGamePool(arrayOfNewObjStates: any[], objectPool: ObjectPool) {
+		arrayOfNewObjStates.forEach((obj) => {
+			objectPool.get(obj.id, obj).update(obj);
 		});
 
-		for (const anOldKey of oldObjects.keys()) {
-			if (this.deadObjects.has(anOldKey)) continue;
-
-			oldObjects.get(anOldKey)?.destroy();
-			oldObjects.delete(anOldKey);
-		}
-	}
-
-	private clearMapOfObjects(objects: Map<string, Phaser.GameObjects.Sprite>) {
-		for (const anOldKey of objects.keys()) {
-			objects.get(anOldKey)?.destroy();
-			objects.delete(anOldKey);
-		}
+		objectPool.clean();
 	}
 
 	private gameOver(endState: any): void {
@@ -834,25 +349,10 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private endGame(): void {
-		this.emptyAllObjects();
 		this.deregisterInputListeners();
+		this.deregisterSocketListeners();
 		this.cameras.resetAll();
 		this.events.emit('stopHUD');
 		this.events.emit('stopUI');
-		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
-	}
-
-	private emptyAllObjects(): void {
-		this.clearMapOfObjects(this.otherPlayerSprites);
-		this.clearMapOfObjects(this.bulletSprites);
-		this.clearMapOfObjects(this.wallSprites);
-		this.clearMapOfObjects(this.turretBaseSprites);
-		this.clearMapOfObjects(this.turretGunSprites);
-		this.clearMapOfObjects(this.campfireSprites);
-		this.clearMapOfObjects(this.campfireRingSprites);
-		this.clearMapOfObjects(this.baseSprites);
-		this.clearMapOfObjects(this.territorySprites);
-		this.clearMapOfObjects(this.resourceSprites);
-		this.deadObjects.clear();
 	}
 }

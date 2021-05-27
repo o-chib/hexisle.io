@@ -10,6 +10,7 @@ export default class MainMenu extends Phaser.Scene {
 	private gameid: string | undefined = '';
 	private inputBox;
 	private nextUpdateTime: number;
+	private submitKey: Phaser.Input.Keyboard.Key;
 
 	constructor() {
 		super('MainMenu');
@@ -42,10 +43,6 @@ export default class MainMenu extends Phaser.Scene {
 			.createFromCache('form')
 			.setDepth(1);
 		menuContainer.add(this.inputBox);
-		const submitKey = this.input.keyboard.addKey(
-			Phaser.Input.Keyboard.KeyCodes.ENTER,
-			false
-		);
 
 		// Menu Buttons from form
 		const playButton = document.getElementById(
@@ -65,7 +62,11 @@ export default class MainMenu extends Phaser.Scene {
 			.setVisible(false);
 
 		// Interactions
-		submitKey.on('down', () => {
+		this.submitKey = this.input.keyboard.addKey(
+			Phaser.Input.Keyboard.KeyCodes.ENTER,
+			false
+		);
+		this.submitKey.on('down', () => {
 			this.joinGame();
 		});
 
@@ -184,6 +185,8 @@ export default class MainMenu extends Phaser.Scene {
 
 	private loadMainScene() {
 		this.socket.off(Constant.MESSAGE.JOIN_GAME_FAIL);
+		this.socket.off(Constant.MESSAGE.GIVE_GAME_LIST);
+		this.submitKey.removeAllListeners();
 
 		this.scene.start(mainScene.Name, {
 			socket: this.socket,
