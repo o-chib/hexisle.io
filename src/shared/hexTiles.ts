@@ -188,7 +188,7 @@ export class HexTiles {
 	}
 
 	checkIfValidEmptyPointOnGrid(point: Point): boolean {
-		const hexCoord: OffsetPoint = this.cartesianToOffset(point);
+		const hexCoord: OffsetPoint = HexTiles.cartesianToOffset(point);
 
 		if (!this.checkIfValidHex(hexCoord)) return false;
 
@@ -342,7 +342,7 @@ export class HexTiles {
 		return results;
 	}
 
-	public cartesianToOffset(point: Point): OffsetPoint {
+	public static cartesianToOffset(point: Point): OffsetPoint {
 		// takes in a point in the cartesian plane
 		// returns the offset odd-q coordinate of the hex it's in
 
@@ -397,7 +397,7 @@ export class HexTiles {
 
 		const results: Tile[] = [];
 		const centerTile: Tile = new Tile();
-		centerTile.offset_coord = this.cartesianToOffset(
+		centerTile.offset_coord = HexTiles.cartesianToOffset(
 			new Point(point.xPos, point.yPos)
 		);
 		const screenCoords: OffsetPoint[] = this.getHexRadiusPoints(
@@ -483,7 +483,7 @@ export class HexTiles {
 		return baseDirs;
 	}
 
-	private pixelToCube(point: Point): number[] {
+	private static pixelToCube(point: Point): number[] {
 		// used for conversions from cartesian to offset odd-q
 		// returns the cube: x, y, z in that order in a list
 
@@ -494,7 +494,7 @@ export class HexTiles {
 		return [q, -q - r, r];
 	}
 
-	private cubeToOffset(cube: number[]): OffsetPoint {
+	private static cubeToOffset(cube: number[]): OffsetPoint {
 		// used for conversions from cartesian to odd-q offset
 		// returns an offset odd-q point
 
@@ -503,7 +503,7 @@ export class HexTiles {
 		return new OffsetPoint(q, r);
 	}
 
-	private roundCube(cube: number[]): number[] {
+	private static roundCube(cube: number[]): number[] {
 		let rx: number = Math.round(cube[0]);
 		let ry: number = Math.round(cube[1]);
 		let rz: number = Math.round(cube[2]);

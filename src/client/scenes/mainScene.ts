@@ -29,7 +29,6 @@ export default class MainScene extends Phaser.Scene {
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
-	private hexTiles: HexTiles;
 	private alive: boolean;
 	private debugMode: boolean;
 
@@ -44,7 +43,6 @@ export default class MainScene extends Phaser.Scene {
 		this.myPlayer = new ClientPlayer(this);
 		this.myPlayer.die();
 
-		this.hexTiles = new HexTiles();
 		this.otherPlayers = new ObjectPool(this, ClientPlayer, 4);
 		this.bullets = new ObjectPool(this, ClientBullet, 10);
 		this.walls = new ObjectPool(this, ClientWall, 10);
@@ -83,7 +81,7 @@ export default class MainScene extends Phaser.Scene {
 			this.input.mousePointer.x,
 			this.input.mousePointer.y
 		);
-		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+		const coord: OffsetPoint = HexTiles.cartesianToOffset(
 			new Point(gamePos.x, gamePos.y)
 		);
 		this.events.emit(
@@ -257,7 +255,7 @@ export default class MainScene extends Phaser.Scene {
 			this.input.mousePointer.y
 		);
 
-		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
+		const coord: OffsetPoint = HexTiles.cartesianToOffset(
 			new Point(gamePos.x, gamePos.y)
 		);
 
