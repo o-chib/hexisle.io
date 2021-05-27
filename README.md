@@ -62,16 +62,6 @@ To run tests, run the following command
   npm test
 ```
 
-## Features
-
-- Players split into teams
-- All players can shoot bullets and explore the map
-- Game is split into different rooms that players can choose
-- Each team is given a home base
-- Campfires are scattered around the map to be captured by team players
-- Resources of different rarities and value randomly spawn to be collected
-- Resources can be spent to build walls and turrets that strengthen your territory
-
 ## Screenshots
 
 ![App Screenshot](public/image/carousel1.png)
