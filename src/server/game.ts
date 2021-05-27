@@ -238,10 +238,10 @@ export default class Game {
 	}
 
 	updatePlayers(currentTimestamp: number, timePassed: number) {
-		const givePassiveIncome: boolean = this.passiveIncome.givePassiveIncomeIfPossible(
-			timePassed
-		);
+		const givePassiveIncome: boolean =
+			this.passiveIncome.givePassiveIncomeIfPossible(timePassed);
 		for (const aPlayer of this.players.values()) {
+			aPlayer.reload(timePassed);
 			this.updatePlayerPosition(currentTimestamp, aPlayer);
 			if (aPlayer.isAlive() && givePassiveIncome) {
 				this.passiveIncome.updatePlayerResources(aPlayer);
@@ -271,11 +271,9 @@ export default class Game {
 	}
 
 	endGame(): void {
+		const gameOverMessage = this.createGameEndRecap();
 		for (const aPlayer of this.players.values()) {
-			aPlayer.socket.emit(
-				Constant.MESSAGE.GAME_END,
-				this.createGameEndRecap()
-			);
+			aPlayer.socket.emit(Constant.MESSAGE.GAME_END, gameOverMessage);
 		}
 		this.stopAllIntervals();
 		this.gameOverCallback();
@@ -420,7 +418,7 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aCampfire,
-					Constant.RADIUS.CAMP,
+					Constant.RADIUS.TERRITORY,
 					player,
 					Constant.RADIUS.VIEW
 				)
@@ -435,15 +433,8 @@ export default class Game {
 		const nearbyBases: Base[] = [];
 
 		for (const aBase of this.bases) {
-			if (
-				this.collision.doCirclesCollide(
-					aBase,
-					Constant.RADIUS.BASE,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyBases.push(aBase);
+			// Let player have information about all bases at all times
+			nearbyBases.push(aBase);
 		}
 
 		return nearbyBases;
@@ -492,9 +483,8 @@ export default class Game {
 		const nearbyTurrets: Turret[] = this.createTurretUpdate(player);
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
 		const nearbyBases: Base[] = this.createBaseUpdate(player);
-		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
-			player
-		);
+		const nearbyTerritories: Territory[] =
+			this.createTerritoryUpdate(player);
 		const nearbyResources: Resource[] = this.createResourceUpdate(player);
 
 		return {
@@ -521,12 +511,19 @@ export default class Game {
 
 	generateNewPlayer(socket, name: string) {
 		const team: number = this.teams.addNewPlayer(socket.id);
-		const newPlayer = new Player(socket, team, name);
+		const newPlayer = new Player(
+			socket,
+			team,
+			name,
+			this.shootBullet.bind(this)
+		);
 		this.players.set(socket.id, newPlayer);
 		return newPlayer;
 	}
 
 	addPlayer(socket: SocketIO.Socket, name = '') {
+		if (this.players.has(socket.id)) return;
+
 		const newPlayer = this.generateNewPlayer(socket, name);
 
 		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
@@ -628,7 +625,7 @@ export default class Game {
 	playerShootBullet(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
-		this.shootBullet(player, direction);
+		player.shootBullet(direction);
 	}
 
 	canBuildStructure(player: Player, tile: Tile, building: string): boolean {
@@ -790,9 +787,8 @@ export default class Game {
 		this.bases.add(base);
 		this.collision.insertCollider(base, Constant.RADIUS.COLLISION.BASE);
 
-		this.teams.getTeam(
-			teamNum
-		).respawnCoords = this.hexTileMap.getHexRingPoints(tile, 2);
+		this.teams.getTeam(teamNum).respawnCoords =
+			this.hexTileMap.getHexRingPoints(tile, 2);
 
 		// make it so you cant build on and around the base
 		for (let i = 0; i <= 2; i++) {
@@ -833,12 +829,12 @@ export default class Game {
 			// Update the tileMap with territory tiles
 			this.setBaseTerritory(i, points);
 			// Add chunk center to terriitories list
-			const xPosition = this.hexTileMap.tileMap[teamBaseCoord.q][
-				teamBaseCoord.r
-			].cartesian_coord.xPos;
-			const yPosition = this.hexTileMap.tileMap[teamBaseCoord.q][
-				teamBaseCoord.r
-			].cartesian_coord.yPos;
+			const xPosition =
+				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r]
+					.cartesian_coord.xPos;
+			const yPosition =
+				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r]
+					.cartesian_coord.yPos;
 			const tempTerritory = new Territory(
 				xPosition.toString() + ', ' + yPosition.toString(),
 				xPosition,

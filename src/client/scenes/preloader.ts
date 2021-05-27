@@ -29,6 +29,8 @@ export default class Preloader extends Phaser.Scene {
 		this.preloadLobby();
 		this.preloadGameOver();
 		this.preloadUI();
+		this.preloadBars();
+		this.preloadIcons();
 		this.preloadSounds();
 	}
 
@@ -259,27 +261,40 @@ export default class Preloader extends Phaser.Scene {
 	 * Preloads lobby assets
 	 */
 	private preloadLobby(): void {
+		this.load.image('logo', '../assets/lobby/logo.png');
 		this.load.image('lobby_bg', '../assets/lobby/lobby_bg.png');
-		this.load.image('lobby_logo', '../assets/lobby/lobby_logo.png');
-		this.load.image('lobby_play', '../assets/lobby/lobby_play.png');
-		this.load.image('lobby_options', '../assets/lobby/lobby_options.png');
-		this.load.image('lobby_help', '../assets/lobby/lobby_help.png');
 		this.load.image('help_menu', '../assets/lobby/help.png');
 		this.load.html('form', '../supportfiles/form.html');
+		this.load.html('form_gameover', '../supportfiles/form_gameover.html');
 	}
 
 	/**
 	 * Preloads game over assets
 	 */
 	private preloadGameOver(): void {
-		this.load.image('playAgain', '../assets/gameover/playagain.png');
+		this.load.image(
+			'return_button_unpressed',
+			'../assets/gameover/return_button_unpressed.png'
+		);
+		this.load.image(
+			'return_button_pressed',
+			'../assets/gameover/return_button_pressed.png'
+		);
 	}
 
 	/**
 	 * Preloads UI assets
 	 */
 	private preloadUI(): void {
-		this.load.image('quitButton', '../assets/ui/quitButton.png');
+		this.load.image(
+			'quit_button_unpressed',
+			'../assets/ui/quit_button_unpressed.png'
+		);
+		this.load.image(
+			'quit_button_pressed',
+			'../assets/ui/quit_button_pressed.png'
+		);
+
 		this.load.image(
 			'help_button_unpressed',
 			'../assets/ui/help_button_unpressed.png'
@@ -288,12 +303,40 @@ export default class Preloader extends Phaser.Scene {
 			'help_button_pressed',
 			'../assets/ui/help_button_pressed.png'
 		);
-		this.load.image('help_popup', '../assets/ui/help_popup.png');
+
 		this.load.image('sound_on_button', '../assets/ui/sound_on_button.png');
 		this.load.image(
 			'sound_off_button',
 			'../assets/ui/sound_off_button.png'
 		);
+
+		this.load.image('help_popup', '../assets/ui/help_popup.png');
+	}
+
+	/**
+	 * Preloads bars
+	 */
+	 private preloadBars(): void {
+		this.load.image('healthbar_red', '../assets/bars/healthbar_red.png');
+		this.load.image('healthbar_blue', '../assets/bars/healthbar_blue.png');
+		this.load.image('healthbar_green', '../assets/bars/healthbar_green.png');
+		this.load.image('bar_backing_thin', '../assets/bars/bar_backing_thin.png');
+		this.load.image(
+			'bar_backing_medium',
+			'../assets/bars/bar_backing_medium.png'
+		);
+		this.load.image('bar_backing_thick', '../assets/bars/bar_backing_thick.png');
+	}
+
+	/**
+	 * Preloads Icons
+	 */
+	private preloadIcons(): void {
+		this.load.image('heart_icon', '../assets/icons/heart_icon.png');
+		this.load.image('coin_icon', '../assets/icons/coin_icon.png');
+		this.load.image('timer_icon', '../assets/icons/timer_icon.png');
+		this.load.image('flag_icon_red', '../assets/icons/flag_icon_red.png');
+		this.load.image('flag_icon_blue', '../assets/icons/flag_icon_blue.png');
 	}
 
 	/**
