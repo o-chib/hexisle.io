@@ -1,8 +1,5 @@
 import { Constant } from '../shared/constants';
-import {
-	CollisionObjectPool,
-	PoolCollisionObject,
-} from './CollisionObjectPool';
+import { CollisionObjectPool } from './CollisionObjectPool';
 
 export class Quadtree {
 	// The ratio of child to parent width. Higher numbers will push payload further down
@@ -56,7 +53,7 @@ export class Quadtree {
 	public insertIntoQuadtree(obj: any, radius: number): void {
 		// console.log("inserting obj:", obj);
 		const pObj = this.cObjPool.getElement();
-		pObj.data.setData(obj, radius);
+		pObj.setData(obj, radius);
 		this.insert(this.topLevelNode, this.topLevelNodeBox.getCopy(), 0, pObj);
 	}
 
@@ -68,7 +65,7 @@ export class Quadtree {
 	public deleteFromQuadtree(obj: any, radius: number): void {
 		// console.log("deleting obj:", obj);
 		const pObj = this.cObjPool.getElement();
-		pObj.data.setData(obj, radius);
+		pObj.setData(obj, radius);
 		this.delete(this.topLevelNode, this.topLevelNodeBox.getCopy(), 0, pObj);
 		this.cObjPool.releaseElement(pObj);
 	}
@@ -81,7 +78,7 @@ export class Quadtree {
 	public updateInQuadtree(obj: any, radius: number): void {
 		// console.log("updating obj:", obj);
 		const pObj = this.cObjPool.getElement();
-		pObj.data.setData(obj, radius);
+		pObj.setData(obj, radius);
 		this.update(this.topLevelNode, this.topLevelNodeBox.getCopy(), 0, pObj);
 	}
 
@@ -110,7 +107,7 @@ export class Quadtree {
 		node: QuadtreeNode,
 		nodebox: Rect,
 		depth: number,
-		pObj: PoolCollisionObject
+		pObj: CollisionObject
 	): void {
 		const splitLeft: number =
 			nodebox.l + this.SPLIT * (nodebox.r - nodebox.l);
@@ -126,25 +123,25 @@ export class Quadtree {
 			node.collisionObjects.push(pObj);
 
 			// contained within UPPER LEFT
-		} else if (pObj.data.r < splitRight && pObj.data.b < splitTop) {
+		} else if (pObj.r < splitRight && pObj.b < splitTop) {
 			if (!node.kids[0]) node.kids[0] = new QuadtreeNode();
 			nodebox.update(nodebox.l, splitRight, splitBottom, nodebox.t);
 			this.insert(node.kids[0], nodebox, depth + 1, pObj);
 
 			// contained within UPPER RIGHT
-		} else if (pObj.data.l > splitLeft && pObj.data.b < splitTop) {
+		} else if (pObj.l > splitLeft && pObj.b < splitTop) {
 			if (!node.kids[1]) node.kids[1] = new QuadtreeNode();
 			nodebox.update(splitLeft, nodebox.r, splitBottom, nodebox.t);
 			this.insert(node.kids[1], nodebox, depth + 1, pObj);
 
 			// contained within LOWER LEFT
-		} else if (pObj.data.r < splitRight && pObj.data.t > splitBottom) {
+		} else if (pObj.r < splitRight && pObj.t > splitBottom) {
 			if (!node.kids[2]) node.kids[2] = new QuadtreeNode();
 			nodebox.update(nodebox.l, splitRight, nodebox.b, splitTop);
 			this.insert(node.kids[2], nodebox, depth + 1, pObj);
 
 			// contained within LOWER RIGHT
-		} else if (pObj.data.l > splitLeft && pObj.data.t > splitBottom) {
+		} else if (pObj.l > splitLeft && pObj.t > splitBottom) {
 			if (!node.kids[3]) node.kids[3] = new QuadtreeNode();
 			nodebox.update(splitLeft, nodebox.r, nodebox.b, splitTop);
 			this.insert(node.kids[3], nodebox, depth + 1, pObj);
@@ -166,7 +163,7 @@ export class Quadtree {
 		node: QuadtreeNode,
 		nodebox: Rect,
 		depth: number,
-		pObj: PoolCollisionObject
+		pObj: CollisionObject
 	): void {
 		const splitLeft: number =
 			nodebox.l + this.SPLIT * (nodebox.r - nodebox.l);
@@ -180,7 +177,7 @@ export class Quadtree {
 		// if we're at our deepest level it must be in here
 		if (depth > this.MAX_DEPTH) {
 			const index: number = node.collisionObjects.findIndex(
-				(o) => o.data.payload.id === pObj.data.payload.id
+				(o) => o.payload.id === pObj.payload.id
 			);
 			const removedPObj = node.collisionObjects.splice(index, 1);
 			removedPObj.forEach((element) => {
@@ -188,25 +185,25 @@ export class Quadtree {
 			});
 
 			// contained within UPPER LEFT
-		} else if (pObj.data.r < splitRight && pObj.data.b > splitTop) {
+		} else if (pObj.r < splitRight && pObj.b > splitTop) {
 			if (!node.kids[0]) node.kids[0] = new QuadtreeNode();
 			nodebox.update(nodebox.l, splitRight, splitBottom, nodebox.t);
 			this.delete(node.kids[0], nodebox, depth + 1, pObj);
 
 			// contained within UPPER RIGHT
-		} else if (pObj.data.l > splitLeft && pObj.data.b > splitTop) {
+		} else if (pObj.l > splitLeft && pObj.b > splitTop) {
 			if (!node.kids[1]) node.kids[1] = new QuadtreeNode();
 			nodebox.update(splitLeft, nodebox.r, splitBottom, nodebox.t);
 			this.delete(node.kids[1], nodebox, depth + 1, pObj);
 
 			// contained within LOWER LEFT
-		} else if (pObj.data.r < splitRight && pObj.data.t < splitBottom) {
+		} else if (pObj.r < splitRight && pObj.t < splitBottom) {
 			if (!node.kids[2]) node.kids[2] = new QuadtreeNode();
 			nodebox.update(nodebox.l, splitRight, nodebox.b, splitTop);
 			this.delete(node.kids[2], nodebox, depth + 1, pObj);
 
 			// contained within LOWER RIGHT
-		} else if (pObj.data.l > splitLeft && pObj.data.t < splitBottom) {
+		} else if (pObj.l > splitLeft && pObj.t < splitBottom) {
 			if (!node.kids[3]) node.kids[3] = new QuadtreeNode();
 			nodebox.update(splitLeft, nodebox.r, nodebox.b, splitTop);
 			this.delete(node.kids[3], nodebox, depth + 1, pObj);
@@ -214,7 +211,7 @@ export class Quadtree {
 			// object is not wholly contained in any child node
 		} else {
 			const index: number = this.topLevelNode.collisionObjects.findIndex(
-				(o) => o.data.payload.id === pObj.data.payload.id
+				(o) => o.payload.id === pObj.payload.id
 			);
 			const removedPObj = this.topLevelNode.collisionObjects.splice(
 				index,
@@ -237,7 +234,7 @@ export class Quadtree {
 		node: QuadtreeNode,
 		nodebox: Rect,
 		depth: number,
-		pObj: PoolCollisionObject
+		pObj: CollisionObject
 	): void {
 		this.delete(node, nodebox, depth, pObj);
 		this.insert(node, nodebox, depth, pObj);
@@ -268,9 +265,9 @@ export class Quadtree {
 		// find all collision objects local to the current node and push them onto the results
 		// if their rectangles overlap.
 		node.collisionObjects
-			.filter((pObj) => this.collides(pObj.data, box))
+			.filter((pObj) => this.collides(pObj, box))
 			.map((pObj) => {
-				results.push(pObj.data);
+				results.push(pObj);
 			});
 
 		const searchBox = nodebox.getCopy();
@@ -347,7 +344,7 @@ export class Rect {
 }
 
 export class QuadtreeNode {
-	public collisionObjects: PoolCollisionObject[];
+	public collisionObjects: CollisionObject[];
 	public kids: QuadtreeNode[]; //ul,ur,ll,lr
 
 	constructor() {
