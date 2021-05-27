@@ -238,9 +238,8 @@ export default class Game {
 	}
 
 	updatePlayers(currentTimestamp: number, timePassed: number) {
-		const givePassiveIncome: boolean = this.passiveIncome.givePassiveIncomeIfPossible(
-			timePassed
-		);
+		const givePassiveIncome: boolean =
+			this.passiveIncome.givePassiveIncomeIfPossible(timePassed);
 		for (const aPlayer of this.players.values()) {
 			this.updatePlayerPosition(currentTimestamp, aPlayer);
 			if (aPlayer.isAlive() && givePassiveIncome) {
@@ -494,9 +493,8 @@ export default class Game {
 		const nearbyTurrets: Turret[] = this.createTurretUpdate(player);
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
 		const nearbyBases: Base[] = this.createBaseUpdate(player);
-		const nearbyTerritories: Territory[] = this.createTerritoryUpdate(
-			player
-		);
+		const nearbyTerritories: Territory[] =
+			this.createTerritoryUpdate(player);
 		const nearbyResources: Resource[] = this.createResourceUpdate(player);
 
 		return {
@@ -792,9 +790,8 @@ export default class Game {
 		this.bases.add(base);
 		this.collision.insertCollider(base, Constant.RADIUS.COLLISION.BASE);
 
-		this.teams.getTeam(
-			teamNum
-		).respawnCoords = this.hexTileMap.getHexRingPoints(tile, 2);
+		this.teams.getTeam(teamNum).respawnCoords =
+			this.hexTileMap.getHexRingPoints(tile, 2);
 
 		// make it so you cant build on and around the base
 		for (let i = 0; i <= 2; i++) {
@@ -835,12 +832,12 @@ export default class Game {
 			// Update the tileMap with territory tiles
 			this.setBaseTerritory(i, points);
 			// Add chunk center to terriitories list
-			const xPosition = this.hexTileMap.tileMap[teamBaseCoord.q][
-				teamBaseCoord.r
-			].cartesian_coord.xPos;
-			const yPosition = this.hexTileMap.tileMap[teamBaseCoord.q][
-				teamBaseCoord.r
-			].cartesian_coord.yPos;
+			const xPosition =
+				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r]
+					.cartesian_coord.xPos;
+			const yPosition =
+				this.hexTileMap.tileMap[teamBaseCoord.q][teamBaseCoord.r]
+					.cartesian_coord.yPos;
 			const tempTerritory = new Territory(
 				xPosition.toString() + ', ' + yPosition.toString(),
 				xPosition,
