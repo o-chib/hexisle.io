@@ -1,7 +1,6 @@
 import { Constant } from '../shared/constants';
 import Game from './game';
 import * as SocketIO from 'socket.io';
-import { OffsetPoint } from '../shared/hexTiles';
 
 export default class GameWrapper {
 	private readonly MAX_PLAYERS = Constant.MAX_PLAYERS;
