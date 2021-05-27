@@ -46,9 +46,7 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 		} else if (name.length > Constant.MAX_NAME_LENGTH) {
 			socket.emit(
 				Constant.MESSAGE.JOIN_GAME_FAIL,
-				'Maximum name length ' +
-					Constant.MAX_NAME_LENGTH +
-					' characters'
+				'Maximum length ' + Constant.MAX_NAME_LENGTH + ' characters'
 			);
 			return;
 		}
