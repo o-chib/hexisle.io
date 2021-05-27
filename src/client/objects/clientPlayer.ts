@@ -133,7 +133,6 @@ class ClientPlayerName extends Phaser.GameObjects.Text implements IPoolObject {
 
 	public update(objectState: any): void {
 		this.setPosition(objectState.xPos - (this.namePixelLength/2), objectState.yPos - 110);
-		console.log(this.namePixelLength);
 	}
 
 	public init(objLiteral: any): void {
