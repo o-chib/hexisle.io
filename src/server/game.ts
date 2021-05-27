@@ -279,11 +279,9 @@ export default class Game {
 	}
 
 	endGame(): void {
+		const gameOverMessage = this.createGameEndRecap();
 		for (const aPlayer of this.players.values()) {
-			aPlayer.socket.emit(
-				Constant.MESSAGE.GAME_END,
-				this.createGameEndRecap()
-			);
+			aPlayer.socket.emit(Constant.MESSAGE.GAME_END, gameOverMessage);
 		}
 		this.stopAllIntervals();
 		this.gameOverCallback();
@@ -411,7 +409,7 @@ export default class Game {
 			if (
 				this.collision.doCirclesCollide(
 					aCampfire,
-					Constant.RADIUS.CAMP,
+					Constant.RADIUS.TERRITORY,
 					player,
 					Constant.RADIUS.VIEW
 				)
@@ -426,15 +424,8 @@ export default class Game {
 		const nearbyBases: Base[] = [];
 
 		for (const aBase of this.bases) {
-			if (
-				this.collision.doCirclesCollide(
-					aBase,
-					Constant.RADIUS.BASE,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyBases.push(aBase);
+			// Let player have information about all bases at all times
+			nearbyBases.push(aBase);
 		}
 
 		return nearbyBases;
@@ -522,6 +513,8 @@ export default class Game {
 	}
 
 	addPlayer(socket: SocketIO.Socket, name = '') {
+		if (this.players.has(socket.id)) return;
+
 		const newPlayer = this.generateNewPlayer(socket, name);
 
 		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
