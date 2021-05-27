@@ -4,7 +4,7 @@ import Collision from '../collision';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
-	public static readonly RELOAD_TIME = 0.1 * 1000;
+	public static readonly RELOAD_TIME = 0.16 * 1000;
 	private static readonly SPEED = 600;
 
 	public socket: SocketIOClient.Socket;
