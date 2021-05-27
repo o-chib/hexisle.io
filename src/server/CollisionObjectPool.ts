@@ -7,7 +7,7 @@ export class CollisionObjectPool {
 	private poolSize: number;
 	private freeElements: number;
 
-	constructor(initialSize = 1000) {
+	constructor(initialSize = 100) {
 		this.increase_percent = 0.5;
 		this.minimum_percent_free = 0.1;
 		this.poolArray = new Array<PoolCollisionObject>(initialSize);
