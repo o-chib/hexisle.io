@@ -1,20 +1,24 @@
-import { OffsetPoint } from './hexTiles';
-const Constant = require('../shared/constants');
+import { Constant } from '../../shared/constants';
 
-export default class Territory {
+export default abstract class IndestructibleObj {
 	public id: string;
 	public xPos: number;
 	public yPos: number;
 	public teamNumber: number;
 
-	constructor(id: string, xPos: number, yPos: number, teamNumber: number) {
+	constructor(
+		id: string,
+		xPos = 0,
+		yPos = 0,
+		teamNumber = Constant.TEAM.NONE
+	) {
 		this.id = id;
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.teamNumber = teamNumber;
 	}
 
-	serializeForUpdate(): any {
+	public serializeForUpdate() {
 		return {
 			id: this.id,
 			xPos: this.xPos,

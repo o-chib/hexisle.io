@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            *,
+            *::before,
+            *::after {
+                padding: 0px;
+                margin: 0px;
+                box-sizing: border-box;
+            }
+            #scene{
+                display: flex;
+                flex-direction: column;
+            }
+            #logo img{
+                height: 300px;
+                width: 600px;
+                margin: auto;
+            }
+            #input-form {
+                padding: 20px 5px ;
+                margin:auto;
+                width: 325px;
+                height: auto;
+                border-radius: 5px;
+                background: rgba(50,50,50,.8);
+                box-shadow: 1px 1px 5px #000;
+
+                display: flex;
+                align-content: center;
+                flex-direction: column;
+                top:100;
+            }
+            h1{
+                font-family: 'Open Sans Condensed', sans-serif;
+                font-size: 36px;
+                font-weight: bold;
+                align-self: center;
+                color:rgba(255, 255, 255, 0.8);
+                margin: auto;
+                padding-top: 40px;
+            }
+            #message{
+                font-family: 'Open Sans Condensed', sans-serif;
+                font-size: 24px;
+                color:rgba(255, 255, 255, 0.8);
+                align-self: center;
+                height: 200px;
+                width:275px;
+                margin:20px;
+                padding: 20px 10px;
+            }
+            #divider{
+                display: block;
+                width: 275px;
+                height: 2px;
+                margin: 10px auto 20px auto;
+                background: rgba(200,200,200,0.5);
+            }
+            button{
+                margin: 15px auto;
+                padding: 0px;
+                display: block;
+                width:275px;
+                background: rgba(20,140,150,0);
+                color: rgba(255,255,255,.8);
+                border: none;
+                border-radius: 3px;
+
+                text-decoration: none;
+                font-family: 'Open Sans Condensed', sans-serif;
+                font-size: 20px;
+                font-weight: bold;
+            }
+            button:hover{
+                background: rgba(10,110,120,0);
+                transition: all 0.2s ease-in-out;
+            }
+            img.button-pressed{
+                display: none;
+            }
+            img.button-unpressed{
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='scene'>
+            <div id="logo"><img src="../assets/logo.png"></img></div>
+            <div id="input-form">
+                <h1>Game Over!</h1>
+                <div id="message"></div>
+                <div id="divider"></div>
+                <button id="returnButton">
+                    <img class="button-unpressed" src="../assets/return_button_unpressed.png"></img>
+                    <img class="button-pressed" src="../assets/return_button_pressed.png"></img>
+                </button>
+            </div>
+        </div>
+    </body>
+</html>
