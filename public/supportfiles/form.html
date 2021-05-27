@@ -9,6 +9,15 @@
                 margin: 0px;
                 box-sizing: border-box;
             }
+            #scene{
+                display: flex;
+                flex-direction: column;
+            }
+            #logo img{
+                height: 300px;
+                width: 600px;
+                margin: auto;
+            }
             #input-form {
                 padding: 20px 5px ;
                 margin:auto;
@@ -21,9 +30,32 @@
                 display: flex;
                 flex-direction: column;
             }
-            #logo{
-                height: 200px;
-                width:100px;
+            #input-form #invalid-message-holder{
+                font-family: 'Open Sans Condensed', sans-serif;
+                text-decoration: none;
+                width: 250px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: auto;
+                font-size: 16px;
+                font-weight:bolder;
+                color: #AA0040;
+                display:none;
+            }
+            #input-form #alert-icon{
+                height: 20px;
+                width: 20px;
+                font-size: 16px;
+                font-weight: bolder;
+                margin: 5px auto;
+                background-color: #AA0040;
+                color:rgba(50,50,50,1);
+                border-radius: 50%;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+
             }
             #input-form input, select{
                 font-family: 'Open Sans Condensed', sans-serif;
@@ -81,26 +113,28 @@
         </style>
     </head>
     <body>
-        <div id="logo"></div>
-        <div id="input-form">
-            <input type="text" name="name" placeholder="Enter Username.." value="" />
-            <select id="dropdownList" name="dropdownList">
-                <!-- Filled with Phaser -->
-            </select>
-            <div id="divider"></div>
-            <button id="playButton">
-                <img class="button-unpressed" src="../assets/lobby_play_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_play_button_pressed.png"></img>
-            </button>
-            <button id="optionButton">
-                <img class="button-unpressed" src="../assets/lobby_options_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_options_button_pressed.png"></img>
-            </button>
-            <button id="helpButton">
-                <img class="button-unpressed" src="../assets/lobby_help_button_unpressed.png"></img>
-                <img class="button-pressed" src="../assets/lobby_help_button_pressed.png"></img>
-            </button>
+        <div id='scene'>
+            <div id="logo"><img src="../assets/logo.png"></img></div>
+            <div id="input-form">
+                <div id='invalid-message-holder'><span id='alert-icon'>!</span> <span id='error-message'>Please use another name</span></div>
+                <input type="text" name="name" placeholder="Enter Username..." value="" />
+                <select id="dropdownList" name="dropdownList">
+                    <!-- Filled by Phaser -->
+                </select>
+                <div id="divider"></div>
+                <button id="playButton">
+                    <img class="button-unpressed" src="../assets/lobby_play_button_unpressed.png"></img>
+                    <img class="button-pressed" src="../assets/lobby_play_button_pressed.png"></img>
+                </button>
+                <button id="optionButton">
+                    <img class="button-unpressed" src="../assets/lobby_options_button_unpressed.png"></img>
+                    <img class="button-pressed" src="../assets/lobby_options_button_pressed.png"></img>
+                </button>
+                <button id="helpButton">
+                    <img class="button-unpressed" src="../assets/lobby_help_button_unpressed.png"></img>
+                    <img class="button-pressed" src="../assets/lobby_help_button_pressed.png"></img>
+                </button>
+            </div>
         </div>
-
     </body>
 </html>

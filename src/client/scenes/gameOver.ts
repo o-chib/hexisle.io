@@ -30,17 +30,6 @@ export default class gameOver extends Phaser.Scene {
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);
 
-		// Logo and Title
-		const logoImg = this.add
-			.image(0, renderHeight * 0.2, 'campfire_lit')
-			.setDepth(1);
-		menuContainer.add(logoImg);
-		const newGameText = this.add
-			.image(0, logoImg.y + 50, 'lobby_logo')
-			.setDepth(2)
-			.setScale(0.5);
-		menuContainer.add(newGameText);
-
 		// Form Box
 		this.messageBox = this.add
 			.dom(0, renderHeight * 0.45)
@@ -74,7 +63,7 @@ export default class gameOver extends Phaser.Scene {
 
 		this.time.addEvent({
 			// Run after ten seconds.
-			delay: 5000,
+			delay: Constant.GAME_TIMING.END_SCREEN,
 			callback: this.loadMainMenu,
 			callbackScope: this,
 			loop: false,

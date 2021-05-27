@@ -30,23 +30,11 @@ export default class MainMenu extends Phaser.Scene {
 
 		const renderWidth = this.game.renderer.width;
 		const renderHeight = this.game.renderer.height;
-
 		// Background image
 		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);
-
-		// Logo and Title
-		const logoImg = this.add
-			.image(0, renderHeight * 0.2, 'campfire_lit')
-			.setDepth(1);
-		menuContainer.add(logoImg);
-		const newGameText = this.add
-			.image(0, logoImg.y + 50, 'lobby_logo')
-			.setDepth(2)
-			.setScale(0.5);
-		menuContainer.add(newGameText);
 
 		// Form Box
 		this.inputBox = this.add
@@ -159,6 +147,17 @@ export default class MainMenu extends Phaser.Scene {
 			dropdownList.removeChild(dropdownList.firstChild);
 		}
 	}
+	private showErrorMessage(message: string): void {
+		const errorMessageHolder = document.getElementById(
+			'invalid-message-holder'
+		);
+		const errorMessage = document.getElementById('error-message');
+		if (!errorMessageHolder) return;
+		if (!errorMessage) return;
+
+		errorMessageHolder.setAttribute('style', 'display:flex');
+		errorMessage.innerText = message;
+	}
 
 	private joinGame(): void {
 		this.playerName = this.inputBox.getChildByName('name').value;
@@ -193,8 +192,7 @@ export default class MainMenu extends Phaser.Scene {
 
 	private failedToJoinGame(message: string) {
 		this.socket.off(Constant.MESSAGE.JOIN_GAME_SUCCESS);
-		console.log(message);
-		//TODO make error message fancier
+		this.showErrorMessage(message);
 	}
 
 	private loadOptions(): void {

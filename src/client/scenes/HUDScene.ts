@@ -1,10 +1,9 @@
 import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
-import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 import ProgressBar from './ProgressBar';
+import { Constant } from '../../shared/constants';
 
 // Text Structure
-const info_format = `%1`;
 const timer_format = `%1:%2`;
 const debug_format = `cursor:
 xPos/yPos:%1/%2

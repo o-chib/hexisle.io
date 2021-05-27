@@ -98,13 +98,13 @@ export default class Preloader extends Phaser.Scene {
 			}
 		);
 		// Lobby
+		this.load.image('logo', '../assets/logo.png');
 		this.load.image('lobby_bg', '../assets/lobby_bg.png');
-		this.load.image('lobby_logo', '../assets/lobby_logo.png');
 		this.load.image('help_menu', '../assets/help.png');
 		this.load.html('form', '../supportfiles/form.html');
 		this.load.html('form_gameover', '../supportfiles/form_gameover.html');
 
-		// Main Game UI
+		// Main Game
 		this.load.image(
 			'quit_button_unpressed',
 			'../assets/quit_button_unpressed.png'

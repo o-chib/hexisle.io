@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "author": "teamIO",
   "description": "A top down gun-action and builder webgame.",
-  "license": "",
+  "license": "MIT",
   "main": "build/server/server.js",
   "scripts": {
     "prestart": "npm run build-prod",

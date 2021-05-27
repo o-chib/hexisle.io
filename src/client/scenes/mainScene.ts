@@ -25,9 +25,9 @@ export default class MainScene extends Phaser.Scene {
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
-	private alive = false;
 	private hexTiles: HexTiles;
-	private debugMode = false;
+	private alive: boolean;
+	private debugMode: boolean;
 
 	constructor() {
 		super('MainScene');
@@ -51,6 +51,8 @@ export default class MainScene extends Phaser.Scene {
 		this.territorySprites = new Map();
 		this.resourceSprites = new Map();
 		this.deadObjects = new Set();
+		this.alive = false;
+		this.debugMode = false;
 	}
 
 	create(): void {
@@ -71,6 +73,7 @@ export default class MainScene extends Phaser.Scene {
 
 	update(): void {
 		this.updateDirection();
+		this.shootIfMouseDown();
 		if (this.debugMode) this.updateDebugInfo();
 	}
 
@@ -144,13 +147,6 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private registerInputListeners(): void {
-		this.input.on('pointerdown', (pointer) => {
-			if (!this.alive) return;
-			const direction = this.getMouseDirection(pointer);
-
-			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
-		});
-
 		for (const key in this.moveKeys) {
 			this.moveKeys[key].addListener(
 				'down',
@@ -191,6 +187,12 @@ export default class MainScene extends Phaser.Scene {
 
 		this.myPlayerSprite.setRotation(direction);
 		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
+	}
+
+	private shootIfMouseDown(): void {
+		if (!this.alive || !this.input.activePointer.isDown) return;
+		const direction = this.getMouseDirection(this.input.activePointer);
+		this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 	}
 
 	private getMouseDirection(pointer: any): any {
@@ -383,6 +385,7 @@ export default class MainScene extends Phaser.Scene {
 			}
 		}
 	}
+
 	private handleCampfireCaptureAnimation(
 		campfireRingSprite: Phaser.GameObjects.Sprite,
 		captureProgress: number
