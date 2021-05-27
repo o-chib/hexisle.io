@@ -15,7 +15,7 @@ export const Constant = Object.freeze({
 	HP: {
 		PLAYER: 100,
 		BASE: 1000,
-		WALL: 100,
+		WALL: 200,
 		TURRET: 150,
 	},
 
@@ -81,6 +81,19 @@ export const Constant = Object.freeze({
 			MEDIUM: 2,
 			LARGE: 5,
 		},
+	},
+
+	SPRITE_DEPTH: {
+		TERRITORY: 0,
+		CAMP: 1,
+		CAMP_RING: 3,
+		BASE: 4,
+		WALL: 4,
+		TURRET_BASE: 4,
+		TURRET_GUN: 7,
+		PLAYER: 6,
+		BULLET: 5,
+		RESOURCE: 2,
 	},
 
 	BUILDING: {
