@@ -141,7 +141,7 @@ export default class HUDScene extends Phaser.Scene {
 			.image(0, 0, 'quit_button_unpressed')
 			.setDepth(99)
 			.setDisplayOrigin(0.5, 0.5)
-			.setScale(0.35);
+			.setScale(0.7);
 		new Anchor(this.quitButton, {
 			right: 'right-10',
 			top: 'top+10',
