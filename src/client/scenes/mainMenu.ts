@@ -1,5 +1,6 @@
 import mainScene from './mainScene';
 import Utilities from './Utilities';
+import FormUtilities from './FormUtilities';
 import { Constant } from './../../shared/constants';
 
 export default class MainMenu extends Phaser.Scene {
@@ -30,23 +31,11 @@ export default class MainMenu extends Phaser.Scene {
 
 		const renderWidth = this.game.renderer.width;
 		const renderHeight = this.game.renderer.height;
-
 		// Background image
 		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
 		// Container
 		const menuContainer = this.add.container(renderWidth / 2, 0);
-
-		// Logo and Title
-		const logoImg = this.add
-			.image(0, renderHeight * 0.2, 'campfire_lit')
-			.setDepth(1);
-		menuContainer.add(logoImg);
-		const newGameText = this.add
-			.image(0, logoImg.y + 50, 'lobby_logo')
-			.setDepth(2)
-			.setScale(0.5);
-		menuContainer.add(newGameText);
 
 		// Form Box
 		this.inputBox = this.add
@@ -55,22 +44,18 @@ export default class MainMenu extends Phaser.Scene {
 			.setDepth(1);
 		menuContainer.add(this.inputBox);
 
-		// Buttons in a Container
-		const playButton = this.add
-			.image(0, renderHeight * 0.55, 'lobby_play')
-			.setDepth(1)
-			.setScale(0.75);
-		menuContainer.add(playButton);
-		const optionButton = this.add
-			.image(0, renderHeight * 0.65, 'lobby_options')
-			.setDepth(1)
-			.setScale(0.75);
-		menuContainer.add(optionButton);
-		const helpButton = this.add
-			.image(0, renderHeight * 0.75, 'lobby_help')
-			.setDepth(1)
-			.setScale(0.75);
-		menuContainer.add(helpButton);
+		// Menu Buttons from form
+		const playButton = document.getElementById(
+			'playButton'
+		) as HTMLLinkElement;
+		const optionButton = document.getElementById(
+			'optionButton'
+		) as HTMLLinkElement;
+		const helpButton = document.getElementById(
+			'helpButton'
+		) as HTMLLinkElement;
+
+		// Help Panel
 		const helpMenu = this.add
 			.image(renderWidth / 2, renderHeight / 2, 'help_menu')
 			.setDepth(2)
@@ -85,32 +70,31 @@ export default class MainMenu extends Phaser.Scene {
 			this.joinGame();
 		});
 
-		playButton.setInteractive();
-		playButton.on(
-			'pointerdown',
-			() => {
-				this.joinGame();
-			},
-			this
+		playButton.addEventListener('click', () => this.joinGame());
+		playButton.addEventListener('mouseover', () =>
+			FormUtilities.setButtonTextureOnMouseIn(playButton)
+		);
+		playButton.addEventListener('mouseout', () =>
+			FormUtilities.setButtonTextureOnMouseOut(playButton)
 		);
 
-		optionButton.setInteractive();
-		optionButton.on(
-			'pointerdown',
-			() => {
-				this.loadOptions();
-			},
-			this
+		optionButton.addEventListener('click', () => this.loadOptions());
+		optionButton.addEventListener('mouseover', () =>
+			FormUtilities.setButtonTextureOnMouseIn(optionButton)
+		);
+		optionButton.addEventListener('mouseout', () =>
+			FormUtilities.setButtonTextureOnMouseOut(optionButton)
 		);
 
-		helpButton.setInteractive();
-		helpButton.on(
-			'pointerdown',
-			() => {
-				menuContainer.setVisible(false);
-				helpMenu.setVisible(true);
-			},
-			this
+		helpButton.addEventListener('click', () => {
+			menuContainer.setVisible(false);
+			helpMenu.setVisible(true);
+		});
+		helpButton.addEventListener('mouseover', () =>
+			FormUtilities.setButtonTextureOnMouseIn(helpButton)
+		);
+		helpButton.addEventListener('mouseout', () =>
+			FormUtilities.setButtonTextureOnMouseOut(helpButton)
 		);
 
 		helpMenu.setInteractive();
@@ -155,7 +139,7 @@ export default class MainMenu extends Phaser.Scene {
 	private addAutoselectOption(dropdownList: HTMLElement) {
 		const autoselect = document.createElement('option');
 		autoselect.value = '';
-		autoselect.text = 'Autoselect';
+		autoselect.text = 'Choose Server (Auto)';
 		dropdownList.appendChild(autoselect);
 	}
 
@@ -163,6 +147,17 @@ export default class MainMenu extends Phaser.Scene {
 		while (dropdownList.firstChild) {
 			dropdownList.removeChild(dropdownList.firstChild);
 		}
+	}
+	private showErrorMessage(message: string): void {
+		const errorMessageHolder = document.getElementById(
+			'invalid-message-holder'
+		);
+		const errorMessage = document.getElementById('error-message');
+		if (!errorMessageHolder) return;
+		if (!errorMessage) return;
+
+		errorMessageHolder.setAttribute('style', 'display:flex');
+		errorMessage.innerText = message;
 	}
 
 	private joinGame(): void {
@@ -200,8 +195,7 @@ export default class MainMenu extends Phaser.Scene {
 
 	private failedToJoinGame(message: string) {
 		this.socket.off(Constant.MESSAGE.JOIN_GAME_SUCCESS);
-		console.log(message);
-		//TODO make error message fancier
+		this.showErrorMessage(message);
 	}
 
 	private loadOptions(): void {

@@ -490,9 +490,9 @@ export default class Game {
 		const nearbyTurrets: Turret[] = this.createTurretUpdate(player);
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
 		const nearbyBases: Base[] = this.createBaseUpdate(player);
-		const nearbyResources: Resource[] = this.createResourceUpdate(player);
 		const nearbyTerritories: Territory[] =
 			this.createTerritoryUpdate(player);
+		const nearbyResources: Resource[] = this.createResourceUpdate(player);
 
 		return {
 			time: this.gameTimeRemaining,
