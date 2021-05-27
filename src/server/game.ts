@@ -433,15 +433,8 @@ export default class Game {
 		const nearbyBases: Base[] = [];
 
 		for (const aBase of this.bases) {
-			if (
-				this.collision.doCirclesCollide(
-					aBase,
-					Constant.RADIUS.TERRITORY,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyBases.push(aBase);
+			// Let player have information about all bases at all times
+			nearbyBases.push(aBase);
 		}
 
 		return nearbyBases;

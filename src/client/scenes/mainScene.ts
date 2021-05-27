@@ -315,6 +315,18 @@ export default class MainScene extends Phaser.Scene {
 		this.updateGamePool(resources, this.resources);
 
 		this.events.emit('updateHUD', currentPlayer, time);
+
+		this.updateTeamHealthBars(bases);
+	}
+
+	private updateTeamHealthBars(bases: any[]) {
+		bases.forEach((obj) => {
+			this.events.emit(
+				'updateTeamHealthbar',
+				obj.teamNumber,
+				obj.hp / Constant.HP.BASE
+			);
+		});
 	}
 
 	private updatePlayer(currentPlayer: any) {

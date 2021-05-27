@@ -45,8 +45,6 @@ export default class gameOver extends Phaser.Scene {
 		textMessage += ' team wins!';
 		textMessage += '\n' + this.endState.message;
 
-		//message.setVisible(false);
-
 		const MessageArea = document.getElementById('message') as HTMLElement;
 		MessageArea.innerText = textMessage;
 

@@ -114,6 +114,24 @@ export default class Preloader extends Phaser.Scene {
 			'../assets/quit_button_pressed.png'
 		);
 
+		// Health Bars
+		this.load.image('healthbar_red', '../assets/healthbar_red.png');
+		this.load.image('healthbar_blue', '../assets/healthbar_blue.png');
+		this.load.image('healthbar_green', '../assets/healthbar_green.png');
+		this.load.image('bar_backing_thin', '../assets/bar_backing_thin.png');
+		this.load.image(
+			'bar_backing_medium',
+			'../assets/bar_backing_medium.png'
+		);
+		this.load.image('bar_backing_thick', '../assets/bar_backing_thick.png');
+
+		// Icons
+		this.load.image('heart_icon', '../assets/heart_icon.png');
+		this.load.image('coin_icon', '../assets/coin_icon.png');
+		this.load.image('timer_icon', '../assets/timer_icon.png');
+		this.load.image('flag_icon_red', '../assets/flag_icon_red.png');
+		this.load.image('flag_icon_blue', '../assets/flag_icon_blue.png');
+
 		// GameOver
 		this.load.image(
 			'return_button_unpressed',
