@@ -143,8 +143,9 @@ export class HexTiles {
 			return;
 		}
 
-		const baseDirs: number[] =
-			this.getBaseDirectionsFromTeamCount(teamCount);
+		const baseDirs: number[] = this.getBaseDirectionsFromTeamCount(
+			teamCount
+		);
 
 		// add a random offset for direction
 		// so bases can have any orientation around the centerTile
