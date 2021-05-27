@@ -63,14 +63,4 @@ export class GameCollection {
 
 		return gameList;
 	}
-
-	public getGameCount(): number {
-		let count = 0;
-
-		for (const game of this.allGames.values()) {
-			count++;
-		}
-
-		return count;
-	}
 }

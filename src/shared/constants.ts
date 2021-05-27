@@ -6,13 +6,6 @@ export const Constant = Object.freeze({
 	MAX_PLAYERS: 50, //TODO lower this maybe, I set it high for demo
 	RANDOM_LOOP_LIMIT: 10,
 
-	SERVER: {
-		GIVE_STATUS: 'GIVE_STATUS',
-		RETURN_STATUS: 'RETURN_STATUS',
-		OK: 'OK',
-		ERROR: 'ERROR',
-	},
-
 	COST: {
 		WALL: 5,
 		TURRET: 10,
@@ -88,6 +81,19 @@ export const Constant = Object.freeze({
 			MEDIUM: 2,
 			LARGE: 5,
 		},
+	},
+
+	SPRITE_DEPTH: {
+		TERRITORY: 0,
+		CAMP: 1,
+		CAMP_RING: 3,
+		BASE: 4,
+		WALL: 4,
+		TURRET_BASE: 4,
+		TURRET_GUN: 7,
+		PLAYER: 6,
+		BULLET: 5,
+		RESOURCE: 2,
 	},
 
 	BUILDING: {

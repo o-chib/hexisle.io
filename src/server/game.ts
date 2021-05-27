@@ -80,8 +80,8 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		// if (timePassed > 18)
-		//	console.log('WARNING: Update took ', timePassed, 'ms');
+		if (timePassed > 24)
+			console.log('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
 
@@ -278,7 +278,7 @@ export default class Game {
 			);
 		}
 		this.stopAllIntervals();
-		setTimeout(this.gameOverCallback, Constant.TIMING.GAME_END_SCREEN); //TODO remove timeout later?
+		this.gameOverCallback();
 	}
 
 	createGameEndRecap() {
