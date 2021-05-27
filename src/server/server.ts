@@ -43,6 +43,14 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 				'Please use a different name'
 			);
 			return;
+		} else if (name.length > Constant.MAX_NAME_LENGTH) {
+			socket.emit(
+				Constant.MESSAGE.JOIN_GAME_FAIL,
+				'Maximum name length ' +
+					Constant.MAX_NAME_LENGTH +
+					' characters'
+			);
+			return;
 		}
 
 		if (allGames.addPlayerToGame(socket, name, gameID))

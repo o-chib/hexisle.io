@@ -5,6 +5,7 @@ export const Constant = Object.freeze({
 	TEAM_COUNT: 2,
 	MAX_PLAYERS: 50, //TODO lower this maybe, I set it high for demo
 	RANDOM_LOOP_LIMIT: 10,
+	MAX_NAME_LENGTH: 15,
 
 	COST: {
 		WALL: 5,
