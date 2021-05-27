@@ -64,11 +64,11 @@ To run tests, run the following command
 
 ## Screenshots
 
-![App Screenshot](public/image/carousel1.png)
+![App Screenshot](landing-page/image/carousel1.png)
 
-![App Screenshot](public/image/carousel2.png)
+![App Screenshot](landing-page/image/carousel2.png)
 
-![App Screenshot](public/image/carousel3.png)
+![App Screenshot](landing-page/image/carousel3.png)
   
 ## Demo
 
