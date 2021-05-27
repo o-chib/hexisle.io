@@ -1,0 +1,18 @@
+body {
+    background-color: #28242c;
+    color: #fff;
+    /* color: #0f0f0f; */
+  }
+  
+  .aboutCard {
+    width: 21%;
+  }
+
+  .serverStatus {
+    border: 2px solid white;
+  }
+
+  .customALink {
+    color: black;
+    text-decoration: none;
+}
