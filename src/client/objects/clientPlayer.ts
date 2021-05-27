@@ -36,7 +36,6 @@ class ClientPlayerSprite extends ClientGameObject {
 			playerTexture = 'player_blue';
 
 		this.setTexture(playerTexture);
-		this.setDepth(10);
 	}
 
 	public update(playerLiteral: any) {
@@ -130,11 +129,7 @@ class ClientPlayerName extends Phaser.GameObjects.Text implements IPoolObject {
 			strokeThickness: 5,
 		});
 		scene.add.existing(this);
-		this.setDepth(100000);		
-	}
-
-	public update(objectState: any): void {
-		this.setPosition(objectState.xPos - (this.namePixelLength/2), objectState.yPos - 110);
+		this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
 	}
 
 	public init(objLiteral: any): void {
@@ -142,12 +137,18 @@ class ClientPlayerName extends Phaser.GameObjects.Text implements IPoolObject {
 		this.setText(objLiteral.name);
 
 		// Calculate pixel length of player name
-		let context = document.createElement("canvas").getContext("2d");
+		const context = document.createElement("canvas").getContext("2d");
 		context!.font = "36px Arial";
 		let width = context!.measureText(objLiteral.name).width;
 		this.namePixelLength = width;
 	}
 
+	public update(objectState: any): void {
+		this.setPosition(
+			objectState.xPos - this.namePixelLength * 0.5,
+			objectState.yPos - 110
+		);
+	}
 
 	public die(): void {
 		this.setAlive(false);
