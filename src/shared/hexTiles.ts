@@ -188,7 +188,10 @@ export class HexTiles {
 	}
 
 	checkIfValidEmptyPointOnGrid(point: Point): boolean {
-		const hexCoord: OffsetPoint = HexTiles.cartesianToOffset(point);
+		const hexCoord: OffsetPoint = HexTiles.cartesianToOffset(
+			point.xPos,
+			point.yPos
+		);
 
 		if (!this.checkIfValidHex(hexCoord)) return false;
 
@@ -342,18 +345,16 @@ export class HexTiles {
 		return results;
 	}
 
-	public static cartesianToOffset(point: Point): OffsetPoint {
+	public static cartesianToOffset(x: number, y: number): OffsetPoint {
 		// takes in a point in the cartesian plane
 		// returns the offset odd-q coordinate of the hex it's in
 
 		// account for the half a hex to the bottom right we're pushing the map
-		let xPos: number = point.xPos;
-		let yPos: number = point.yPos;
-		xPos = xPos - HexTiles.HEX_SIZE;
-		yPos = yPos - HexTiles.HEX_SIZE;
+		x = x - HexTiles.HEX_SIZE;
+		y = y - HexTiles.HEX_SIZE;
 
 		// make the offset coord into a cube format
-		let cube: number[] = this.pixelToCube(new Point(xPos, yPos));
+		let cube: number[] = this.pixelToCube(new Point(x, y));
 
 		// round the cube
 		cube = this.roundCube(cube);
@@ -398,7 +399,8 @@ export class HexTiles {
 		const results: Tile[] = [];
 		const centerTile: Tile = new Tile();
 		centerTile.offset_coord = HexTiles.cartesianToOffset(
-			new Point(point.xPos, point.yPos)
+			point.xPos,
+			point.yPos
 		);
 		const screenCoords: OffsetPoint[] = this.getHexRadiusPoints(
 			centerTile,

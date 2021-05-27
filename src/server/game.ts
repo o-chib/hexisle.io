@@ -655,9 +655,11 @@ export default class Game {
 
 	buildStructure(
 		socket: SocketIO.Socket,
-		coord: OffsetPoint,
+		x: number,
+		y: number,
 		building: string
 	): void {
+		const coord = HexTiles.cartesianToOffset(x, y);
 		if (
 			!this.players.has(socket.id) ||
 			!this.hexTileMap.checkIfValidHex(coord)
@@ -705,7 +707,8 @@ export default class Game {
 		return true;
 	}
 
-	demolishStructure(socket: SocketIO.Socket, coord: OffsetPoint): void {
+	demolishStructure(socket: SocketIO.Socket, x: number, y: number): void {
+		const coord = HexTiles.cartesianToOffset(x, y);
 		if (
 			!this.players.has(socket.id) ||
 			!this.hexTileMap.checkIfValidHex(coord)

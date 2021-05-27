@@ -64,14 +64,17 @@ export default class GameWrapper {
 
 		socket.on(
 			Constant.MESSAGE.BUILD_STRUCTURE,
-			(coord: OffsetPoint, building: string) => {
-				this.game.buildStructure(socket, coord, building);
+			(x: number, y: number, building: string) => {
+				this.game.buildStructure(socket, x, y, building);
 			}
 		);
 
-		socket.on(Constant.MESSAGE.DEMOLISH_STRUCTURE, (coord: OffsetPoint) => {
-			this.game.demolishStructure(socket, coord);
-		});
+		socket.on(
+			Constant.MESSAGE.DEMOLISH_STRUCTURE,
+			(x: number, y: number) => {
+				this.game.demolishStructure(socket, x, y);
+			}
+		);
 	}
 
 	private leaveGame(socket: SocketIO.Socket) {
