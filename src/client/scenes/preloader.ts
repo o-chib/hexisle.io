@@ -125,8 +125,8 @@ export default class Preloader extends Phaser.Scene {
 		);
 
 		// Static Images
-		this.load.image('bullet', '../assets/bullet.png');
-		this.load.image('bulletblue', '../assets/bulletblue.png');
+		this.load.image('bullet_red', '../assets/bullet.png');
+		this.load.image('bullet_blue', '../assets/bulletblue.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
 		this.load.image('resSmall', '../assets/resourceSmall.png');
 		this.load.image('resMedium', '../assets/resourceMedium.png');
