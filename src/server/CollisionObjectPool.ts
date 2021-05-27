@@ -33,7 +33,6 @@ export class CollisionObjectPool {
 	 * @param element the element to free and reset
 	 */
 	public releaseElement(element: CollisionObject): void {
-		element.resetData();
 		this.poolArray.push(element);
 		this.activeElements--;
 	}

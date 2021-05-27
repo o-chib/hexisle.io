@@ -372,15 +372,4 @@ export class CollisionObject extends Rect {
 		this.t = object.yPos - radius;
 		this.payload = object;
 	}
-
-	/**
-	 * Resets an existing collision object to represent nothing
-	 */
-	public resetData(): void {
-		this.l = 0;
-		this.r = 0;
-		this.b = 0;
-		this.t = 0;
-		this.payload = {};
-	}
 }
