@@ -30,9 +30,7 @@ describe('HexTiles', () => {
 	});
 
 	it('cartesianToOffset should give an empty tile at the right offset coord', () => {
-		const hexCoord: OffsetPoint = hexTileMap.cartesianToOffset(
-			new Point(2900, 1700)
-		);
+		const hexCoord: OffsetPoint = HexTiles.cartesianToOffset(2900, 1700);
 		expect(hexCoord.q).toEqual(25);
 		expect(hexCoord.r).toEqual(12);
 
@@ -41,9 +39,7 @@ describe('HexTiles', () => {
 	});
 
 	it('cartesianToOffset should give a boundary tile at the right offset coord', () => {
-		const hexCoord: OffsetPoint = hexTileMap.cartesianToOffset(
-			new Point(7400, 4600)
-		);
+		const hexCoord: OffsetPoint = HexTiles.cartesianToOffset(7400, 4600);
 		expect(hexCoord.q).toEqual(65);
 		expect(hexCoord.r).toEqual(34);
 
@@ -53,7 +49,7 @@ describe('HexTiles', () => {
 
 	it('cartesianToOffset should not modify the point given to it', () => {
 		const point: Point = new Point(1900, 2700);
-		hexTileMap.cartesianToOffset(point);
+		HexTiles.cartesianToOffset(point.xPos, point.yPos);
 		expect(point.xPos).toEqual(1900);
 		expect(point.yPos).toEqual(2700);
 	});
