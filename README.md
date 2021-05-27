@@ -136,4 +136,4 @@ This project is [MIT](https://github.com/o-chib/hexisle.io/blob/main/LICENSE) li
   
 ## Feedback
 
-If you have any feedback, please reach out to us using [issues page](https://github.com/kefranabg/readme-md-generator/issues).
+If you have any feedback, please reach out to us using [issues page](https://github.com/o-chib/hexisle.io/issues).
