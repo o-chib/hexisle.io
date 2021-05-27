@@ -98,19 +98,31 @@ export default class Preloader extends Phaser.Scene {
 			}
 		);
 		// Lobby
+		this.load.image('logo', '../assets/logo.png');
 		this.load.image('lobby_bg', '../assets/lobby_bg.png');
-		this.load.image('lobby_logo', '../assets/lobby_logo.png');
-		this.load.image('lobby_play', '../assets/lobby_play.png');
-		this.load.image('lobby_options', '../assets/lobby_options.png');
-		this.load.image('lobby_help', '../assets/lobby_help.png');
 		this.load.image('help_menu', '../assets/help.png');
 		this.load.html('form', '../supportfiles/form.html');
+		this.load.html('form_gameover', '../supportfiles/form_gameover.html');
 
 		// Main Game
-		this.load.image('quitButton', '../assets/quitButton.png');
+		this.load.image(
+			'quit_button_unpressed',
+			'../assets/quit_button_unpressed.png'
+		);
+		this.load.image(
+			'quit_button_pressed',
+			'../assets/quit_button_pressed.png'
+		);
 
 		// GameOver
-		this.load.image('playAgain', '../assets/gameover_playagain.png');
+		this.load.image(
+			'return_button_unpressed',
+			'../assets/return_button_unpressed.png'
+		);
+		this.load.image(
+			'return_button_pressed',
+			'../assets/return_button_pressed.png'
+		);
 
 		// Static Images
 		this.load.image('bullet', '../assets/bullet.png');
