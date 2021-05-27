@@ -3,8 +3,9 @@ import { ClientGameObject } from './clientGameObject';
 
 export class ClientResource extends ClientGameObject {
 	public create(newResourceLiteral: any) {
-		let resourceTexture = '';
+		this.setDepth(Constant.SPRITE_DEPTH.RESOURCE);
 
+		let resourceTexture = '';
 		if (newResourceLiteral.type == Constant.RESOURCE.RESOURCE_NAME[0]) {
 			resourceTexture = 'resSmall';
 		} else if (

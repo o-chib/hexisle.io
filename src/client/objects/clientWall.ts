@@ -3,6 +3,8 @@ import { ClientStructure } from './clientStructure';
 
 export class ClientWall extends ClientStructure {
 	public update(newWallLiteral: any) {
+		this.setDepth(Constant.SPRITE_DEPTH.WALL);
+
 		let wallTexture = '';
 		if (newWallLiteral.teamNumber == Constant.TEAM.RED)
 			wallTexture = 'wall_red';

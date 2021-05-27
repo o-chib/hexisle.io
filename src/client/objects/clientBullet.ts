@@ -3,7 +3,7 @@ import { ClientGameObject } from './clientGameObject';
 
 export class ClientBullet extends ClientGameObject {
 	public create(newBulletLiteral: any) {
-		this.setDepth(this.depth + 2);
+		this.setDepth(Constant.SPRITE_DEPTH.BULLET);
 
 		let bulletTexture = '';
 		if (newBulletLiteral.teamNumber == Constant.TEAM.RED)

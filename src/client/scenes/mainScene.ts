@@ -29,9 +29,9 @@ export default class MainScene extends Phaser.Scene {
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
 	private socket: SocketIOClient.Socket;
-	private alive = false;
 	private hexTiles: HexTiles;
-	private debugMode = false;
+	private alive: boolean;
+	private debugMode: boolean;
 
 	constructor() {
 		super(MainScene.Name);
@@ -52,6 +52,8 @@ export default class MainScene extends Phaser.Scene {
 		this.campfires = new ObjectPool(this, ClientCampfire, 5);
 		this.bases = new ObjectPool(this, ClientBase, 2);
 		this.resources = new ObjectPool(this, ClientResource, 10);
+		this.alive = false;
+		this.debugMode = false;
 	}
 
 	create(): void {
@@ -72,6 +74,7 @@ export default class MainScene extends Phaser.Scene {
 
 	update(): void {
 		this.updateDirection();
+		this.shootIfMouseDown();
 		if (this.debugMode) this.updateDebugInfo();
 	}
 
@@ -137,14 +140,16 @@ export default class MainScene extends Phaser.Scene {
 			.events.once('leaveGame', this.leaveGame.bind(this));
 	}
 
+	private deregisterSocketListeners(): void {
+		this.socket.off(Constant.MESSAGE.INITIALIZE);
+
+		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
+
+		this.socket.off(Constant.MESSAGE.GAME_END);
+		this.scene.get('HUDScene').events.off('leaveGame');
+	}
+
 	private registerInputListeners(): void {
-		this.input.on('pointerdown', (pointer) => {
-			if (!this.alive) return;
-			const direction = this.getMouseDirection(pointer);
-
-			this.socket.emit(Constant.MESSAGE.SHOOT, direction);
-		});
-
 		for (const key in this.moveKeys) {
 			this.moveKeys[key].addListener(
 				'down',
@@ -165,6 +170,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	private deregisterInputListeners(): void {
+		this.input.off('pointerdown');
 		for (const key in this.moveKeys) {
 			this.moveKeys[key].removeAllListeners();
 		}
@@ -180,6 +186,12 @@ export default class MainScene extends Phaser.Scene {
 
 		this.myPlayer.setRotation(direction);
 		this.socket.emit(Constant.MESSAGE.ROTATE, direction);
+	}
+
+	private shootIfMouseDown(): void {
+		if (!this.alive || !this.input.activePointer.isDown) return;
+		const direction = this.getMouseDirection(this.input.activePointer);
+		this.socket.emit(Constant.MESSAGE.SHOOT, direction);
 	}
 
 	private getMouseDirection(pointer?: Phaser.Input.Pointer): any {
@@ -338,9 +350,9 @@ export default class MainScene extends Phaser.Scene {
 
 	private endGame(): void {
 		this.deregisterInputListeners();
+		this.deregisterSocketListeners();
 		this.cameras.resetAll();
 		this.events.emit('stopHUD');
 		this.events.emit('stopUI');
-		this.socket.off(Constant.MESSAGE.GAME_UPDATE);
 	}
 }

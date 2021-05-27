@@ -13,6 +13,8 @@ export class ClientBase extends ClientGameObjectContainer {
 
 class ClientBaseSprite extends ClientStructure {
 	public create(newBaseLiteral: any) {
+		this.setDepth(Constant.SPRITE_DEPTH.BASE);
+
 		let baseTexture = '';
 		if (newBaseLiteral.teamNumber == Constant.TEAM.RED)
 			baseTexture = 'base_red';

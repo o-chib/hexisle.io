@@ -11,7 +11,7 @@ hexQ/hexR:%3/%4`;
 
 export default class HUDScene extends Phaser.Scene {
 	public static Name = 'HUDScene';
-	private mainSceneObj: any;
+	private mainSceneObj: Phaser.Scene;
 
 	// Text/Scoring
 	private infoText?: Phaser.GameObjects.Text;
@@ -20,7 +20,7 @@ export default class HUDScene extends Phaser.Scene {
 	// Debug Info
 	private debugInfoText?: Phaser.GameObjects.Text;
 	// Quit Button
-	private quitButton?: Phaser.GameObjects.Image;
+	private quitButton: Phaser.GameObjects.Image;
 
 	constructor() {
 		super('HUDScene');
@@ -86,7 +86,7 @@ export default class HUDScene extends Phaser.Scene {
 
 		// HUD: Right
 		this.quitButton = this.add
-			.image(0, 0, 'quitButton')
+			.image(0, 0, 'quit_button_unpressed')
 			.setDepth(99)
 			.setDisplayOrigin(0.5, 0.5)
 			.setScale(0.35);
@@ -97,8 +97,15 @@ export default class HUDScene extends Phaser.Scene {
 		});
 
 		// Set quitButton Interaction
+		this.quitButton.removeAllListeners();
 		this.quitButton.setInteractive();
-		this.quitButton.on('pointerdown', this.quitCurrentGame.bind(this));
+		this.quitButton.once('pointerdown', this.quitCurrentGame.bind(this));
+		this.quitButton.on('pointerover', () => {
+			this.quitButton.setTexture('quit_button_pressed');
+		});
+		this.quitButton.on('pointerout', () => {
+			this.quitButton.setTexture('quit_button_unpressed');
+		});
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');
@@ -108,9 +115,9 @@ export default class HUDScene extends Phaser.Scene {
 		this.mainSceneObj.events.off('updateHUD');
 		this.mainSceneObj.events.off('stopHUD');
 
-		this.mainSceneObj.events.on('startHUD', this.startHUD, this);
+		this.mainSceneObj.events.once('startHUD', this.startHUD, this);
 		this.mainSceneObj.events.on('updateHUD', this.updateText, this);
-		this.mainSceneObj.events.on('stopHUD', this.stopHUD, this);
+		this.mainSceneObj.events.once('stopHUD', this.stopHUD, this);
 	}
 
 	private updateText(currentPlayer: any, time: number): void {
