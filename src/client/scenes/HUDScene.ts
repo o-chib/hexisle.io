@@ -97,6 +97,7 @@ export default class HUDScene extends Phaser.Scene {
 		});
 
 		// Set quitButton Interaction
+		this.quitButton.removeAllListeners();
 		this.quitButton.setInteractive();
 		this.quitButton.once('pointerdown', this.quitCurrentGame.bind(this));
 		this.quitButton.on('pointerover', () => {
