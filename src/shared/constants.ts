@@ -99,6 +99,7 @@ export const Constant = Object.freeze({
 		TURRET_BASE: 4,
 		TURRET_GUN: 7,
 		PLAYER: 6,
+		PLAYER_DEATH: 4,
 		BULLET: 5,
 		RESOURCE: 2,
 	},
