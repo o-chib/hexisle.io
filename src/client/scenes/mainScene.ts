@@ -38,6 +38,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	init(data): void {
+		this.sound.pauseOnBlur = false;
 		this.socket = data.socket;
 
 		this.initializeKeys();
