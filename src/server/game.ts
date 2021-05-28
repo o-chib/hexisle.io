@@ -409,7 +409,7 @@ export default class Game {
 		return nearbyCampfires;
 	}
 
-	createBaseUpdate(player: Player) {
+	createBaseUpdate() {
 		const nearbyBases: Base[] = [];
 
 		for (const aBase of this.bases) {
@@ -462,7 +462,7 @@ export default class Game {
 		const nearbyWalls: Wall[] = this.createWallUpdate(player);
 		const nearbyTurrets: Turret[] = this.createTurretUpdate(player);
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
-		const nearbyBases: Base[] = this.createBaseUpdate(player);
+		const nearbyBases: Base[] = this.createBaseUpdate();
 		const nearbyTerritories: Territory[] =
 			this.createTerritoryUpdate(player);
 		const nearbyResources: Resource[] = this.createResourceUpdate(player);
