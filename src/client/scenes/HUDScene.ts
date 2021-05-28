@@ -2,6 +2,7 @@ import Anchor from 'phaser3-rex-plugins/plugins/anchor.js';
 import Utilities from './Utilities';
 import ProgressBar from './ProgressBar';
 import { Constant } from '../../shared/constants';
+import BaseNavigator from './BaseNavigator';
 
 // Text Structure
 const timer_format = `%1:%2`;
@@ -24,6 +25,9 @@ export default class HUDScene extends Phaser.Scene {
 
 	private ResourcesCounter: ProgressBar;
 	private GameTimeCounter: ProgressBar;
+
+	private navigator_red: BaseNavigator;
+	private navigator_blue: BaseNavigator;
 
 	constructor() {
 		super('HUDScene');
@@ -67,6 +71,18 @@ export default class HUDScene extends Phaser.Scene {
 				bottom: 'bottom-50',
 				left: 'left+20',
 			}
+		);
+
+		this.navigator_red = new BaseNavigator();
+		this.navigator_blue = new BaseNavigator();
+
+		this.navigator_red.createNavigator(
+			this.scene.get(HUDScene.Name),
+			'flag_icon_red'
+		);
+		this.navigator_blue.createNavigator(
+			this.scene.get(HUDScene.Name),
+			'flag_icon_blue'
 		);
 
 		this.healthbar_player.scaleEntireBar(0.4);
@@ -178,6 +194,29 @@ export default class HUDScene extends Phaser.Scene {
 			this.updateTeamHealthbar,
 			this
 		);
+		this.mainSceneObj.events.off('updateBaseNavigator');
+		this.mainSceneObj.events.on(
+			'updateBaseNavigator',
+			this.updateBaseNavigator,
+			this
+		);
+	}
+	private updateBaseNavigator(
+		teamNumber: number,
+		base:{x:number, y:number},
+		player: {x: number, y : number}
+	): void {
+		switch (teamNumber) {
+			case Constant.TEAM.BLUE:
+			console.log("BLUE");
+				this.navigator_blue.updateNavigator(base, player);
+				break;
+			case Constant.TEAM.RED:
+			console.log("RED");
+
+				this.navigator_red.updateNavigator(base, player);
+				break;
+		}
 	}
 
 	private updateTeamHealthbar(

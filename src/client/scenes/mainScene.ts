@@ -321,10 +321,22 @@ export default class MainScene extends Phaser.Scene {
 
 	private updateTeamHealthBars(bases: any[]) {
 		bases.forEach((obj) => {
+			// team healthbars
 			this.events.emit(
 				'updateTeamHealthbar',
 				obj.teamNumber,
 				obj.hp / Constant.HP.BASE
+			);
+			// base navigator
+			let basePosition = {
+				x:obj.xPos,
+				y:obj.yPos
+			};
+			this.events.emit(
+				'updateBaseNavigator',
+				obj.teamNumber,
+				basePosition,
+				this.myPlayer.getPosition()
 			);
 		});
 	}

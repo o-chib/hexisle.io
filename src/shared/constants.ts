@@ -95,6 +95,7 @@ export const Constant = Object.freeze({
 		PLAYER: 6,
 		BULLET: 5,
 		RESOURCE: 2,
+		UI: 10,
 	},
 
 	BUILDING: {
