@@ -45,8 +45,10 @@ class ClientPlayerSprite extends ClientGameObject {
 		// Opponent Animation Control
 		if (playerLiteral.hp > 0) {
 			if (this.visible == false) this.setVisible(true);
+			this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
 			this.handleWalkAnimation(playerLiteral.xVel, playerLiteral.yVel);
 		} else if (playerLiteral.hp <= 0) {
+			this.setDepth(Constant.SPRITE_DEPTH.PLAYER_DEATH);
 			this.handleDeathAnimation();
 		}
 
@@ -104,10 +106,10 @@ class ClientPlayerSprite extends ClientGameObject {
 				key: playerTextureName + '_death',
 				frames: this.anims.generateFrameNames(playerTextureName, {
 					start: 4,
-					end: 12,
+					end: 13,
 				}),
 				frameRate: 8,
-				hideOnComplete: true,
+				hideOnComplete: false,
 			});
 		}
 		if (this.anims.currentAnim.key == playerTextureName + '_walk') {
