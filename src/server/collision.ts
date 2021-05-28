@@ -358,12 +358,10 @@ export default class CollisionDetection {
 		results: CollisionObject[]
 	) {
 		this.quadtree.searchQuadtree(
-			new Rect(
-				object.xPos - radius,
-				object.xPos + radius,
-				object.yPos + radius,
-				object.yPos - radius
-			),
+			object.xPos - radius,
+			object.xPos + radius,
+			object.yPos - radius,
+			object.yPos + radius,
 			results
 		);
 	}
