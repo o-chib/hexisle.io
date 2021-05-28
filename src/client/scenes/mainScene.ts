@@ -332,32 +332,8 @@ export default class MainScene extends Phaser.Scene {
 		});
 	}
 
-	private updateHealthEffects(
-		currentPlayer: any,
-		clientPlayer: ClientPlayer
-	) {
-		// Handle Player Health-Based Effects
-		if (clientPlayer.getCurrentHP() != currentPlayer.hp) {
-			if (currentPlayer.hp != Constant.HP.PLAYER) {
-				// Play on-hit/damage sound
-				this.sound.play('sfx_player_hit');
-				// Turn player red
-				clientPlayer.setTint(0xff0000);
-			} else {
-				// Play respawn sound
-				this.sound.play('sfx_player_respawn');
-			}
-		} else {
-			// Remove tint effects
-			clientPlayer.clearTint();
-		}
-
-		clientPlayer.setCurrentHP(currentPlayer.hp);
-	}
-
 	private updatePlayer(currentPlayer: any) {
 		this.alive = currentPlayer.hp > 0;
-		this.updateHealthEffects(currentPlayer, this.myPlayer);
 		this.myPlayer.update(currentPlayer);
 	}
 

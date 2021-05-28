@@ -4,7 +4,6 @@ import { ClientGameObjectContainer } from './clientGameObjectContainer';
 
 export class ClientPlayer extends ClientGameObjectContainer {
 	public playerSprite: ClientPlayerSprite;
-	private playerHP: number = Constant.HP.PLAYER;
 
 	constructor(scene: Phaser.Scene) {
 		super();
@@ -22,25 +21,11 @@ export class ClientPlayer extends ClientGameObjectContainer {
 			y: this.playerSprite.y,
 		};
 	}
-
-	public setTint(tint: number) {
-		this.playerSprite.setTint(tint);
-	}
-
-	public clearTint() {
-		this.playerSprite.clearTint();
-	}
-
-	public setCurrentHP(hp: number): void {
-		this.playerHP = hp;
-	}
-
-	public getCurrentHP(): number {
-		return this.playerHP;
-	}
 }
 
 class ClientPlayerSprite extends ClientGameObject {
+	private playerHP: number = Constant.HP.PLAYER;
+
 	public create(playerLiteral: any) {
 		this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
 
@@ -65,6 +50,7 @@ class ClientPlayerSprite extends ClientGameObject {
 		} else if (playerLiteral.hp <= 0) {
 			this.handleDeathAnimation();
 		}
+		this.updateHealthEffects(playerLiteral.hp);
 
 		return this;
 	}
@@ -131,5 +117,33 @@ class ClientPlayerSprite extends ClientGameObject {
 			this.anims.play(playerTextureName + '_death', true);
 		}
 		return this;
+	}
+
+	private updateHealthEffects(hp: any) {
+		// Handle Player Health-Based Effects
+		if (this.getCurrentHP() != hp) {
+			if (hp != Constant.HP.PLAYER) {
+				// Play on-hit/damage sound
+				this.scene.sound.play('sfx_player_hit');
+				// Turn player red
+				this.setTint(0xff0000);
+			} else {
+				// Play respawn sound
+				this.scene.sound.play('sfx_player_respawn');
+			}
+		} else {
+			// Remove tint effects
+			this.clearTint();
+		}
+
+		this.setCurrentHP(hp);
+	}
+
+	public setCurrentHP(hp: number): void {
+		this.playerHP = hp;
+	}
+
+	public getCurrentHP(): number {
+		return this.playerHP;
 	}
 }
