@@ -87,7 +87,7 @@ export const Constant = Object.freeze({
 	VOLUME: {
 		BG_MUSIC: 0.01,
 		MENU_MUSIC: 0.005,
-		PLAYER_VOLUME: 0.25,
+		PLAYER_VOLUME: 0.1,
 	},
 
 	SPRITE_DEPTH: {
