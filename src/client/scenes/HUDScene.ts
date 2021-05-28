@@ -156,7 +156,7 @@ export default class HUDScene extends Phaser.Scene {
 			right: 'right-140',
 			top: 'top+10',
 		});
-		this.setToggleMuteButtonIcon();
+		Utilities.setToggleMuteButtonIcon(this.muteButton, this.sound);
 
 		// Set button Interaction
 		this.quitButton.removeAllListeners();
@@ -173,7 +173,7 @@ export default class HUDScene extends Phaser.Scene {
 		this.muteButton.setInteractive();
 		this.muteButton.on(
 			'pointerdown',
-			this.toggleMuteButton.bind(this, this.game)
+			Utilities.toggleMuteButton.bind(this, this.muteButton, this.sound)
 		);
 
 		//  Grab a reference to the Game Scene
@@ -269,24 +269,5 @@ export default class HUDScene extends Phaser.Scene {
 
 	private quitCurrentGame(): void {
 		this.events.emit('leaveGame');
-	}
-
-	/**
-	 * Action when pressing the sound button, toggles mute for all game sounds
-	 */
-	private toggleMuteButton(): void {
-		Utilities.toggleMute(this.sound);
-		this.setToggleMuteButtonIcon();
-	}
-
-	/**
-	 * Changes the icon of the mute button corresponding to the current mute status
-	 */
-	private setToggleMuteButtonIcon(): void {
-		if (this.sound.mute) {
-			this.muteButton?.setTexture('sound_off_button');
-		} else {
-			this.muteButton?.setTexture('sound_on_button');
-		}
 	}
 }
