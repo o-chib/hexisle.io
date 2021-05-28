@@ -146,6 +146,6 @@ export const Constant = Object.freeze({
 
 	QUADTREE: {
 		SPLIT: 0.5,
-		MAX_DEPTH: 24,
+		MAX_DEPTH: 20,
 	},
 });
