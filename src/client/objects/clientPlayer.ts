@@ -122,7 +122,7 @@ class ClientPlayerSprite extends ClientGameObject {
 	}
 
 	private getVolume(): number {
-		const mainSceneObj = this.scene.scene.get(MainScene.Name) as MainScene;
+		const mainSceneObj = this.scene as MainScene;
 		const mainPlayerPosition = mainSceneObj.myPlayer.getPosition();
 		const distance = Phaser.Math.Distance.Between(
 			this.x,
@@ -132,7 +132,7 @@ class ClientPlayerSprite extends ClientGameObject {
 		);
 		let ratio = distance / Constant.RADIUS.VIEW;
 		ratio = Phaser.Math.Clamp(ratio, 0, 1);
-		return 1 - ratio;
+		return (1 - ratio) * Constant.VOLUME;
 	}
 	private getIfMuted(): boolean {
 		return this.scene.sound.mute;
