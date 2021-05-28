@@ -123,10 +123,14 @@ export default class Preloader extends Phaser.Scene {
 	 * Preloads player assets
 	 */
 	private preloadPlayers(): void {
-		this.load.spritesheet('player_red', '../assets/players/player_red.png', {
-			frameWidth: 94,
-			frameHeight: 120,
-		});
+		this.load.spritesheet(
+			'player_red',
+			'../assets/players/player_red.png',
+			{
+				frameWidth: 94,
+				frameHeight: 120,
+			}
+		);
 		this.load.spritesheet(
 			'player_blue',
 			'../assets/players/player_blue.png',
@@ -316,16 +320,25 @@ export default class Preloader extends Phaser.Scene {
 	/**
 	 * Preloads bars
 	 */
-	 private preloadBars(): void {
+	private preloadBars(): void {
 		this.load.image('healthbar_red', '../assets/bars/healthbar_red.png');
 		this.load.image('healthbar_blue', '../assets/bars/healthbar_blue.png');
-		this.load.image('healthbar_green', '../assets/bars/healthbar_green.png');
-		this.load.image('bar_backing_thin', '../assets/bars/bar_backing_thin.png');
+		this.load.image(
+			'healthbar_green',
+			'../assets/bars/healthbar_green.png'
+		);
+		this.load.image(
+			'bar_backing_thin',
+			'../assets/bars/bar_backing_thin.png'
+		);
 		this.load.image(
 			'bar_backing_medium',
 			'../assets/bars/bar_backing_medium.png'
 		);
-		this.load.image('bar_backing_thick', '../assets/bars/bar_backing_thick.png');
+		this.load.image(
+			'bar_backing_thick',
+			'../assets/bars/bar_backing_thick.png'
+		);
 	}
 
 	/**

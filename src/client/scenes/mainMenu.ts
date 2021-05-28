@@ -50,7 +50,9 @@ export default class MainMenu extends Phaser.Scene {
 
 		// Containers
 		const menuContainer = this.add.container(renderWidth / 2, 0);
-		const optionsContainer = this.add.container(menuContainer.x + 160, renderHeight / 2).setVisible(false);
+		const optionsContainer = this.add
+			.container(menuContainer.x + 160, renderHeight / 2)
+			.setVisible(false);
 
 		// Form Box
 		this.inputBox = this.add
@@ -148,6 +150,7 @@ export default class MainMenu extends Phaser.Scene {
 	}
 
 	public update(): void {
+		// Main Menu doesn't update, interactions are listener-based
 	}
 
 	private initializeLobbyList(lobbyList): void {

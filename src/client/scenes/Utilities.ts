@@ -19,7 +19,10 @@ export default class Utilities {
 	/**
 	 * Action when pressing the sound button, toggles mute for all game sounds
 	 */
-	public static toggleMuteButton(button: Phaser.GameObjects.Image, sound: Phaser.Sound.BaseSoundManager): void {
+	public static toggleMuteButton(
+		button: Phaser.GameObjects.Image,
+		sound: Phaser.Sound.BaseSoundManager
+	): void {
 		Utilities.toggleMute(sound);
 		Utilities.setToggleMuteButtonIcon(button, sound);
 	}
@@ -27,7 +30,10 @@ export default class Utilities {
 	/**
 	 * Changes the icon of the mute button corresponding to the current mute status
 	 */
-	public static setToggleMuteButtonIcon(button: Phaser.GameObjects.Image, sound: Phaser.Sound.BaseSoundManager): void {
+	public static setToggleMuteButtonIcon(
+		button: Phaser.GameObjects.Image,
+		sound: Phaser.Sound.BaseSoundManager
+	): void {
 		if (sound.mute) {
 			button.setTexture('sound_off_button');
 		} else {
