@@ -45,8 +45,10 @@ class ClientPlayerSprite extends ClientGameObject {
 		// Opponent Animation Control
 		if (playerLiteral.hp > 0) {
 			if (this.visible == false) this.setVisible(true);
+			this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
 			this.handleWalkAnimation(playerLiteral.xVel, playerLiteral.yVel);
 		} else if (playerLiteral.hp <= 0) {
+			this.setDepth(Constant.SPRITE_DEPTH.PLAYER_DEATH);
 			this.handleDeathAnimation();
 		}
 
