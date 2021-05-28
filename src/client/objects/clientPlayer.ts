@@ -104,10 +104,10 @@ class ClientPlayerSprite extends ClientGameObject {
 				key: playerTextureName + '_death',
 				frames: this.anims.generateFrameNames(playerTextureName, {
 					start: 4,
-					end: 12,
+					end: 13,
 				}),
 				frameRate: 8,
-				hideOnComplete: true,
+				hideOnComplete: false,
 			});
 		}
 		if (this.anims.currentAnim.key == playerTextureName + '_walk') {
