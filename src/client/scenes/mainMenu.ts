@@ -9,8 +9,10 @@ export default class MainMenu extends Phaser.Scene {
 	private playerName: string | undefined = '';
 	private gameid: string | undefined = '';
 	private inputBox;
+	private menuMusic: Phaser.Sound.BaseSound;
 	private nextUpdateTime: number;
 	private submitKey: Phaser.Input.Keyboard.Key;
+	private muteButton?: Phaser.GameObjects.Image;
 
 	constructor() {
 		super('MainMenu');
@@ -23,6 +25,17 @@ export default class MainMenu extends Phaser.Scene {
 			Constant.MESSAGE.GIVE_GAME_LIST,
 			this.initializeLobbyList.bind(this)
 		);
+
+		// Menu Music
+		if (!this.sound.get('menuMusic')) {
+			this.menuMusic = this.sound.add('menuMusic', {
+				volume: Constant.VOLUME.MENU_MUSIC,
+				loop: true,
+			});
+		}
+		if (!this.menuMusic.isPlaying) {
+			this.menuMusic.play();
+		}
 	}
 
 	public create(): void {
@@ -31,16 +44,20 @@ export default class MainMenu extends Phaser.Scene {
 
 		const renderWidth = this.game.renderer.width;
 		const renderHeight = this.game.renderer.height;
+
 		// Background image
 		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
-		// Container
+		// Containers
 		const menuContainer = this.add.container(renderWidth / 2, 0);
+		const optionsContainer = this.add
+			.container(menuContainer.x + 170, renderHeight / 2)
+			.setVisible(false);
 
 		// Form Box
 		this.inputBox = this.add
 			.dom(0, renderHeight * 0.45)
-			.createFromCache('form')
+			.createFromCache('form_mainmenu')
 			.setDepth(1);
 		menuContainer.add(this.inputBox);
 
@@ -61,6 +78,23 @@ export default class MainMenu extends Phaser.Scene {
 			.setDepth(2)
 			.setVisible(false);
 
+		// Options menu/buttons
+		this.muteButton = this.add
+			.image(0, 0, '')
+			.setDepth(3)
+			.setDisplayOrigin(0.5, 0.5)
+			.setScale(0.7);
+		Utilities.setToggleMuteButtonIcon(this.muteButton, this.sound);
+
+		this.muteButton.removeAllListeners();
+		this.muteButton.setInteractive();
+		this.muteButton.on(
+			'pointerdown',
+			Utilities.toggleMuteButton.bind(this, this.muteButton, this.sound)
+		);
+
+		optionsContainer.add(this.muteButton);
+
 		// Interactions
 		this.submitKey = this.input.keyboard.addKey(
 			Phaser.Input.Keyboard.KeyCodes.ENTER,
@@ -78,7 +112,9 @@ export default class MainMenu extends Phaser.Scene {
 			FormUtilities.setButtonTextureOnMouseOut(playButton)
 		);
 
-		optionButton.addEventListener('click', () => this.loadOptions());
+		optionButton.addEventListener('click', () =>
+			optionsContainer.setVisible(!optionsContainer.visible)
+		);
 		optionButton.addEventListener('mouseover', () =>
 			FormUtilities.setButtonTextureOnMouseIn(optionButton)
 		);
@@ -114,7 +150,7 @@ export default class MainMenu extends Phaser.Scene {
 	}
 
 	public update(): void {
-		//if (Date.now() >= this.nextUpdateTime) this.askForUpdatedGameList();
+		// Main Menu doesn't update, interactions are listener-based
 	}
 
 	private initializeLobbyList(lobbyList): void {
@@ -188,6 +224,8 @@ export default class MainMenu extends Phaser.Scene {
 		this.socket.off(Constant.MESSAGE.GIVE_GAME_LIST);
 		this.submitKey.removeAllListeners();
 
+		this.menuMusic.pause();
+
 		this.scene.start(mainScene.Name, {
 			socket: this.socket,
 		});
@@ -196,9 +234,5 @@ export default class MainMenu extends Phaser.Scene {
 	private failedToJoinGame(message: string) {
 		this.socket.off(Constant.MESSAGE.JOIN_GAME_SUCCESS);
 		this.showErrorMessage(message);
-	}
-
-	private loadOptions(): void {
-		//TODO remove options?
 	}
 }

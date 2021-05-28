@@ -13,10 +13,9 @@ export default class HUDScene extends Phaser.Scene {
 	public static Name = 'HUDScene';
 	private mainSceneObj: Phaser.Scene;
 
-	// Debug Info
 	private debugInfoText?: Phaser.GameObjects.Text;
-	// Quit Button
 	private quitButton: Phaser.GameObjects.Image;
+	private muteButton?: Phaser.GameObjects.Image;
 
 	private healthbar_player: ProgressBar;
 	private healthbar_team_red: ProgressBar;
@@ -142,14 +141,24 @@ export default class HUDScene extends Phaser.Scene {
 			.image(0, 0, 'quit_button_unpressed')
 			.setDepth(99)
 			.setDisplayOrigin(0.5, 0.5)
-			.setScale(0.35);
-
+			.setScale(0.4);
 		new Anchor(this.quitButton, {
 			right: 'right-10',
 			top: 'top+10',
 		});
 
-		// Set quitButton Interaction
+		this.muteButton = this.add
+			.image(0, 0, 'sound_on_button')
+			.setDepth(99)
+			.setDisplayOrigin(0.5, 0.5)
+			.setScale(0.4);
+		new Anchor(this.muteButton, {
+			right: 'right-65',
+			top: 'top+10',
+		});
+		Utilities.setToggleMuteButtonIcon(this.muteButton, this.sound);
+
+		// Set button Interaction
 		this.quitButton.removeAllListeners();
 		this.quitButton.setInteractive();
 		this.quitButton.once('pointerdown', this.quitCurrentGame.bind(this));
@@ -159,6 +168,13 @@ export default class HUDScene extends Phaser.Scene {
 		this.quitButton.on('pointerout', () => {
 			this.quitButton.setTexture('quit_button_unpressed');
 		});
+
+		this.muteButton.removeAllListeners();
+		this.muteButton.setInteractive();
+		this.muteButton.on(
+			'pointerdown',
+			Utilities.toggleMuteButton.bind(this, this.muteButton, this.sound)
+		);
 
 		//  Grab a reference to the Game Scene
 		this.mainSceneObj = this.scene.get('MainScene');

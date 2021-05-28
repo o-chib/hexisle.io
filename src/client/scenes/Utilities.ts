@@ -15,4 +15,37 @@ export default class Utilities {
 	public static LogSceneMethodEntry(sceneName: string, method: string): void {
 		this.Log('Entered ' + sceneName + ' ' + method + '()');
 	}
+
+	/**
+	 * Action when pressing the sound button, toggles mute for all game sounds
+	 */
+	public static toggleMuteButton(
+		button: Phaser.GameObjects.Image,
+		sound: Phaser.Sound.BaseSoundManager
+	): void {
+		Utilities.toggleMute(sound);
+		Utilities.setToggleMuteButtonIcon(button, sound);
+	}
+
+	/**
+	 * Changes the icon of the mute button corresponding to the current mute status
+	 */
+	public static setToggleMuteButtonIcon(
+		button: Phaser.GameObjects.Image,
+		sound: Phaser.Sound.BaseSoundManager
+	): void {
+		if (sound.mute) {
+			button.setTexture('sound_off_button');
+		} else {
+			button.setTexture('sound_on_button');
+		}
+	}
+
+	/**
+	 * Toggles muting all sounds in the game
+	 * @param scene the scene to get the sound manager from
+	 */
+	public static toggleMute(sound: Phaser.Sound.BaseSoundManager): void {
+		sound.mute = !sound.mute;
+	}
 }
