@@ -366,5 +366,6 @@ export default class Preloader extends Phaser.Scene {
 			'sfx_player_respawn',
 			'../assets/sounds/220173__gameaudio__spacey-1up-power-up.wav'
 		);
+		this.load.audio('bullet', '../assets/sounds/bullet.mp3');
 	}
 }
