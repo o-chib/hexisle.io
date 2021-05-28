@@ -2,15 +2,30 @@
     <img src="https://i.imgur.com/cjIpMcl.png" />
 </p>
 <p align="center">
-    <img src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000?" target="_blank" />
+    <a href="">
+        <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/o-chib/hexisle.io">
+    </a>
+    <a href="https://travis-ci.com/github/o-chib/hexisle.io/builds" target="_blank">
+        <img alt="Travis (.com) branch" src="https://travis-ci.com/o-chib/hexisle.io.svg?branch=main">
+    </a>
+    <a href="">
+        <img alt="Typescript" src="https://img.shields.io/badge/typescript-strict-blue.svg">
+    </a>
+    <br />
+    <a href="https://github.com/o-chib/hexisle.io/issues?q=is%3Aopen+is%3Aissue">
+        <img alt="GitHub issues" src="https://img.shields.io/github/issues-raw/o-chib/hexisle.io">
+    </a>
     <a href="https://github.com/o-chib/hexisle.io/wiki">
         <img alt="" src="https://img.shields.io/badge/documentation-here-brightgreen.svg?" target="_blank" />
     </a>
     <a href="https://docs.google.com/document/d/1YHrR4WNBf9_-gPamyvvTtFYI9yxm49cz7WaIZMAzbWY/edit?usp=sharing">
         <img alt="" src="https://img.shields.io/badge/userguide-here-brightgreen.svg?" target="_blank" />
     </a>
+    <a href="https://hexisle.io/">
+        <img alt="Website" src="https://img.shields.io/website?down_color=lightgrey&down_message=offline&up_color=blue&up_message=online&url=https%3A%2F%2Fhexisle.io%2F">
+    </a>
     <a href="https://github.com/o-chib/hexisle.io/blob/main/LICENSE">
-        <img alt="" src="https://img.shields.io/badge/license-MIT-yellow.svg?" target="_blank" />
+        <img alt="GitHub" src="https://img.shields.io/github/license/o-chib/hexisle.io">
     </a>
 </p>
 
