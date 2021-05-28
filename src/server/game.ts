@@ -81,7 +81,7 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (timePassed > 40)
+		if (timePassed > 24)
 			console.log('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
@@ -198,10 +198,6 @@ export default class Game {
 			}
 
 			if (aTurret.teamNumber != Constant.TEAM.NONE) {
-				this.collision.findDirectionOfClosestEnemy(
-					aTurret,
-					Constant.RADIUS.RANGE.TURRET
-				);
 				aTurret.aimAndFireIfPossible(
 					this.collision.findDirectionOfClosestEnemy(
 						aTurret,
