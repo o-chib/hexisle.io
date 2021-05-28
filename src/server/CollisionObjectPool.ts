@@ -2,14 +2,12 @@ import { CollisionObject } from './quadtree';
 
 export class CollisionObjectPool {
 	private increase_percent: number;
-	private minimum_percent_free: number;
 	private poolArray: Array<CollisionObject>;
 	private poolSize: number;
 	private activeElements: number;
 
 	constructor(initialSize = 100) {
 		this.increase_percent = 0.5;
-		this.minimum_percent_free = 0.1;
 		this.poolArray = new Array<CollisionObject>(initialSize);
 		for (let i = 0; i < this.poolArray.length; i++) {
 			this.poolArray[i] = new CollisionObject();
