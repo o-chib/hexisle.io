@@ -1,4 +1,5 @@
 import { Constant } from '../../shared/constants';
+import { IPoolObject } from '../iPoolObject';
 import MainScene from '../scenes/mainScene';
 import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectContainer } from './clientGameObjectContainer';
@@ -10,6 +11,7 @@ export class ClientPlayer extends ClientGameObjectContainer {
 		super();
 		this.playerSprite = new ClientPlayerSprite(scene);
 		this.children.push(this.playerSprite);
+		this.children.push(new ClientPlayerName(scene));
 	}
 
 	public setRotation(direction: number) {
@@ -37,7 +39,6 @@ class ClientPlayerSprite extends ClientGameObject {
 			playerTexture = 'player_blue';
 
 		this.setTexture(playerTexture);
-		this.setDepth(10);
 	}
 
 	public update(playerLiteral: any) {
@@ -163,5 +164,38 @@ class ClientPlayerSprite extends ClientGameObject {
 
 	public getCurrentHP(): number {
 		return this.playerHP;
+	}
+}
+
+class ClientPlayerName extends Phaser.GameObjects.Text implements IPoolObject {
+	public dirtyBit: boolean;
+
+	constructor(scene: Phaser.Scene) {
+		super(scene, 0, 0, '', {
+			font: '28px Arial',
+			stroke: '#000000',
+			strokeThickness: 2.5,
+		});
+		scene.add.existing(this);
+		this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
+	}
+
+	public init(objLiteral: any): void {
+		this.setAlive(true);
+		this.setText(objLiteral.name);
+		this.setOrigin();
+	}
+
+	public update(objectState: any): void {
+		this.setPosition(objectState.xPos, objectState.yPos - 80);
+	}
+
+	public die(): void {
+		this.setAlive(false);
+	}
+
+	protected setAlive(status: boolean) {
+		this.setActive(status);
+		this.setVisible(status);
 	}
 }
