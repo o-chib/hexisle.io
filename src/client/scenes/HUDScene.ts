@@ -141,19 +141,19 @@ export default class HUDScene extends Phaser.Scene {
 			.image(0, 0, 'quit_button_unpressed')
 			.setDepth(99)
 			.setDisplayOrigin(0.5, 0.5)
-			.setScale(0.7);
+			.setScale(0.4);
 		new Anchor(this.quitButton, {
 			right: 'right-10',
 			top: 'top+10',
 		});
 
 		this.muteButton = this.add
-			.image(0, 0, '')
+			.image(0, 0, 'sound_on_button')
 			.setDepth(99)
 			.setDisplayOrigin(0.5, 0.5)
-			.setScale(0.7);
+			.setScale(0.4);
 		new Anchor(this.muteButton, {
-			right: 'right-140',
+			right: 'right-65',
 			top: 'top+10',
 		});
 		Utilities.setToggleMuteButtonIcon(this.muteButton, this.sound);
