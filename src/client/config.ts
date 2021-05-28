@@ -16,6 +16,9 @@ export const config: Phaser.Types.Core.GameConfig = {
 		mode: Phaser.Scale.ENVELOP,
 		autoCenter: Phaser.Scale.CENTER_BOTH,
 	},
+	audio: {
+		disableWebAudio: true,
+	},
 	scene: [
 		boot,
 		preloader,
