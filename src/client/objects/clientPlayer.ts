@@ -4,6 +4,7 @@ import { ClientGameObjectContainer } from './clientGameObjectContainer';
 
 export class ClientPlayer extends ClientGameObjectContainer {
 	public playerSprite: ClientPlayerSprite;
+	private playerHP: number = Constant.HP.PLAYER;
 
 	constructor(scene: Phaser.Scene) {
 		super();
@@ -20,6 +21,14 @@ export class ClientPlayer extends ClientGameObjectContainer {
 			x: this.playerSprite.x,
 			y: this.playerSprite.y,
 		};
+	}
+
+	public setCurrentHP(hp: number): void {
+		this.playerHP = hp;
+	}
+
+	public getCurrentHP(): number {
+		return this.playerHP;
 	}
 }
 

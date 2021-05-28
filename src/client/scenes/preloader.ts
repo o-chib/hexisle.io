@@ -163,6 +163,9 @@ export default class Preloader extends Phaser.Scene {
 			'../assets/help_button_pressed.png'
 		);
 		this.load.image('help_popup', '../assets/help_popup.png');
+
+		// SFX
+		this.load.audio('sfx_player_hit', '../assets/sounds/mixkit-boxer-getting-hit-2055.wav');
 	}
 
 	public create(): void {
