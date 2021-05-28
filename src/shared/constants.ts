@@ -6,7 +6,6 @@ export const Constant = Object.freeze({
 	MAX_PLAYERS: 50, //TODO lower this maybe, I set it high for demo
 	RANDOM_LOOP_LIMIT: 10,
 	MAX_NAME_LENGTH: 15,
-	VOLUME: 0.25,
 
 	COST: {
 		WALL: 5,
@@ -88,6 +87,7 @@ export const Constant = Object.freeze({
 	VOLUME: {
 		BG_MUSIC: 0.03,
 		MENU_MUSIC: 0.01,
+		PLAYER_VOLUME: 0.25,
 	},
 
 	SPRITE_DEPTH: {

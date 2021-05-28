@@ -132,7 +132,7 @@ class ClientPlayerSprite extends ClientGameObject {
 		);
 		let ratio = distance / Constant.RADIUS.VIEW;
 		ratio = Phaser.Math.Clamp(ratio, 0, 1);
-		return (1 - ratio) * Constant.VOLUME;
+		return (1 - ratio) * Constant.VOLUME.PLAYER_VOLUME;
 	}
 	private getIfMuted(): boolean {
 		return this.scene.sound.mute;
