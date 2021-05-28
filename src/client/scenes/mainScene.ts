@@ -203,7 +203,7 @@ export default class MainScene extends Phaser.Scene {
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 		const playerPos = this.myPlayer.getPosition();
 
-		return Math.atan2(gamePos.y - playerPos.y, gamePos.x - playerPos.x);
+		return Phaser.Math.Angle.BetweenPoints(playerPos, gamePos);
 	}
 
 	private initializeGame(update: any): void {
