@@ -12,6 +12,7 @@ export default class MainMenu extends Phaser.Scene {
 	private menuMusic: Phaser.Sound.BaseSound;
 	private nextUpdateTime: number;
 	private submitKey: Phaser.Input.Keyboard.Key;
+	private muteButton?: Phaser.GameObjects.Image;
 
 	constructor() {
 		super('MainMenu');
@@ -47,13 +48,14 @@ export default class MainMenu extends Phaser.Scene {
 		// Background image
 		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
-		// Container
+		// Containers
 		const menuContainer = this.add.container(renderWidth / 2, 0);
+		const optionsContainer = this.add.container(menuContainer.x + 160, renderHeight / 2).setVisible(false);
 
 		// Form Box
 		this.inputBox = this.add
 			.dom(0, renderHeight * 0.45)
-			.createFromCache('form')
+			.createFromCache('form_mainmenu')
 			.setDepth(1);
 		menuContainer.add(this.inputBox);
 
@@ -74,6 +76,23 @@ export default class MainMenu extends Phaser.Scene {
 			.setDepth(2)
 			.setVisible(false);
 
+		// Options menu/buttons
+		this.muteButton = this.add
+			.image(0, 0, '')
+			.setDepth(3)
+			.setDisplayOrigin(0.5, 0.5)
+			.setScale(0.7);
+		Utilities.setToggleMuteButtonIcon(this.muteButton, this.sound);
+
+		this.muteButton.removeAllListeners();
+		this.muteButton.setInteractive();
+		this.muteButton.on(
+			'pointerdown',
+			Utilities.toggleMuteButton.bind(this, this.muteButton, this.sound)
+		);
+
+		optionsContainer.add(this.muteButton);
+
 		// Interactions
 		this.submitKey = this.input.keyboard.addKey(
 			Phaser.Input.Keyboard.KeyCodes.ENTER,
@@ -91,7 +110,9 @@ export default class MainMenu extends Phaser.Scene {
 			FormUtilities.setButtonTextureOnMouseOut(playButton)
 		);
 
-		optionButton.addEventListener('click', () => this.loadOptions());
+		optionButton.addEventListener('click', () =>
+			optionsContainer.setVisible(!optionsContainer.visible)
+		);
 		optionButton.addEventListener('mouseover', () =>
 			FormUtilities.setButtonTextureOnMouseIn(optionButton)
 		);
@@ -127,7 +148,6 @@ export default class MainMenu extends Phaser.Scene {
 	}
 
 	public update(): void {
-		//if (Date.now() >= this.nextUpdateTime) this.askForUpdatedGameList();
 	}
 
 	private initializeLobbyList(lobbyList): void {
@@ -211,9 +231,5 @@ export default class MainMenu extends Phaser.Scene {
 	private failedToJoinGame(message: string) {
 		this.socket.off(Constant.MESSAGE.JOIN_GAME_SUCCESS);
 		this.showErrorMessage(message);
-	}
-
-	private loadOptions(): void {
-		Utilities.toggleMute(this.sound);
 	}
 }
