@@ -1,10 +1,11 @@
 import { Constant } from '../../shared/constants';
 import { Point } from '../../shared/hexTiles';
 import Collision from '../collision';
+import { MapResources } from '../mapResources';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
-	public static readonly RELOAD_TIME = 0.1 * 1000;
+	public static readonly RELOAD_TIME = 0.16 * 1000;
 	private static readonly SPEED = 600;
 
 	public socket: SocketIOClient.Socket;
@@ -58,25 +59,18 @@ export default class Player extends DestructibleObj {
 		this.yVel = 0;
 	}
 
-	public updatePosition(presentTime: number, collision: Collision): void {
+	public updatePosition(
+		presentTime: number,
+		collision: Collision,
+		mapResources: MapResources
+	): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		const newX = this.xPos + timePassed * this.xVel;
 		const newY = this.yPos - timePassed * this.yVel;
 		if (!(this.xVel == 0 && this.yVel == 0)) {
 			if (
-				!collision.doesObjCollideWithStructure(
-					newX,
-					newY,
-					Constant.RADIUS.PLAYER
-				)
+				!collision.updatePlayerPosition(newX, newY, mapResources, this)
 			) {
-				this.xPos = newX;
-				this.yPos = newY;
-				collision.updateCollider(
-					this,
-					Constant.RADIUS.COLLISION.PLAYER
-				);
-			} else {
 				this.xVel = 0;
 				this.yVel = 0;
 			}

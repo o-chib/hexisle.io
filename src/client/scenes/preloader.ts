@@ -98,23 +98,53 @@ export default class Preloader extends Phaser.Scene {
 			}
 		);
 		// Lobby
+		this.load.image('logo', '../assets/logo.png');
 		this.load.image('lobby_bg', '../assets/lobby_bg.png');
-		this.load.image('lobby_logo', '../assets/lobby_logo.png');
-		this.load.image('lobby_play', '../assets/lobby_play.png');
-		this.load.image('lobby_options', '../assets/lobby_options.png');
-		this.load.image('lobby_help', '../assets/lobby_help.png');
 		this.load.image('help_menu', '../assets/help.png');
 		this.load.html('form', '../supportfiles/form.html');
+		this.load.html('form_gameover', '../supportfiles/form_gameover.html');
 
 		// Main Game
-		this.load.image('quitButton', '../assets/quitButton.png');
+		this.load.image(
+			'quit_button_unpressed',
+			'../assets/quit_button_unpressed.png'
+		);
+		this.load.image(
+			'quit_button_pressed',
+			'../assets/quit_button_pressed.png'
+		);
+
+		// Health Bars
+		this.load.image('healthbar_red', '../assets/healthbar_red.png');
+		this.load.image('healthbar_blue', '../assets/healthbar_blue.png');
+		this.load.image('healthbar_green', '../assets/healthbar_green.png');
+		this.load.image('bar_backing_thin', '../assets/bar_backing_thin.png');
+		this.load.image(
+			'bar_backing_medium',
+			'../assets/bar_backing_medium.png'
+		);
+		this.load.image('bar_backing_thick', '../assets/bar_backing_thick.png');
+
+		// Icons
+		this.load.image('heart_icon', '../assets/heart_icon.png');
+		this.load.image('coin_icon', '../assets/coin_icon.png');
+		this.load.image('timer_icon', '../assets/timer_icon.png');
+		this.load.image('flag_icon_red', '../assets/flag_icon_red.png');
+		this.load.image('flag_icon_blue', '../assets/flag_icon_blue.png');
 
 		// GameOver
-		this.load.image('playAgain', '../assets/gameover_playagain.png');
+		this.load.image(
+			'return_button_unpressed',
+			'../assets/return_button_unpressed.png'
+		);
+		this.load.image(
+			'return_button_pressed',
+			'../assets/return_button_pressed.png'
+		);
 
 		// Static Images
-		this.load.image('bullet', '../assets/bullet.png');
-		this.load.image('bulletblue', '../assets/bulletblue.png');
+		this.load.image('bullet_red', '../assets/bullet.png');
+		this.load.image('bullet_blue', '../assets/bulletblue.png');
 		this.load.image('campfire_lit', '../assets/campfire_lit.png');
 		this.load.image('resSmall', '../assets/resourceSmall.png');
 		this.load.image('resMedium', '../assets/resourceMedium.png');

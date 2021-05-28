@@ -74,64 +74,29 @@ export default class CollisionDetection {
 	}
 
 	/**
-	 * Checks if a player collides with a map resource, increments resources and removes the resource if necessary
-	 * @param player the player to check for resource collisions
-	 * @param mapResources the mapResources class to interface with resources
-	 * @returns early if the player is not alive
+	 * Checks if a player collides with a structure and if not, increments resources with collided resources
+	 * @param xPos the new xPos of the player
+	 * @param yPos the new yPos of the player
+	 * @param mapResources the mapResources object to delete resources from
+	 * @param player the player to give resources to
+	 * @returns boolean that's false if a player will collide with a structure
 	 */
-	public playerResourceCollision(
-		player: Player,
-		mapResources: MapResources
-	): void {
-		if (!player.isAlive()) {
-			return;
-		}
-
+	public updatePlayerPosition(
+		xPos: number,
+		yPos: number,
+		mapResources: MapResources,
+		player: Player
+	): boolean {
+		const resourcesCollided: Resource[] = [];
 		const results: CollisionObject[] = [];
 		this.searchCollisions(
-			player,
+			{ xPos: xPos, yPos: yPos },
 			Constant.RADIUS.COLLISION.PLAYER,
 			results
 		);
 
-		results.forEach((result) => {
-			if (
-				result.payload instanceof Resource &&
-				result.payload.dropAmount > 0 &&
-				this.doCirclesCollide(
-					player,
-					Constant.RADIUS.PLAYER,
-					result.payload,
-					Constant.RADIUS.RESOURCE
-				)
-			) {
-				player.updateResource(result.payload.dropAmount);
-				mapResources.deleteResource(result.payload);
-				this.deleteCollider(result.payload, Constant.RADIUS.RESOURCE);
-			}
-		});
-	}
-
-	/**
-	 * Checks if a certain object collides with a structure
-	 * @param xPos the xPos of the object
-	 * @param yPos the yPos of the object
-	 * @param objectRadius the radius of the object
-	 * @returns boolean
-	 */
-	public doesObjCollideWithStructure(
-		xPos: number,
-		yPos: number,
-		objectRadius: number
-	): boolean {
-		const results: CollisionObject[] = [];
-		this.searchCollisions(
-			{ xPos: xPos, yPos: yPos },
-			objectRadius,
-			results
-		);
-
 		for (const result of results) {
+			// check if the player hits a structure
 			if (
 				this.isStructure(result.payload) &&
 				this.doCirclesCollide(
@@ -140,10 +105,37 @@ export default class CollisionDetection {
 					result.payload,
 					this.getCollisionRadius(result.payload)
 				)
-			)
-				return true;
+			) {
+				return false;
+
+				// also keep track if the player will collide with any resources
+			} else if (
+				result.payload instanceof Resource &&
+				result.payload.dropAmount > 0 &&
+				this.doCirclesCollide(
+					{ xPos: xPos, yPos: yPos },
+					Constant.RADIUS.COLLISION.PLAYER,
+					result.payload,
+					Constant.RADIUS.RESOURCE
+				)
+			) {
+				resourcesCollided.push(result.payload);
+			}
 		}
-		return false;
+
+		// remove and give resources to the player for each resource collided with
+		resourcesCollided.forEach((resource) => {
+			player.updateResource(resource.dropAmount);
+			mapResources.deleteResource(resource);
+			this.deleteCollider(resource, Constant.RADIUS.RESOURCE);
+		});
+
+		// update the player position and collider
+		player.xPos = xPos;
+		player.yPos = yPos;
+		this.updateCollider(player, Constant.RADIUS.COLLISION.PLAYER);
+
+		return true;
 	}
 
 	/**
