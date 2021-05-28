@@ -12,7 +12,7 @@ export default class Player extends DestructibleObj {
 	public socket: SocketIOClient.Socket;
 	public name: string;
 	public resources: number;
-	private reloadTimer: number;
+	public reloadTimer: number;
 	private respawnTimer: number;
 	private xVel: number;
 	private yVel: number;
@@ -108,7 +108,7 @@ export default class Player extends DestructibleObj {
 		this.respawning = false;
 	}
 
-	private canShoot(): boolean {
+	public canShoot(): boolean {
 		return this.reloadTimer <= 0;
 	}
 
@@ -118,7 +118,7 @@ export default class Player extends DestructibleObj {
 		this.resetReloadTimer();
 	}
 
-	private resetReloadTimer(): void {
+	public resetReloadTimer(): void {
 		this.reloadTimer = Player.RELOAD_TIME;
 	}
 
