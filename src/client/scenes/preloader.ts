@@ -11,6 +11,13 @@ export default class Preloader extends Phaser.Scene {
 
 	constructor() {
 		super('Preloader');
+	}
+
+	public preload(): void {
+		this.addProgressBar();
+
+		this.socket = io();
+	
 		this.preloadPlayers();
 		this.preloadBases();
 		this.preloadWalls();
