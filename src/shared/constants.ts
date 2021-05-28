@@ -42,7 +42,7 @@ export const Constant = Object.freeze({
 		BASE: 200,
 		CAMP: 75,
 		TERRITORY: 500,
-		VIEW: 2000,
+		VIEW: 1500,
 		CAMP_HEXES: 4,
 
 		COLLISION: {
