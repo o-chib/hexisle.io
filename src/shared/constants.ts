@@ -5,6 +5,7 @@ export const Constant = Object.freeze({
 	TEAM_COUNT: 2,
 	MAX_PLAYERS: 50, //TODO lower this maybe, I set it high for demo
 	RANDOM_LOOP_LIMIT: 10,
+	MAX_NAME_LENGTH: 15,
 
 	COST: {
 		WALL: 5,
@@ -28,7 +29,7 @@ export const Constant = Object.freeze({
 		UPDATE_RATE: 1000 / 60,
 		CHECK_END: 1000 / 60,
 		END_SCREEN: 5 * 1000,
-		TIME_LIMIT: 5 * (60 * 1000),
+		TIME_LIMIT: 15 * (60 * 1000),
 	},
 
 	RADIUS: {
@@ -147,5 +148,10 @@ export const Constant = Object.freeze({
 		S: 1.5 * Math.PI,
 		SE: 1.75 * Math.PI,
 		INVALID: 10,
+	},
+
+	QUADTREE: {
+		SPLIT: 0.5,
+		MAX_DEPTH: 20,
 	},
 });
