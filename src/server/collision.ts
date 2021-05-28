@@ -74,11 +74,11 @@ export default class CollisionDetection {
 	}
 
 	/**
-	 * Checks if a certain object collides with a structure
+	 * Checks if a player collides with a structure and if not, increments resources with collided resources
 	 * @param xPos the new xPos of the player
 	 * @param yPos the new yPos of the player
 	 * @param mapResources the mapResources object to delete resources from
-	 * @param player the player to give resoruces to
+	 * @param player the player to give resources to
 	 * @returns boolean that's false if a player will collide with a structure
 	 */
 	public updatePlayerPosition(
@@ -96,7 +96,6 @@ export default class CollisionDetection {
 		);
 
 		for (const result of results) {
-
 			// check if the player hits a structure
 			if (
 				this.isStructure(result.payload) &&
@@ -109,7 +108,7 @@ export default class CollisionDetection {
 			) {
 				return false;
 
-			// also keep track if the player will collide with any resources
+				// also keep track if the player will collide with any resources
 			} else if (
 				result.payload instanceof Resource &&
 				result.payload.dropAmount > 0 &&
@@ -118,11 +117,12 @@ export default class CollisionDetection {
 					Constant.RADIUS.COLLISION.PLAYER,
 					result.payload,
 					Constant.RADIUS.RESOURCE
-				)) {
+				)
+			) {
 				resourcesCollided.push(result.payload);
 			}
 		}
-		
+
 		// remove and give resources to the player for each resource collided with
 		resourcesCollided.forEach((resource) => {
 			player.updateResource(resource.dropAmount);
@@ -133,11 +133,8 @@ export default class CollisionDetection {
 		// update the player position and collider
 		player.xPos = xPos;
 		player.yPos = yPos;
-		this.updateCollider(
-			player,
-			Constant.RADIUS.COLLISION.PLAYER
-		);
-	
+		this.updateCollider(player, Constant.RADIUS.COLLISION.PLAYER);
+
 		return true;
 	}
 

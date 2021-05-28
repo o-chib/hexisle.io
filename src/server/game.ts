@@ -249,7 +249,11 @@ export default class Game {
 				}, 3000);
 			} else if (aPlayer.isAlive()) {
 				aPlayer.reload(timePassed);
-				aPlayer.updatePosition(currentTimestamp, this.collision, this.mapResources);
+				aPlayer.updatePosition(
+					currentTimestamp,
+					this.collision,
+					this.mapResources
+				);
 				if (givePassiveIncome) {
 					this.passiveIncome.updatePlayerResources(aPlayer);
 				}
