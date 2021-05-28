@@ -244,24 +244,18 @@ export default class Game {
 		const givePassiveIncome: boolean =
 			this.passiveIncome.givePassiveIncomeIfPossible(timePassed);
 		for (const aPlayer of this.players.values()) {
-			if (aPlayer.hp == 0) {
-				// Give time for player to play death animation
-				// Only call timeout once
-				this.collision.deleteCollider(
-					aPlayer,
-					Constant.RADIUS.COLLISION.PLAYER
-				);
-				aPlayer.hp = -1;
-				aPlayer.setNoVelocity();
-				setTimeout(() => {
-					this.respawnPlayer(aPlayer);
-				}, 3000);
-			} else if (aPlayer.isAlive()) {
+			if (aPlayer.isAlive()) {
 				aPlayer.reload(timePassed);
-				this.updatePlayerPosition(currentTimestamp, aPlayer);
+				aPlayer.updatePosition(
+					currentTimestamp,
+					this.collision,
+					this.mapResources
+				);
 				if (givePassiveIncome) {
 					this.passiveIncome.updatePlayerResources(aPlayer);
 				}
+			} else if (aPlayer.canRespawn(timePassed, this.collision)) {
+				this.respawnPlayer(aPlayer);
 			}
 		}
 	}
@@ -331,11 +325,6 @@ export default class Game {
 
 	stopAllIntervals(): void {
 		clearInterval(this.gameInterval);
-	}
-
-	updatePlayerPosition(currentTimestamp: number, player: Player): void {
-		player.updatePosition(currentTimestamp, this.collision);
-		this.collision.playerResourceCollision(player, this.mapResources);
 	}
 
 	createPlayerUpdate(player: Player) {
