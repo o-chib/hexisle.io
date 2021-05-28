@@ -72,6 +72,7 @@ export default class MainScene extends Phaser.Scene {
 		this.events.emit('showUI');
 
 		this.sound.add('sfx_player_hit');
+		this.sound.add('sfx_player_respawn');
 	}
 
 	update(): void {
@@ -342,6 +343,7 @@ export default class MainScene extends Phaser.Scene {
 				this.sound.play('sfx_player_hit');
 			} else{
 				// Play respawn sound
+				this.sound.play('sfx_player_respawn');
 			}
 		}
 		this.myPlayer.setCurrentHP(currentPlayer.hp);

@@ -166,6 +166,7 @@ export default class Preloader extends Phaser.Scene {
 
 		// SFX
 		this.load.audio('sfx_player_hit', '../assets/sounds/mixkit-boxer-getting-hit-2055.wav');
+		this.load.audio('sfx_player_respawn', '../assets/sounds/mixkit-video-game-health-recharge-2837.wav');
 	}
 
 	public create(): void {
