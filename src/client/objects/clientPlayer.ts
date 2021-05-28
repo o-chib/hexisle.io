@@ -134,21 +134,28 @@ class ClientPlayerSprite extends ClientGameObject {
 		ratio = Phaser.Math.Clamp(ratio, 0, 1);
 		return 1 - ratio;
 	}
+	private getIfMuted(): boolean {
+		return this.scene.sound.mute;
+	}
 	private updateHealthEffects(hp: any) {
 		// Handle Player Health-Based Effects
 		if (this.getCurrentHP() != hp) {
 			if (hp != Constant.HP.PLAYER) {
 				// Play on-hit/damage sound
-				this.scene.sound.play('sfx_player_hit', {
-					volume: this.getVolume(),
-				});
+				if (!this.getIfMuted()) {
+					this.scene.sound.play('sfx_player_hit', {
+						volume: this.getVolume(),
+					});
+				}
 				// Turn player red
 				this.setTint(0xff0000);
 			} else {
 				// Play respawn sound
-				this.scene.sound.play('sfx_player_respawn', {
-					volume: this.getVolume(),
-				});
+				if (!this.getIfMuted()) {
+					this.scene.sound.play('sfx_player_respawn', {
+						volume: this.getVolume(),
+					});
+				}
 			}
 		} else {
 			// Remove tint effects
