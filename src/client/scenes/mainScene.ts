@@ -320,7 +320,6 @@ export default class MainScene extends Phaser.Scene {
 		this.events.emit('updateHUD', currentPlayer, time);
 
 		this.updateTeamHealthBars(bases);
-
 	}
 
 	private updateTeamHealthBars(bases: any[]) {
@@ -337,11 +336,11 @@ export default class MainScene extends Phaser.Scene {
 		this.alive = currentPlayer.hp > 0;
 
 		// Handle Player Health-Based Sounds
-		if(this.myPlayer.getCurrentHP() != currentPlayer.hp) {
-			if(currentPlayer.hp != Constant.HP.PLAYER) {
+		if (this.myPlayer.getCurrentHP() != currentPlayer.hp) {
+			if (currentPlayer.hp != Constant.HP.PLAYER) {
 				// Play on-hit/damage sound
 				this.sound.play('sfx_player_hit');
-			} else{
+			} else {
 				// Play respawn sound
 				this.sound.play('sfx_player_respawn');
 			}

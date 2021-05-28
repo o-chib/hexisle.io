@@ -165,8 +165,15 @@ export default class Preloader extends Phaser.Scene {
 		this.load.image('help_popup', '../assets/help_popup.png');
 
 		// SFX
-		this.load.audio('sfx_player_hit', '../assets/sounds/mixkit-boxer-getting-hit-2055.wav');
-		this.load.audio('sfx_player_respawn', '../assets/sounds/mixkit-video-game-health-recharge-2837.wav');
+		// this.load.audio('sfx_player_hit', '../assets/sounds/417486__mentoslat__8-bit-death-sound.wav');
+		this.load.audio(
+			'sfx_player_hit',
+			'../assets/sounds/163441__under7dude__man-getting-hit.wav'
+		);
+		this.load.audio(
+			'sfx_player_respawn',
+			'../assets/sounds/220173__gameaudio__spacey-1up-power-up.wav'
+		);
 	}
 
 	public create(): void {
