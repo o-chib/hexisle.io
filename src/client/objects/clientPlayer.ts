@@ -137,9 +137,10 @@ class ClientPlayerSprite extends ClientGameObject {
 	private getIfMuted(): boolean {
 		return this.scene.sound.mute;
 	}
+
 	private updateHealthEffects(hp: any) {
 		// Handle Player Health-Based Effects
-		if (this.getCurrentHP() != hp) {
+		if (this.playerHP != hp) {
 			if (hp != Constant.HP.PLAYER) {
 				// Play on-hit/damage sound
 				if (!this.getIfMuted()) {
@@ -162,15 +163,7 @@ class ClientPlayerSprite extends ClientGameObject {
 			this.clearTint();
 		}
 
-		this.setCurrentHP(hp);
-	}
-
-	public setCurrentHP(hp: number): void {
 		this.playerHP = hp;
-	}
-
-	public getCurrentHP(): number {
-		return this.playerHP;
 	}
 }
 
