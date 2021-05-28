@@ -254,15 +254,7 @@ export default class CollisionDetection {
 	 * @param radius the radius of the object
 	 */
 	public insertCollider(object: any, radius: number): void {
-		this.quadtree.insertIntoQuadtree(
-			new CollisionObject(
-				object.xPos - radius,
-				object.xPos + radius,
-				object.yPos + radius,
-				object.yPos - radius,
-				object
-			)
-		);
+		this.quadtree.insertIntoQuadtree(object, radius);
 	}
 
 	/**
@@ -271,15 +263,7 @@ export default class CollisionDetection {
 	 * @param radius the radius of the object
 	 */
 	public deleteCollider(object: any, radius: number): void {
-		this.quadtree.deleteFromQuadtree(
-			new CollisionObject(
-				object.xPos - radius,
-				object.xPos + radius,
-				object.yPos + radius,
-				object.yPos - radius,
-				object
-			)
-		);
+		this.quadtree.deleteFromQuadtree(object, radius);
 	}
 
 	/**
@@ -288,15 +272,7 @@ export default class CollisionDetection {
 	 * @param radius the radius of the object
 	 */
 	public updateCollider(object: any, radius: number): void {
-		this.quadtree.updateInQuadtree(
-			new CollisionObject(
-				object.xPos - radius,
-				object.xPos + radius,
-				object.yPos + radius,
-				object.yPos - radius,
-				object
-			)
-		);
+		this.quadtree.updateInQuadtree(object, radius);
 	}
 
 	/**
