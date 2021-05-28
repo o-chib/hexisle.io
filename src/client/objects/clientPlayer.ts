@@ -23,6 +23,14 @@ export class ClientPlayer extends ClientGameObjectContainer {
 		};
 	}
 
+	public setTint(tint: number) {
+		this.playerSprite.setTint(tint);
+	}
+
+	public clearTint() {
+		this.playerSprite.clearTint();
+	}
+
 	public setCurrentHP(hp: number): void {
 		this.playerHP = hp;
 	}
