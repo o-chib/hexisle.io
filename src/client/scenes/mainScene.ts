@@ -336,7 +336,7 @@ export default class MainScene extends Phaser.Scene {
 		this.alive = currentPlayer.hp > 0;
 
 		// Handle Player Health-Based Sounds
-		if(this.myPlayer.getCurrentHP() != currentPlayer.hp && currentPlayer.hp >= 0) {
+		if(this.myPlayer.getCurrentHP() != currentPlayer.hp) {
 			if(currentPlayer.hp != Constant.HP.PLAYER) {
 				// Play on-hit/damage sound
 				this.sound.play('sfx_player_hit');
