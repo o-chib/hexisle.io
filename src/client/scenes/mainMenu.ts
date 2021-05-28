@@ -51,7 +51,7 @@ export default class MainMenu extends Phaser.Scene {
 		// Containers
 		const menuContainer = this.add.container(renderWidth / 2, 0);
 		const optionsContainer = this.add
-			.container(menuContainer.x + 160, renderHeight / 2)
+			.container(menuContainer.x + 170, renderHeight / 2)
 			.setVisible(false);
 
 		// Form Box
