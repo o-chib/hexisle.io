@@ -134,7 +134,8 @@ class ClientPlayerSprite extends ClientGameObject {
 				// Play on-hit/damage sound
 				if (!this.getIfMuted()) {
 					this.scene.sound.play('sfx_player_hit', {
-						volume: this.getVolume(),
+						volume:
+							this.getVolume() * Constant.VOLUME.PLAYER_VOLUME,
 					});
 				}
 				// Turn player red
@@ -143,7 +144,7 @@ class ClientPlayerSprite extends ClientGameObject {
 				// Play respawn sound
 				if (!this.getIfMuted()) {
 					this.scene.sound.play('sfx_player_respawn', {
-						volume: this.getVolume(),
+						volume: this.getVolume() * Constant.VOLUME.PLAYER_VOLUME,
 					});
 				}
 			}

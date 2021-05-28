@@ -48,7 +48,7 @@ export abstract class ClientGameObject
 		);
 		let ratio = distance / Constant.RADIUS.VIEW;
 		ratio = Phaser.Math.Clamp(ratio, 0, 1);
-		return (1 - ratio) * Constant.VOLUME.PLAYER_VOLUME;
+		return 1 - ratio;
 	}
 }
 
