@@ -16,7 +16,6 @@ export default class Turret extends Structure {
 		gameShootBulletMethod?: (turret: any, direction: number) => void
 	) {
 		super(id, Constant.HP.TURRET, tile);
-		this.tile = tile;
 		this.direction = 0;
 		this.reloadTimer = 0;
 		this.hasTarget = false;

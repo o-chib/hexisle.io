@@ -1,18 +1,18 @@
-// Import Mapsize or something
 import { Constant } from '../shared/constants';
 
 export class Quadtree {
-	// The ratio of child to parent width.  Higher numbers will push payload further down
-	// into the tree.  The resulting quadtree will require more node testing but less object
+	// The ratio of child to parent width. Higher numbers will push payload further down
+	// into the tree. The resulting quadtree will require more node testing but less object
 	// testing.
 	private SPLIT: number;
 	private MAX_DEPTH: number;
 	private topLevelNode: QuadtreeNode;
 	private topLevelNodeBox: Rect;
+	private searchSubbox: Rect;
 
 	constructor() {
-		this.SPLIT = 0.5; // originally(with overlapping) = 0.6;
-		this.MAX_DEPTH = 8;
+		this.SPLIT = Constant.QUADTREE.SPLIT; // originally(with overlapping) = 0.6;
+		this.MAX_DEPTH = Constant.QUADTREE.MAX_DEPTH;
 		this.topLevelNode = new QuadtreeNode();
 		this.topLevelNodeBox = new Rect(
 			0,
@@ -20,8 +20,15 @@ export class Quadtree {
 			Constant.MAP_HEIGHT,
 			0
 		);
+		this.searchSubbox = new Rect();
 	}
 
+	/**
+	 * Checks whether two objects collide with eachother rectangularly
+	 * @param obj the collision object to check against the box
+	 * @param box the rectangular bounds of an object
+	 * @returns boolean
+	 */
 	public collides(obj: CollisionObject, box: Rect): boolean {
 		if (
 			box.l <= obj.r &&
@@ -35,26 +42,51 @@ export class Quadtree {
 		}
 	}
 
-	public getTopLevelNode(): QuadtreeNode {
-		return this.topLevelNode;
-	}
-
+	/**
+	 * interface into inserting an object into the quadtree
+	 * @param obj the object we are inserting
+	 */
 	public insertIntoQuadtree(obj: CollisionObject): void {
-		this.insert(this.topLevelNode, this.topLevelNodeBox, 0, obj);
+		this.insert(this.topLevelNode, this.topLevelNodeBox.getCopy(), 0, obj);
 	}
 
+	/**
+	 * interface into deleting an object from the quadtree
+	 * @param obj the object we are deleting
+	 */
 	public deleteFromQuadtree(obj: CollisionObject): void {
-		this.delete(this.topLevelNode, this.topLevelNodeBox, 0, obj);
+		this.delete(this.topLevelNode, this.topLevelNodeBox.getCopy(), 0, obj);
 	}
 
+	/**
+	 * interface into updating an object in the quadtree
+	 * @param obj the object we are updating
+	 */
 	public updateInQuadtree(obj: CollisionObject): void {
-		this.update(this.topLevelNode, this.topLevelNodeBox, 0, obj);
+		this.update(this.topLevelNode, this.topLevelNodeBox.getCopy(), 0, obj);
 	}
 
+	/**
+	 * interface into searching for collisions for an object
+	 * @param box the rectangular box of the object we are searching for
+	 * @param results the list of collision objects we found that may collide
+	 */
 	public searchQuadtree(box: Rect, results: CollisionObject[]): void {
-		this.search(this.topLevelNode, this.topLevelNodeBox, box, results);
+		this.search(
+			this.topLevelNode,
+			this.topLevelNodeBox.getCopy(),
+			box,
+			results
+		);
 	}
 
+	/**
+	 * Inserts an object into the quadtree at the first node possible
+	 * @param node the collision node to search
+	 * @param nodebox the rectangle bounds of this node
+	 * @param depth the current depth into the quadtree
+	 * @param obj the object to insert
+	 */
 	private insert(
 		node: QuadtreeNode,
 		nodebox: Rect,
@@ -77,25 +109,25 @@ export class Quadtree {
 			// contained within UPPER LEFT
 		} else if (obj.r < splitRight && obj.b < splitTop) {
 			if (!node.kids[0]) node.kids[0] = new QuadtreeNode();
-			nodebox = new Rect(nodebox.l, splitRight, splitBottom, nodebox.t);
+			nodebox.update(nodebox.l, splitRight, splitBottom, nodebox.t);
 			this.insert(node.kids[0], nodebox, depth + 1, obj);
 
 			// contained within UPPER RIGHT
 		} else if (obj.l > splitLeft && obj.b < splitTop) {
 			if (!node.kids[1]) node.kids[1] = new QuadtreeNode();
-			nodebox = new Rect(splitLeft, nodebox.r, splitBottom, nodebox.t);
+			nodebox.update(splitLeft, nodebox.r, splitBottom, nodebox.t);
 			this.insert(node.kids[1], nodebox, depth + 1, obj);
 
 			// contained within LOWER LEFT
 		} else if (obj.r < splitRight && obj.t > splitBottom) {
 			if (!node.kids[2]) node.kids[2] = new QuadtreeNode();
-			nodebox = new Rect(nodebox.l, splitRight, nodebox.b, splitTop);
+			nodebox.update(nodebox.l, splitRight, nodebox.b, splitTop);
 			this.insert(node.kids[2], nodebox, depth + 1, obj);
 
 			// contained within LOWER RIGHT
 		} else if (obj.l > splitLeft && obj.t > splitBottom) {
 			if (!node.kids[3]) node.kids[3] = new QuadtreeNode();
-			nodebox = new Rect(splitLeft, nodebox.r, nodebox.b, splitTop);
+			nodebox.update(splitLeft, nodebox.r, nodebox.b, splitTop);
 			this.insert(node.kids[3], nodebox, depth + 1, obj);
 
 			// object is not wholly contained in any child node
@@ -104,6 +136,13 @@ export class Quadtree {
 		}
 	}
 
+	/**
+	 * Deletes an object from the quadtree
+	 * @param node the collision node to search
+	 * @param nodebox the rectangle bounds of this node
+	 * @param depth the current depth into the quadtree
+	 * @param obj the object to delete
+	 */
 	private delete(
 		node: QuadtreeNode,
 		nodebox: Rect,
@@ -129,25 +168,25 @@ export class Quadtree {
 			// contained within UPPER LEFT
 		} else if (obj.r < splitRight && obj.b > splitTop) {
 			if (!node.kids[0]) node.kids[0] = new QuadtreeNode();
-			nodebox = new Rect(nodebox.l, splitRight, splitBottom, nodebox.t);
+			nodebox.update(nodebox.l, splitRight, splitBottom, nodebox.t);
 			this.delete(node.kids[0], nodebox, depth + 1, obj);
 
 			// contained within UPPER RIGHT
 		} else if (obj.l > splitLeft && obj.b > splitTop) {
 			if (!node.kids[1]) node.kids[1] = new QuadtreeNode();
-			nodebox = new Rect(splitLeft, nodebox.r, splitBottom, nodebox.t);
+			nodebox.update(splitLeft, nodebox.r, splitBottom, nodebox.t);
 			this.delete(node.kids[1], nodebox, depth + 1, obj);
 
 			// contained within LOWER LEFT
 		} else if (obj.r < splitRight && obj.t < splitBottom) {
 			if (!node.kids[2]) node.kids[2] = new QuadtreeNode();
-			nodebox = new Rect(nodebox.l, splitRight, nodebox.b, splitTop);
+			nodebox.update(nodebox.l, splitRight, nodebox.b, splitTop);
 			this.delete(node.kids[2], nodebox, depth + 1, obj);
 
 			// contained within LOWER RIGHT
 		} else if (obj.l > splitLeft && obj.t < splitBottom) {
 			if (!node.kids[3]) node.kids[3] = new QuadtreeNode();
-			nodebox = new Rect(splitLeft, nodebox.r, nodebox.b, splitTop);
+			nodebox.update(splitLeft, nodebox.r, nodebox.b, splitTop);
 			this.delete(node.kids[3], nodebox, depth + 1, obj);
 
 			// object is not wholly contained in any child node
@@ -159,6 +198,13 @@ export class Quadtree {
 		}
 	}
 
+	/**
+	 * Updates the position of a collision object currently in the quadtree
+	 * @param node the top level node to start the search
+	 * @param nodebox the top level nodebox
+	 * @param depth 0, the very top depth level
+	 * @param obj the object to update in the quadtree
+	 */
 	private update(
 		node: QuadtreeNode,
 		nodebox: Rect,
@@ -169,6 +215,13 @@ export class Quadtree {
 		this.insert(node, nodebox, depth, obj);
 	}
 
+	/**
+	 * Searches the node and if it finds any collision objects in the deepest node, puts the collision objects in results
+	 * @param node the collision node to search
+	 * @param nodebox the rectangle bounds of this node
+	 * @param box the rectangular box of the object we are searching for
+	 * @param results the list of collision objects we found that may collide
+	 */
 	private search(
 		node: QuadtreeNode,
 		nodebox: Rect,
@@ -192,38 +245,50 @@ export class Quadtree {
 				results.push(obj);
 			});
 
+		const searchBox = nodebox.getCopy();
+
 		// intersects UPPER LEFT
 		if (box.l < splitRight && box.t < splitBottom && node.kids[0]) {
-			const subbox = new Rect(
-				nodebox.l,
+			this.searchSubbox.update(
+				searchBox.l,
 				splitRight,
 				splitBottom,
-				nodebox.t
+				searchBox.t
 			);
-			this.search(node.kids[0], subbox, box, results);
+			this.search(node.kids[0], this.searchSubbox, box, results);
 
 			// intersects UPPER RIGHT
 		}
 		if (box.r > splitLeft && box.t < splitBottom && node.kids[1]) {
-			const subbox = new Rect(
+			this.searchSubbox.update(
 				splitLeft,
-				nodebox.r,
+				searchBox.r,
 				splitBottom,
-				nodebox.t
+				searchBox.t
 			);
-			this.search(node.kids[1], subbox, box, results);
+			this.search(node.kids[1], this.searchSubbox, box, results);
 
 			// intersects LOWER LEFT
 		}
 		if (box.l < splitRight && box.b < splitTop && node.kids[2]) {
-			const subbox = new Rect(nodebox.l, splitRight, nodebox.b, splitTop);
-			this.search(node.kids[2], subbox, box, results);
+			this.searchSubbox.update(
+				searchBox.l,
+				splitRight,
+				searchBox.b,
+				splitTop
+			);
+			this.search(node.kids[2], this.searchSubbox, box, results);
 
 			// intersects LOWER RIGHT
 		}
 		if (box.r > splitLeft && box.b < splitTop && node.kids[3]) {
-			const subbox = new Rect(splitLeft, nodebox.r, nodebox.b, splitTop);
-			this.search(node.kids[3], subbox, box, results);
+			this.searchSubbox.update(
+				splitLeft,
+				searchBox.r,
+				searchBox.b,
+				splitTop
+			);
+			this.search(node.kids[3], this.searchSubbox, box, results);
 		}
 	}
 }
@@ -234,11 +299,22 @@ export class Rect {
 	public b: number;
 	public t: number;
 
-	constructor(l: number, r: number, b: number, t: number) {
+	constructor(l = 0, r = 0, b = 0, t = 0) {
 		this.l = l;
 		this.r = r;
 		this.b = b;
 		this.t = t;
+	}
+
+	public update(l: number, r: number, b: number, t: number): void {
+		this.l = l;
+		this.r = r;
+		this.b = b;
+		this.t = t;
+	}
+
+	public getCopy(): Rect {
+		return new Rect(this.l, this.r, this.b, this.t);
 	}
 }
 
