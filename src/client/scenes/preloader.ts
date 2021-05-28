@@ -360,7 +360,7 @@ export default class Preloader extends Phaser.Scene {
 		this.load.audio('backgroundMusic', '../sounds/backgroundMusic.mp3');
 		this.load.audio(
 			'sfx_player_hit',
-			'../assets/sounds/163441__under7dude__man-getting-hit.wav'
+			'../assets/sounds/deathSound.wav'
 		);
 		this.load.audio(
 			'sfx_player_respawn',
