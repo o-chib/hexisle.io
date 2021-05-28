@@ -26,10 +26,10 @@ export default class MainMenu extends Phaser.Scene {
 			this.initializeLobbyList.bind(this)
 		);
 
-		// Background Music
+		// Menu Music
 		if (!this.sound.get('menuMusic')) {
 			this.menuMusic = this.sound.add('menuMusic', {
-				volume: 0.01,
+				volume: Constant.VOLUME.MENU_MUSIC,
 				loop: true,
 			});
 		}

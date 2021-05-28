@@ -126,7 +126,7 @@ export default class MainScene extends Phaser.Scene {
 	private initializeSounds(): void {
 		if (!this.sound.get('backgroundMusic')) {
 			this.backgroundMusic = this.sound.add('backgroundMusic', {
-				volume: 0.03,
+				volume: Constant.VOLUME.BG_MUSIC,
 				loop: true,
 			});
 		}

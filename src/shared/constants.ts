@@ -83,6 +83,11 @@ export const Constant = Object.freeze({
 		},
 	},
 
+	VOLUME: {
+		BG_MUSIC: 0.03,
+		MENU_MUSIC: 0.01,
+	},
+
 	SPRITE_DEPTH: {
 		TERRITORY: 0,
 		CAMP: 1,
