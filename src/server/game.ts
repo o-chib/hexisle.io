@@ -235,7 +235,7 @@ export default class Game {
 		const givePassiveIncome: boolean =
 			this.passiveIncome.givePassiveIncomeIfPossible(timePassed);
 		for (const aPlayer of this.players.values()) {
-			if (aPlayer.hp == 0) {
+			if (!aPlayer.isAlive()) {
 				// Give time for player to play death animation
 				// Only call timeout once
 				this.collision.deleteCollider(
@@ -247,7 +247,7 @@ export default class Game {
 				setTimeout(() => {
 					this.respawnPlayer(aPlayer);
 				}, 3000);
-			} else if (aPlayer.isAlive()) {
+			} else {
 				aPlayer.reload(timePassed);
 				this.updatePlayerPosition(currentTimestamp, aPlayer);
 				if (givePassiveIncome) {
