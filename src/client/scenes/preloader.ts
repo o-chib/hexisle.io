@@ -264,7 +264,7 @@ export default class Preloader extends Phaser.Scene {
 		this.load.image('logo', '../assets/lobby/logo.png');
 		this.load.image('lobby_bg', '../assets/lobby/lobby_bg.png');
 		this.load.image('help_menu', '../assets/lobby/help.png');
-		this.load.html('form', '../supportfiles/form.html');
+		this.load.html('form_mainmenu', '../supportfiles/form_mainmenu.html');
 		this.load.html('form_gameover', '../supportfiles/form_gameover.html');
 	}
 
