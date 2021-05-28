@@ -18,7 +18,7 @@ type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayer: ClientPlayer;
+	public myPlayer: ClientPlayer;
 	private otherPlayers: ObjectPool;
 	private bullets: ObjectPool;
 	private walls: ObjectPool;

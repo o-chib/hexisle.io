@@ -1,4 +1,5 @@
 import { Constant } from '../../shared/constants';
+import MainScene from '../scenes/mainScene';
 import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectContainer } from './clientGameObjectContainer';
 
@@ -119,17 +120,34 @@ class ClientPlayerSprite extends ClientGameObject {
 		return this;
 	}
 
+	private getVolume(): number {
+		const mainSceneObj = this.scene.scene.get(MainScene.Name) as MainScene;
+		const mainPlayerPosition = mainSceneObj.myPlayer.getPosition();
+		const distance = Phaser.Math.Distance.Between(
+			this.x,
+			this.y,
+			mainPlayerPosition.x,
+			mainPlayerPosition.y
+		);
+		let ratio = distance / Constant.RADIUS.VIEW;
+		ratio = Phaser.Math.Clamp(ratio, 0, 1);
+		return 1 - ratio;
+	}
 	private updateHealthEffects(hp: any) {
 		// Handle Player Health-Based Effects
 		if (this.getCurrentHP() != hp) {
 			if (hp != Constant.HP.PLAYER) {
 				// Play on-hit/damage sound
-				this.scene.sound.play('sfx_player_hit');
+				this.scene.sound.play('sfx_player_hit', {
+					volume: this.getVolume(),
+				});
 				// Turn player red
 				this.setTint(0xff0000);
 			} else {
 				// Play respawn sound
-				this.scene.sound.play('sfx_player_respawn');
+				this.scene.sound.play('sfx_player_respawn', {
+					volume: this.getVolume(),
+				});
 			}
 		} else {
 			// Remove tint effects
