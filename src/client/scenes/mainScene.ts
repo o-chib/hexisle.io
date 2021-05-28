@@ -45,6 +45,8 @@ export default class MainScene extends Phaser.Scene {
 		this.myPlayer = new ClientPlayer(this);
 		this.myPlayer.die();
 
+		this.hexTiles = new HexTiles();
+
 		this.otherPlayers = new ObjectPool(this, ClientPlayer, 4);
 		this.bullets = new ObjectPool(this, ClientBullet, 10);
 		this.walls = new ObjectPool(this, ClientWall, 10);
@@ -52,6 +54,7 @@ export default class MainScene extends Phaser.Scene {
 		this.campfires = new ObjectPool(this, ClientCampfire, 5);
 		this.bases = new ObjectPool(this, ClientBase, 2);
 		this.resources = new ObjectPool(this, ClientResource, 10);
+
 		this.alive = false;
 		this.debugMode = false;
 
