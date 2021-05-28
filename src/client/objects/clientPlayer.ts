@@ -121,19 +121,6 @@ class ClientPlayerSprite extends ClientGameObject {
 		return this;
 	}
 
-	private getVolume(): number {
-		const mainSceneObj = this.scene as MainScene;
-		const mainPlayerPosition = mainSceneObj.myPlayer.getPosition();
-		const distance = Phaser.Math.Distance.Between(
-			this.x,
-			this.y,
-			mainPlayerPosition.x,
-			mainPlayerPosition.y
-		);
-		let ratio = distance / Constant.RADIUS.VIEW;
-		ratio = Phaser.Math.Clamp(ratio, 0, 1);
-		return (1 - ratio) * Constant.VOLUME.PLAYER_VOLUME;
-	}
 	private getIfMuted(): boolean {
 		return this.scene.sound.mute;
 	}
