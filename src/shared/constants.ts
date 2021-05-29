@@ -85,9 +85,9 @@ export const Constant = Object.freeze({
 	},
 
 	VOLUME: {
-		BG_MUSIC: 0.008,
-		MENU_MUSIC: 0.005,
-		PLAYER_VOLUME: 0.05,
+		BG_MUSIC: 0.03,
+		MENU_MUSIC: 0.01,
+		PLAYER_VOLUME: 0.012,
 	},
 
 	SPRITE_DEPTH: {
@@ -153,7 +153,7 @@ export const Constant = Object.freeze({
 	},
 
 	QUADTREE: {
-		SPLIT: 0.5,
+		SPLIT: 0.51,
 		MAX_DEPTH: 20,
 	},
 });
