@@ -356,15 +356,15 @@ export default class Preloader extends Phaser.Scene {
 	 * Preloads sounds
 	 */
 	private preloadSounds(): void {
-		this.load.audio('menuMusic', '../sounds/menuMusic.wav');
-		this.load.audio('backgroundMusic', '../sounds/backgroundMusic.wav');
+		this.load.audio('menuMusic', '../assets/sounds/menuMusic.wav');
+		this.load.audio('backgroundMusic', '../assets/sounds/backgroundMusic.wav');
 		this.load.audio(
 			'sfx_player_hit',
-			'../assets/sounds/deathSound.wav'
+			'../assets/sounds/playerDamage.wav'
 		);
 		this.load.audio(
 			'sfx_player_respawn',
-			'../assets/sounds/220173__gameaudio__spacey-1up-power-up.wav'
+			'../assets/sounds/respawn.wav'
 		);
 		this.load.audio('bullet', '../assets/sounds/bullet.mp3');
 	}
