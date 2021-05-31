@@ -18,7 +18,7 @@ type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayer: ClientPlayer;
+	public myPlayer: ClientPlayer;
 	private otherPlayers: ObjectPool;
 	private bullets: ObjectPool;
 	private walls: ObjectPool;
@@ -28,6 +28,7 @@ export default class MainScene extends Phaser.Scene {
 	private resources: ObjectPool;
 	private moveKeys: KeySet;
 	private actionKeys: KeySet;
+	private backgroundMusic: Phaser.Sound.BaseSound;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
 	private debugMode: boolean;
@@ -37,6 +38,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	init(data): void {
+		this.sound.pauseOnBlur = false;
 		this.socket = data.socket;
 
 		this.initializeKeys();
@@ -50,8 +52,11 @@ export default class MainScene extends Phaser.Scene {
 		this.campfires = new ObjectPool(this, ClientCampfire, 5);
 		this.bases = new ObjectPool(this, ClientBase, 2);
 		this.resources = new ObjectPool(this, ClientResource, 10);
+
 		this.alive = false;
 		this.debugMode = false;
+
+		this.initializeSounds();
 	}
 
 	create(): void {
@@ -68,6 +73,9 @@ export default class MainScene extends Phaser.Scene {
 		this.socket.emit(Constant.MESSAGE.START_GAME);
 		this.events.emit('startHUD');
 		this.events.emit('showUI');
+
+		this.sound.add('sfx_player_hit');
+		this.sound.add('sfx_player_respawn');
 	}
 
 	update(): void {
@@ -115,6 +123,15 @@ export default class MainScene extends Phaser.Scene {
 			},
 			false
 		);
+	}
+
+	private initializeSounds(): void {
+		if (!this.sound.get('backgroundMusic')) {
+			this.backgroundMusic = this.sound.add('backgroundMusic', {
+				volume: Constant.VOLUME.BG_MUSIC,
+				loop: true,
+			});
+		}
 	}
 
 	private registerListeners(): void {
@@ -198,7 +215,7 @@ export default class MainScene extends Phaser.Scene {
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 		const playerPos = this.myPlayer.getPosition();
 
-		return Math.atan2(gamePos.y - playerPos.y, gamePos.x - playerPos.x);
+		return Phaser.Math.Angle.BetweenPoints(playerPos, gamePos);
 	}
 
 	private initializeGame(update: any): void {
@@ -207,6 +224,7 @@ export default class MainScene extends Phaser.Scene {
 
 		this.setCamera();
 		this.initializePlayer(player);
+		this.backgroundMusic.play();
 	}
 
 	private initializePlayer(player: any): void {
@@ -316,6 +334,18 @@ export default class MainScene extends Phaser.Scene {
 		this.updateGamePool(resources, this.resources);
 
 		this.events.emit('updateHUD', currentPlayer, time);
+
+		this.updateTeamHealthBars(bases);
+	}
+
+	private updateTeamHealthBars(bases: any[]) {
+		bases.forEach((obj) => {
+			this.events.emit(
+				'updateTeamHealthbar',
+				obj.teamNumber,
+				obj.hp / Constant.HP.BASE
+			);
+		});
 	}
 
 	private updatePlayer(currentPlayer: any) {
@@ -353,6 +383,7 @@ export default class MainScene extends Phaser.Scene {
 		this.deregisterInputListeners();
 		this.deregisterSocketListeners();
 		this.cameras.resetAll();
+		this.backgroundMusic.pause();
 		this.events.emit('stopHUD');
 		this.events.emit('stopUI');
 	}

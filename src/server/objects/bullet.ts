@@ -1,8 +1,10 @@
+import { Constant } from '../../shared/constants';
+import Collision from '../collision';
 import IndestructibleObj from './indestructibleObj';
 
 export default class Bullet extends IndestructibleObj {
 	public static readonly DAMAGE = 10;
-	public static readonly SPEED = 1;
+	public static readonly SPEED = 1.2;
 	private static readonly LIFELENGTH = 1 * 1000;
 
 	public xVel: number;
@@ -22,9 +24,10 @@ export default class Bullet extends IndestructibleObj {
 		this.expirationDate = Date.now() + Bullet.LIFELENGTH;
 	}
 
-	public updatePosition(timePassed: number) {
+	public updatePosition(timePassed: number, collision: Collision) {
 		this.xPos += timePassed * this.xVel;
 		this.yPos += timePassed * this.yVel;
+		collision.updateCollider(this, Constant.RADIUS.COLLISION.BULLET);
 	}
 
 	public isExpired(currentDate: number): boolean {

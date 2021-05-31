@@ -5,6 +5,7 @@ export const Constant = Object.freeze({
 	TEAM_COUNT: 2,
 	MAX_PLAYERS: 50, //TODO lower this maybe, I set it high for demo
 	RANDOM_LOOP_LIMIT: 10,
+	MAX_NAME_LENGTH: 15,
 
 	COST: {
 		WALL: 5,
@@ -15,7 +16,7 @@ export const Constant = Object.freeze({
 	HP: {
 		PLAYER: 100,
 		BASE: 1000,
-		WALL: 100,
+		WALL: 200,
 		TURRET: 150,
 	},
 
@@ -28,7 +29,7 @@ export const Constant = Object.freeze({
 		UPDATE_RATE: 1000 / 60,
 		CHECK_END: 1000 / 60,
 		END_SCREEN: 5 * 1000,
-		TIME_LIMIT: 5 * (60 * 1000),
+		TIME_LIMIT: 15 * (60 * 1000),
 	},
 
 	RADIUS: {
@@ -41,7 +42,7 @@ export const Constant = Object.freeze({
 		BASE: 200,
 		CAMP: 75,
 		TERRITORY: 500,
-		VIEW: 2000,
+		VIEW: 1500,
 		CAMP_HEXES: 4,
 
 		COLLISION: {
@@ -83,6 +84,12 @@ export const Constant = Object.freeze({
 		},
 	},
 
+	VOLUME: {
+		BG_MUSIC: 0.03,
+		MENU_MUSIC: 0.01,
+		PLAYER_VOLUME: 0.012,
+	},
+
 	SPRITE_DEPTH: {
 		TERRITORY: 0,
 		CAMP: 1,
@@ -92,6 +99,7 @@ export const Constant = Object.freeze({
 		TURRET_BASE: 4,
 		TURRET_GUN: 7,
 		PLAYER: 6,
+		PLAYER_DEATH: 4,
 		BULLET: 5,
 		RESOURCE: 2,
 	},
@@ -142,5 +150,10 @@ export const Constant = Object.freeze({
 		S: 1.5 * Math.PI,
 		SE: 1.75 * Math.PI,
 		INVALID: 10,
+	},
+
+	QUADTREE: {
+		SPLIT: 0.51,
+		MAX_DEPTH: 20,
 	},
 });

@@ -12,6 +12,11 @@ export class ClientBullet extends ClientGameObject {
 			bulletTexture = 'bullet_blue';
 
 		if (this.texture.key != bulletTexture) this.setTexture(bulletTexture);
+		if (!this.scene.sound.mute) {
+			this.scene.sound.play('bullet', {
+				volume: this.getVolume() * 0.02,
+			});
+		}
 	}
 
 	public update(newWallLiteral: any) {

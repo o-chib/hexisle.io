@@ -1,21 +1,25 @@
 import { Constant } from '../../shared/constants';
 import { Point } from '../../shared/hexTiles';
 import Collision from '../collision';
+import { MapResources } from '../mapResources';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
-	public static readonly RELOAD_TIME = 0.1 * 1000;
+	public static readonly RELOAD_TIME = 0.16 * 1000;
+	public static readonly RESPAWN_TIME = 3000;
 	private static readonly SPEED = 600;
 
 	public socket: SocketIOClient.Socket;
 	public name: string;
 	public resources: number;
 	public reloadTimer: number;
+	private respawnTimer: number;
 	private xVel: number;
 	private yVel: number;
 	private direction: number;
 	private lastUpdateTime: number;
 	private gameShootBullet: (turret: any, direction: number) => void;
+	private respawning: boolean;
 
 	constructor(
 		socket: SocketIOClient.Socket,
@@ -33,6 +37,7 @@ export default class Player extends DestructibleObj {
 		this.direction = 0;
 		this.lastUpdateTime = Date.now();
 		if (gameShootBulletMethod) this.gameShootBullet = gameShootBulletMethod;
+		this.respawning = false;
 	}
 
 	public updateResource(resourceValue: number) {
@@ -58,22 +63,21 @@ export default class Player extends DestructibleObj {
 		this.yVel = 0;
 	}
 
-	public updatePosition(presentTime: number, collision: Collision): void {
+	public updatePosition(
+		presentTime: number,
+		collision: Collision,
+		mapResources: MapResources
+	): void {
 		const timePassed = (presentTime - this.lastUpdateTime) / 1000;
 		const newX = this.xPos + timePassed * this.xVel;
 		const newY = this.yPos - timePassed * this.yVel;
-		if (
-			!collision.doesObjCollideWithStructure(
-				newX,
-				newY,
-				Constant.RADIUS.PLAYER
-			)
-		) {
-			this.xPos = newX;
-			this.yPos = newY;
-		} else {
-			this.xVel = 0;
-			this.yVel = 0;
+		if (!(this.xVel == 0 && this.yVel == 0)) {
+			if (
+				!collision.updatePlayerPosition(newX, newY, mapResources, this)
+			) {
+				this.xVel = 0;
+				this.yVel = 0;
+			}
 		}
 		this.lastUpdateTime = presentTime;
 	}
@@ -99,8 +103,9 @@ export default class Player extends DestructibleObj {
 	public respawn(respawnPoint: Point) {
 		this.xPos = respawnPoint.xPos;
 		this.yPos = respawnPoint.yPos;
-		this.hp = 100;
+		this.hp = Constant.HP.PLAYER;
 		this.resources = 0;
+		this.respawning = false;
 	}
 
 	public canShoot(): boolean {
@@ -119,6 +124,20 @@ export default class Player extends DestructibleObj {
 
 	public reload(timePassed: number): void {
 		if (this.reloadTimer > 0) this.reloadTimer -= timePassed;
+	}
+
+	public canRespawn(timePassed: number, collision: Collision): boolean {
+		// Run when they first die
+		if (!this.respawning) {
+			this.respawning = true;
+			this.respawnTimer = 0;
+			this.setNoVelocity();
+			collision.deleteCollider(this, Constant.RADIUS.COLLISION.PLAYER);
+			return false;
+		}
+
+		this.respawnTimer += timePassed;
+		return this.respawnTimer >= Player.RESPAWN_TIME;
 	}
 
 	public serializeForUpdate() {

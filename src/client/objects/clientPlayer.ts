@@ -1,4 +1,6 @@
 import { Constant } from '../../shared/constants';
+import { IPoolObject } from '../iPoolObject';
+import MainScene from '../scenes/mainScene';
 import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectContainer } from './clientGameObjectContainer';
 
@@ -9,6 +11,7 @@ export class ClientPlayer extends ClientGameObjectContainer {
 		super();
 		this.playerSprite = new ClientPlayerSprite(scene);
 		this.children.push(this.playerSprite);
+		this.children.push(new ClientPlayerName(scene));
 	}
 
 	public setRotation(direction: number) {
@@ -24,6 +27,8 @@ export class ClientPlayer extends ClientGameObjectContainer {
 }
 
 class ClientPlayerSprite extends ClientGameObject {
+	private playerHP: number = Constant.HP.PLAYER;
+
 	public create(playerLiteral: any) {
 		this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
 
@@ -34,7 +39,6 @@ class ClientPlayerSprite extends ClientGameObject {
 			playerTexture = 'player_blue';
 
 		this.setTexture(playerTexture);
-		this.setDepth(10);
 	}
 
 	public update(playerLiteral: any) {
@@ -44,10 +48,13 @@ class ClientPlayerSprite extends ClientGameObject {
 		// Opponent Animation Control
 		if (playerLiteral.hp > 0) {
 			if (this.visible == false) this.setVisible(true);
+			this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
 			this.handleWalkAnimation(playerLiteral.xVel, playerLiteral.yVel);
 		} else if (playerLiteral.hp <= 0) {
+			this.setDepth(Constant.SPRITE_DEPTH.PLAYER_DEATH);
 			this.handleDeathAnimation();
 		}
+		this.updateHealthEffects(playerLiteral.hp);
 
 		return this;
 	}
@@ -103,10 +110,10 @@ class ClientPlayerSprite extends ClientGameObject {
 				key: playerTextureName + '_death',
 				frames: this.anims.generateFrameNames(playerTextureName, {
 					start: 4,
-					end: 12,
+					end: 13,
 				}),
 				frameRate: 8,
-				hideOnComplete: true,
+				hideOnComplete: false,
 			});
 		}
 		if (this.anims.currentAnim.key == playerTextureName + '_walk') {
@@ -114,5 +121,71 @@ class ClientPlayerSprite extends ClientGameObject {
 			this.anims.play(playerTextureName + '_death', true);
 		}
 		return this;
+	}
+
+	private getIfMuted(): boolean {
+		return this.scene.sound.mute;
+	}
+
+	private updateHealthEffects(hp: any) {
+		// Handle Player Health-Based Effects
+		if (this.playerHP != hp) {
+			if (hp != Constant.HP.PLAYER) {
+				// Play on-hit/damage sound
+				if (!this.getIfMuted()) {
+					this.scene.sound.play('sfx_player_hit', {
+						volume:
+							this.getVolume() * Constant.VOLUME.PLAYER_VOLUME,
+					});
+				}
+				// Turn player red
+				this.setTint(0xff0000);
+			} else {
+				// Play respawn sound
+				if (!this.getIfMuted()) {
+					this.scene.sound.play('sfx_player_respawn', {
+						volume: this.getVolume() * Constant.VOLUME.PLAYER_VOLUME,
+					});
+				}
+			}
+		} else {
+			// Remove tint effects
+			this.clearTint();
+		}
+
+		this.playerHP = hp;
+	}
+}
+
+class ClientPlayerName extends Phaser.GameObjects.Text implements IPoolObject {
+	public dirtyBit: boolean;
+
+	constructor(scene: Phaser.Scene) {
+		super(scene, 0, 0, '', {
+			font: '28px Arial',
+			stroke: '#000000',
+			strokeThickness: 2.5,
+		});
+		scene.add.existing(this);
+		this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
+	}
+
+	public init(objLiteral: any): void {
+		this.setAlive(true);
+		this.setText(objLiteral.name);
+		this.setOrigin();
+	}
+
+	public update(objectState: any): void {
+		this.setPosition(objectState.xPos, objectState.yPos - 80);
+	}
+
+	public die(): void {
+		this.setAlive(false);
+	}
+
+	protected setAlive(status: boolean) {
+		this.setActive(status);
+		this.setVisible(status);
 	}
 }

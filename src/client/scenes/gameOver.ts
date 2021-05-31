@@ -16,6 +16,7 @@ export default class gameOver extends Phaser.Scene {
 	init(data): void {
 		this.socket = data.socket;
 		this.endState = data.endState;
+		this.sound.get('menuMusic').play();
 	}
 
 	create(): void {
@@ -44,8 +45,6 @@ export default class gameOver extends Phaser.Scene {
 			this.endState.winner == Constant.TEAM.BLUE ? 'Blue' : 'Red';
 		textMessage += ' team wins!';
 		textMessage += '\n' + this.endState.message;
-
-		//message.setVisible(false);
 
 		const MessageArea = document.getElementById('message') as HTMLElement;
 		MessageArea.innerText = textMessage;

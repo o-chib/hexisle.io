@@ -16,6 +16,7 @@ import { MapResources } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
 import { Resource } from './objects/resource';
+import BoundaryWall from './objects/boundaryWall';
 
 export default class Game {
 	hexTileMap: HexTiles;
@@ -85,8 +86,6 @@ export default class Game {
 
 		this.updateBullets(currentTimestamp, timePassed);
 
-		this.updateTerritories();
-
 		this.updateWalls();
 
 		this.updateTurrets(timePassed);
@@ -94,6 +93,8 @@ export default class Game {
 		this.updateBases();
 
 		this.updatePlayers(currentTimestamp, timePassed);
+
+		this.updateTerritories();
 
 		this.updateMapResources(timePassed);
 
@@ -112,8 +113,6 @@ export default class Game {
 
 	updateBullets(currentTimestamp, timePassed) {
 		for (const aBullet of this.bullets) {
-			aBullet.updatePosition(timePassed);
-
 			if (aBullet.isExpired(currentTimestamp)) {
 				this.collision.deleteCollider(
 					aBullet,
@@ -123,10 +122,8 @@ export default class Game {
 				continue;
 			}
 
-			this.collision.updateCollider(
-				aBullet,
-				Constant.RADIUS.COLLISION.BULLET
-			);
+			aBullet.updatePosition(timePassed, this.collision);
+			this.collision.bulletCollision(aBullet, this.bullets);
 		}
 	}
 
@@ -187,7 +184,6 @@ export default class Game {
 
 	updateWalls() {
 		for (const aWall of this.walls.values()) {
-			this.collision.buildingBulletCollision(aWall, this.bullets);
 			if (!aWall.isAlive()) {
 				this.removeWall(aWall);
 			}
@@ -196,7 +192,6 @@ export default class Game {
 
 	updateTurrets(timePassed: number) {
 		for (const aTurret of this.turrets.values()) {
-			this.collision.buildingBulletCollision(aTurret, this.bullets);
 			if (!aTurret.isAlive()) {
 				this.removeTurret(aTurret);
 				continue;
@@ -216,7 +211,6 @@ export default class Game {
 
 	updateBases() {
 		for (const aBase of this.bases) {
-			this.collision.buildingBulletCollision(aBase, this.bullets);
 			if (!aBase.isAlive()) {
 				this.collision.deleteCollider(
 					aBase,
@@ -241,10 +235,18 @@ export default class Game {
 		const givePassiveIncome: boolean =
 			this.passiveIncome.givePassiveIncomeIfPossible(timePassed);
 		for (const aPlayer of this.players.values()) {
-			aPlayer.reload(timePassed);
-			this.updatePlayerPosition(currentTimestamp, aPlayer);
-			if (aPlayer.isAlive() && givePassiveIncome) {
-				this.passiveIncome.updatePlayerResources(aPlayer);
+			if (aPlayer.isAlive()) {
+				aPlayer.reload(timePassed);
+				aPlayer.updatePosition(
+					currentTimestamp,
+					this.collision,
+					this.mapResources
+				);
+				if (givePassiveIncome) {
+					this.passiveIncome.updatePlayerResources(aPlayer);
+				}
+			} else if (aPlayer.canRespawn(timePassed, this.collision)) {
+				this.respawnPlayer(aPlayer);
 			}
 		}
 	}
@@ -314,28 +316,6 @@ export default class Game {
 
 	stopAllIntervals(): void {
 		clearInterval(this.gameInterval);
-	}
-
-	updatePlayerPosition(currentTimestamp: number, player: Player): void {
-		player.updatePosition(currentTimestamp, this.collision);
-		this.collision.playerBulletResourceCollision(
-			player,
-			this.bullets,
-			this.mapResources
-		);
-		if (player.hp == 0) {
-			// Give time for player to play death animation
-			// Only call timeout once
-			this.collision.deleteCollider(
-				player,
-				Constant.RADIUS.COLLISION.PLAYER
-			);
-			player.hp = -1;
-			player.setNoVelocity();
-			setTimeout(() => {
-				this.respawnPlayer(player);
-			}, 3000);
-		}
 	}
 
 	createPlayerUpdate(player: Player) {
@@ -429,19 +409,12 @@ export default class Game {
 		return nearbyCampfires;
 	}
 
-	createBaseUpdate(player: Player) {
+	createBaseUpdate() {
 		const nearbyBases: Base[] = [];
 
 		for (const aBase of this.bases) {
-			if (
-				this.collision.doCirclesCollide(
-					aBase,
-					Constant.RADIUS.TERRITORY,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyBases.push(aBase);
+			// Let player have information about all bases at all times
+			nearbyBases.push(aBase);
 		}
 
 		return nearbyBases;
@@ -489,7 +462,7 @@ export default class Game {
 		const nearbyWalls: Wall[] = this.createWallUpdate(player);
 		const nearbyTurrets: Turret[] = this.createTurretUpdate(player);
 		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
-		const nearbyBases: Base[] = this.createBaseUpdate(player);
+		const nearbyBases: Base[] = this.createBaseUpdate();
 		const nearbyTerritories: Territory[] =
 			this.createTerritoryUpdate(player);
 		const nearbyResources: Resource[] = this.createResourceUpdate(player);
@@ -574,8 +547,6 @@ export default class Game {
 		const player: Player = this.getPlayer(socket.id)!;
 
 		player.updateVelocity(direction);
-		player.updatePosition(Date.now(), this.collision);
-		this.collision.updateCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 	}
 
 	rotatePlayer(socket: SocketIO.Socket, direction: number): void {
@@ -858,9 +829,12 @@ export default class Game {
 
 	generateBoundaryColliders(): void {
 		for (const boundaryHex of this.hexTileMap.boundaryCoords) {
-			this.collision.insertCollider(
+			const boundaryWall = new BoundaryWall(
+				this.idGenerator.newID(),
 				this.hexTileMap.tileMap[boundaryHex.q][boundaryHex.r]
-					.cartesian_coord,
+			);
+			this.collision.insertCollider(
+				boundaryWall,
 				Constant.RADIUS.COLLISION.WALL
 			);
 		}
