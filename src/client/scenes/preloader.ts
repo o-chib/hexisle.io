@@ -17,7 +17,7 @@ export default class Preloader extends Phaser.Scene {
 		this.addProgressBar();
 
 		this.socket = io();
-
+	
 		this.preloadPlayers();
 		this.preloadBases();
 		this.preloadWalls();
@@ -356,7 +356,16 @@ export default class Preloader extends Phaser.Scene {
 	 * Preloads sounds
 	 */
 	private preloadSounds(): void {
-		this.load.audio('menuMusic', '../sounds/menuMusic.mp3');
-		this.load.audio('backgroundMusic', '../sounds/backgroundMusic.mp3');
+		this.load.audio('menuMusic', '../assets/sounds/menuMusic.wav');
+		this.load.audio('backgroundMusic', '../assets/sounds/backgroundMusic.wav');
+		this.load.audio(
+			'sfx_player_hit',
+			'../assets/sounds/playerDamage.wav'
+		);
+		this.load.audio(
+			'sfx_player_respawn',
+			'../assets/sounds/respawn.wav'
+		);
+		this.load.audio('bullet', '../assets/sounds/bullet.mp3');
 	}
 }

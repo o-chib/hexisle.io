@@ -18,7 +18,7 @@ type KeySet = { [key: string]: Phaser.Input.Keyboard.Key };
 
 export default class MainScene extends Phaser.Scene {
 	public static Name = 'MainScene';
-	private myPlayer: ClientPlayer;
+	public myPlayer: ClientPlayer;
 	private otherPlayers: ObjectPool;
 	private bullets: ObjectPool;
 	private walls: ObjectPool;
@@ -39,6 +39,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	init(data): void {
+		this.sound.pauseOnBlur = false;
 		this.socket = data.socket;
 
 		this.initializeKeys();
@@ -75,6 +76,9 @@ export default class MainScene extends Phaser.Scene {
 		this.socket.emit(Constant.MESSAGE.START_GAME);
 		this.events.emit('startHUD');
 		this.events.emit('showUI');
+
+		this.sound.add('sfx_player_hit');
+		this.sound.add('sfx_player_respawn');
 	}
 
 	update(): void {
@@ -213,7 +217,7 @@ export default class MainScene extends Phaser.Scene {
 		const gamePos = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 		const playerPos = this.myPlayer.getPosition();
 
-		return Math.atan2(gamePos.y - playerPos.y, gamePos.x - playerPos.x);
+		return Phaser.Math.Angle.BetweenPoints(playerPos, gamePos);
 	}
 
 	private initializeGame(update: any): void {

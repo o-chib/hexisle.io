@@ -42,7 +42,7 @@ export const Constant = Object.freeze({
 		BASE: 200,
 		CAMP: 75,
 		TERRITORY: 500,
-		VIEW: 2000,
+		VIEW: 1500,
 		CAMP_HEXES: 4,
 
 		COLLISION: {
@@ -87,6 +87,7 @@ export const Constant = Object.freeze({
 	VOLUME: {
 		BG_MUSIC: 0.03,
 		MENU_MUSIC: 0.01,
+		PLAYER_VOLUME: 0.012,
 	},
 
 	SPRITE_DEPTH: {
@@ -152,7 +153,7 @@ export const Constant = Object.freeze({
 	},
 
 	QUADTREE: {
-		SPLIT: 0.5,
+		SPLIT: 0.51,
 		MAX_DEPTH: 20,
 	},
 });

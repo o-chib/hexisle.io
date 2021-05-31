@@ -1,5 +1,6 @@
 import { Constant } from '../../shared/constants';
 import { IPoolObject } from '../iPoolObject';
+import MainScene from '../scenes/mainScene';
 import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectContainer } from './clientGameObjectContainer';
 
@@ -26,6 +27,8 @@ export class ClientPlayer extends ClientGameObjectContainer {
 }
 
 class ClientPlayerSprite extends ClientGameObject {
+	private playerHP: number = Constant.HP.PLAYER;
+
 	public create(playerLiteral: any) {
 		this.setDepth(Constant.SPRITE_DEPTH.PLAYER);
 
@@ -51,6 +54,7 @@ class ClientPlayerSprite extends ClientGameObject {
 			this.setDepth(Constant.SPRITE_DEPTH.PLAYER_DEATH);
 			this.handleDeathAnimation();
 		}
+		this.updateHealthEffects(playerLiteral.hp);
 
 		return this;
 	}
@@ -117,6 +121,39 @@ class ClientPlayerSprite extends ClientGameObject {
 			this.anims.play(playerTextureName + '_death', true);
 		}
 		return this;
+	}
+
+	private getIfMuted(): boolean {
+		return this.scene.sound.mute;
+	}
+
+	private updateHealthEffects(hp: any) {
+		// Handle Player Health-Based Effects
+		if (this.playerHP != hp) {
+			if (hp != Constant.HP.PLAYER) {
+				// Play on-hit/damage sound
+				if (!this.getIfMuted()) {
+					this.scene.sound.play('sfx_player_hit', {
+						volume:
+							this.getVolume() * Constant.VOLUME.PLAYER_VOLUME,
+					});
+				}
+				// Turn player red
+				this.setTint(0xff0000);
+			} else {
+				// Play respawn sound
+				if (!this.getIfMuted()) {
+					this.scene.sound.play('sfx_player_respawn', {
+						volume: this.getVolume() * Constant.VOLUME.PLAYER_VOLUME,
+					});
+				}
+			}
+		} else {
+			// Remove tint effects
+			this.clearTint();
+		}
+
+		this.playerHP = hp;
 	}
 }
 

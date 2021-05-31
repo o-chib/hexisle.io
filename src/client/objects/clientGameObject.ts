@@ -1,4 +1,6 @@
+import { Constant } from '../../shared/constants';
 import { IPoolObject } from '../iPoolObject';
+import MainScene from '../scenes/mainScene';
 
 export abstract class ClientGameObject
 	extends Phaser.GameObjects.Sprite
@@ -33,6 +35,20 @@ export abstract class ClientGameObject
 	protected setAlive(status: boolean) {
 		this.setActive(status);
 		this.setVisible(status);
+	}
+
+	protected getVolume(): number {
+		const mainSceneObj = this.scene as MainScene;
+		const mainPlayerPosition = mainSceneObj.myPlayer.getPosition();
+		const distance = Phaser.Math.Distance.Between(
+			this.x,
+			this.y,
+			mainPlayerPosition.x,
+			mainPlayerPosition.y
+		);
+		let ratio = distance / Constant.RADIUS.VIEW;
+		ratio = Phaser.Math.Clamp(ratio, 0, 1);
+		return 1 - ratio;
 	}
 }
 

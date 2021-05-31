@@ -29,7 +29,6 @@ const restartGame = () => {
 const filter = new Filter();
 const allGames = new GameCollection(restartGame);
 allGames.newGame();
-allGames.newGame();
 
 // Start Socket.io connection
 const websocket = new SocketIO.Server(server);
