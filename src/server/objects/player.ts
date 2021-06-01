@@ -106,6 +106,7 @@ export default class Player extends DestructibleObj {
 		this.hp = Constant.HP.PLAYER;
 		this.resources = 0;
 		this.respawning = false;
+		this.lastUpdateTime = Date.now();
 	}
 
 	public canShoot(): boolean {
@@ -136,6 +137,7 @@ export default class Player extends DestructibleObj {
 			return false;
 		}
 
+		this.setNoVelocity();
 		this.respawnTimer += timePassed;
 		return this.respawnTimer >= Player.RESPAWN_TIME;
 	}
