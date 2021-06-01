@@ -284,13 +284,16 @@ export default class Game {
 	createGameEndRecap() {
 		let redCamps = 0;
 		let blueCamps = 0;
+		let redHealth = -1;
+		let blueHealth = -1;
+
 		for (const camp of this.campfires) {
 			if (camp.teamNumber == Constant.TEAM.RED) redCamps++;
 			else if (camp.teamNumber == Constant.TEAM.RED) blueCamps++;
 		}
 
 		let winner = Constant.TEAM.NONE;
-		let message: string;
+		let message = '';
 
 		if (this.bases.size == 1) {
 			for (const base of this.bases) {
@@ -299,8 +302,29 @@ export default class Game {
 			}
 			message = 'All other team bases eliminated!';
 		} else {
-			if (redCamps > blueCamps) winner = Constant.TEAM.RED;
-			else if (redCamps < blueCamps) winner = Constant.TEAM.BLUE;
+			if (redCamps > blueCamps) {
+				winner = Constant.TEAM.RED;
+			} else if (redCamps < blueCamps) {
+				winner = Constant.TEAM.BLUE;
+			} else {
+				// Both teams have the same number of camps
+				// Check health
+				for (const base of this.bases) {
+					if (base.teamNumber == Constant.TEAM.RED)
+						redHealth = base.hp;
+					else if (base.teamNumber == Constant.TEAM.BLUE)
+						blueHealth = base.hp;
+
+					if (redHealth > blueHealth) {
+						winner = Constant.TEAM.RED;
+					} else if (redHealth < blueHealth) {
+						winner = Constant.TEAM.BLUE;
+					} else {
+						// Draw
+						winner = Constant.TEAM.NONE;
+					}
+				}
+			}
 			message = 'Time Up!';
 		}
 
@@ -310,6 +334,10 @@ export default class Game {
 			campCount: {
 				red: redCamps,
 				blue: blueCamps,
+			},
+			teamHealth: {
+				red: redHealth,
+				blue: blueHealth,
 			},
 		};
 	}
