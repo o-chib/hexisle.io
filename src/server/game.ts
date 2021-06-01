@@ -726,10 +726,7 @@ export default class Game {
 	}
 
 	removeTurret(turret: Turret): void {
-		this.collision.deleteCollider(
-			this.turrets.get(turret.id),
-			Constant.RADIUS.COLLISION.TURRET
-		);
+		this.collision.deleteCollider(turret, Constant.RADIUS.COLLISION.TURRET);
 		this.turrets.delete(turret.id);
 		turret.tile.removeBuilding();
 	}
