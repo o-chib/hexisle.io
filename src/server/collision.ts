@@ -4,7 +4,7 @@ import Wall from './objects/wall';
 import Turret from './objects/turret';
 import Campfire from './objects/campfire';
 import Base from './objects/base';
-import { Quadtree, Rect, CollisionObject } from './quadtree';
+import { Quadtree, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { MapResources } from './mapResources';
 import { Resource } from './objects/resource';
