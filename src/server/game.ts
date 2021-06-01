@@ -533,14 +533,7 @@ export default class Game {
 
 		const newPlayer = this.generateNewPlayer(socket, name);
 
-		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
-		newPlayer.xPos = respawnPoint.xPos;
-		newPlayer.yPos = respawnPoint.yPos;
-
-		this.collision.insertCollider(
-			newPlayer,
-			Constant.RADIUS.COLLISION.PLAYER
-		);
+		this.respawnPlayer(newPlayer);
 
 		this.initiateGame(newPlayer, socket);
 	}
