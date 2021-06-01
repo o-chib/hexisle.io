@@ -1,9 +1,8 @@
 export const Constant = Object.freeze({
-	// Player_Radius, Player_Hp, Player_Speed, Player_Fire_rate, Bullet_speed, Bullet damage
 	MAP_WIDTH: 10000,
 	MAP_HEIGHT: 10000,
 	TEAM_COUNT: 2,
-	MAX_PLAYERS: 50, //TODO lower this maybe, I set it high for demo
+	MAX_PLAYERS: 50,
 	RANDOM_LOOP_LIMIT: 10,
 	MAX_NAME_LENGTH: 15,
 

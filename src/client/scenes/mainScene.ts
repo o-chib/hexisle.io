@@ -303,7 +303,6 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	updateState(update: any): void {
-		//TODO may state type
 		const {
 			time,
 			currentPlayer,

@@ -297,7 +297,6 @@ export default class Game {
 
 		if (this.bases.size == 1) {
 			for (const base of this.bases) {
-				//TODO do we need to do a loop?
 				winner = base.teamNumber;
 			}
 			message = 'All other team bases eliminated!';
