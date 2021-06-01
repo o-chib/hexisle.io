@@ -81,8 +81,9 @@ export default class Game {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
-		if (timePassed > 24)
-			console.log('WARNING : Update took ', timePassed, 'ms');
+		// Throw a warning if an update rate dips below 30fps
+		if (timePassed > 34)
+			console.warn('WARNING : Update took ', timePassed, 'ms');
 
 		this.updateBullets(currentTimestamp, timePassed);
 
