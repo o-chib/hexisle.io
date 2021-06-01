@@ -144,7 +144,8 @@ class ClientPlayerSprite extends ClientGameObject {
 				// Play respawn sound
 				if (!this.getIfMuted()) {
 					this.scene.sound.play('sfx_player_respawn', {
-						volume: this.getVolume() * Constant.VOLUME.PLAYER_VOLUME,
+						volume:
+							this.getVolume() * Constant.VOLUME.PLAYER_VOLUME,
 					});
 				}
 			}

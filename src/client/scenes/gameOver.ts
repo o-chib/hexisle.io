@@ -40,10 +40,14 @@ export default class gameOver extends Phaser.Scene {
 
 		// Message
 		let textMessage = '';
-
-		textMessage +=
-			this.endState.winner == Constant.TEAM.BLUE ? 'Blue' : 'Red';
-		textMessage += ' team wins!';
+		if (this.endState.winner != Constant.TEAM.NONE) {
+			textMessage +=
+				this.endState.winner == Constant.TEAM.BLUE ? 'BLUE' : 'RED';
+			textMessage += ' TEAM WINS!';
+		} else {
+			textMessage += 'DRAW!';
+		}
+		textMessage += '\n\n';
 		textMessage += '\n' + this.endState.message;
 
 		const MessageArea = document.getElementById('message') as HTMLElement;
