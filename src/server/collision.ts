@@ -65,12 +65,16 @@ export default class CollisionDetection {
 			Constant.RADIUS.COLLISION.BULLET,
 			results
 		);
-		results.forEach((result) => {
-			// if statement for making sure bullets hit either a player or structure, not both
-			if (!this.bulletPlayerCollision(result.payload, bullet, bullets)) {
-				this.bulletStructureCollision(result.payload, bullet, bullets);
+		for (const result of results) {
+			// if statement for making sure bullets hit either a player or structure, not both,
+			// returns on first successful collision so bullets don't hit multiple things at once
+			if (
+				this.bulletPlayerCollision(result.payload, bullet, bullets) ||
+				this.bulletStructureCollision(result.payload, bullet, bullets)
+				) {
+				return;
 			}
-		});
+		}
 	}
 
 	/**
