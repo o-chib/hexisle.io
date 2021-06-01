@@ -636,6 +636,7 @@ export default class Game {
 				tile.cartesian_coord.yPos,
 				collisionRadius
 			) ||
+			!player.isAlive() ||
 			!player.canAffordStructure(building)
 		) {
 			return false;
