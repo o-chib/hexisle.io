@@ -352,7 +352,7 @@ export default class Game {
 		return nearbyObj;
 	}
 
-	private createPlayerUpdate(player: Player) {
+	private getNearbyPlayers(player: Player) {
 		const nearbyPlayers: Player[] = [];
 
 		for (const aPlayer of this.players.values()) {
@@ -372,7 +372,7 @@ export default class Game {
 	}
 
 	private createUpdate(player: Player) {
-		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
+		const nearbyPlayers: Player[] = this.getNearbyPlayers(player);
 		const nearbyBullets: Bullet[] = this.getNearbyObj(
 			player,
 			this.bullets.values()
@@ -410,12 +410,10 @@ export default class Game {
 		};
 	}
 
-	private initiateGame(newPlayer: Player, socket: SocketIO.Socket) {
-		const initObject = {
+	private sendInitialState(newPlayer: Player, socket: SocketIO.Socket) {
+		socket.emit(Constant.MESSAGE.INITIALIZE, {
 			player: newPlayer.serializeForUpdate(),
-		};
-
-		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
+		});
 	}
 
 	private generateNewPlayer(socket: SocketIO.Socket, name: string) {
@@ -437,7 +435,7 @@ export default class Game {
 
 		this.respawnPlayer(newPlayer);
 
-		this.initiateGame(newPlayer, socket);
+		this.sendInitialState(newPlayer, socket);
 	}
 
 	public removePlayer(socket: SocketIO.Socket) {
@@ -453,15 +451,11 @@ export default class Game {
 	}
 
 	private respawnPlayer(player: Player) {
-		const respawnPoint: Point = this.getRespawnPoint(player.teamNumber);
-		player.respawn(respawnPoint);
+		const respawnPoint = this.teams.getRandomRespawnPoint(
+			player.teamNumber
+		);
+		player.respawn(this.hexTileMap.offsetToCartesian(respawnPoint));
 		this.collision.insertCollider(player);
-	}
-
-	private getRespawnPoint(teamNum: number): Point {
-		const coords: OffsetPoint[] = this.teams.getRespawnCoords(teamNum);
-		const index = Math.floor(Math.random() * coords.length);
-		return this.hexTileMap.offsetToCartesian(coords[index]);
 	}
 
 	public movePlayer(socket: SocketIO.Socket, direction: number) {

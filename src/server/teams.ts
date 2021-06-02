@@ -31,6 +31,12 @@ export default class Teams {
 		return this.teams.get(teamNum)!.respawnCoords;
 	}
 
+	public getRandomRespawnPoint(teamNum: number): OffsetPoint {
+		const coords: OffsetPoint[] = this.getRespawnCoords(teamNum);
+		const index = Math.floor(Math.random() * coords.length);
+		return coords[index];
+	}
+
 	public addNewPlayer(playerID: string): number {
 		const teamNumber: number = this.getNewPlayerTeamNumber();
 		this.addPlayerToTeam(teamNumber, playerID);
