@@ -39,12 +39,8 @@ export default class Teams {
 
 	public addNewPlayer(playerID: string): number {
 		const teamNumber: number = this.getNewPlayerTeamNumber();
-		this.addPlayerToTeam(teamNumber, playerID);
+		this.teams.get(teamNumber)!.addPlayer(playerID);
 		return teamNumber;
-	}
-
-	public removePlayer(playerID: string, teamNumber: number): void {
-		this.removePlayerFromTeam(teamNumber, playerID);
 	}
 
 	private initTeams(teamCount: number): void {
@@ -73,11 +69,7 @@ export default class Teams {
 		return smallestTeam;
 	}
 
-	private addPlayerToTeam(teamNum: number, playerID: string): void {
-		this.teams.get(teamNum)!.addPlayer(playerID);
-	}
-
-	private removePlayerFromTeam(teamNum: number, playerID: string): void {
+	public removePlayer(playerID: string, teamNum: number): void {
 		this.teams.get(teamNum)!.removePlayer(playerID);
 	}
 }
