@@ -58,7 +58,7 @@ function checkServerStatus()
 
     let imgLoaded = 0;
     let img = document.body.appendChild(document.createElement("img"));
-    img.src = "https://play.hexisle.io/assets/help.png";
+    img.src = "https://play.hexisle.io/assets/lobby/help.png";
     // img.src = "https://raw.githubusercontent.com/o-chib/teamIO-project/main/public/favicon.ico?token=AHYXK3SB3335CLIKSZM3ZEDAVQ5RU";
 
     img.onload = function()
