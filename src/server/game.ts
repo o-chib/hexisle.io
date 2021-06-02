@@ -458,7 +458,7 @@ export default class Game {
 		this.collision.insertCollider(player);
 	}
 
-	public movePlayer(socket: SocketIO.Socket, direction: number) {
+	public changeMovementDirection(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 
