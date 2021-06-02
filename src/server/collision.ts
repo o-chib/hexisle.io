@@ -1,9 +1,6 @@
 import Player from './objects/player';
 import Bullet from './objects/bullet';
-import Wall from './objects/wall';
-import Turret from './objects/turret';
 import Campfire from './objects/campfire';
-import Base from './objects/base';
 import { Quadtree, CollisionObject } from './quadtree';
 import { Constant } from '../shared/constants';
 import { MapResources } from './mapResources';
@@ -100,7 +97,7 @@ export default class CollisionDetection {
 					{ xPos: xPos, yPos: yPos },
 					Constant.RADIUS.PLAYER,
 					result.payload,
-					this.getCollisionRadius(result.payload)
+					result.payload.RADIUS
 				)
 			) {
 				return false;
@@ -322,9 +319,9 @@ export default class CollisionDetection {
 			payload.hp > 0 &&
 			this.doCirclesCollide(
 				payload,
-				this.getCollisionRadius(payload),
+				payload.RADIUS,
 				bullet,
-				Constant.RADIUS.BULLET
+				bullet.RADIUS
 			)
 		) {
 			payload.hp -= Bullet.DAMAGE;
@@ -353,26 +350,6 @@ export default class CollisionDetection {
 			object.yPos + radius,
 			results
 		);
-	}
-
-	/**
-	 * Returns the collision radius of an object
-	 * @param object the object to check
-	 * @returns number
-	 */
-	private getCollisionRadius(object: any): number {
-		if (object instanceof Wall || object instanceof BoundaryWall) {
-			return Constant.RADIUS.WALL;
-		} else if (object instanceof Turret) {
-			return Constant.RADIUS.TURRET;
-		} else if (object instanceof Base) {
-			return Constant.RADIUS.BASE;
-		} else if (object instanceof Player) {
-			return Constant.RADIUS.PLAYER;
-		} else if (object instanceof Bullet) {
-			return Constant.RADIUS.BULLET;
-		}
-		throw new Error('Invalid Object.');
 	}
 
 	/**
