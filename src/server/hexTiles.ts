@@ -750,7 +750,7 @@ export class Tile {
 	public cartesian_coord: Point;
 	public teamNumber: number;
 	public building: string;
-	private buildingObj: Structure | null;
+	public buildingObj: Structure | null;
 
 	constructor(
 		building: string = Constant.BUILDING.NONE,

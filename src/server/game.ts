@@ -17,6 +17,7 @@ import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
 import { Resource } from './objects/resource';
 import GameObject from './objects/gameObject';
+import Structure from './objects/structure';
 
 export default class Game {
 	hexTileMap: HexTiles;
@@ -581,23 +582,13 @@ export default class Game {
 		if (!this.canDemolishStructure(player, tile)) return;
 
 		player.refundStructure(tile.building);
-		if (tile.building == Constant.BUILDING.WALL) {
-			this.removeWall(this.walls.get(tile.getBuildingId())!);
-		} else if (tile.building == Constant.BUILDING.TURRET) {
-			this.removeTurret(this.turrets.get(tile.getBuildingId())!);
-		}
+		this.removeStructure(tile.buildingObj!);
 	}
 
-	private removeWall(wall: Wall): void {
-		this.collision.deleteCollider(wall);
-		this.walls.delete(wall.id);
-		wall.tile.removeBuilding();
-	}
-
-	private removeTurret(turret: Turret): void {
-		this.collision.deleteCollider(turret);
-		this.turrets.delete(turret.id);
-		turret.tile.removeBuilding();
+	private removeStructure(structure: Structure): void {
+		this.collision.deleteCollider(structure);
+		this.walls.delete(structure.id);
+		structure.tile.removeBuilding();
 	}
 
 	private getPlayer(socketID: string): Player {
