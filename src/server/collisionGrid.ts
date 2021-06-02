@@ -254,7 +254,7 @@ export class CollisionGrid {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param obj the object to check collision against
 	 * @param searchL the left position of the search box
 	 * @param searchR the right position of the search box
@@ -406,7 +406,7 @@ export class CollisionGrid {
 	}
 
 	/**
-	 * Checks if a certain [row, col] indices are in-bounds/valid
+	 * Checks if certain left, right, top, and bottom indices are in-bounds/valid
 	 * @param idxL the left-most index of the grid-box
 	 * @param idxR the right-most index of the grid-box
 	 * @param idxT the top-most index of the grid-box
@@ -422,12 +422,7 @@ export class CollisionGrid {
 		const numBoxes = Math.floor(
 			Constant.MAP_HEIGHT / Constant.GRID.BOX_SIZE
 		);
-		if (
-			idxL < 0 ||
-			idxT < 0 ||
-			idxR >= numBoxes ||
-			idxB >= numBoxes
-		) {
+		if (idxL < 0 || idxT < 0 || idxR >= numBoxes || idxB >= numBoxes) {
 			return false;
 		}
 		return true;
