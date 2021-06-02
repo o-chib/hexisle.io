@@ -1,13 +1,11 @@
-import { Console } from 'node:console';
 import { Constant } from '../shared/constants';
 import { CollisionObjectPool } from './CollisionObjectPool';
-import Player from './objects/player';
 
 export class CollisionGrid {
 	// The ratio of child to parent width. Higher numbers will push payload further down
 	// into the tree. The resulting quadtree will require more node testing but less object
 	// testing.
-	private grid: CollisionObject | null [][];
+	private grid: CollisionObject | null[][];
 	private topLevelCObjs: CollisionObject[] | null;
 	private cObjPool: CollisionObjectPool;
 
@@ -37,10 +35,10 @@ export class CollisionGrid {
 		results: CollisionObject[]
 	): void {
 		// console.log(searchL, searchR, searchT, searchB);
-		let idxL = Math.floor(searchL / Constant.GRID.BOX_SIZE);
-		let idxR = Math.floor(searchR / Constant.GRID.BOX_SIZE);
-		let idxT = Math.floor(searchT / Constant.GRID.BOX_SIZE);
-		let idxB = Math.floor(searchB / Constant.GRID.BOX_SIZE);
+		const idxL = Math.floor(searchL / Constant.GRID.BOX_SIZE);
+		const idxR = Math.floor(searchR / Constant.GRID.BOX_SIZE);
+		const idxT = Math.floor(searchT / Constant.GRID.BOX_SIZE);
+		const idxB = Math.floor(searchB / Constant.GRID.BOX_SIZE);
 
 		this.search(
 			idxL,
@@ -55,16 +53,12 @@ export class CollisionGrid {
 		);
 	}
 
-	private insert(
-		cObj: CollisionObject,
-		gridIndices: [number, number]
-	): void {
+	private insert(cObj: CollisionObject, gridIndices: [number, number]): void {
 		let cObjList: CollisionObject[] | null;
 		// console.log("");
-		
+
 		// top level
 		if (!gridIndices) {
-
 			// initialize this array if needed
 			if (!this.topLevelCObjs) {
 				this.topLevelCObjs = [];
@@ -73,9 +67,8 @@ export class CollisionGrid {
 			cObjList = this.topLevelCObjs;
 			// console.log("inserting in top level");
 
-		// inside a grid
+			// inside a grid
 		} else {
-
 			// initialize this array if needed
 			if (!this.grid[gridIndices[0]][gridIndices[1]]) {
 				this.grid[gridIndices[0]][gridIndices[1]] = [];
@@ -89,10 +82,7 @@ export class CollisionGrid {
 		cObjList!.push(cObj);
 	}
 
-	private delete(
-		obj: any,
-		gridIndices: [number, number]
-	): void {
+	private delete(obj: any, gridIndices: [number, number]): void {
 		let cObjList: CollisionObject[] | null;
 		// console.log("");
 
@@ -100,8 +90,8 @@ export class CollisionGrid {
 		if (!gridIndices) {
 			cObjList = this.topLevelCObjs;
 			// console.log("deleting in top level");
-		
-		// inside a grid
+
+			// inside a grid
 		} else {
 			cObjList = this.grid[gridIndices[0]][gridIndices[1]];
 			// console.log("deleting in grid:", gridIndices);
@@ -143,37 +133,69 @@ export class CollisionGrid {
 			// check if there is anything in the top level node, search for collisions if something is in there
 			cObjList = this.topLevelCObjs;
 			if (cObjList) {
-				this.pushCollidingItemsOntoResults(searchL, searchR, searchT, searchB, cObjList, results);
+				this.pushCollidingItemsOntoResults(
+					searchL,
+					searchR,
+					searchT,
+					searchB,
+					cObjList,
+					results
+				);
 				// console.log("    searching top level");
 			}
 
 			// check if there is anything in this box, search for collisions if something is in there
 			cObjList = this.grid[idxL][idxT];
 			if (cObjList) {
-				this.pushCollidingItemsOntoResults(searchL, searchR, searchT, searchB, cObjList, results);
+				this.pushCollidingItemsOntoResults(
+					searchL,
+					searchR,
+					searchT,
+					searchB,
+					cObjList,
+					results
+				);
 				// console.log("    searching box", [idxL, idxT]);
 			}
-			
-		// it must overlap so check the toplevelcObjs and overlapping boxes
+
+			// it must overlap so check the toplevelcObjs and overlapping boxes
 		} else {
 			// console.log("search: overlap");
 
 			// check if there is anything in the top level node, search for collisions if something is in there
 			cObjList = this.topLevelCObjs;
 			if (cObjList) {
-				this.pushCollidingItemsOntoResults(searchL, searchR, searchT, searchB, cObjList, results);
+				this.pushCollidingItemsOntoResults(
+					searchL,
+					searchR,
+					searchT,
+					searchB,
+					cObjList,
+					results
+				);
 				// console.log("    searching top level");
 			}
-			
+
 			// also check any surrounding boxes it overlaps in
-			const indices = this.getIntersectingGridIndices(idxL, idxR, idxT, idxB);
+			const indices = this.getIntersectingGridIndices(
+				idxL,
+				idxR,
+				idxT,
+				idxB
+			);
 			// console.log(indices);
 			for (const indice of indices) {
-
 				// check if there is anything in this box, search for collisions if something is in there
 				cObjList = this.grid[indice[0]][indice[1]];
-				if(cObjList) {
-					this.pushCollidingItemsOntoResults(searchL, searchR, searchT, searchB, cObjList, results);
+				if (cObjList) {
+					this.pushCollidingItemsOntoResults(
+						searchL,
+						searchR,
+						searchT,
+						searchB,
+						cObjList,
+						results
+					);
 					// console.log("    searching box", [indice[0], indice[1]]);
 				}
 			}
@@ -200,7 +222,9 @@ export class CollisionGrid {
 	}
 
 	private initGrid(): void {
-		let numBoxes = Math.floor(Constant.MAP_HEIGHT / Constant.GRID.BOX_SIZE);
+		const numBoxes = Math.floor(
+			Constant.MAP_HEIGHT / Constant.GRID.BOX_SIZE
+		);
 		this.grid = [];
 		for (let i = 0; i < numBoxes; i++) {
 			this.grid[i] = [];
@@ -221,10 +245,7 @@ export class CollisionGrid {
 		const idxT = Math.floor(objT / Constant.GRID.BOX_SIZE);
 		const idxB = Math.floor(objB / Constant.GRID.BOX_SIZE);
 
-		if (
-			idxL == idxR &&
-			idxT == idxB
-		) {
+		if (idxL == idxR && idxT == idxB) {
 			return [idxL, idxT];
 		} else {
 			return null;
@@ -235,10 +256,10 @@ export class CollisionGrid {
 		idxL: number,
 		idxR: number,
 		idxT: number,
-		idxB: number,
+		idxB: number
 	): Array<Array<number>> {
-		let results: Array<Array<number>> = [];
-		let checkedRowsCols = new Map();
+		const results: Array<Array<number>> = [];
+		const checkedRowsCols = new Map();
 		for (const row of [idxL, idxR]) {
 			if (checkedRowsCols.has(row)) {
 				continue;

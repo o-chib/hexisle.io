@@ -25,10 +25,7 @@ export default class CollisionDetection {
 	public campfirePlayerCollision(campfire: Campfire): void {
 		// Get everything touching the campfires collider
 		const results: CollisionObject[] = [];
-		this.searchCollisions(
-			campfire,
-			results
-		);
+		this.searchCollisions(campfire, results);
 
 		const playerCount: number[] = [];
 		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
@@ -59,17 +56,14 @@ export default class CollisionDetection {
 	 */
 	public bulletCollision(bullet: Bullet, bullets: Set<Bullet>): void {
 		const results: CollisionObject[] = [];
-		this.searchCollisions(
-			bullet,
-			results
-		);
+		this.searchCollisions(bullet, results);
 		for (const result of results) {
 			// if statement for making sure bullets hit either a player or structure, not both,
 			// returns on first successful collision so bullets don't hit multiple things at once
 			if (
 				this.bulletPlayerCollision(result.payload, bullet, bullets) ||
 				this.bulletStructureCollision(result.payload, bullet, bullets)
-				) {
+			) {
 				return;
 			}
 		}
@@ -91,10 +85,7 @@ export default class CollisionDetection {
 	): boolean {
 		const resourcesCollided: Resource[] = [];
 		const results: CollisionObject[] = [];
-		this.searchCollisions(
-			{ xPos: newXPos, yPos: newYPos },
-			results
-		);
+		this.searchCollisions({ xPos: newXPos, yPos: newYPos }, results);
 
 		for (const result of results) {
 			// console.log("potentially colliding with", result);
@@ -154,10 +145,7 @@ export default class CollisionDetection {
 		objectRadius: number
 	): boolean {
 		const results: CollisionObject[] = [];
-		this.searchCollisions(
-			{ xPos: xPos, yPos: yPos },
-			results
-		);
+		this.searchCollisions({ xPos: xPos, yPos: yPos }, results);
 		for (const result of results) {
 			if (
 				result.payload instanceof Player &&
@@ -340,7 +328,7 @@ export default class CollisionDetection {
 	private searchCollisions(
 		object: any,
 		results: CollisionObject[],
-		radius: number = Constant.RADIUS.COLLISION.LARGEST,
+		radius: number = Constant.RADIUS.COLLISION.LARGEST
 	) {
 		this.collisionGrid.searchGrid(
 			object.xPos - radius,
