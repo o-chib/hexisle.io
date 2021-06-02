@@ -81,13 +81,15 @@ To run tests, run the following command
 
 ![App Screenshot](landing-page/image/carousel1.png)
 
-![App Screenshot](landing-page/image/carousel2.png)
-
 ![App Screenshot](landing-page/image/carousel3.png)
   
-## Demo
+![App Screenshot](landing-page/image/carousel4.png)
+  
+## Game Trailer
 
-[We'll put our trailer here]
+[![Game Trailer](http://i3.ytimg.com/vi/o8Bu8e-gTtE/maxresdefault.jpg)](https://www.youtube.com/watch?v=o8Bu8e-gTtE)
+
+Link: https://www.youtube.com/watch?v=o8Bu8e-gTtE
 
   
 ## Tech Stack
