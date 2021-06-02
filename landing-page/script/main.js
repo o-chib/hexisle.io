@@ -7,7 +7,6 @@ const userGuide = document.getElementById("userGuide")
 userGuide.onclick = userGuideRedirect;
 const githubWiki = document.getElementById('githubWiki')
 githubWiki.onclick = githubWikiRedirect;
-gameTrailer
 const gameTrailer = document.getElementById('gameTrailer')
 gameTrailer.onclick = gameTrailerRedirect;
 
