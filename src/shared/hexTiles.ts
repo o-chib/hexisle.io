@@ -222,10 +222,7 @@ export class HexTiles {
 		this.game.territories.add(territory);
 		tile.building = Constant.BUILDING.CAMP;
 
-		this.game.collision.insertCollider(
-			campfire,
-			Constant.RADIUS.COLLISION.WALL
-		);
+		this.game.collision.insertCollider(campfire);
 	}
 
 	private initBases(): void {
@@ -281,10 +278,7 @@ export class HexTiles {
 				this.game.idGenerator.newID(),
 				this.tileMap[boundaryHex.q][boundaryHex.r]
 			);
-			this.game.collision.insertCollider(
-				boundaryWall,
-				Constant.RADIUS.COLLISION.WALL
-			);
+			this.game.collision.insertCollider(boundaryWall);
 		}
 	}
 
@@ -298,10 +292,7 @@ export class HexTiles {
 		const base = new Base(this.game.idGenerator.newID(), tile);
 
 		this.game.bases.add(base);
-		this.game.collision.insertCollider(
-			base,
-			Constant.RADIUS.COLLISION.BASE
-		);
+		this.game.collision.insertCollider(base);
 
 		this.game.teams.getTeam(teamNum).respawnCoords = this.getHexRingPoints(
 			tile,

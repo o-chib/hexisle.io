@@ -28,7 +28,7 @@ export default class Bullet extends IndestructibleObj {
 	public updatePosition(timePassed: number, collision: Collision) {
 		this.xPos += timePassed * this.xVel;
 		this.yPos += timePassed * this.yVel;
-		collision.updateCollider(this, Constant.RADIUS.COLLISION.BULLET);
+		collision.updateCollider(this);
 	}
 
 	public isExpired(currentDate: number): boolean {

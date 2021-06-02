@@ -134,7 +134,7 @@ export default class Player extends DestructibleObj {
 			this.respawning = true;
 			this.respawnTimer = 0;
 			this.setNoVelocity();
-			collision.deleteCollider(this, Constant.RADIUS.COLLISION.PLAYER);
+			collision.deleteCollider(this);
 			return false;
 		}
 
