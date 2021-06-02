@@ -49,7 +49,7 @@ export default class MainMenu extends Phaser.Scene {
 		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
 		// Containers
-		const menuContainer = this.add.container(renderWidth / 2, 0)
+		const menuContainer = this.add.container(renderWidth / 2, 0);
 		const optionsContainer = this.add
 			.container(menuContainer.x + 230, renderHeight / 2)
 			.setVisible(false);
