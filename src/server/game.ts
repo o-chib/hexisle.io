@@ -379,11 +379,31 @@ export default class Game {
 
 	createUpdate(player: Player) {
 		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
-		const nearbyBullets: Bullet[] = this.getNearbyObj(player, this.bullets.values(), Constant.RADIUS.BULLET);
-		const nearbyWalls: Wall[] = this.getNearbyObj(player, this.walls.values(), Constant.RADIUS.WALL);
-		const nearbyTurrets: Turret[] = this.getNearbyObj(player, this.turrets.values(), Constant.RADIUS.TURRET);
-		const nearbyCampfires: Campfire[] = this.getNearbyObj(player, this.campfires.values(), Constant.RADIUS.TERRITORY);
-		const nearbyResources: Resource[] = this.getNearbyObj(player, this.mapResources.resources.values(), Constant.RADIUS.RESOURCE);
+		const nearbyBullets: Bullet[] = this.getNearbyObj(
+			player,
+			this.bullets.values(),
+			Constant.RADIUS.BULLET
+		);
+		const nearbyWalls: Wall[] = this.getNearbyObj(
+			player,
+			this.walls.values(),
+			Constant.RADIUS.WALL
+		);
+		const nearbyTurrets: Turret[] = this.getNearbyObj(
+			player,
+			this.turrets.values(),
+			Constant.RADIUS.TURRET
+		);
+		const nearbyCampfires: Campfire[] = this.getNearbyObj(
+			player,
+			this.campfires.values(),
+			Constant.RADIUS.TERRITORY
+		);
+		const nearbyResources: Resource[] = this.getNearbyObj(
+			player,
+			this.mapResources.resources.values(),
+			Constant.RADIUS.RESOURCE
+		);
 		const nearbyBases: Base[] = Array.from(this.bases);
 
 		return {
