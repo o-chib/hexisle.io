@@ -6,7 +6,7 @@ export class CollisionObjectPool {
 	private poolSize: number;
 	private activeElements: number;
 
-	constructor(initialSize = 100) {
+	constructor(initialSize = 350) {
 		this.increase_percent = 0.5;
 		this.poolArray = new Array<CollisionObject>(initialSize);
 		for (let i = 0; i < this.poolArray.length; i++) {

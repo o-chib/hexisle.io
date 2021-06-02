@@ -533,14 +533,7 @@ export default class Game {
 
 		const newPlayer = this.generateNewPlayer(socket, name);
 
-		const respawnPoint: Point = this.getRespawnPoint(newPlayer.teamNumber);
-		newPlayer.xPos = respawnPoint.xPos;
-		newPlayer.yPos = respawnPoint.yPos;
-
-		this.collision.insertCollider(
-			newPlayer,
-			Constant.RADIUS.COLLISION.PLAYER
-		);
+		this.respawnPlayer(newPlayer);
 
 		this.initiateGame(newPlayer, socket);
 	}
@@ -643,6 +636,7 @@ export default class Game {
 				tile.cartesian_coord.yPos,
 				collisionRadius
 			) ||
+			!player.isAlive() ||
 			!player.canAffordStructure(building)
 		) {
 			return false;
@@ -733,10 +727,7 @@ export default class Game {
 	}
 
 	removeTurret(turret: Turret): void {
-		this.collision.deleteCollider(
-			this.turrets.get(turret.id),
-			Constant.RADIUS.COLLISION.TURRET
-		);
+		this.collision.deleteCollider(turret, Constant.RADIUS.COLLISION.TURRET);
 		this.turrets.delete(turret.id);
 		turret.tile.removeBuilding();
 	}

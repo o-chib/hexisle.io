@@ -1,6 +1,5 @@
 import { Constant } from '../../shared/constants';
 import { IPoolObject } from '../iPoolObject';
-import MainScene from '../scenes/mainScene';
 import { ClientGameObject } from './clientGameObject';
 import { ClientGameObjectContainer } from './clientGameObjectContainer';
 
