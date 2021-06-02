@@ -153,6 +153,6 @@ export const Constant = Object.freeze({
 	},
 
 	GRID: {
-		BOX_SIZE: 500,
+		BOX_SIZE: 1000,
 	},
 });
