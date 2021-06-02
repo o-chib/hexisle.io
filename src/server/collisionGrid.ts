@@ -19,12 +19,16 @@ export class CollisionGrid {
 		const cObj = this.cObjPool.getElement();
 		cObj.setData(obj, radius);
 		const gridIndices = this.getGridIndices(obj, radius);
-		this.insert(cObj, gridIndices!);
+		if (this.areValidRowColIndices(gridIndices)) {
+			this.insert(cObj, gridIndices!);
+		}
 	}
 
 	public deleteFromGrid(obj: any, radius: number): void {
 		const gridIndices = this.getGridIndices(obj, radius);
-		this.delete(obj, gridIndices!);
+		if (this.areValidRowColIndices(gridIndices)) {
+			this.delete(obj, gridIndices!);
+		}
 	}
 
 	public searchGrid(
@@ -39,6 +43,10 @@ export class CollisionGrid {
 		const idxR = Math.floor(searchR / Constant.GRID.BOX_SIZE);
 		const idxT = Math.floor(searchT / Constant.GRID.BOX_SIZE);
 		const idxB = Math.floor(searchB / Constant.GRID.BOX_SIZE);
+
+		if (!this.areValidLRTBIndices(idxL, idxR, idxT, idxB)) {
+			return;
+		}
 
 		this.search(
 			idxL,
@@ -185,6 +193,8 @@ export class CollisionGrid {
 			);
 			// console.log(indices);
 			for (const indice of indices) {
+				// console.log("    searching for", indice);
+
 				// check if there is anything in this box, search for collisions if something is in there
 				cObjList = this.grid[indice[0]][indice[1]];
 				if (cObjList) {
@@ -260,12 +270,14 @@ export class CollisionGrid {
 	): Array<Array<number>> {
 		const results: Array<Array<number>> = [];
 		const checkedRowsCols = new Map();
-		for (const row of [idxL, idxR]) {
+		// for (const row of [idxL, idxR]) {
+		for (let row = idxL; row < idxR + 1; row++) {
 			if (checkedRowsCols.has(row)) {
 				continue;
 			}
 			checkedRowsCols.set(row, []);
-			for (const col of [idxT, idxB]) {
+			// for (const col of [idxT, idxB]) {
+			for (let col = idxT; col < idxB + 1; col++) {
 				if (checkedRowsCols.get(row).includes(col)) {
 					continue;
 				}
@@ -291,6 +303,45 @@ export class CollisionGrid {
 			.map((cObj) => {
 				results.push(cObj);
 			});
+	}
+
+	private areValidRowColIndices(indices: [number, number] | null): boolean {
+		if (!indices) {
+			return true;
+		}
+
+		const numBoxes = Math.floor(
+			Constant.MAP_HEIGHT / Constant.GRID.BOX_SIZE
+		);
+		if (
+			indices[0] < 0 ||
+			indices[1] < 0 ||
+			indices[0] >= numBoxes ||
+			indices[1] >= numBoxes
+		) {
+			return false;
+		}
+		return true;
+	}
+
+	private areValidLRTBIndices(
+		idxL: number,
+		idxR: number,
+		idxT: number,
+		idxB: number
+	): boolean {
+		const numBoxes = Math.floor(
+			Constant.MAP_HEIGHT / Constant.GRID.BOX_SIZE
+		);
+		if (
+			idxL < 0 ||
+			idxT < 0 ||
+			idxR >= numBoxes ||
+			idxB >= numBoxes
+		) {
+			return false;
+		}
+		return true;
 	}
 }
 
