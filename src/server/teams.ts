@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { OffsetPoint } from '../shared/hexTiles';
+import { OffsetPoint } from './hexTiles';
 
 export default class Teams {
 	private teams: Map<number, Team>;
 	private numTeams: number;
 
-	constructor(teamCount: number, baseCoords: OffsetPoint[]) {
+	constructor(teamCount: number) {
 		this.numTeams = teamCount;
 		this.initTeams(teamCount);
-		this.initBases(baseCoords);
 	}
 
 	public getTeam(teamNum: number): Team {
@@ -32,14 +31,16 @@ export default class Teams {
 		return this.teams.get(teamNum)!.respawnCoords;
 	}
 
-	public addNewPlayer(playerID: string): number {
-		const teamNumber: number = this.getNewPlayerTeamNumber();
-		this.addPlayerToTeam(teamNumber, playerID);
-		return teamNumber;
+	public getRandomRespawnPoint(teamNum: number): OffsetPoint {
+		const coords: OffsetPoint[] = this.getRespawnCoords(teamNum);
+		const index = Math.floor(Math.random() * coords.length);
+		return coords[index];
 	}
 
-	public removePlayer(playerID: string, teamNumber: number): void {
-		this.removePlayerFromTeam(teamNumber, playerID);
+	public addNewPlayer(playerID: string): number {
+		const teamNumber: number = this.getNewPlayerTeamNumber();
+		this.teams.get(teamNumber)!.addPlayer(playerID);
+		return teamNumber;
 	}
 
 	private initTeams(teamCount: number): void {
@@ -49,7 +50,7 @@ export default class Teams {
 		}
 	}
 
-	private initBases(baseCoords: OffsetPoint[]): void {
+	public initBases(baseCoords: OffsetPoint[]): void {
 		for (const [teamNumber, team] of this.teams) {
 			team.baseCoord = baseCoords[teamNumber];
 			team.numCapturedCamps = 1;
@@ -68,11 +69,7 @@ export default class Teams {
 		return smallestTeam;
 	}
 
-	private addPlayerToTeam(teamNum: number, playerID: string): void {
-		this.teams.get(teamNum)!.addPlayer(playerID);
-	}
-
-	private removePlayerFromTeam(teamNum: number, playerID: string): void {
+	public removePlayer(playerID: string, teamNum: number): void {
 		this.teams.get(teamNum)!.removePlayer(playerID);
 	}
 }

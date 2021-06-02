@@ -1,15 +1,13 @@
 import Player from './objects/player';
 import Bullet from './objects/bullet';
-import Wall from './objects/wall';
-import Turret from './objects/turret';
 import Campfire from './objects/campfire';
-import Base from './objects/base';
 import { CollisionGrid, CollisionObject } from './collisionGrid';
 import { Constant } from '../shared/constants';
 import { MapResources } from './mapResources';
 import { Resource } from './objects/resource';
 import BoundaryWall from './objects/boundaryWall';
 import Structure from './objects/structure';
+import GameObject from './objects/gameObject';
 
 export default class CollisionDetection {
 	collisionGrid: CollisionGrid;
@@ -36,9 +34,9 @@ export default class CollisionDetection {
 				result.payload instanceof Player &&
 				this.doCirclesCollide(
 					campfire,
-					Constant.RADIUS.COLLISION.CAMP,
+					Constant.RADIUS.CAMP,
 					result.payload,
-					Constant.RADIUS.COLLISION.PLAYER
+					Constant.RADIUS.PLAYER
 				)
 			) {
 				// Get number of players in each team
@@ -94,9 +92,9 @@ export default class CollisionDetection {
 				this.isStructure(result.payload) &&
 				this.doCirclesCollide(
 					{ xPos: newXPos, yPos: newYPos },
-					Constant.RADIUS.COLLISION.PLAYER,
+					Constant.RADIUS.PLAYER,
 					result.payload,
-					this.getCollisionRadius(result.payload)
+					result.payload.RADIUS
 				)
 			) {
 				return false;
@@ -107,7 +105,7 @@ export default class CollisionDetection {
 				result.payload.dropAmount > 0 &&
 				this.doCirclesCollide(
 					{ xPos: newXPos, yPos: newYPos },
-					Constant.RADIUS.COLLISION.PLAYER,
+					Constant.RADIUS.PLAYER,
 					result.payload,
 					Constant.RADIUS.RESOURCE
 				)
@@ -120,14 +118,14 @@ export default class CollisionDetection {
 		resourcesCollided.forEach((resource) => {
 			player.updateResource(resource.dropAmount);
 			mapResources.deleteResource(resource);
-			this.deleteCollider(resource, Constant.RADIUS.RESOURCE);
+			this.deleteCollider(resource);
 		});
 
 		// update the player position and collider
-		this.deleteCollider(player, Constant.RADIUS.COLLISION.PLAYER);
+		this.deleteCollider(player);
 		player.xPos = newXPos;
 		player.yPos = newYPos;
-		this.insertCollider(player, Constant.RADIUS.COLLISION.PLAYER);
+		this.insertCollider(player);
 
 		return true;
 	}
@@ -153,7 +151,7 @@ export default class CollisionDetection {
 					{ xPos: xPos, yPos: yPos },
 					objectRadius,
 					result.payload,
-					Constant.RADIUS.COLLISION.PLAYER
+					Constant.RADIUS.PLAYER
 				)
 			)
 				return true;
@@ -186,7 +184,7 @@ export default class CollisionDetection {
 					{ xPos: object.xPos, yPos: object.yPos },
 					objectRange,
 					result.payload,
-					Constant.RADIUS.COLLISION.PLAYER
+					Constant.RADIUS.PLAYER
 				)
 			) {
 				const xDiff: number = result.payload.xPos - object.xPos;
@@ -239,21 +237,19 @@ export default class CollisionDetection {
 	}
 
 	/**
-	 * Inserts an object in the quadtree
+	 * Inserts an object into the collision grid
 	 * @param object the object to insert
-	 * @param radius the radius of the object
 	 */
-	public insertCollider(object: any, radius: number): void {
-		this.collisionGrid.insertIntoGrid(object, radius);
+	public insertCollider(object: GameObject): void {
+		this.collisionGrid.insertIntoGrid(object, object.RADIUS);
 	}
 
 	/**
-	 * Deletes an object in the quadtree
+	 * Deletes an object from the collision grid
 	 * @param object the object to delete
-	 * @param radius the radius of the object
 	 */
-	public deleteCollider(object: any, radius: number): void {
-		this.collisionGrid.deleteFromGrid(object, radius);
+	public deleteCollider(object: GameObject): void {
+		this.collisionGrid.deleteFromGrid(object, object.RADIUS);
 	}
 
 	/**
@@ -274,14 +270,14 @@ export default class CollisionDetection {
 			payload.hp > 0 &&
 			this.doCirclesCollide(
 				payload,
-				Constant.RADIUS.COLLISION.PLAYER,
+				Constant.RADIUS.PLAYER,
 				bullet,
-				Constant.RADIUS.COLLISION.BULLET
+				Constant.RADIUS.BULLET
 			)
 		) {
 			payload.hp -= Bullet.DAMAGE;
 			bullets.delete(bullet);
-			this.deleteCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
+			this.deleteCollider(bullet);
 			return true;
 		}
 		return false;
@@ -306,14 +302,14 @@ export default class CollisionDetection {
 			payload.hp > 0 &&
 			this.doCirclesCollide(
 				payload,
-				this.getCollisionRadius(payload),
+				payload.RADIUS,
 				bullet,
-				Constant.RADIUS.COLLISION.BULLET
+				bullet.RADIUS
 			)
 		) {
 			payload.hp -= Bullet.DAMAGE;
 			bullets.delete(bullet);
-			this.deleteCollider(bullet, Constant.RADIUS.COLLISION.BULLET);
+			this.deleteCollider(bullet);
 			return true;
 		}
 		return false;
@@ -328,7 +324,7 @@ export default class CollisionDetection {
 	private searchCollisions(
 		object: any,
 		results: CollisionObject[],
-		radius: number = Constant.RADIUS.COLLISION.LARGEST
+		radius: number = Constant.RADIUS.LARGEST
 	) {
 		this.collisionGrid.searchGrid(
 			object.xPos - radius,
@@ -337,26 +333,6 @@ export default class CollisionDetection {
 			object.yPos + radius,
 			results
 		);
-	}
-
-	/**
-	 * Returns the collision radius of an object
-	 * @param object the object to check
-	 * @returns number
-	 */
-	private getCollisionRadius(object: any): number {
-		if (object instanceof Wall || object instanceof BoundaryWall) {
-			return Constant.RADIUS.COLLISION.WALL;
-		} else if (object instanceof Turret) {
-			return Constant.RADIUS.COLLISION.TURRET;
-		} else if (object instanceof Base) {
-			return Constant.RADIUS.COLLISION.BASE;
-		} else if (object instanceof Player) {
-			return Constant.RADIUS.COLLISION.PLAYER;
-		} else if (object instanceof Bullet) {
-			return Constant.RADIUS.COLLISION.BULLET;
-		}
-		throw new Error('Invalid Object.');
 	}
 
 	/**

@@ -1,15 +1,17 @@
 import { Constant } from '../../shared/constants';
-import { Point } from '../../shared/hexTiles';
+import { Point } from '../hexTiles';
 import Collision from '../collision';
 import { MapResources } from '../mapResources';
 import DestructibleObj from './destructibleObj';
+import * as SocketIO from 'socket.io';
 
 export default class Player extends DestructibleObj {
+	public readonly RADIUS = Constant.RADIUS.PLAYER;
 	public static readonly RELOAD_TIME = 0.16 * 1000;
 	public static readonly RESPAWN_TIME = 3000;
 	private static readonly SPEED = 600;
 
-	public socket: SocketIOClient.Socket;
+	public socket: SocketIO.Socket;
 	public name: string;
 	public resources: number;
 	public reloadTimer: number;
@@ -22,7 +24,7 @@ export default class Player extends DestructibleObj {
 	private respawning: boolean;
 
 	constructor(
-		socket: SocketIOClient.Socket,
+		socket: SocketIO.Socket,
 		teamNumber: number,
 		name = '',
 		gameShootBulletMethod?: (turret: any, direction: number) => void
@@ -133,7 +135,7 @@ export default class Player extends DestructibleObj {
 			this.respawning = true;
 			this.respawnTimer = 0;
 			this.setNoVelocity();
-			collision.deleteCollider(this, Constant.RADIUS.COLLISION.PLAYER);
+			collision.deleteCollider(this);
 			return false;
 		}
 

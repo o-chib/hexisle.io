@@ -1,7 +1,7 @@
 import { Constant } from '../../shared/constants';
-import IndestructibleObj from './indestructibleObj';
+import GameObject from './gameObject';
 
-export default abstract class DestructibleObj extends IndestructibleObj {
+export default abstract class DestructibleObj extends GameObject {
 	public hp: number;
 
 	constructor(

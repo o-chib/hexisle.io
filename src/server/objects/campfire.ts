@@ -1,18 +1,19 @@
 import { Constant } from '../../shared/constants';
-import { OffsetPoint } from '../../shared/hexTiles';
-import IndestructibleObj from './indestructibleObj';
+import { OffsetPoint } from '../hexTiles';
+import GameObject from './gameObject';
 
-export default class Campfire extends IndestructibleObj {
+export default class Campfire extends GameObject {
+	public readonly RADIUS = Constant.RADIUS.CAMP;
 	public territoryPoints: OffsetPoint[];
 	public captureProgress: number; // Variable Progress Bar (0-100)
 	public isCaptured: boolean;
 	public capturingTeam: number; // denotes who is capturing (-1 = no team)
 
 	constructor(id: string, xPos: number, yPos: number) {
-		super(id, xPos, yPos, -1);
+		super(id, xPos, yPos);
 		this.isCaptured = false;
 		this.captureProgress = 0;
-		this.capturingTeam = -1;
+		this.capturingTeam = Constant.TEAM.NONE;
 		this.territoryPoints = [];
 	}
 

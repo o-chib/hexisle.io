@@ -2,7 +2,6 @@ import gameOver from './gameOver';
 import mainMenu from './mainMenu';
 import HUDScene from './HUDScene';
 import HelpOverlayScene from './helpOverlayScene';
-import { HexTiles, OffsetPoint } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 import ObjectPool from '../objectPool';
@@ -31,7 +30,6 @@ export default class MainScene extends Phaser.Scene {
 	private backgroundMusic: Phaser.Sound.BaseSound;
 	private socket: SocketIOClient.Socket;
 	private alive: boolean;
-	private debugMode: boolean;
 
 	constructor() {
 		super(MainScene.Name);
@@ -54,7 +52,6 @@ export default class MainScene extends Phaser.Scene {
 		this.resources = new ObjectPool(this, ClientResource, 10);
 
 		this.alive = false;
-		this.debugMode = false;
 
 		this.initializeSounds();
 	}
@@ -81,25 +78,6 @@ export default class MainScene extends Phaser.Scene {
 	update(): void {
 		this.updateDirection();
 		this.shootIfMouseDown();
-		if (this.debugMode) this.updateDebugInfo();
-	}
-
-	private updateDebugInfo(): void {
-		const gamePos = this.cameras.main.getWorldPoint(
-			this.input.mousePointer.x,
-			this.input.mousePointer.y
-		);
-		const coord: OffsetPoint = HexTiles.cartesianToOffset(
-			gamePos.x,
-			gamePos.y
-		);
-		this.events.emit(
-			'updateDebugInfo',
-			gamePos.x,
-			gamePos.y,
-			coord.q,
-			coord.r
-		);
 	}
 
 	private initializeKeys(): void {
@@ -118,7 +96,6 @@ export default class MainScene extends Phaser.Scene {
 				buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 				buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
 				demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
-				debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
 				toggleHelp: Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH,
 			},
 			false
@@ -294,9 +271,6 @@ export default class MainScene extends Phaser.Scene {
 				gamePos.x,
 				gamePos.y
 			);
-		} else if (this.actionKeys.debugInfo.isDown) {
-			if (this.debugMode) this.events.emit('clearDebugInfo');
-			this.debugMode = !this.debugMode;
 		} else if (this.actionKeys.toggleHelp.isDown) {
 			this.events.emit('toggleHelpUI');
 		}

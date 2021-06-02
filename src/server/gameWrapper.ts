@@ -50,7 +50,7 @@ export default class GameWrapper {
 		});
 
 		socket.on(Constant.MESSAGE.MOVEMENT, (direction: number) => {
-			this.game.movePlayer(socket, direction);
+			this.game.changeMovementDirection(socket, direction);
 		});
 
 		socket.on(Constant.MESSAGE.SHOOT, (direction: number) => {
