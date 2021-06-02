@@ -1,3 +1,4 @@
+import Game from '../game';
 import { Constant } from '../../shared/constants';
 
 export default abstract class GameObject {
@@ -18,6 +19,12 @@ export default abstract class GameObject {
 		this.yPos = yPos;
 		this.teamNumber = teamNumber;
 	}
+
+	public abstract update(
+		game: Game,
+		timePassed?: number,
+		currentTimestamp?: number
+	): void;
 
 	public serializeForUpdate() {
 		return {
