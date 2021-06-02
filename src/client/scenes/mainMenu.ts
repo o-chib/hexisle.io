@@ -74,14 +74,14 @@ export default class MainMenu extends Phaser.Scene {
 
 		// Help Panel
 		const helpMenu = this.add
-			.image(renderWidth / 2, renderHeight / 2, 'help_menu')
-			.setDepth(2)
+			.image(renderWidth / 4 + 160, renderHeight / 2 + 100, 'help_menu')
+			.setDepth(10)
 			.setVisible(false);
 
 		// Options menu/buttons
 		this.muteButton = this.add
 			.image(0, 0, '')
-			.setDepth(3)
+			.setDepth(10)
 			.setDisplayOrigin(0.5, 0.5)
 			.setScale(0.7);
 		Utilities.setToggleMuteButtonIcon(this.muteButton, this.sound);
@@ -123,24 +123,13 @@ export default class MainMenu extends Phaser.Scene {
 		);
 
 		helpButton.addEventListener('click', () => {
-			menuContainer.setVisible(false);
-			helpMenu.setVisible(true);
+			helpMenu.setVisible(!helpMenu.visible);
 		});
 		helpButton.addEventListener('mouseover', () =>
 			FormUtilities.setButtonTextureOnMouseIn(helpButton)
 		);
 		helpButton.addEventListener('mouseout', () =>
 			FormUtilities.setButtonTextureOnMouseOut(helpButton)
-		);
-
-		helpMenu.setInteractive();
-		helpMenu.on(
-			'pointerdown',
-			() => {
-				helpMenu.setVisible(false);
-				menuContainer.setVisible(true);
-			},
-			this
 		);
 	}
 
