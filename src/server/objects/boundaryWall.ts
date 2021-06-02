@@ -12,4 +12,8 @@ export default class BoundaryWall extends Structure {
 	public getBuildingType() {
 		return Constant.BUILDING.BOUNDARY;
 	}
+
+	public isAlive(): boolean {
+		return true;
+	}
 }
