@@ -3,6 +3,7 @@ import { Constant } from '../../shared/constants';
 import { Tile } from '../../shared/hexTiles';
 
 export default class Turret extends Structure {
+	public readonly RADIUS = Constant.RADIUS.TURRET;
 	public static readonly RELOAD_TIME = 1 * 1000;
 
 	public direction: number;

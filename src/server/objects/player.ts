@@ -5,6 +5,7 @@ import { MapResources } from '../mapResources';
 import DestructibleObj from './destructibleObj';
 
 export default class Player extends DestructibleObj {
+	public readonly RADIUS = Constant.RADIUS.PLAYER;
 	public static readonly RELOAD_TIME = 0.16 * 1000;
 	public static readonly RESPAWN_TIME = 3000;
 	private static readonly SPEED = 600;

@@ -3,6 +3,7 @@ import { OffsetPoint } from '../../shared/hexTiles';
 import IndestructibleObj from './indestructibleObj';
 
 export default class Campfire extends IndestructibleObj {
+	public readonly RADIUS = Constant.RADIUS.CAMP;
 	public territoryPoints: OffsetPoint[];
 	public captureProgress: number; // Variable Progress Bar (0-100)
 	public isCaptured: boolean;

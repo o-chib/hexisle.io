@@ -3,6 +3,7 @@ import Collision from '../collision';
 import IndestructibleObj from './indestructibleObj';
 
 export default class Bullet extends IndestructibleObj {
+	public readonly RADIUS = Constant.RADIUS.BULLET;
 	public static readonly DAMAGE = 10;
 	public static readonly SPEED = 1.2;
 	private static readonly LIFELENGTH = 1 * 1000;

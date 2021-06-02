@@ -1,6 +1,7 @@
 import { Constant } from '../../shared/constants';
 
 export default abstract class IndestructibleObj {
+	public abstract readonly RADIUS: number;
 	public id: string;
 	public xPos: number;
 	public yPos: number;
