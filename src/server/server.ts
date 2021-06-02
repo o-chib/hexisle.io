@@ -57,7 +57,6 @@ websocket.on('connection', function (socket: SocketIO.Socket) {
 				Constant.MESSAGE.JOIN_GAME_FAIL,
 				'Failed to join game.'
 			);
-		//TODO improve error message
 	});
 
 	socket.on(Constant.MESSAGE.ASK_GAME_LIST, () => {

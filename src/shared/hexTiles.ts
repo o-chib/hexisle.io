@@ -2,18 +2,16 @@ import { Constant } from '../shared/constants';
 import Structure from '../server/objects/structure';
 
 export class HexTiles {
+	public static readonly HEX_SIZE = Constant.RADIUS.HEX;
+	public static readonly CAMP_RADIUS = Constant.RADIUS.CAMP_HEXES;
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
 	public hexRadius: number;
-	public hexSize: number;
-	public campRadius: number;
 	public mapHeight: number;
 	public campfiresInHalfWidth: number;
 	public baseCoords: OffsetPoint[];
 	public boundaryCoords: OffsetPoint[];
 
 	constructor(mapHeight: number = Constant.MAP_HEIGHT) {
-		this.hexSize = Constant.RADIUS.HEX;
-		this.campRadius = Constant.RADIUS.CAMP_HEXES;
 		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();
 		this.campfiresInHalfWidth = this.getNumCampfiresInMapRadius();
@@ -78,11 +76,11 @@ export class HexTiles {
 			}
 			const territoryHexes: OffsetPoint[] = this.getHexRadiusPoints(
 				this.tileMap[hex.q][hex.r],
-				this.campRadius
+				HexTiles.CAMP_RADIUS
 			);
 			const boundaryRingHexes: OffsetPoint[] = this.getHexRingPoints(
 				this.tileMap[hex.q][hex.r],
-				this.campRadius + 1
+				HexTiles.CAMP_RADIUS + 1
 			);
 
 			// Check if the outermost ring is within the tileMap indices
@@ -190,7 +188,10 @@ export class HexTiles {
 	}
 
 	checkIfValidEmptyPointOnGrid(point: Point): boolean {
-		const hexCoord: OffsetPoint = this.cartesianToOffset(point);
+		const hexCoord: OffsetPoint = HexTiles.cartesianToOffset(
+			point.xPos,
+			point.yPos
+		);
 
 		if (!this.checkIfValidHex(hexCoord)) return false;
 
@@ -263,39 +264,39 @@ export class HexTiles {
 		switch (direction) {
 			case 0: // North East
 				// Go north-east
-				campfire = this.hexTraverse(from, 5, this.campRadius + 1);
+				campfire = this.hexTraverse(from, 5, HexTiles.CAMP_RADIUS + 1);
 				// Go north
-				campfire = this.hexTraverse(campfire, 4, this.campRadius);
+				campfire = this.hexTraverse(campfire, 4, HexTiles.CAMP_RADIUS);
 				break;
 			case 1: // East
 				// Go south-east
-				campfire = this.hexTraverse(from, 0, this.campRadius + 1);
+				campfire = this.hexTraverse(from, 0, HexTiles.CAMP_RADIUS + 1);
 				// Go north-east
-				campfire = this.hexTraverse(campfire, 5, this.campRadius);
+				campfire = this.hexTraverse(campfire, 5, HexTiles.CAMP_RADIUS);
 				break;
 			case 2: // South East
 				// Go south
-				campfire = this.hexTraverse(from, 1, this.campRadius + 1);
+				campfire = this.hexTraverse(from, 1, HexTiles.CAMP_RADIUS + 1);
 				// Go south-east
-				campfire = this.hexTraverse(campfire, 0, this.campRadius);
+				campfire = this.hexTraverse(campfire, 0, HexTiles.CAMP_RADIUS);
 				break;
 			case 3: //South West
 				// Go south-west
-				campfire = this.hexTraverse(from, 2, this.campRadius + 1);
+				campfire = this.hexTraverse(from, 2, HexTiles.CAMP_RADIUS + 1);
 				// Go south
-				campfire = this.hexTraverse(campfire, 1, this.campRadius);
+				campfire = this.hexTraverse(campfire, 1, HexTiles.CAMP_RADIUS);
 				break;
 			case 4: // West
 				// Go north-west
-				campfire = this.hexTraverse(from, 3, this.campRadius + 1);
+				campfire = this.hexTraverse(from, 3, HexTiles.CAMP_RADIUS + 1);
 				// Go south-west
-				campfire = this.hexTraverse(campfire, 2, this.campRadius);
+				campfire = this.hexTraverse(campfire, 2, HexTiles.CAMP_RADIUS);
 				break;
 			case 5: // North West
 				// Go north
-				campfire = this.hexTraverse(from, 4, this.campRadius + 1);
+				campfire = this.hexTraverse(from, 4, HexTiles.CAMP_RADIUS + 1);
 				// Go north-west
-				campfire = this.hexTraverse(campfire, 3, this.campRadius);
+				campfire = this.hexTraverse(campfire, 3, HexTiles.CAMP_RADIUS);
 				break;
 		}
 		return campfire;
@@ -344,18 +345,16 @@ export class HexTiles {
 		return results;
 	}
 
-	cartesianToOffset(point: Point): OffsetPoint {
+	public static cartesianToOffset(x: number, y: number): OffsetPoint {
 		// takes in a point in the cartesian plane
 		// returns the offset odd-q coordinate of the hex it's in
 
 		// account for the half a hex to the bottom right we're pushing the map
-		let xPos: number = point.xPos;
-		let yPos: number = point.yPos;
-		xPos = xPos - this.hexSize;
-		yPos = yPos - this.hexSize;
+		x = x - HexTiles.HEX_SIZE;
+		y = y - HexTiles.HEX_SIZE;
 
 		// make the offset coord into a cube format
-		let cube: number[] = this.pixelToCube(new Point(xPos, yPos));
+		let cube: number[] = this.pixelToCube(new Point(x, y));
 
 		// round the cube
 		cube = this.roundCube(cube);
@@ -369,18 +368,18 @@ export class HexTiles {
 		// returns the cartesian coordinate of the center of that hex
 
 		// matrix multiplication for conversions
-		const x: number = this.hexSize * (1.5 * OffsetPoint.q);
+		const x: number = HexTiles.HEX_SIZE * (1.5 * OffsetPoint.q);
 
 		// if the column number is odd shift the hexes down, if it's even don't
 		let y: number;
 		if (OffsetPoint.q % 2 != 0) {
 			y =
-				this.hexSize *
+				HexTiles.HEX_SIZE *
 				(Math.sqrt(3) / 2 + Math.sqrt(3) * OffsetPoint.r);
 		} else {
-			y = this.hexSize * (Math.sqrt(3) * OffsetPoint.r);
+			y = HexTiles.HEX_SIZE * (Math.sqrt(3) * OffsetPoint.r);
 		}
-		return new Point(x + this.hexSize, y + this.hexSize);
+		return new Point(x + HexTiles.HEX_SIZE, y + HexTiles.HEX_SIZE);
 	}
 
 	getHexPointsFromCenter(point: Point): Point[] {
@@ -399,8 +398,9 @@ export class HexTiles {
 
 		const results: Tile[] = [];
 		const centerTile: Tile = new Tile();
-		centerTile.offset_coord = this.cartesianToOffset(
-			new Point(point.xPos, point.yPos)
+		centerTile.offset_coord = HexTiles.cartesianToOffset(
+			point.xPos,
+			point.yPos
 		);
 		const screenCoords: OffsetPoint[] = this.getHexRadiusPoints(
 			centerTile,
@@ -415,11 +415,11 @@ export class HexTiles {
 	}
 
 	public getHexHeight(): number {
-		return this.hexSize * Math.sqrt(3);
+		return HexTiles.HEX_SIZE * Math.sqrt(3);
 	}
 
 	public getHexWidth(): number {
-		return this.hexSize * 2;
+		return HexTiles.HEX_SIZE * 2;
 	}
 
 	private getHexCorner(point: Point, angle: number): Point {
@@ -429,8 +429,8 @@ export class HexTiles {
 		const angle_deg: number = 60 * angle;
 		const angle_rad: number = (Math.PI / 180) * angle_deg;
 		return new Point(
-			point.xPos + this.hexSize * Math.cos(angle_rad),
-			point.yPos + this.hexSize * Math.sin(angle_rad)
+			point.xPos + HexTiles.HEX_SIZE * Math.cos(angle_rad),
+			point.yPos + HexTiles.HEX_SIZE * Math.sin(angle_rad)
 		);
 	}
 
@@ -448,8 +448,8 @@ export class HexTiles {
 		// We need n = number of campfires horizontally
 		// # tiles needed = [n * (# tiles in between camps)]+ leftover tiles from ending campfire + 1 boundary tile
 		// OR # = [n * (2 * campRadius + 1)] + (campRadius + 1) <= hexRadius
-		const spaceBetweenCamps = 2 * this.campRadius + 1;
-		const addedTiles = this.campRadius + 1;
+		const spaceBetweenCamps = 2 * HexTiles.CAMP_RADIUS + 1;
+		const addedTiles = HexTiles.CAMP_RADIUS + 1;
 
 		const n = Math.floor((this.hexRadius - addedTiles) / spaceBetweenCamps);
 
@@ -485,18 +485,18 @@ export class HexTiles {
 		return baseDirs;
 	}
 
-	private pixelToCube(point: Point): number[] {
+	private static pixelToCube(point: Point): number[] {
 		// used for conversions from cartesian to offset odd-q
 		// returns the cube: x, y, z in that order in a list
 
-		const q: number = ((2 / 3) * point.xPos) / this.hexSize;
+		const q: number = ((2 / 3) * point.xPos) / HexTiles.HEX_SIZE;
 		const r: number =
 			((-1 / 3) * point.xPos + (Math.sqrt(3) / 3) * point.yPos) /
-			this.hexSize;
+			HexTiles.HEX_SIZE;
 		return [q, -q - r, r];
 	}
 
-	private cubeToOffset(cube: number[]): OffsetPoint {
+	private static cubeToOffset(cube: number[]): OffsetPoint {
 		// used for conversions from cartesian to odd-q offset
 		// returns an offset odd-q point
 
@@ -505,7 +505,7 @@ export class HexTiles {
 		return new OffsetPoint(q, r);
 	}
 
-	private roundCube(cube: number[]): number[] {
+	private static roundCube(cube: number[]): number[] {
 		let rx: number = Math.round(cube[0]);
 		let ry: number = Math.round(cube[1]);
 		let rz: number = Math.round(cube[2]);

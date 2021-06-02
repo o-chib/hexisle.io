@@ -2,7 +2,7 @@ import gameOver from './gameOver';
 import mainMenu from './mainMenu';
 import HUDScene from './HUDScene';
 import HelpOverlayScene from './helpOverlayScene';
-import { HexTiles, OffsetPoint, Point } from './../../shared/hexTiles';
+import { HexTiles, OffsetPoint } from './../../shared/hexTiles';
 import { Constant } from './../../shared/constants';
 import Utilities from './Utilities';
 import ObjectPool from '../objectPool';
@@ -30,7 +30,6 @@ export default class MainScene extends Phaser.Scene {
 	private actionKeys: KeySet;
 	private backgroundMusic: Phaser.Sound.BaseSound;
 	private socket: SocketIOClient.Socket;
-	private hexTiles: HexTiles;
 	private alive: boolean;
 	private debugMode: boolean;
 
@@ -45,8 +44,6 @@ export default class MainScene extends Phaser.Scene {
 		this.initializeKeys();
 		this.myPlayer = new ClientPlayer(this);
 		this.myPlayer.die();
-
-		this.hexTiles = new HexTiles();
 
 		this.otherPlayers = new ObjectPool(this, ClientPlayer, 4);
 		this.bullets = new ObjectPool(this, ClientBullet, 10);
@@ -92,8 +89,9 @@ export default class MainScene extends Phaser.Scene {
 			this.input.mousePointer.x,
 			this.input.mousePointer.y
 		);
-		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-			new Point(gamePos.x, gamePos.y)
+		const coord: OffsetPoint = HexTiles.cartesianToOffset(
+			gamePos.x,
+			gamePos.y
 		);
 		this.events.emit(
 			'updateDebugInfo',
@@ -276,24 +274,26 @@ export default class MainScene extends Phaser.Scene {
 			this.input.mousePointer.y
 		);
 
-		const coord: OffsetPoint = this.hexTiles.cartesianToOffset(
-			new Point(gamePos.x, gamePos.y)
-		);
-
 		if (this.actionKeys.buildWall.isDown) {
 			this.socket.emit(
 				Constant.MESSAGE.BUILD_STRUCTURE,
-				coord,
+				gamePos.x,
+				gamePos.y,
 				Constant.BUILDING.WALL
 			);
 		} else if (this.actionKeys.buildTurret.isDown) {
 			this.socket.emit(
 				Constant.MESSAGE.BUILD_STRUCTURE,
-				coord,
+				gamePos.x,
+				gamePos.y,
 				Constant.BUILDING.TURRET
 			);
 		} else if (this.actionKeys.demolishStructure.isDown) {
-			this.socket.emit(Constant.MESSAGE.DEMOLISH_STRUCTURE, coord);
+			this.socket.emit(
+				Constant.MESSAGE.DEMOLISH_STRUCTURE,
+				gamePos.x,
+				gamePos.y
+			);
 		} else if (this.actionKeys.debugInfo.isDown) {
 			if (this.debugMode) this.events.emit('clearDebugInfo');
 			this.debugMode = !this.debugMode;
@@ -303,7 +303,6 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	updateState(update: any): void {
-		//TODO may state type
 		const {
 			time,
 			currentPlayer,

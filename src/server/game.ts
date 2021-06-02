@@ -297,7 +297,6 @@ export default class Game {
 
 		if (this.bases.size == 1) {
 			for (const base of this.bases) {
-				//TODO do we need to do a loop?
 				winner = base.teamNumber;
 			}
 			message = 'All other team bases eliminated!';
@@ -654,9 +653,11 @@ export default class Game {
 
 	buildStructure(
 		socket: SocketIO.Socket,
-		coord: OffsetPoint,
+		x: number,
+		y: number,
 		building: string
 	): void {
+		const coord = HexTiles.cartesianToOffset(x, y);
 		if (
 			!this.players.has(socket.id) ||
 			!this.hexTileMap.checkIfValidHex(coord)
@@ -704,7 +705,8 @@ export default class Game {
 		return true;
 	}
 
-	demolishStructure(socket: SocketIO.Socket, coord: OffsetPoint): void {
+	demolishStructure(socket: SocketIO.Socket, x: number, y: number): void {
+		const coord = HexTiles.cartesianToOffset(x, y);
 		if (
 			!this.players.has(socket.id) ||
 			!this.hexTileMap.checkIfValidHex(coord)

@@ -1,7 +1,6 @@
 import { Constant } from '../shared/constants';
 import Game from './game';
 import * as SocketIO from 'socket.io';
-import { OffsetPoint } from '../shared/hexTiles';
 
 export default class GameWrapper {
 	private readonly MAX_PLAYERS = Constant.MAX_PLAYERS;
@@ -24,7 +23,7 @@ export default class GameWrapper {
 
 	// Returns true if successfully added player
 	public addPlayer(socket: SocketIO.Socket, name = ''): boolean {
-		//TODO reenable player limit later
+		// If you wish to re-enable game size limits uncomment next line
 		// if (this.isFull()) return false;
 
 		this.updateSocket(socket, name);
@@ -64,14 +63,17 @@ export default class GameWrapper {
 
 		socket.on(
 			Constant.MESSAGE.BUILD_STRUCTURE,
-			(coord: OffsetPoint, building: string) => {
-				this.game.buildStructure(socket, coord, building);
+			(x: number, y: number, building: string) => {
+				this.game.buildStructure(socket, x, y, building);
 			}
 		);
 
-		socket.on(Constant.MESSAGE.DEMOLISH_STRUCTURE, (coord: OffsetPoint) => {
-			this.game.demolishStructure(socket, coord);
-		});
+		socket.on(
+			Constant.MESSAGE.DEMOLISH_STRUCTURE,
+			(x: number, y: number) => {
+				this.game.demolishStructure(socket, x, y);
+			}
+		);
 	}
 
 	private leaveGame(socket: SocketIO.Socket) {
