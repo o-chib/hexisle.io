@@ -4,7 +4,7 @@ import Wall from './objects/wall';
 import Turret from './objects/turret';
 import Campfire from './objects/campfire';
 import Base from './objects/base';
-import { Quadtree, CollisionObject } from './quadtree';
+import { CollisionGrid, CollisionObject } from './collisionGrid';
 import { Constant } from '../shared/constants';
 import { MapResources } from './mapResources';
 import { Resource } from './objects/resource';
@@ -12,10 +12,10 @@ import BoundaryWall from './objects/boundaryWall';
 import Structure from './objects/structure';
 
 export default class CollisionDetection {
-	quadtree: Quadtree;
+	collisionGrid: CollisionGrid;
 
 	constructor() {
-		this.quadtree = new Quadtree();
+		this.collisionGrid = new CollisionGrid();
 	}
 
 	/**
@@ -27,7 +27,6 @@ export default class CollisionDetection {
 		const results: CollisionObject[] = [];
 		this.searchCollisions(
 			campfire,
-			Constant.RADIUS.COLLISION.WALL,
 			results
 		);
 
@@ -62,7 +61,6 @@ export default class CollisionDetection {
 		const results: CollisionObject[] = [];
 		this.searchCollisions(
 			bullet,
-			Constant.RADIUS.COLLISION.BULLET,
 			results
 		);
 		for (const result of results) {
@@ -86,25 +84,25 @@ export default class CollisionDetection {
 	 * @returns boolean that's false if a player will collide with a structure
 	 */
 	public updatePlayerPosition(
-		xPos: number,
-		yPos: number,
+		newXPos: number,
+		newYPos: number,
 		mapResources: MapResources,
 		player: Player
 	): boolean {
 		const resourcesCollided: Resource[] = [];
 		const results: CollisionObject[] = [];
 		this.searchCollisions(
-			{ xPos: xPos, yPos: yPos },
-			Constant.RADIUS.COLLISION.PLAYER,
+			{ xPos: newXPos, yPos: newYPos },
 			results
 		);
 
 		for (const result of results) {
+			// console.log("potentially colliding with", result);
 			// check if the player hits a structure
 			if (
 				this.isStructure(result.payload) &&
 				this.doCirclesCollide(
-					{ xPos: xPos, yPos: yPos },
+					{ xPos: newXPos, yPos: newYPos },
 					Constant.RADIUS.COLLISION.PLAYER,
 					result.payload,
 					this.getCollisionRadius(result.payload)
@@ -117,7 +115,7 @@ export default class CollisionDetection {
 				result.payload instanceof Resource &&
 				result.payload.dropAmount > 0 &&
 				this.doCirclesCollide(
-					{ xPos: xPos, yPos: yPos },
+					{ xPos: newXPos, yPos: newYPos },
 					Constant.RADIUS.COLLISION.PLAYER,
 					result.payload,
 					Constant.RADIUS.RESOURCE
@@ -135,9 +133,10 @@ export default class CollisionDetection {
 		});
 
 		// update the player position and collider
-		player.xPos = xPos;
-		player.yPos = yPos;
-		this.updateCollider(player, Constant.RADIUS.COLLISION.PLAYER);
+		this.deleteCollider(player, Constant.RADIUS.COLLISION.PLAYER);
+		player.xPos = newXPos;
+		player.yPos = newYPos;
+		this.insertCollider(player, Constant.RADIUS.COLLISION.PLAYER);
 
 		return true;
 	}
@@ -157,7 +156,6 @@ export default class CollisionDetection {
 		const results: CollisionObject[] = [];
 		this.searchCollisions(
 			{ xPos: xPos, yPos: yPos },
-			objectRadius,
 			results
 		);
 		for (const result of results) {
@@ -187,7 +185,7 @@ export default class CollisionDetection {
 	): number {
 		// Get everything in range
 		const results: CollisionObject[] = [];
-		this.searchCollisions(object, objectRange, results);
+		this.searchCollisions(object, results, objectRange);
 
 		// Go through the results and find the closest enemy
 		let closestEnemy: Player | null = null;
@@ -258,7 +256,7 @@ export default class CollisionDetection {
 	 * @param radius the radius of the object
 	 */
 	public insertCollider(object: any, radius: number): void {
-		this.quadtree.insertIntoQuadtree(object, radius);
+		this.collisionGrid.insertIntoGrid(object, radius);
 	}
 
 	/**
@@ -267,16 +265,7 @@ export default class CollisionDetection {
 	 * @param radius the radius of the object
 	 */
 	public deleteCollider(object: any, radius: number): void {
-		this.quadtree.deleteFromQuadtree(object, radius);
-	}
-
-	/**
-	 * Updates an object in the quadtree with its new position
-	 * @param object the object to update
-	 * @param radius the radius of the object
-	 */
-	public updateCollider(object: any, radius: number): void {
-		this.quadtree.updateInQuadtree(object, radius);
+		this.collisionGrid.deleteFromGrid(object, radius);
 	}
 
 	/**
@@ -350,10 +339,10 @@ export default class CollisionDetection {
 	 */
 	private searchCollisions(
 		object: any,
-		radius: number,
-		results: CollisionObject[]
+		results: CollisionObject[],
+		radius: number = Constant.RADIUS.COLLISION.LARGEST,
 	) {
-		this.quadtree.searchQuadtree(
+		this.collisionGrid.searchGrid(
 			object.xPos - radius,
 			object.xPos + radius,
 			object.yPos - radius,

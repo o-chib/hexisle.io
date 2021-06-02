@@ -1,4 +1,4 @@
-import { CollisionObject } from './quadtree';
+import { CollisionObject } from './collisionGrid';
 
 export class CollisionObjectPool {
 	private increase_percent: number;

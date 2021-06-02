@@ -51,6 +51,7 @@ export const Constant = Object.freeze({
 			TURRET: 75 * 0.75,
 			BASE: 200 * 0.75,
 			CAMP: 75 * 1.5,
+			LARGEST: 200 * 0.75,
 		},
 
 		RANGE: {
@@ -151,8 +152,7 @@ export const Constant = Object.freeze({
 		INVALID: 10,
 	},
 
-	QUADTREE: {
-		SPLIT: 0.51,
-		MAX_DEPTH: 20,
+	GRID: {
+		BOX_SIZE: 500,
 	},
 });
