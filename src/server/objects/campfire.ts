@@ -10,10 +10,10 @@ export default class Campfire extends IndestructibleObj {
 	public capturingTeam: number; // denotes who is capturing (-1 = no team)
 
 	constructor(id: string, xPos: number, yPos: number) {
-		super(id, xPos, yPos, -1);
+		super(id, xPos, yPos);
 		this.isCaptured = false;
 		this.captureProgress = 0;
-		this.capturingTeam = -1;
+		this.capturingTeam = Constant.TEAM.NONE;
 		this.territoryPoints = [];
 	}
 
