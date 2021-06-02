@@ -7,6 +7,9 @@ const userGuide = document.getElementById("userGuide")
 userGuide.onclick = userGuideRedirect;
 const githubWiki = document.getElementById('githubWiki')
 githubWiki.onclick = githubWikiRedirect;
+gameTrailer
+const gameTrailer = document.getElementById('gameTrailer')
+gameTrailer.onclick = gameTrailerRedirect;
 
 function setGameStatus(status) {
     const serverStatus = document.createElement('span');
@@ -46,6 +49,10 @@ function userGuideRedirect() {
 
 function githubWikiRedirect() {
     window.open('https://github.com/o-chib/teamIO-project/wiki');
+}
+
+function gameTrailerRedirect() {
+    window.open('https://www.youtube.com/watch?v=o8Bu8e-gTtE');
 }
 
 //  Server Online Check
