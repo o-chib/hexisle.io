@@ -49,9 +49,7 @@ export default class MainMenu extends Phaser.Scene {
 		this.add.image(0, 0, 'lobby_bg').setOrigin(0).setDepth(0);
 
 		// Containers
-		const menuContainer = this.add
-			.container(renderWidth / 2, 0)
-			.setDepth(1);
+		const menuContainer = this.add.container(renderWidth / 2, 0)
 		const optionsContainer = this.add
 			.container(menuContainer.x + 230, renderHeight / 2)
 			.setVisible(false);
@@ -83,7 +81,7 @@ export default class MainMenu extends Phaser.Scene {
 		// Options menu/buttons
 		this.muteButton = this.add
 			.image(0, 0, '')
-			.setDepth(2)
+			.setDepth(3)
 			.setDisplayOrigin(0.5, 0.5)
 			.setScale(0.7);
 		Utilities.setToggleMuteButtonIcon(this.muteButton, this.sound);
