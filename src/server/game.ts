@@ -8,7 +8,7 @@ import Turret from './objects/turret';
 import Campfire from './objects/campfire';
 import Base from './objects/base';
 import CollisionDetection from './collision';
-import { HexTiles, Tile, OffsetPoint, Point } from './hexTiles';
+import { HexTiles, Tile } from './hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './objects/territory';
@@ -91,7 +91,7 @@ export default class Game {
 
 		this.updateTerritories();
 
-		this.updateMapResources(timePassed);
+		this.mapResources.update(timePassed);
 
 		if (this.isGameOver()) this.endGame();
 
@@ -238,10 +238,6 @@ export default class Game {
 				this.respawnPlayer(aPlayer);
 			}
 		}
-	}
-
-	private updateMapResources(timePassed: number): void {
-		this.mapResources.updateMapResourcesIfPossible(timePassed);
 	}
 
 	private sendStateToPlayers() {

@@ -58,7 +58,7 @@ export class MapResources {
 		}
 	}
 
-	public updateMapResourcesIfPossible(timePassed: number): void {
+	public update(timePassed: number): void {
 		if (!this.canUpdateMapResources()) {
 			this.decrementUpdateTimer(timePassed);
 			return;
