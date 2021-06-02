@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { OffsetPoint } from '../shared/hexTiles';
+import { OffsetPoint } from './../shared/hexTiles';
 
 export default class Teams {
 	private teams: Map<number, Team>;
 	private numTeams: number;
 
-	constructor(teamCount: number, baseCoords: OffsetPoint[]) {
+	constructor(teamCount: number) {
 		this.numTeams = teamCount;
 		this.initTeams(teamCount);
-		this.initBases(baseCoords);
 	}
 
 	public getTeam(teamNum: number): Team {
@@ -49,7 +48,7 @@ export default class Teams {
 		}
 	}
 
-	private initBases(baseCoords: OffsetPoint[]): void {
+	public initBases(baseCoords: OffsetPoint[]): void {
 		for (const [teamNumber, team] of this.teams) {
 			team.baseCoord = baseCoords[teamNumber];
 			team.numCapturedCamps = 1;

@@ -1,9 +1,15 @@
-import { Constant } from '../shared/constants';
+import { Constant } from './constants';
 import Structure from '../server/objects/structure';
+import Campfire from '../server/objects/campfire';
+import Game from '../server/game';
+import Territory from '../server/objects/territory';
+import BoundaryWall from '../server/objects/boundaryWall';
+import Base from '../server/objects/base';
 
 export class HexTiles {
 	public static readonly HEX_SIZE = Constant.RADIUS.HEX;
 	public static readonly CAMP_RADIUS = Constant.RADIUS.CAMP_HEXES;
+	private game: Game;
 	public tileMap: Tile[][]; // Made in offset even-q coordinates
 	public hexRadius: number;
 	public mapHeight: number;
@@ -11,7 +17,8 @@ export class HexTiles {
 	public baseCoords: OffsetPoint[];
 	public boundaryCoords: OffsetPoint[];
 
-	constructor(mapHeight: number = Constant.MAP_HEIGHT) {
+	constructor(game: Game, mapHeight: number = Constant.MAP_HEIGHT) {
+		this.game = game;
 		this.mapHeight = mapHeight;
 		this.hexRadius = this.getMapHexRadius();
 		this.campfiresInHalfWidth = this.getNumCampfiresInMapRadius();
@@ -28,6 +35,9 @@ export class HexTiles {
 			Math.floor(this.campfiresInHalfWidth * 0.75)
 		);
 		this.generateBases(Constant.TEAM_COUNT, campDistanceFromCenter);
+		this.initCampfires();
+		this.initBases();
+		this.generateBoundaryColliders();
 	}
 
 	generateTileMap(): void {
@@ -170,6 +180,142 @@ export class HexTiles {
 						Constant.BUILDING.BASE;
 				this.baseCoords.push(travHex);
 			}
+		}
+	}
+
+	private initCampfires(): void {
+		const tilemap = this.tileMap;
+		for (let i = 0; i < tilemap.length; i++) {
+			for (let j = 0; j < tilemap[i].length; j++) {
+				if (tilemap[i][j].building == Constant.BUILDING.CAMP) {
+					this.buildCampfire(tilemap[i][j].offset_coord);
+				}
+			}
+		}
+	}
+
+	private buildCampfire(coord: OffsetPoint): void {
+		if (!this.checkIfValidHex(coord)) {
+			return;
+		}
+
+		const tile: Tile = this.tileMap[coord.q][coord.r];
+
+		const campfire: Campfire = new Campfire(
+			this.game.idGenerator.newID(),
+			tile.cartesian_coord.xPos,
+			tile.cartesian_coord.yPos
+		);
+
+		campfire.setTerritoryPoints(
+			this.getHexRadiusPoints(tile, Constant.RADIUS.CAMP_HEXES)
+		);
+
+		this.game.campfires.add(campfire);
+
+		const territory: Territory = new Territory(
+			campfire.xPos.toString() + ', ' + campfire.yPos.toString(),
+			campfire.xPos,
+			campfire.yPos,
+			Constant.TEAM.NONE
+		);
+		this.game.territories.add(territory);
+		tile.building = Constant.BUILDING.CAMP;
+
+		this.game.collision.insertCollider(
+			campfire,
+			Constant.RADIUS.COLLISION.WALL
+		);
+	}
+
+	private initBases(): void {
+		this.addBaseTerritories();
+		this.game.teams.initBases(this.baseCoords);
+		for (let teamNum = 0; teamNum < Constant.TEAM_COUNT; teamNum++) {
+			this.buildBase(teamNum, this.game.teams.getTeamBaseCoord(teamNum));
+		}
+	}
+
+	private addBaseTerritories() {
+		// Add permanent territory from bases
+		for (let i = 0; i < Constant.TEAM_COUNT; i++) {
+			const teamBaseCoord = this.baseCoords[i];
+			const points = this.getHexRadiusPoints(
+				this.tileMap[teamBaseCoord.q][teamBaseCoord.r],
+				Constant.RADIUS.CAMP_HEXES
+			);
+			// Update the tileMap with territory tiles
+			this.setBaseTerritory(i, points);
+			// Add chunk center to terriitories list
+			const xPosition =
+				this.tileMap[teamBaseCoord.q][teamBaseCoord.r].cartesian_coord
+					.xPos;
+			const yPosition =
+				this.tileMap[teamBaseCoord.q][teamBaseCoord.r].cartesian_coord
+					.yPos;
+			const tempTerritory = new Territory(
+				xPosition.toString() + ', ' + yPosition.toString(),
+				xPosition,
+				yPosition,
+				i
+			);
+
+			this.game.territories.add(tempTerritory);
+		}
+	}
+
+	private setBaseTerritory(teamNumber, points) {
+		for (const pt of points) {
+			const tempTile = this.tileMap[pt.q][pt.r];
+			if (tempTile.building == Constant.BUILDING.OUT_OF_BOUNDS) {
+				continue;
+			}
+			tempTile.teamNumber = teamNumber;
+			this.tileMap[pt.q][pt.r] = tempTile;
+		}
+	}
+
+	private generateBoundaryColliders(): void {
+		for (const boundaryHex of this.boundaryCoords) {
+			const boundaryWall = new BoundaryWall(
+				this.game.idGenerator.newID(),
+				this.tileMap[boundaryHex.q][boundaryHex.r]
+			);
+			this.game.collision.insertCollider(
+				boundaryWall,
+				Constant.RADIUS.COLLISION.WALL
+			);
+		}
+	}
+
+	private buildBase(teamNum: number, coord: OffsetPoint): void {
+		if (!this.checkIfValidHex(coord))
+			throw new Error('Base is not on a valid hex.');
+
+		const tile = this.tileMap[coord.q][coord.r];
+		tile.teamNumber = teamNum;
+
+		const base = new Base(this.game.idGenerator.newID(), tile);
+
+		this.game.bases.add(base);
+		this.game.collision.insertCollider(
+			base,
+			Constant.RADIUS.COLLISION.BASE
+		);
+
+		this.game.teams.getTeam(teamNum).respawnCoords = this.getHexRingPoints(
+			tile,
+			2
+		);
+
+		// make it so you cant build on and around the base
+		for (let i = 0; i <= 2; i++) {
+			this.getHexRingPoints(tile, i).forEach((coord) => {
+				this.tileMap[coord.q][coord.r].setBuilding(
+					base.getBuildingType(),
+					base
+				);
+			});
 		}
 	}
 
