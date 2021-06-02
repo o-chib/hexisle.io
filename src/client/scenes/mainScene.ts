@@ -96,7 +96,6 @@ export default class MainScene extends Phaser.Scene {
 				buildWall: Phaser.Input.Keyboard.KeyCodes.E,
 				buildTurret: Phaser.Input.Keyboard.KeyCodes.Q,
 				demolishStructure: Phaser.Input.Keyboard.KeyCodes.R,
-				debugInfo: Phaser.Input.Keyboard.KeyCodes.N,
 				toggleHelp: Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH,
 			},
 			false
