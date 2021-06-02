@@ -337,13 +337,11 @@ export class CollisionGrid {
 	): Array<Array<number>> {
 		const results: Array<Array<number>> = [];
 		const checkedRowsCols = new Map();
-		// for (const row of [idxL, idxR]) {
 		for (let row = idxL; row < idxR + 1; row++) {
 			if (checkedRowsCols.has(row)) {
 				continue;
 			}
 			checkedRowsCols.set(row, []);
-			// for (const col of [idxT, idxB]) {
 			for (let col = idxT; col < idxB + 1; col++) {
 				if (checkedRowsCols.get(row).includes(col)) {
 					continue;
