@@ -178,7 +178,7 @@ export default class Game {
 	private updateWalls() {
 		for (const aWall of this.walls.values()) {
 			if (!aWall.isAlive()) {
-				this.removeWall(aWall);
+				this.removeStructure(aWall);
 			}
 		}
 	}
@@ -186,7 +186,7 @@ export default class Game {
 	private updateTurrets(timePassed: number) {
 		for (const aTurret of this.turrets.values()) {
 			if (!aTurret.isAlive()) {
-				this.removeTurret(aTurret);
+				this.removeStructure(aTurret);
 				continue;
 			}
 
