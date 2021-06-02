@@ -92,16 +92,16 @@ export const Constant = Object.freeze({
 
 	SPRITE_DEPTH: {
 		TERRITORY: 0,
-		CAMP: 1,
-		CAMP_RING: 3,
-		BASE: 4,
-		WALL: 4,
-		TURRET_BASE: 4,
+		CAMP: 4,
+		CAMP_RING: 2,
+		BASE: 3,
+		WALL: 3,
+		TURRET_BASE: 3,
 		TURRET_GUN: 7,
 		PLAYER: 6,
 		PLAYER_DEATH: 4,
 		BULLET: 5,
-		RESOURCE: 2,
+		RESOURCE: 1,
 	},
 
 	BUILDING: {
