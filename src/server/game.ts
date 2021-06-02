@@ -55,7 +55,7 @@ export default class Game {
 		this.hexTileMap = new HexTiles(this);
 		this.hexTileMap.generateMap();
 
-		this.mapResources = new MapResources(this.addResource.bind(this));
+		this.mapResources = new MapResources(this);
 		this.mapResources.addInitialResources();
 
 		this.passiveIncome = new PassiveIncome(this.teams);
@@ -71,7 +71,7 @@ export default class Game {
 		);
 	}
 
-	private update() {
+	public update() {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
@@ -476,38 +476,6 @@ export default class Game {
 		const player = this.getPlayer(socket.id);
 
 		player?.updateDirection(direction);
-	}
-
-	private addResource(): void {
-		const randomPoint = this.getRandomEmptyPointOnMap();
-		if (!randomPoint) return;
-
-		const newResource: Resource = this.mapResources.generateResource(
-			this.idGenerator.newID(),
-			randomPoint
-		);
-
-		this.collision.insertCollider(newResource);
-	}
-
-	private getRandomEmptyPointOnMap(): Point | null {
-		let loopLimit = Constant.RANDOM_LOOP_LIMIT;
-		let point: Point;
-
-		do {
-			if (loopLimit <= 0) return null;
-			point = this.getRandomMapPoint();
-			loopLimit--;
-		} while (!this.hexTileMap.checkIfValidEmptyPointOnGrid(point));
-
-		return point;
-	}
-
-	private getRandomMapPoint(): Point {
-		return new Point(
-			Math.random() * Constant.MAP_WIDTH,
-			Math.random() * Constant.MAP_HEIGHT
-		);
 	}
 
 	private shootBullet(object: any, direction: number): void {
