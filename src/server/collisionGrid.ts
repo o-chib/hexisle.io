@@ -36,7 +36,7 @@ export class CollisionGrid {
 		searchB: number,
 		results: CollisionObject[]
 	): void {
-		console.log(searchL, searchR, searchT, searchB);
+		// console.log(searchL, searchR, searchT, searchB);
 		let idxL = Math.floor(searchL / Constant.GRID.BOX_SIZE);
 		let idxR = Math.floor(searchR / Constant.GRID.BOX_SIZE);
 		let idxT = Math.floor(searchT / Constant.GRID.BOX_SIZE);
@@ -60,7 +60,7 @@ export class CollisionGrid {
 		gridIndices: [number, number]
 	): void {
 		let cObjList: CollisionObject[] | null;
-		console.log("");
+		// console.log("");
 		
 		// top level
 		if (!gridIndices) {
@@ -71,7 +71,7 @@ export class CollisionGrid {
 			}
 
 			cObjList = this.topLevelCObjs;
-			console.log("inserting in top level");
+			// console.log("inserting in top level");
 
 		// inside a grid
 		} else {
@@ -82,7 +82,7 @@ export class CollisionGrid {
 			}
 
 			cObjList = this.grid[gridIndices[0]][gridIndices[1]];
-			console.log("inserting in grid:", gridIndices);
+			// console.log("inserting in grid:", gridIndices);
 		}
 
 		// push the cObj onto the array
@@ -94,17 +94,17 @@ export class CollisionGrid {
 		gridIndices: [number, number]
 	): void {
 		let cObjList: CollisionObject[] | null;
-		console.log("");
+		// console.log("");
 
 		// top level
 		if (!gridIndices) {
 			cObjList = this.topLevelCObjs;
-			console.log("deleting in top level");
+			// console.log("deleting in top level");
 		
 		// inside a grid
 		} else {
 			cObjList = this.grid[gridIndices[0]][gridIndices[1]];
-			console.log("deleting in grid:", gridIndices);
+			// console.log("deleting in grid:", gridIndices);
 		}
 
 		// find and remove the cObj
@@ -134,35 +134,35 @@ export class CollisionGrid {
 	): void {
 		let cObjList: CollisionObject[] | null;
 
-		console.log("");
+		// console.log("");
 
 		// if it's wholly contained in one box then just search in there + maybe the top level node
 		if (idxL == idxR && idxT == idxB) {
-			console.log("search: wholly contained", idxL, idxT);
+			// console.log("search: wholly contained", idxL, idxT);
 
 			// check if there is anything in the top level node, search for collisions if something is in there
 			cObjList = this.topLevelCObjs;
 			if (cObjList) {
 				this.pushCollidingItemsOntoResults(searchL, searchR, searchT, searchB, cObjList, results);
-				console.log("    searching top level");
+				// console.log("    searching top level");
 			}
 
 			// check if there is anything in this box, search for collisions if something is in there
 			cObjList = this.grid[idxL][idxT];
 			if (cObjList) {
 				this.pushCollidingItemsOntoResults(searchL, searchR, searchT, searchB, cObjList, results);
-				console.log("    searching box", [idxL, idxT]);
+				// console.log("    searching box", [idxL, idxT]);
 			}
 			
 		// it must overlap so check the toplevelcObjs and overlapping boxes
 		} else {
-			console.log("search: overlap");
+			// console.log("search: overlap");
 
 			// check if there is anything in the top level node, search for collisions if something is in there
 			cObjList = this.topLevelCObjs;
 			if (cObjList) {
 				this.pushCollidingItemsOntoResults(searchL, searchR, searchT, searchB, cObjList, results);
-				console.log("    searching top level");
+				// console.log("    searching top level");
 			}
 			
 			// also check any surrounding boxes it overlaps in
@@ -174,7 +174,7 @@ export class CollisionGrid {
 				cObjList = this.grid[indice[0]][indice[1]];
 				if(cObjList) {
 					this.pushCollidingItemsOntoResults(searchL, searchR, searchT, searchB, cObjList, results);
-					console.log("    searching box", [indice[0], indice[1]]);
+					// console.log("    searching box", [indice[0], indice[1]]);
 				}
 			}
 		}
