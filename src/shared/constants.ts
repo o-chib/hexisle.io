@@ -15,8 +15,8 @@ export const Constant = Object.freeze({
 	HP: {
 		PLAYER: 100,
 		BASE: 1000,
-		WALL: 200,
-		TURRET: 150,
+		WALL: 150,
+		TURRET: 50,
 	},
 
 	INCOME: {
@@ -62,7 +62,7 @@ export const Constant = Object.freeze({
 	RESOURCE: {
 		UPDATE_RATE: 1 * 1000,
 
-		INITIAL_RESOURCES: 50,
+		INITIAL_RESOURCES: 100,
 		MAX_RESOURCES: 150,
 		MAX_RESOURCES_PER_UPDATE: 5,
 
