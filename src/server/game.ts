@@ -8,7 +8,7 @@ import Turret from './objects/turret';
 import Campfire from './objects/campfire';
 import Base from './objects/base';
 import CollisionDetection from './collision';
-import { HexTiles, Tile, OffsetPoint, Point } from './../shared/hexTiles';
+import { HexTiles, Tile, OffsetPoint, Point } from './hexTiles';
 import IDgenerator from './idGenerator';
 import { Constant } from '../shared/constants';
 import Territory from './objects/territory';

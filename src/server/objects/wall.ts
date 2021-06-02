@@ -1,6 +1,6 @@
 import Structure from './structure';
 import { Constant } from '../../shared/constants';
-import { Tile } from '../../shared/hexTiles';
+import { Tile } from '../hexTiles';
 
 export default class Wall extends Structure {
 	public readonly RADIUS = Constant.RADIUS.WALL;

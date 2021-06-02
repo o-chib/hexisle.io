@@ -1,10 +1,10 @@
-import { Constant } from './constants';
-import Structure from '../server/objects/structure';
-import Campfire from '../server/objects/campfire';
-import Game from '../server/game';
-import Territory from '../server/objects/territory';
-import BoundaryWall from '../server/objects/boundaryWall';
-import Base from '../server/objects/base';
+import { Constant } from '../shared/constants';
+import Structure from './objects/structure';
+import Campfire from './objects/campfire';
+import Game from './game';
+import Territory from './objects/territory';
+import BoundaryWall from './objects/boundaryWall';
+import Base from './objects/base';
 
 export class HexTiles {
 	public static readonly HEX_SIZE = Constant.RADIUS.HEX;

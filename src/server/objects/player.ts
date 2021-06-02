@@ -1,5 +1,5 @@
 import { Constant } from '../../shared/constants';
-import { Point } from '../../shared/hexTiles';
+import { Point } from '../hexTiles';
 import Collision from '../collision';
 import { MapResources } from '../mapResources';
 import DestructibleObj from './destructibleObj';

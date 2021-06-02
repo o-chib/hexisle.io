@@ -1,4 +1,4 @@
-import { Point } from '../shared/hexTiles';
+import { Point } from './hexTiles';
 import { Constant } from '../shared/constants';
 import { Resource } from './objects/resource';
 
