@@ -16,7 +16,7 @@ import { MapResources } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
 import { Resource } from './objects/resource';
-import IndestructibleObj from './objects/indestructibleObj';
+import GameObject from './objects/gameObject';
 
 export default class Game {
 	hexTileMap: HexTiles;
@@ -326,7 +326,7 @@ export default class Game {
 		};
 	}
 
-	private getNearbyObj<ObjType extends IndestructibleObj>(
+	private getNearbyObj<ObjType extends GameObject>(
 		player: Player,
 		set: IterableIterator<ObjType>,
 		objRadius?: number

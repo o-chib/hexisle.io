@@ -1,8 +1,8 @@
 import { Constant } from '../../shared/constants';
 import Collision from '../collision';
-import IndestructibleObj from './indestructibleObj';
+import GameObject from './gameObject';
 
-export default class Bullet extends IndestructibleObj {
+export default class Bullet extends GameObject {
 	public readonly RADIUS = Constant.RADIUS.BULLET;
 	public static readonly DAMAGE = 10;
 	public static readonly SPEED = 1.2;

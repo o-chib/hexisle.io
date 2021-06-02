@@ -7,7 +7,7 @@ import { MapResources } from './mapResources';
 import { Resource } from './objects/resource';
 import BoundaryWall from './objects/boundaryWall';
 import Structure from './objects/structure';
-import IndestructibleObj from './objects/indestructibleObj';
+import GameObject from './objects/gameObject';
 
 export default class CollisionDetection {
 	quadtree: Quadtree;
@@ -247,7 +247,7 @@ export default class CollisionDetection {
 	 * @param object the object to insert
 	 * @param radius the radius of the object
 	 */
-	public insertCollider(object: IndestructibleObj): void {
+	public insertCollider(object: GameObject): void {
 		this.quadtree.insertIntoQuadtree(object, object.RADIUS);
 	}
 
@@ -256,7 +256,7 @@ export default class CollisionDetection {
 	 * @param object the object to delete
 	 * @param radius the radius of the object
 	 */
-	public deleteCollider(object: IndestructibleObj): void {
+	public deleteCollider(object: GameObject): void {
 		this.quadtree.deleteFromQuadtree(object, object.RADIUS);
 	}
 
@@ -265,7 +265,7 @@ export default class CollisionDetection {
 	 * @param object the object to update
 	 * @param radius the radius of the object
 	 */
-	public updateCollider(object: IndestructibleObj): void {
+	public updateCollider(object: GameObject): void {
 		this.quadtree.updateInQuadtree(object, object.RADIUS);
 	}
 

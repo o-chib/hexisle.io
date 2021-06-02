@@ -1,7 +1,7 @@
 import { Constant } from '../../shared/constants';
-import IndestructibleObj from './indestructibleObj';
+import GameObject from './gameObject';
 
-export class Resource extends IndestructibleObj {
+export class Resource extends GameObject {
 	public readonly RADIUS = Constant.RADIUS.RESOURCE;
 	public dropAmount: number;
 	public type: string;

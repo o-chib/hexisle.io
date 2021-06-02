@@ -1,8 +1,8 @@
 import { Constant } from '../../shared/constants';
 import { OffsetPoint } from '../hexTiles';
-import IndestructibleObj from './indestructibleObj';
+import GameObject from './gameObject';
 
-export default class Campfire extends IndestructibleObj {
+export default class Campfire extends GameObject {
 	public readonly RADIUS = Constant.RADIUS.CAMP;
 	public territoryPoints: OffsetPoint[];
 	public captureProgress: number; // Variable Progress Bar (0-100)
