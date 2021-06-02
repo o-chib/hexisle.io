@@ -1,9 +1,7 @@
 export const Constant = Object.freeze({
 	MAP_WIDTH: 10000,
 	MAP_HEIGHT: 10000,
-	TEAM_COUNT: 2,
 	MAX_PLAYERS: 50,
-	RANDOM_LOOP_LIMIT: 10,
 	MAX_NAME_LENGTH: 15,
 
 	COST: {
@@ -17,11 +15,6 @@ export const Constant = Object.freeze({
 		BASE: 1000,
 		WALL: 200,
 		TURRET: 150,
-	},
-
-	INCOME: {
-		UPDATE_RATE: 5 * 1000,
-		INCOME_PER_CAMP: 1,
 	},
 
 	GAME_TIMING: {
@@ -41,16 +34,19 @@ export const Constant = Object.freeze({
 		BULLET: 15,
 		WALL: 75 * 0.75,
 		TURRET: 75 * 0.75,
+		TURRET_RANGE: 750,
 		BASE: 200 * 0.75,
 		CAMP: 75 * 1.5,
+	},
 
-		RANGE: {
-			TURRET: 750,
-		},
+	INCOME: {
+		UPDATE_RATE: 5 * 1000,
+		INCOME_PER_CAMP: 1,
 	},
 
 	RESOURCE: {
 		UPDATE_RATE: 1 * 1000,
+		RANDOM_LOOP_LIMIT: 10,
 
 		INITIAL_RESOURCES: 50,
 		MAX_RESOURCES: 150,
@@ -124,6 +120,7 @@ export const Constant = Object.freeze({
 		UPDATE_NAME: 'NEW NAME',
 	},
 
+	TEAM_COUNT: 2,
 	TEAM: {
 		NONE: -1,
 		RED: 0,

@@ -33,7 +33,7 @@ export class MapResources {
 	}
 
 	private getRandomEmptyPointOnMap(): Point | null {
-		let loopLimit = Constant.RANDOM_LOOP_LIMIT;
+		let loopLimit = Constant.RESOURCE.RANDOM_LOOP_LIMIT;
 		let point: Point;
 
 		do {

@@ -194,7 +194,7 @@ export default class Game {
 				aTurret.aimAndFireIfPossible(
 					this.collision.findDirectionOfClosestEnemy(
 						aTurret,
-						Constant.RADIUS.RANGE.TURRET
+						Constant.RADIUS.TURRET_RANGE
 					),
 					timePassed
 				);
