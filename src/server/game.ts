@@ -16,7 +16,7 @@ import { MapResources } from './mapResources';
 import { PassiveIncome } from './passiveIncome';
 import * as SocketIO from 'socket.io';
 import { Resource } from './objects/resource';
-import BoundaryWall from './objects/boundaryWall';
+import IndestructibleObj from './objects/indestructibleObj';
 
 export default class Game {
 	hexTileMap: HexTiles;
@@ -336,6 +336,28 @@ export default class Game {
 		};
 	}
 
+	getNearbyObj<ObjType extends IndestructibleObj>(
+		player: Player,
+		set: IterableIterator<ObjType>,
+		objRadius: number
+	): ObjType[] {
+		const nearbyObj: ObjType[] = [];
+
+		for (const obj of set) {
+			if (
+				this.collision.doCirclesCollide(
+					obj,
+					objRadius,
+					player,
+					Constant.RADIUS.VIEW
+				)
+			)
+				nearbyObj.push(obj);
+		}
+
+		return nearbyObj;
+	}
+
 	createPlayerUpdate(player: Player) {
 		const nearbyPlayers: Player[] = [];
 
@@ -355,135 +377,14 @@ export default class Game {
 		return nearbyPlayers;
 	}
 
-	createBulletUpdate(player: Player) {
-		const nearbyBullets: Bullet[] = [];
-
-		for (const aBullet of this.bullets) {
-			if (
-				this.collision.doCirclesCollide(
-					aBullet,
-					Constant.RADIUS.BULLET,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyBullets.push(aBullet);
-		}
-
-		return nearbyBullets;
-	}
-
-	createWallUpdate(player: Player) {
-		const nearbyWalls: Wall[] = [];
-
-		for (const aWall of this.walls.values()) {
-			if (
-				this.collision.doCirclesCollide(
-					aWall,
-					Constant.RADIUS.WALL,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyWalls.push(aWall);
-		}
-
-		return nearbyWalls;
-	}
-
-	createTurretUpdate(player: Player) {
-		const nearbyTurrets: Turret[] = [];
-
-		for (const aTurret of this.turrets.values()) {
-			if (
-				this.collision.doCirclesCollide(
-					aTurret,
-					Constant.RADIUS.TURRET,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyTurrets.push(aTurret);
-		}
-
-		return nearbyTurrets;
-	}
-
-	createCampfireUpdate(player: Player) {
-		const nearbyCampfires: Campfire[] = [];
-
-		for (const aCampfire of this.campfires) {
-			if (
-				this.collision.doCirclesCollide(
-					aCampfire,
-					Constant.RADIUS.TERRITORY,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyCampfires.push(aCampfire);
-		}
-
-		return nearbyCampfires;
-	}
-
-	createBaseUpdate() {
-		const nearbyBases: Base[] = [];
-
-		for (const aBase of this.bases) {
-			// Let player have information about all bases at all times
-			nearbyBases.push(aBase);
-		}
-
-		return nearbyBases;
-	}
-
-	createTerritoryUpdate(player: Player) {
-		const nearbyTerritories: Territory[] = [];
-
-		for (const aTerritory of this.territories) {
-			if (
-				this.collision.doCirclesCollide(
-					aTerritory,
-					Constant.RADIUS.TERRITORY,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyTerritories.push(aTerritory);
-		}
-
-		return nearbyTerritories;
-	}
-
-	createResourceUpdate(player: Player): Resource[] {
-		const nearbyResources: Resource[] = [];
-
-		for (const aResource of this.mapResources.resources) {
-			if (
-				this.collision.doCirclesCollide(
-					aResource,
-					Constant.RADIUS.RESOURCE,
-					player,
-					Constant.RADIUS.VIEW
-				)
-			)
-				nearbyResources.push(aResource);
-		}
-
-		return nearbyResources;
-	}
-
 	createUpdate(player: Player) {
 		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
-		const nearbyBullets: Bullet[] = this.createBulletUpdate(player);
-		const nearbyWalls: Wall[] = this.createWallUpdate(player);
-		const nearbyTurrets: Turret[] = this.createTurretUpdate(player);
-		const nearbyCampfires: Campfire[] = this.createCampfireUpdate(player);
-		const nearbyBases: Base[] = this.createBaseUpdate();
-		const nearbyTerritories: Territory[] =
-			this.createTerritoryUpdate(player);
-		const nearbyResources: Resource[] = this.createResourceUpdate(player);
+		const nearbyBullets: Bullet[] = this.getNearbyObj(player, this.bullets.values(), Constant.RADIUS.BULLET);
+		const nearbyWalls: Wall[] = this.getNearbyObj(player, this.walls.values(), Constant.RADIUS.WALL);
+		const nearbyTurrets: Turret[] = this.getNearbyObj(player, this.turrets.values(), Constant.RADIUS.TURRET);
+		const nearbyCampfires: Campfire[] = this.getNearbyObj(player, this.campfires.values(), Constant.RADIUS.TERRITORY);
+		const nearbyResources: Resource[] = this.getNearbyObj(player, this.mapResources.resources.values(), Constant.RADIUS.RESOURCE);
+		const nearbyBases: Base[] = Array.from(this.bases);
 
 		return {
 			time: this.gameTimeRemaining,
@@ -494,7 +395,6 @@ export default class Game {
 			turrets: nearbyTurrets.map((p) => p.serializeForUpdate()),
 			campfires: nearbyCampfires.map((p) => p.serializeForUpdate()),
 			bases: nearbyBases.map((p) => p.serializeForUpdate()),
-			territories: nearbyTerritories.map((p) => p.serializeForUpdate()),
 			resources: nearbyResources.map((p) => p.serializeForUpdate()),
 		};
 	}
