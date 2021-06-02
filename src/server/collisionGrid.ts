@@ -15,6 +15,11 @@ export class CollisionGrid {
 		this.initGrid();
 	}
 
+	/**
+	 * Inserts an object into the collision grid
+	 * @param obj the object to insert
+	 * @param radius the radius of the object
+	 */
 	public insertIntoGrid(obj: any, radius: number): void {
 		const cObj = this.cObjPool.getElement();
 		cObj.setData(obj, radius);
@@ -24,6 +29,11 @@ export class CollisionGrid {
 		}
 	}
 
+	/**
+	 * Deletes an object from the collision grid
+	 * @param obj the object to delete
+	 * @param radius the radius of the object
+	 */
 	public deleteFromGrid(obj: any, radius: number): void {
 		const gridIndices = this.getGridIndices(obj, radius);
 		if (this.areValidRowColIndices(gridIndices)) {
@@ -31,6 +41,15 @@ export class CollisionGrid {
 		}
 	}
 
+	/**
+	 * Searches the collision grid for anything that collides with the box given
+	 * @param searchL the left position of the box
+	 * @param searchR the right position of the box
+	 * @param searchT the top position of the box
+	 * @param searchB the bottom position of the box
+	 * @param results the list of results to append the collided objects to
+	 * @returns early if the search parameters are out of bounds
+	 */
 	public searchGrid(
 		searchL: number,
 		searchR: number,
@@ -61,6 +80,11 @@ export class CollisionGrid {
 		);
 	}
 
+	/**
+	 * Internal function for inserting a collision object into the grid
+	 * @param cObj the collision object to insert
+	 * @param gridIndices the indices of the gridbox to insert in
+	 */
 	private insert(cObj: CollisionObject, gridIndices: [number, number]): void {
 		let cObjList: CollisionObject[] | null;
 		// console.log("");
@@ -90,6 +114,11 @@ export class CollisionGrid {
 		cObjList!.push(cObj);
 	}
 
+	/**
+	 * Internal function for deleting a collision object from the grid
+	 * @param obj the collision object to delete
+	 * @param gridIndices the indices of the gridbox to delete from
+	 */
 	private delete(obj: any, gridIndices: [number, number]): void {
 		let cObjList: CollisionObject[] | null;
 		// console.log("");
@@ -119,6 +148,18 @@ export class CollisionGrid {
 		}
 	}
 
+	/**
+	 * Internal function for searching for colliders
+	 * @param idxL the left-most index of the grid-box
+	 * @param idxR the right-most index of the grid-box
+	 * @param idxT the top-most index of the grid-box
+	 * @param idxB the bottom-most index of the grid-box
+	 * @param searchL the left position of the search box
+	 * @param searchR the right position of the search box
+	 * @param searchT the top position of the search box
+	 * @param searchB the bottom position of the search box
+	 * @param results the list of results to append the collided objects to
+	 */
 	private search(
 		idxL: number,
 		idxR: number,
@@ -212,6 +253,15 @@ export class CollisionGrid {
 		}
 	}
 
+	/**
+	 * 
+	 * @param obj the object to check collision against
+	 * @param searchL the left position of the search box
+	 * @param searchR the right position of the search box
+	 * @param searchT the top position of the search box
+	 * @param searchB the bottom position of the search box
+	 * @returns boolean representing if the object and box collide
+	 */
 	private collides(
 		obj: CollisionObject,
 		searchL: number,
@@ -231,6 +281,9 @@ export class CollisionGrid {
 		}
 	}
 
+	/**
+	 * Initializes the grid with default values (null in each gridbox)
+	 */
 	private initGrid(): void {
 		const numBoxes = Math.floor(
 			Constant.MAP_HEIGHT / Constant.GRID.BOX_SIZE
@@ -244,6 +297,12 @@ export class CollisionGrid {
 		}
 	}
 
+	/**
+	 * gets grid indices based on an object location and radius
+	 * @param obj the object to get indices for
+	 * @param radius the radius of the object
+	 * @returns [number, number], or null if the object isn't contained in a single box
+	 */
 	private getGridIndices(obj: any, radius: number): [number, number] | null {
 		const objL = obj.xPos - radius;
 		const objR = obj.xPos + radius;
@@ -262,6 +321,14 @@ export class CollisionGrid {
 		}
 	}
 
+	/**
+	 * Gets all indices for all gridboxes for indices represent multiple gridboxes
+	 * @param idxL the left-most index of the grid-box
+	 * @param idxR the right-most index of the grid-box
+	 * @param idxT the top-most index of the grid-box
+	 * @param idxB the bottom-most index of the grid-box
+	 * @returns an array of indices arrays [ [number, number], ... ]
+	 */
 	private getIntersectingGridIndices(
 		idxL: number,
 		idxR: number,
@@ -288,6 +355,15 @@ export class CollisionGrid {
 		return results;
 	}
 
+	/**
+	 * Finds which objects in a list collide with a searchbox and pushes them on a list
+	 * @param searchL the left position of the search box
+	 * @param searchR the right position of the search box
+	 * @param searchT the top position of the search box
+	 * @param searchB the bottom position of the search box
+	 * @param cObjs the list of objects to check against the searchbox
+	 * @param results the list of results to append the collided objects to
+	 */
 	private pushCollidingItemsOntoResults(
 		searchL: number,
 		searchR: number,
@@ -305,6 +381,11 @@ export class CollisionGrid {
 			});
 	}
 
+	/**
+	 * Checks if a certain [row, col] indices are in-bounds/valid
+	 * @param indices the indices to validate
+	 * @returns a boolean that's true if the indices are valid
+	 */
 	private areValidRowColIndices(indices: [number, number] | null): boolean {
 		if (!indices) {
 			return true;
@@ -324,6 +405,14 @@ export class CollisionGrid {
 		return true;
 	}
 
+	/**
+	 * Checks if a certain [row, col] indices are in-bounds/valid
+	 * @param idxL the left-most index of the grid-box
+	 * @param idxR the right-most index of the grid-box
+	 * @param idxT the top-most index of the grid-box
+	 * @param idxB the bottom-most index of the grid-box
+	 * @returns a boolean that's true if the indices are valid
+	 */
 	private areValidLRTBIndices(
 		idxL: number,
 		idxR: number,
