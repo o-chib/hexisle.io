@@ -587,7 +587,10 @@ export default class Game {
 
 	private removeStructure(structure: Structure): void {
 		this.collision.deleteCollider(structure);
-		this.walls.delete(structure.id);
+		if (structure.getBuildingType() == Constant.BUILDING.WALL)
+			this.walls.delete(structure.id);
+		else if (structure.getBuildingType() == Constant.BUILDING.TURRET)
+			this.turrets.delete(structure.id);
 		structure.tile.removeBuilding();
 	}
 
