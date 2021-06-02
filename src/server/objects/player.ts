@@ -3,6 +3,7 @@ import { Point } from '../hexTiles';
 import Collision from '../collision';
 import { MapResources } from '../mapResources';
 import DestructibleObj from './destructibleObj';
+import * as SocketIO from 'socket.io';
 
 export default class Player extends DestructibleObj {
 	public readonly RADIUS = Constant.RADIUS.PLAYER;
@@ -10,7 +11,7 @@ export default class Player extends DestructibleObj {
 	public static readonly RESPAWN_TIME = 3000;
 	private static readonly SPEED = 600;
 
-	public socket: SocketIOClient.Socket;
+	public socket: SocketIO.Socket;
 	public name: string;
 	public resources: number;
 	public reloadTimer: number;
@@ -23,7 +24,7 @@ export default class Player extends DestructibleObj {
 	private respawning: boolean;
 
 	constructor(
-		socket: SocketIOClient.Socket,
+		socket: SocketIO.Socket,
 		teamNumber: number,
 		name = '',
 		gameShootBulletMethod?: (turret: any, direction: number) => void

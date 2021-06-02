@@ -71,7 +71,7 @@ export default class Game {
 		);
 	}
 
-	update() {
+	private update() {
 		const [currentTimestamp, timePassed] = this.calculateTimePassed();
 		this.gameTimeRemaining = this.endGameTimestamp - currentTimestamp;
 
@@ -98,7 +98,7 @@ export default class Game {
 		this.sendStateToPlayers();
 	}
 
-	calculateTimePassed(): [number, number] {
+	private calculateTimePassed(): [number, number] {
 		const currentTimestamp = Date.now();
 		const timePassed = currentTimestamp - this.previousUpdateTimestamp;
 		this.previousUpdateTimestamp = currentTimestamp;
@@ -106,7 +106,7 @@ export default class Game {
 		return [currentTimestamp, timePassed];
 	}
 
-	updateBullets(currentTimestamp, timePassed) {
+	private updateBullets(currentTimestamp: number, timePassed: number) {
 		for (const aBullet of this.bullets) {
 			if (aBullet.isExpired(currentTimestamp)) {
 				this.collision.deleteCollider(aBullet);
@@ -119,7 +119,7 @@ export default class Game {
 		}
 	}
 
-	updateTerritories() {
+	private updateTerritories() {
 		// update tileMap with captured tiles
 		// update territories with campfire status
 		for (const aCampfire of this.campfires) {
@@ -174,7 +174,7 @@ export default class Game {
 		}
 	}
 
-	updateWalls() {
+	private updateWalls() {
 		for (const aWall of this.walls.values()) {
 			if (!aWall.isAlive()) {
 				this.removeWall(aWall);
@@ -182,7 +182,7 @@ export default class Game {
 		}
 	}
 
-	updateTurrets(timePassed: number) {
+	private updateTurrets(timePassed: number) {
 		for (const aTurret of this.turrets.values()) {
 			if (!aTurret.isAlive()) {
 				this.removeTurret(aTurret);
@@ -201,7 +201,7 @@ export default class Game {
 		}
 	}
 
-	updateBases() {
+	private updateBases() {
 		for (const aBase of this.bases) {
 			if (!aBase.isAlive()) {
 				this.collision.deleteCollider(aBase);
@@ -220,7 +220,7 @@ export default class Game {
 		}
 	}
 
-	updatePlayers(currentTimestamp: number, timePassed: number) {
+	private updatePlayers(currentTimestamp: number, timePassed: number) {
 		const givePassiveIncome: boolean =
 			this.passiveIncome.givePassiveIncomeIfPossible(timePassed);
 		for (const aPlayer of this.players.values()) {
@@ -240,11 +240,11 @@ export default class Game {
 		}
 	}
 
-	updateMapResources(timePassed: number): void {
+	private updateMapResources(timePassed: number): void {
 		this.mapResources.updateMapResourcesIfPossible(timePassed);
 	}
 
-	sendStateToPlayers(): void {
+	private sendStateToPlayers() {
 		// Send updates to player
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(
@@ -254,14 +254,14 @@ export default class Game {
 		}
 	}
 
-	isGameOver(): boolean {
+	private isGameOver(): boolean {
 		if (this.bases.size == 1 || this.gameTimeRemaining <= 0) {
 			return true;
 		}
 		return false;
 	}
 
-	endGame(): void {
+	private endGame(): void {
 		const gameOverMessage = this.createGameEndRecap();
 		for (const aPlayer of this.players.values()) {
 			aPlayer.socket.emit(Constant.MESSAGE.GAME_END, gameOverMessage);
@@ -270,7 +270,7 @@ export default class Game {
 		this.gameOverCallback();
 	}
 
-	createGameEndRecap() {
+	private createGameEndRecap() {
 		let redCamps = 0;
 		let blueCamps = 0;
 		let redHealth = -1;
@@ -330,7 +330,7 @@ export default class Game {
 		};
 	}
 
-	getNearbyObj<ObjType extends IndestructibleObj>(
+	private getNearbyObj<ObjType extends IndestructibleObj>(
 		player: Player,
 		set: IterableIterator<ObjType>,
 		objRadius?: number
@@ -352,7 +352,7 @@ export default class Game {
 		return nearbyObj;
 	}
 
-	createPlayerUpdate(player: Player) {
+	private createPlayerUpdate(player: Player) {
 		const nearbyPlayers: Player[] = [];
 
 		for (const aPlayer of this.players.values()) {
@@ -371,7 +371,7 @@ export default class Game {
 		return nearbyPlayers;
 	}
 
-	createUpdate(player: Player) {
+	private createUpdate(player: Player) {
 		const nearbyPlayers: Player[] = this.createPlayerUpdate(player);
 		const nearbyBullets: Bullet[] = this.getNearbyObj(
 			player,
@@ -410,7 +410,7 @@ export default class Game {
 		};
 	}
 
-	initiateGame(newPlayer, socket) {
+	private initiateGame(newPlayer: Player, socket: SocketIO.Socket) {
 		const initObject = {
 			player: newPlayer.serializeForUpdate(),
 		};
@@ -418,7 +418,7 @@ export default class Game {
 		socket.emit(Constant.MESSAGE.INITIALIZE, initObject);
 	}
 
-	generateNewPlayer(socket, name: string) {
+	private generateNewPlayer(socket: SocketIO.Socket, name: string) {
 		const team: number = this.teams.addNewPlayer(socket.id);
 		const newPlayer = new Player(
 			socket,
@@ -430,7 +430,7 @@ export default class Game {
 		return newPlayer;
 	}
 
-	addPlayer(socket: SocketIO.Socket, name = '') {
+	public addPlayer(socket: SocketIO.Socket, name = '') {
 		if (this.players.has(socket.id)) return;
 
 		const newPlayer = this.generateNewPlayer(socket, name);
@@ -440,7 +440,7 @@ export default class Game {
 		this.initiateGame(newPlayer, socket);
 	}
 
-	removePlayer(socket: SocketIO.Socket) {
+	public removePlayer(socket: SocketIO.Socket) {
 		if (!this.players.has(socket.id)) return;
 
 		const player: Player = this.getPlayer(socket.id);
@@ -452,33 +452,33 @@ export default class Game {
 		this.players.delete(socket.id);
 	}
 
-	respawnPlayer(player: Player) {
+	private respawnPlayer(player: Player) {
 		const respawnPoint: Point = this.getRespawnPoint(player.teamNumber);
 		player.respawn(respawnPoint);
 		this.collision.insertCollider(player);
 	}
 
-	getRespawnPoint(teamNum: number): Point {
+	private getRespawnPoint(teamNum: number): Point {
 		const coords: OffsetPoint[] = this.teams.getRespawnCoords(teamNum);
 		const index = Math.floor(Math.random() * coords.length);
 		return this.hexTileMap.offsetToCartesian(coords[index]);
 	}
 
-	movePlayer(socket: SocketIO.Socket, direction: number) {
+	public movePlayer(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 
 		player.updateVelocity(direction);
 	}
 
-	rotatePlayer(socket: SocketIO.Socket, direction: number): void {
+	public rotatePlayer(socket: SocketIO.Socket, direction: number): void {
 		if (!this.players.has(socket.id)) return;
 		const player = this.getPlayer(socket.id);
 
 		player?.updateDirection(direction);
 	}
 
-	addResource(): void {
+	private addResource(): void {
 		const randomPoint = this.getRandomEmptyPointOnMap();
 		if (!randomPoint) return;
 
@@ -490,7 +490,7 @@ export default class Game {
 		this.collision.insertCollider(newResource);
 	}
 
-	getRandomEmptyPointOnMap(): Point | null {
+	private getRandomEmptyPointOnMap(): Point | null {
 		let loopLimit = Constant.RANDOM_LOOP_LIMIT;
 		let point: Point;
 
@@ -503,14 +503,14 @@ export default class Game {
 		return point;
 	}
 
-	getRandomMapPoint(): Point {
+	private getRandomMapPoint(): Point {
 		return new Point(
 			Math.random() * Constant.MAP_WIDTH,
 			Math.random() * Constant.MAP_HEIGHT
 		);
 	}
 
-	shootBullet(object: any, direction: number): void {
+	private shootBullet(object: any, direction: number): void {
 		const bullet: Bullet = new Bullet(
 			this.idGenerator.newID(),
 			object.xPos,
@@ -522,13 +522,17 @@ export default class Game {
 		this.collision.insertCollider(bullet);
 	}
 
-	playerShootBullet(socket: SocketIO.Socket, direction: number) {
+	public playerShootBullet(socket: SocketIO.Socket, direction: number) {
 		if (!this.players.has(socket.id)) return;
 		const player: Player = this.getPlayer(socket.id)!;
 		player.shootBullet(direction);
 	}
 
-	canBuildStructure(player: Player, tile: Tile, building: string): boolean {
+	private canBuildStructure(
+		player: Player,
+		tile: Tile,
+		building: string
+	): boolean {
 		const collisionRadius = Constant.RADIUS[building];
 		if (
 			!tile.hasNoBuilding() ||
@@ -547,7 +551,7 @@ export default class Game {
 		return true;
 	}
 
-	buildStructure(
+	public buildStructure(
 		socket: SocketIO.Socket,
 		x: number,
 		y: number,
@@ -573,13 +577,13 @@ export default class Game {
 		}
 	}
 
-	addWall(tile: Tile): void {
+	private addWall(tile: Tile): void {
 		const wall: Wall = new Wall(this.idGenerator.newID(), tile);
 		this.walls.set(wall.id, wall);
 		this.collision.insertCollider(wall);
 	}
 
-	addTurret(tile: Tile): void {
+	private addTurret(tile: Tile): void {
 		const turret: Turret = new Turret(
 			this.idGenerator.newID(),
 			tile,
@@ -589,7 +593,7 @@ export default class Game {
 		this.collision.insertCollider(turret);
 	}
 
-	canDemolishStructure(player: Player, tile: Tile): boolean {
+	private canDemolishStructure(player: Player, tile: Tile): boolean {
 		if (
 			tile.hasNoBuilding() ||
 			(tile.building != Constant.BUILDING.WALL &&
@@ -601,7 +605,11 @@ export default class Game {
 		return true;
 	}
 
-	demolishStructure(socket: SocketIO.Socket, x: number, y: number): void {
+	public demolishStructure(
+		socket: SocketIO.Socket,
+		x: number,
+		y: number
+	): void {
 		const coord = HexTiles.cartesianToOffset(x, y);
 		if (
 			!this.players.has(socket.id) ||
@@ -622,19 +630,19 @@ export default class Game {
 		}
 	}
 
-	removeWall(wall: Wall): void {
+	private removeWall(wall: Wall): void {
 		this.collision.deleteCollider(wall);
 		this.walls.delete(wall.id);
 		wall.tile.removeBuilding();
 	}
 
-	removeTurret(turret: Turret): void {
+	private removeTurret(turret: Turret): void {
 		this.collision.deleteCollider(turret);
 		this.turrets.delete(turret.id);
 		turret.tile.removeBuilding();
 	}
 
-	private getPlayer(socketID): Player {
+	private getPlayer(socketID: string): Player {
 		return this.players.get(socketID)!;
 	}
 }
