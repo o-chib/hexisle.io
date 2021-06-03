@@ -106,7 +106,7 @@ export default class Player extends DestructibleObj {
 		this.xPos = respawnPoint.xPos;
 		this.yPos = respawnPoint.yPos;
 		this.hp = Constant.HP.PLAYER;
-		this.resources = 0;
+		this.resources = 50;
 		this.respawning = false;
 		this.lastUpdateTime = Date.now();
 	}
