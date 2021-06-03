@@ -1,31 +1,64 @@
-import { Point } from '../shared/hexTiles';
+import { Point } from './hexTiles';
 import { Constant } from '../shared/constants';
 import { Resource } from './objects/resource';
+import Game from './game';
 
 export class MapResources {
 	private readonly INITIAL_RESOURCES: number;
 	private readonly MAX_RESOURCES: number;
+	private game: Game;
 	private updateTimer: number;
 	private resourceCount: number;
 	public resources: Set<Resource>;
-	private gameAddResource: () => void;
 
-	constructor(gameAddResource?: () => void) {
+	constructor(game: Game) {
 		this.INITIAL_RESOURCES = Constant.RESOURCE.INITIAL_RESOURCES;
 		this.MAX_RESOURCES = Constant.RESOURCE.MAX_RESOURCES;
 		this.resourceCount = 0;
 		this.resources = new Set();
-		if (gameAddResource) this.gameAddResource = gameAddResource;
 		this.resetUpdateTimer();
+		this.game = game;
+	}
+
+	private addResource(): void {
+		const randomPoint = this.getRandomEmptyPointOnMap();
+		if (!randomPoint) return;
+
+		const newResource: Resource = this.generateResource(
+			this.game.idGenerator.newID(),
+			randomPoint
+		);
+
+		this.game.collision.insertCollider(newResource);
+	}
+
+	private getRandomEmptyPointOnMap(): Point | null {
+		let loopLimit = Constant.RANDOM_LOOP_LIMIT;
+		let point: Point;
+
+		do {
+			if (loopLimit <= 0) return null;
+			point = this.getRandomMapPoint();
+			loopLimit--;
+		} while (!this.game.hexTileMap.checkIfValidEmptyPointOnGrid(point));
+
+		return point;
+	}
+
+	private getRandomMapPoint(): Point {
+		return new Point(
+			Math.random() * Constant.MAP_WIDTH,
+			Math.random() * Constant.MAP_HEIGHT
+		);
 	}
 
 	public addInitialResources(): void {
 		for (let i = 0; i < this.INITIAL_RESOURCES; i++) {
-			this.gameAddResource();
+			this.addResource();
 		}
 	}
 
-	public updateMapResourcesIfPossible(timePassed: number): void {
+	public update(timePassed: number): void {
 		if (!this.canUpdateMapResources()) {
 			this.decrementUpdateTimer(timePassed);
 			return;
@@ -34,7 +67,7 @@ export class MapResources {
 		const numResourcesToGenerate = this.getRandomResourceGenerationCount();
 
 		for (let i = 0; i < numResourcesToGenerate; i++) {
-			this.gameAddResource();
+			this.addResource();
 		}
 
 		this.resetUpdateTimer();

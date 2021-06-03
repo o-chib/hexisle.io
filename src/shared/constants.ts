@@ -33,25 +33,16 @@ export const Constant = Object.freeze({
 
 	RADIUS: {
 		HEX: 75,
-		PLAYER: 50,
-		BULLET: 15,
 		RESOURCE: 15,
-		WALL: 75,
-		TURRET: 75,
-		BASE: 200,
-		CAMP: 75,
 		TERRITORY: 500,
 		VIEW: 1500,
 		CAMP_HEXES: 4,
-
-		COLLISION: {
-			PLAYER: 50,
-			BULLET: 15,
-			WALL: 75 * 0.75,
-			TURRET: 75 * 0.75,
-			BASE: 200 * 0.75,
-			CAMP: 75 * 1.5,
-		},
+		PLAYER: 50,
+		BULLET: 15,
+		WALL: 75 * 0.75,
+		TURRET: 75 * 0.75,
+		BASE: 200 * 0.75,
+		CAMP: 75 * 1.5,
 
 		RANGE: {
 			TURRET: 750,
