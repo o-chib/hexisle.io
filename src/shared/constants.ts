@@ -14,7 +14,7 @@ export const Constant = Object.freeze({
 
 	HP: {
 		PLAYER: 100,
-		BASE: 1000,
+		BASE: 3000,
 		WALL: 150,
 		TURRET: 50,
 	},
