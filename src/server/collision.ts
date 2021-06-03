@@ -71,7 +71,7 @@ export default class CollisionDetection {
 			if (
 				this.bulletPlayerCollision(result.payload, bullet, bullets) ||
 				this.bulletStructureCollision(result.payload, bullet, bullets)
-				) {
+			) {
 				return;
 			}
 		}

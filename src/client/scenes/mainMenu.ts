@@ -51,7 +51,7 @@ export default class MainMenu extends Phaser.Scene {
 		// Containers
 		const menuContainer = this.add.container(renderWidth / 2, 0);
 		const optionsContainer = this.add
-			.container(menuContainer.x + 170, renderHeight / 2)
+			.container(menuContainer.x + 230, renderHeight / 2)
 			.setVisible(false);
 
 		// Form Box
@@ -74,7 +74,7 @@ export default class MainMenu extends Phaser.Scene {
 
 		// Help Panel
 		const helpMenu = this.add
-			.image(renderWidth / 2, renderHeight / 2, 'help_menu')
+			.image(menuContainer.x - 380, renderHeight / 2 + 100, 'help_menu')
 			.setDepth(2)
 			.setVisible(false);
 
@@ -123,24 +123,13 @@ export default class MainMenu extends Phaser.Scene {
 		);
 
 		helpButton.addEventListener('click', () => {
-			menuContainer.setVisible(false);
-			helpMenu.setVisible(true);
+			helpMenu.setVisible(!helpMenu.visible);
 		});
 		helpButton.addEventListener('mouseover', () =>
 			FormUtilities.setButtonTextureOnMouseIn(helpButton)
 		);
 		helpButton.addEventListener('mouseout', () =>
 			FormUtilities.setButtonTextureOnMouseOut(helpButton)
-		);
-
-		helpMenu.setInteractive();
-		helpMenu.on(
-			'pointerdown',
-			() => {
-				helpMenu.setVisible(false);
-				menuContainer.setVisible(true);
-			},
-			this
 		);
 	}
 
