@@ -69,9 +69,9 @@ export const Constant = Object.freeze({
 		},
 
 		DROP_AMOUNT: {
-			SMALL: 1,
-			MEDIUM: 2,
-			LARGE: 5,
+			SMALL: 5,
+			MEDIUM: 10,
+			LARGE: 25,
 		},
 	},
 
