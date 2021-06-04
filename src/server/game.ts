@@ -149,10 +149,6 @@ export default class Game {
 					if (!tempTile.isInBounds()) continue;
 					tempTile.changeTeamNumber(aCampfire.teamNumber);
 					this.hexTileMap.tileMap[pt.q][pt.r] = tempTile;
-					// this.addTurret(tempTile);
-					// this.players.forEach((player) => {
-					// 	this.respawnPlayer(player);
-					// });
 				}
 
 				// Update team num of territory
@@ -195,16 +191,11 @@ export default class Game {
 			}
 
 			if (aTurret.teamNumber != Constant.TEAM.NONE) {
-				// this.collision.findDirectionOfClosestEnemy(
-				// 	aTurret,
-				// 	Constant.RADIUS.RANGE.TURRET
-				// );
 				aTurret.aimAndFireIfPossible(
 					this.collision.findDirectionOfClosestEnemy(
 						aTurret,
 						Constant.RADIUS.RANGE.TURRET
 					),
-					// 1,
 					timePassed
 				);
 			}
