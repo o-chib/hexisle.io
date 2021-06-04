@@ -26,9 +26,10 @@ export default class Bullet extends GameObject {
 	}
 
 	public updatePosition(timePassed: number, collision: Collision) {
+		collision.deleteCollider(this);
 		this.xPos += timePassed * this.xVel;
 		this.yPos += timePassed * this.yVel;
-		collision.updateCollider(this);
+		collision.insertCollider(this);
 	}
 
 	public isExpired(currentDate: number): boolean {

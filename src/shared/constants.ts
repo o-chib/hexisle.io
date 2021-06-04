@@ -14,9 +14,9 @@ export const Constant = Object.freeze({
 
 	HP: {
 		PLAYER: 100,
-		BASE: 1000,
-		WALL: 200,
-		TURRET: 150,
+		BASE: 3000,
+		WALL: 150,
+		TURRET: 50,
 	},
 
 	INCOME: {
@@ -43,6 +43,7 @@ export const Constant = Object.freeze({
 		TURRET: 75 * 0.75,
 		BASE: 200 * 0.75,
 		CAMP: 75 * 1.5,
+		LARGEST: 200 * 0.75,
 
 		RANGE: {
 			TURRET: 750,
@@ -52,7 +53,7 @@ export const Constant = Object.freeze({
 	RESOURCE: {
 		UPDATE_RATE: 1 * 1000,
 
-		INITIAL_RESOURCES: 50,
+		INITIAL_RESOURCES: 100,
 		MAX_RESOURCES: 150,
 		MAX_RESOURCES_PER_UPDATE: 5,
 
@@ -68,9 +69,9 @@ export const Constant = Object.freeze({
 		},
 
 		DROP_AMOUNT: {
-			SMALL: 1,
-			MEDIUM: 2,
-			LARGE: 5,
+			SMALL: 5,
+			MEDIUM: 10,
+			LARGE: 25,
 		},
 	},
 
@@ -82,16 +83,16 @@ export const Constant = Object.freeze({
 
 	SPRITE_DEPTH: {
 		TERRITORY: 0,
-		CAMP: 1,
-		CAMP_RING: 3,
-		BASE: 4,
-		WALL: 4,
-		TURRET_BASE: 4,
+		CAMP: 4,
+		CAMP_RING: 2,
+		BASE: 3,
+		WALL: 3,
+		TURRET_BASE: 3,
 		TURRET_GUN: 7,
 		PLAYER: 6,
 		PLAYER_DEATH: 4,
 		BULLET: 5,
-		RESOURCE: 2,
+		RESOURCE: 1,
 	},
 
 	BUILDING: {
@@ -142,8 +143,7 @@ export const Constant = Object.freeze({
 		INVALID: 10,
 	},
 
-	QUADTREE: {
-		SPLIT: 0.51,
-		MAX_DEPTH: 20,
+	GRID: {
+		BOX_SIZE: 1000,
 	},
 });
