@@ -31,7 +31,7 @@
 
 > Hexisle.io is a browser-enabled multiplayer arena match game where players are divided into teams and have to defend their base from being destroyed. This game requires taking risks to explore your surroundings and try to take down other bases, while simultaneously testing your skills at dodging the bullet hell other players will unleash when they see you.
 
-Check out our [User Guide](https://docs.google.com/document/d/e/2PACX-1vSCLj2ZHzgOwm3bN77StsHC25qQgZzq9X9zNPsLQ1pb5jvs5dWN0a5323ga9XYmV2CJSrn1UVBRkrys/pub) for more info!
+Please read our [**User Guide**](https://docs.google.com/document/d/e/2PACX-1vSCLj2ZHzgOwm3bN77StsHC25qQgZzq9X9zNPsLQ1pb5jvs5dWN0a5323ga9XYmV2CJSrn1UVBRkrys/pub) for more information on the game, its gameplay, hosting it, and the technology and systems that it uses!
 
 ## Game Trailer
 
