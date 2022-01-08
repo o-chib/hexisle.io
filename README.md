@@ -31,6 +31,22 @@
 
 > Hexisle.io is a browser-enabled multiplayer arena match game where players are divided into teams and have to defend their base from being destroyed. This game requires taking risks to explore your surroundings and try to take down other bases, while simultaneously testing your skills at dodging the bullet hell other players will unleash when they see you.
 
+Check out our [User Guide](https://docs.google.com/document/d/e/2PACX-1vSCLj2ZHzgOwm3bN77StsHC25qQgZzq9X9zNPsLQ1pb5jvs5dWN0a5323ga9XYmV2CJSrn1UVBRkrys/pub) for more info!
+
+## Game Trailer
+
+https://user-images.githubusercontent.com/49731414/148640528-a581f3d2-de7a-4821-92f0-8bf81f2eea77.mp4
+
+Or view on [YouTube](https://www.youtube.com/watch?v=o8Bu8e-gTtE)
+
+## Screenshots
+
+![App Screenshot](landing-page/image/carousel1.png)
+
+![App Screenshot](landing-page/image/carousel3.png)
+  
+![App Screenshot](landing-page/image/carousel4.png)
+
 ## Installation 
 
 Install HexIsle.io with npm
@@ -53,7 +69,7 @@ If you are working on a local or windows environment as admin, run
   npm run website
 ```
 
-If you are working with `sudo` permissions, run
+If your environment needs to use `sudo` for root permissions, run
 
 ```bash
   npm run sudowebsite
@@ -76,25 +92,10 @@ To run tests, run the following command
 ```bash
   npm test
 ```
-
-## Screenshots
-
-![App Screenshot](landing-page/image/carousel1.png)
-
-![App Screenshot](landing-page/image/carousel3.png)
-  
-![App Screenshot](landing-page/image/carousel4.png)
-  
-## Game Trailer
-
-[![Game Trailer](http://i3.ytimg.com/vi/o8Bu8e-gTtE/maxresdefault.jpg)](https://www.youtube.com/watch?v=o8Bu8e-gTtE)
-
-Link: https://www.youtube.com/watch?v=o8Bu8e-gTtE
-
   
 ## Tech Stack
 
-**Frameworks:** Bootstrap (landing page), Phaser 3 (game engine)
+**Frameworks:** Bootstrap (landing page), Phaser 3 (game engine, used for front-end rendering)
 
 **Tools/Languages:** Typescript
 
@@ -132,9 +133,9 @@ Please adhere to this project's `MIT` license.
 
 ## Documentation
 
-[Github Wiki](https://github.com/o-chib/hexisle.io/wiki)
+For an overview of the game and its systems refer to the [User Guide](https://docs.google.com/document/d/e/2PACX-1vSCLj2ZHzgOwm3bN77StsHC25qQgZzq9X9zNPsLQ1pb5jvs5dWN0a5323ga9XYmV2CJSrn1UVBRkrys/pub) 
 
-[User Guide](https://docs.google.com/document/d/1YHrR4WNBf9_-gPamyvvTtFYI9yxm49cz7WaIZMAzbWY/edit?usp=sharing)
+For more detail on the different parts of the code [GitHub Wiki](https://github.com/o-chib/hexisle.io/wiki)
 
 ## License
 
